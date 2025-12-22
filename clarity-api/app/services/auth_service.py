@@ -67,7 +67,7 @@ class AuthService:
         if not user or not user.password_hash:
             raise ValueError("INVALID_CREDENTIALS")
 
-        if not verify_password(data.password, user.password_hash):
+        if not verify_password(data.password, user.password_hash):  # type: ignore[arg-type]
             raise ValueError("INVALID_CREDENTIALS")
 
         # 检查/创建设备（subscription 已通过 selectinload 预加载）
@@ -107,9 +107,9 @@ class AuthService:
         user = session.user
 
         # Token rotation: 创建新 token，更新会话
-        new_refresh = create_refresh_token(session.id)
-        session.token_hash = hash_token(new_refresh)
-        session.expires_at = datetime.utcnow() + timedelta(days=30)
+        new_refresh = create_refresh_token(session.id)  # type: ignore[arg-type]
+        session.token_hash = hash_token(new_refresh)  # type: ignore[assignment]
+        session.expires_at = datetime.utcnow() + timedelta(days=30)  # type: ignore[assignment]
 
         access_token = create_access_token(user.id, user.email)
 
@@ -159,7 +159,7 @@ class AuthService:
         if device:
             if device.user_id != user.id:
                 raise ValueError("DEVICE_BOUND_TO_OTHER")
-            device.last_active_at = datetime.utcnow()
+            device.last_active_at = datetime.utcnow()  # type: ignore[assignment]
             return device
 
         # 检查设备限制（tier 由调用方传入，避免懒加载）
@@ -193,9 +193,9 @@ class AuthService:
         self.db.add(session)
         await self.db.flush()
 
-        access_token = create_access_token(user.id, user.email)
-        refresh_token = create_refresh_token(session.id)
-        session.token_hash = hash_token(refresh_token)
+        access_token = create_access_token(user.id, user.email)  # type: ignore[arg-type]
+        refresh_token = create_refresh_token(session.id)  # type: ignore[arg-type]
+        session.token_hash = hash_token(refresh_token)  # type: ignore[assignment]
 
         return TokenResponse(
             access_token=access_token,
