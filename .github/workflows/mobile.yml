@@ -3,10 +3,8 @@ name: Mobile CI
 on:
   push:
     branches: [main]
-    paths: ['clarity-mobile/**', '.github/workflows/mobile.yml']
   pull_request:
     branches: [main]
-    paths: ['clarity-mobile/**', '.github/workflows/mobile.yml']
 
 defaults:
   run:

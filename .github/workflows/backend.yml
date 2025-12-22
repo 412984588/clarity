@@ -3,10 +3,8 @@ name: Backend CI
 on:
   push:
     branches: [main]
-    paths: ['clarity-api/**', '.github/workflows/backend.yml']
   pull_request:
     branches: [main]
-    paths: ['clarity-api/**', '.github/workflows/backend.yml']
 
 defaults:
   run:
@@ -21,7 +19,7 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install poetry
-      - run: poetry install
+      - run: poetry install --no-root
       - run: poetry run ruff check .
       - run: poetry run mypy app --ignore-missing-imports
 
@@ -42,7 +40,7 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install poetry
-      - run: poetry install
+      - run: poetry install --no-root
       - run: poetry run alembic upgrade head
         env:
           DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/clarity_test
