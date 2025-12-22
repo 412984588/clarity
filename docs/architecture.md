@@ -1234,7 +1234,7 @@ async def health_check():
         "status": "healthy" if db_ok else "degraded",
         "database": "ok" if db_ok else "error",
         "version": settings.VERSION,
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.datetime.now(datetime.UTC).isoformat()
     }
 ```
 

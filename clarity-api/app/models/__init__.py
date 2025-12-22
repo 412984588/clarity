@@ -4,6 +4,7 @@ from app.models.session import ActiveSession
 from app.models.solve_session import SolveSession
 from app.models.subscription import Subscription, Usage
 from app.models.password_reset import PasswordResetToken
+from app.models.webhook_event import ProcessedWebhookEvent
 
 __all__ = [
     "User",
@@ -13,4 +14,5 @@ __all__ = [
     "Subscription",
     "Usage",
     "PasswordResetToken",
+    "ProcessedWebhookEvent",
 ]

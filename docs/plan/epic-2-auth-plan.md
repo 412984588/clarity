@@ -211,7 +211,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def create_access_token(user_id: UUID, email: str, expires_delta: Optional[timedelta] = None) -> str:
     """Create JWT access token"""
-    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=settings.jwt_expire_minutes))
+    expire = datetime.datetime.now(datetime.UTC) + (expires_delta or timedelta(minutes=settings.jwt_expire_minutes))
     to_encode = {
         "sub": str(user_id),
         "email": email,
@@ -223,7 +223,7 @@ def create_access_token(user_id: UUID, email: str, expires_delta: Optional[timed
 
 def create_refresh_token(session_id: UUID, expires_delta: Optional[timedelta] = None) -> str:
     """Create JWT refresh token"""
-    expire = datetime.utcnow() + (expires_delta or timedelta(days=30))
+    expire = datetime.datetime.now(datetime.UTC) + (expires_delta or timedelta(days=30))
     to_encode = {
         "sub": str(session_id),
         "type": "refresh",
@@ -496,7 +496,7 @@ class AuthService:
             .where(
                 ActiveSession.id == session_id,
                 ActiveSession.token_hash == token_hash,
-                ActiveSession.expires_at > datetime.utcnow()
+                ActiveSession.expires_at > datetime.datetime.now(datetime.UTC)
             )
         )
         session = result.scalar_one_or_none()
@@ -509,7 +509,7 @@ class AuthService:
         # Token rotation: 创建新 token，删除旧会话
         new_refresh = create_refresh_token(session.id)
         session.token_hash = hash_token(new_refresh)
-        session.expires_at = datetime.utcnow() + timedelta(days=30)
+        session.expires_at = datetime.datetime.now(datetime.UTC) + timedelta(days=30)
 
         access_token = create_access_token(user.id, user.email)
 
@@ -557,7 +557,7 @@ class AuthService:
         if device:
             if device.user_id != user.id:
                 raise ValueError("DEVICE_BOUND_TO_OTHER")
-            device.last_active_at = datetime.utcnow()
+            device.last_active_at = datetime.datetime.now(datetime.UTC)
             return device
 
         # 检查设备限制
@@ -590,7 +590,7 @@ class AuthService:
             user_id=user.id,
             device_id=device.id,
             token_hash="",  # Will be updated
-            expires_at=datetime.utcnow() + timedelta(days=30)
+            expires_at=datetime.datetime.now(datetime.UTC) + timedelta(days=30)
         )
         self.db.add(session)
         await self.db.flush()
@@ -1221,12 +1221,12 @@ async def remove_device(
         raise HTTPException(status_code=400, detail={"error": "CANNOT_REMOVE_CURRENT_DEVICE"})
 
     # 检查解绑频率限制
-    if device.last_removal_at and device.last_removal_at > datetime.utcnow() - timedelta(days=1):
+    if device.last_removal_at and device.last_removal_at > datetime.datetime.now(datetime.UTC) - timedelta(days=1):
         raise HTTPException(status_code=429, detail={"error": "DEVICE_REMOVAL_LIMIT"})
 
     # 软删除
     device.is_active = False
-    device.last_removal_at = datetime.utcnow()
+    device.last_removal_at = datetime.datetime.now(datetime.UTC)
     await db.commit()
 
 
@@ -1831,7 +1831,7 @@ async def request_password_reset(self, email: str) -> Optional[str]:
     reset = PasswordReset(
         user_id=user.id,
         token_hash=token_hash,
-        expires_at=datetime.utcnow() + timedelta(hours=1)
+        expires_at=datetime.datetime.now(datetime.UTC) + timedelta(hours=1)
     )
     self.db.add(reset)
     await self.db.commit()
@@ -1848,7 +1848,7 @@ async def reset_password(self, token: str, new_password: str) -> bool:
     result = await self.db.execute(
         select(PasswordReset).where(
             PasswordReset.token_hash == token_hash,
-            PasswordReset.expires_at > datetime.utcnow(),
+            PasswordReset.expires_at > datetime.datetime.now(datetime.UTC),
             PasswordReset.used_at == None
         )
     )
@@ -1867,7 +1867,7 @@ async def reset_password(self, token: str, new_password: str) -> bool:
         raise ValueError("RESET_TOKEN_INVALID")
 
     user.password_hash = hash_password(new_password)
-    reset.used_at = datetime.utcnow()
+    reset.used_at = datetime.datetime.now(datetime.UTC)
 
     # 使所有会话失效
     await self.db.execute(

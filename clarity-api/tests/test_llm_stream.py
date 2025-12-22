@@ -1,4 +1,5 @@
 """LLM stream tests."""
+
 import json
 
 import pytest
@@ -8,17 +9,22 @@ from app.routers import sessions as sessions_router
 
 
 async def _register_user(client: AsyncClient, email: str, fingerprint: str) -> str:
-    response = await client.post("/auth/register", json={
-        "email": email,
-        "password": "Password123",
-        "device_fingerprint": fingerprint
-    })
+    response = await client.post(
+        "/auth/register",
+        json={
+            "email": email,
+            "password": "Password123",
+            "device_fingerprint": fingerprint,
+        },
+    )
     assert response.status_code == 201
     return response.json()["access_token"]
 
 
 @pytest.mark.asyncio
-async def test_llm_stream_emits_tokens_and_done(client: AsyncClient, monkeypatch: pytest.MonkeyPatch):
+async def test_llm_stream_emits_tokens_and_done(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+):
     class FakeAIService:
         async def stream(self, system_prompt: str, user_prompt: str):
             for token in ["foo", "bar"]:
@@ -57,7 +63,7 @@ async def test_llm_stream_emits_tokens_and_done(client: AsyncClient, monkeypatch
         if line == "event: done" and idx + 1 < len(lines):
             data_line = lines[idx + 1]
             if data_line.startswith("data: "):
-                done_payload = json.loads(data_line[len("data: "):])
+                done_payload = json.loads(data_line[len("data: ") :])
                 break
 
     assert done_payload is not None

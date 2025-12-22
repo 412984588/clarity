@@ -1,4 +1,5 @@
 """Prompt injection filter tests."""
+
 import re
 
 from app.services.content_filter import sanitize_user_input, strip_pii

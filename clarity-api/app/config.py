@@ -4,6 +4,7 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
     """应用配置，从环境变量加载"""
+
     app_name: str = "Clarity API"
     debug: bool = False
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/clarity"

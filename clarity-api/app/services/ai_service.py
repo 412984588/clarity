@@ -25,14 +25,18 @@ class AIService:
         else:
             raise ValueError(f"Unsupported LLM provider: {self.provider}")
 
-    async def stream(self, system_prompt: str, user_prompt: str) -> AsyncGenerator[str, None]:
+    async def stream(
+        self, system_prompt: str, user_prompt: str
+    ) -> AsyncGenerator[str, None]:
         """Stream response tokens from the configured provider."""
         attempt = 0
         while attempt < self.max_retries:
             attempt += 1
             yielded_any = False
             try:
-                async for token in self._get_stream_generator(system_prompt, user_prompt):
+                async for token in self._get_stream_generator(
+                    system_prompt, user_prompt
+                ):
                     yielded_any = True
                     yield token
                 return
@@ -41,7 +45,9 @@ class AIService:
                     raise
                 await asyncio.sleep(0.5 * attempt)
 
-    async def _stream_openai(self, system_prompt: str, user_prompt: str) -> AsyncGenerator[str, None]:
+    async def _stream_openai(
+        self, system_prompt: str, user_prompt: str
+    ) -> AsyncGenerator[str, None]:
         api_key = self.settings.openai_api_key
         if not api_key:
             raise ValueError("OPENAI_API_KEY is not configured")
@@ -71,7 +77,7 @@ class AIService:
                 async for line in response.aiter_lines():
                     if not line or not line.startswith("data:"):
                         continue
-                    data = line[len("data:"):].strip()
+                    data = line[len("data:") :].strip()
                     if data == "[DONE]":
                         break
                     try:
@@ -83,7 +89,9 @@ class AIService:
                     if content:
                         yield content
 
-    async def _stream_anthropic(self, system_prompt: str, user_prompt: str) -> AsyncGenerator[str, None]:
+    async def _stream_anthropic(
+        self, system_prompt: str, user_prompt: str
+    ) -> AsyncGenerator[str, None]:
         api_key = self.settings.anthropic_api_key
         if not api_key:
             raise ValueError("ANTHROPIC_API_KEY is not configured")
@@ -115,7 +123,7 @@ class AIService:
                 async for line in response.aiter_lines():
                     if not line or not line.startswith("data:"):
                         continue
-                    data = line[len("data:"):].strip()
+                    data = line[len("data:") :].strip()
                     if not data:
                         continue
                     try:

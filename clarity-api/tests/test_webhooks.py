@@ -1,4 +1,5 @@
 """Webhook endpoint tests."""
+
 import json
 from unittest.mock import patch
 from uuid import uuid4
@@ -15,11 +16,7 @@ from app.models.user import User
 async def _create_user_with_subscription(email: str) -> str:
     """Create a user with subscription directly in DB."""
     async with TestingSessionLocal() as session:
-        user = User(
-            email=email,
-            password_hash="test",
-            auth_provider="email"
-        )
+        user = User(email=email, password_hash="test", auth_provider="email")
         session.add(user)
         await session.flush()
 
@@ -28,7 +25,7 @@ async def _create_user_with_subscription(email: str) -> str:
             tier="free",
             status="active",
             stripe_customer_id=f"cus_{uuid4().hex[:14]}",
-            stripe_subscription_id=f"sub_{uuid4().hex[:14]}"
+            stripe_subscription_id=f"sub_{uuid4().hex[:14]}",
         )
         session.add(subscription)
         await session.commit()
@@ -41,7 +38,7 @@ async def test_webhook_missing_signature_returns_400(client: AsyncClient):
     response = await client.post(
         "/webhooks/stripe",
         content=json.dumps({"type": "test"}),
-        headers={"Content-Type": "application/json"}
+        headers={"Content-Type": "application/json"},
     )
     assert response.status_code == 400
     assert response.json()["detail"]["error"] == "MISSING_SIGNATURE"
@@ -52,8 +49,9 @@ async def test_webhook_invalid_signature_returns_400(client: AsyncClient):
     """Webhook with invalid signature returns 400."""
     with patch("app.routers.webhooks.stripe_service") as mock_stripe:
         import stripe
-        mock_stripe.verify_webhook.side_effect = stripe.error.SignatureVerificationError(
-            "Invalid", "sig"
+
+        mock_stripe.verify_webhook.side_effect = (
+            stripe.error.SignatureVerificationError("Invalid", "sig")
         )
 
         response = await client.post(
@@ -61,8 +59,8 @@ async def test_webhook_invalid_signature_returns_400(client: AsyncClient):
             content=json.dumps({"type": "test"}),
             headers={
                 "Content-Type": "application/json",
-                "Stripe-Signature": "invalid_sig"
-            }
+                "Stripe-Signature": "invalid_sig",
+            },
         )
     assert response.status_code == 400
     assert response.json()["detail"]["error"] == "INVALID_SIGNATURE"
@@ -81,12 +79,9 @@ async def test_webhook_checkout_completed(client: AsyncClient):
                 "customer": "cus_new_customer",
                 "subscription": "sub_new_subscription",
                 "client_reference_id": user_id,
-                "metadata": {
-                    "user_id": user_id,
-                    "price_id": "price_standard"
-                }
+                "metadata": {"user_id": user_id, "price_id": "price_standard"},
             }
-        }
+        },
     }
 
     with patch("app.routers.webhooks.stripe_service") as mock_stripe:
@@ -100,8 +95,8 @@ async def test_webhook_checkout_completed(client: AsyncClient):
                 content=json.dumps(event),
                 headers={
                     "Content-Type": "application/json",
-                    "Stripe-Signature": "valid_sig"
-                }
+                    "Stripe-Signature": "valid_sig",
+                },
             )
 
     assert response.status_code == 200
@@ -128,15 +123,10 @@ async def test_webhook_invoice_paid(client: AsyncClient):
                 "customer": customer_id,
                 "subscription": "sub_test",
                 "lines": {
-                    "data": [{
-                        "period": {
-                            "start": 1704067200,
-                            "end": 1706745600
-                        }
-                    }]
-                }
+                    "data": [{"period": {"start": 1704067200, "end": 1706745600}}]
+                },
             }
-        }
+        },
     }
 
     with patch("app.routers.webhooks.stripe_service") as mock_stripe:
@@ -147,8 +137,8 @@ async def test_webhook_invoice_paid(client: AsyncClient):
             content=json.dumps(event),
             headers={
                 "Content-Type": "application/json",
-                "Stripe-Signature": "valid_sig"
-            }
+                "Stripe-Signature": "valid_sig",
+            },
         )
 
     assert response.status_code == 200
@@ -169,12 +159,7 @@ async def test_webhook_payment_failed(client: AsyncClient):
     event = {
         "id": f"evt_{uuid4().hex[:14]}",
         "type": "invoice.payment_failed",
-        "data": {
-            "object": {
-                "customer": customer_id,
-                "subscription": "sub_test"
-            }
-        }
+        "data": {"object": {"customer": customer_id, "subscription": "sub_test"}},
     }
 
     with patch("app.routers.webhooks.stripe_service") as mock_stripe:
@@ -185,8 +170,8 @@ async def test_webhook_payment_failed(client: AsyncClient):
             content=json.dumps(event),
             headers={
                 "Content-Type": "application/json",
-                "Stripe-Signature": "valid_sig"
-            }
+                "Stripe-Signature": "valid_sig",
+            },
         )
 
     assert response.status_code == 200
@@ -217,12 +202,7 @@ async def test_webhook_subscription_deleted(client: AsyncClient):
     event = {
         "id": f"evt_{uuid4().hex[:14]}",
         "type": "customer.subscription.deleted",
-        "data": {
-            "object": {
-                "id": subscription_id,
-                "customer": customer_id
-            }
-        }
+        "data": {"object": {"id": subscription_id, "customer": customer_id}},
     }
 
     with patch("app.routers.webhooks.stripe_service") as mock_stripe:
@@ -233,8 +213,8 @@ async def test_webhook_subscription_deleted(client: AsyncClient):
             content=json.dumps(event),
             headers={
                 "Content-Type": "application/json",
-                "Stripe-Signature": "valid_sig"
-            }
+                "Stripe-Signature": "valid_sig",
+            },
         )
 
     assert response.status_code == 200

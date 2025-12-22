@@ -50,7 +50,9 @@ async def _get_subscription(
 ) -> Optional[Subscription]:
     if subscription_id:
         result = await db.execute(
-            select(Subscription).where(Subscription.stripe_subscription_id == subscription_id)
+            select(Subscription).where(
+                Subscription.stripe_subscription_id == subscription_id
+            )
         )
         subscription = result.scalar_one_or_none()
         if subscription:
@@ -187,7 +189,9 @@ async def _handle_invoice_payment_failed(db: AsyncSession, invoice: dict) -> Non
     subscription.status = "past_due"  # type: ignore[assignment]
 
 
-async def _handle_subscription_deleted(db: AsyncSession, stripe_subscription: dict) -> None:
+async def _handle_subscription_deleted(
+    db: AsyncSession, stripe_subscription: dict
+) -> None:
     customer_id = stripe_subscription.get("customer")
     subscription_id = stripe_subscription.get("id")
     subscription = await _get_subscription(db, customer_id, subscription_id)

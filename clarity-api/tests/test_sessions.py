@@ -1,4 +1,5 @@
 """Session tests."""
+
 from uuid import UUID, uuid4
 
 import pytest
@@ -9,22 +10,28 @@ from app.routers import sessions as sessions_router
 
 
 async def _register_user(client: AsyncClient, email: str, fingerprint: str) -> str:
-    response = await client.post("/auth/register", json={
-        "email": email,
-        "password": "Password123",
-        "device_fingerprint": fingerprint
-    })
+    response = await client.post(
+        "/auth/register",
+        json={
+            "email": email,
+            "password": "Password123",
+            "device_fingerprint": fingerprint,
+        },
+    )
     assert response.status_code == 201
     return response.json()["access_token"]
 
 
 @pytest.mark.asyncio
 async def test_revoked_session_invalidates_token(client: AsyncClient):
-    register_resp = await client.post("/auth/register", json={
-        "email": "revoke-session-token@example.com",
-        "password": "Password123",
-        "device_fingerprint": "session-token-001"
-    })
+    register_resp = await client.post(
+        "/auth/register",
+        json={
+            "email": "revoke-session-token@example.com",
+            "password": "Password123",
+            "device_fingerprint": "session-token-001",
+        },
+    )
     assert register_resp.status_code == 201
     access_token = register_resp.json()["access_token"]
 
@@ -33,13 +40,12 @@ async def test_revoked_session_invalidates_token(client: AsyncClient):
 
     revoke_resp = await client.delete(
         f"/auth/sessions/{session_id}",
-        headers={"Authorization": f"Bearer {access_token}"}
+        headers={"Authorization": f"Bearer {access_token}"},
     )
     assert revoke_resp.status_code == 204
 
     devices_resp = await client.get(
-        "/auth/devices",
-        headers={"Authorization": f"Bearer {access_token}"}
+        "/auth/devices", headers={"Authorization": f"Bearer {access_token}"}
     )
     assert devices_resp.status_code == 401
     assert devices_resp.json()["detail"]["error"] == "SESSION_REVOKED"
@@ -54,7 +60,9 @@ async def test_sessions_unauthenticated_returns_401(client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_create_session_returns_201(client: AsyncClient):
-    token = await _register_user(client, "session-create@example.com", "session-device-001")
+    token = await _register_user(
+        client, "session-create@example.com", "session-device-001"
+    )
     response = await client.post(
         "/sessions",
         json={},
@@ -73,7 +81,9 @@ async def test_create_session_returns_201(client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_list_sessions_returns_array(client: AsyncClient):
-    token = await _register_user(client, "session-list@example.com", "session-device-002")
+    token = await _register_user(
+        client, "session-list@example.com", "session-device-002"
+    )
     await client.post(
         "/sessions",
         json={},
@@ -96,7 +106,9 @@ async def test_list_sessions_returns_array(client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_get_session_returns_correct_data(client: AsyncClient):
-    token = await _register_user(client, "session-get@example.com", "session-device-003")
+    token = await _register_user(
+        client, "session-get@example.com", "session-device-003"
+    )
     create_resp = await client.post(
         "/sessions",
         json={},
@@ -120,7 +132,9 @@ async def test_get_session_returns_correct_data(client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_get_other_users_session_returns_404(client: AsyncClient):
-    token_a = await _register_user(client, "session-user-a@example.com", "session-device-004")
+    token_a = await _register_user(
+        client, "session-user-a@example.com", "session-device-004"
+    )
     create_resp = await client.post(
         "/sessions",
         json={},
@@ -131,7 +145,9 @@ async def test_get_other_users_session_returns_404(client: AsyncClient):
     )
     session_id = create_resp.json()["session_id"]
 
-    token_b = await _register_user(client, "session-user-b@example.com", "session-device-005")
+    token_b = await _register_user(
+        client, "session-user-b@example.com", "session-device-005"
+    )
     response = await client.get(
         f"/sessions/{session_id}",
         headers={"Authorization": f"Bearer {token_b}"},
@@ -141,14 +157,18 @@ async def test_get_other_users_session_returns_404(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_sse_endpoint_returns_event_stream(client: AsyncClient, monkeypatch: pytest.MonkeyPatch):
+async def test_sse_endpoint_returns_event_stream(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+):
     class FakeAIService:
         async def stream(self, system_prompt: str, user_prompt: str):
             for token in ["hello", "world"]:
                 yield token
 
     monkeypatch.setattr(sessions_router, "AIService", FakeAIService)
-    token = await _register_user(client, "session-sse@example.com", "session-device-006")
+    token = await _register_user(
+        client, "session-sse@example.com", "session-device-006"
+    )
     create_resp = await client.post(
         "/sessions",
         json={},
@@ -176,7 +196,9 @@ async def test_sse_endpoint_returns_event_stream(client: AsyncClient, monkeypatc
 
 @pytest.mark.asyncio
 async def test_sse_invalid_session_returns_404(client: AsyncClient):
-    token = await _register_user(client, "session-invalid@example.com", "session-device-007")
+    token = await _register_user(
+        client, "session-invalid@example.com", "session-device-007"
+    )
     response = await client.post(
         f"/sessions/{uuid4()}/messages",
         json={"content": "hello", "step": "receive"},

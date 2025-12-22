@@ -8,6 +8,7 @@ from app.database import Base
 
 class User(Base):
     """用户模型 - 支持邮箱和 OAuth"""
+
     __tablename__ = "users"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -25,9 +26,15 @@ class User(Base):
     )
 
     # Relationships
-    devices = relationship("Device", back_populates="user", cascade="all, delete-orphan")
-    sessions = relationship("ActiveSession", back_populates="user", cascade="all, delete-orphan")
-    solve_sessions = relationship("SolveSession", back_populates="user", cascade="all, delete-orphan")
+    devices = relationship(
+        "Device", back_populates="user", cascade="all, delete-orphan"
+    )
+    sessions = relationship(
+        "ActiveSession", back_populates="user", cascade="all, delete-orphan"
+    )
+    solve_sessions = relationship(
+        "SolveSession", back_populates="user", cascade="all, delete-orphan"
+    )
     subscription = relationship("Subscription", back_populates="user", uselist=False)
     password_reset_tokens = relationship(
         "PasswordResetToken", back_populates="user", cascade="all, delete-orphan"

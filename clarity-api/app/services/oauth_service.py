@@ -8,6 +8,7 @@ OAuth Service - Google & Apple Sign-in
 3. Apple 公钥缓存（TTL 24小时）
 4. 提取通用登录流程减少代码重复
 """
+
 import asyncio
 from typing import Tuple, Optional
 from google.oauth2 import id_token
@@ -48,7 +49,7 @@ class OAuthService:
             provider="google",
             provider_id=user_info["sub"],
             device_fingerprint=data.device_fingerprint,
-            device_name=data.device_name
+            device_name=data.device_name,
         )
 
     async def apple_auth(self, data: OAuthRequest) -> Tuple[User, TokenResponse]:
@@ -59,7 +60,7 @@ class OAuthService:
             provider="apple",
             provider_id=user_info["sub"],
             device_fingerprint=data.device_fingerprint,
-            device_name=data.device_name
+            device_name=data.device_name,
         )
 
     async def _process_oauth_login(
@@ -68,7 +69,7 @@ class OAuthService:
         provider: str,
         provider_id: str,
         device_fingerprint: str,
-        device_name: Optional[str]
+        device_name: Optional[str],
     ) -> Tuple[User, TokenResponse]:
         """
         通用 OAuth 登录流程
@@ -109,10 +110,8 @@ class OAuthService:
             idinfo = await loop.run_in_executor(
                 None,
                 lambda: id_token.verify_oauth2_token(
-                    token,
-                    google_requests.Request(),
-                    settings.google_client_id
-                )
+                    token, google_requests.Request(), settings.google_client_id
+                ),
             )
         except ValueError as e:
             raise ValueError(f"GOOGLE_TOKEN_INVALID: {e}")
@@ -129,7 +128,7 @@ class OAuthService:
             "sub": idinfo["sub"],
             "email": idinfo["email"],
             "name": idinfo.get("name"),
-            "picture": idinfo.get("picture")
+            "picture": idinfo.get("picture"),
         }
 
     async def _verify_apple_token(self, token: str) -> dict:
@@ -158,14 +157,14 @@ class OAuthService:
                 key,  # type: ignore[arg-type]
                 algorithms=["RS256"],
                 audience=settings.apple_client_id,
-                issuer="https://appleid.apple.com"
+                issuer="https://appleid.apple.com",
             )
 
             # Apple 首次登录返回 email，后续登录只有 sub
             return {
                 "sub": payload["sub"],
                 "email": payload.get("email"),  # 可能为 None
-                "email_verified": payload.get("email_verified", "true") == "true"
+                "email_verified": payload.get("email_verified", "true") == "true",
             }
         except jwt.ExpiredSignatureError:
             raise ValueError("APPLE_TOKEN_EXPIRED")
@@ -195,10 +194,7 @@ class OAuthService:
         return None
 
     async def _get_or_create_user(
-        self,
-        email: str,
-        provider: str,
-        provider_id: Optional[str] = None
+        self, email: str, provider: str, provider_id: Optional[str] = None
     ) -> User:
         """
         查找或创建用户
@@ -207,7 +203,9 @@ class OAuthService:
         """
         # 查找现有用户（预加载 subscription）
         result = await self.db.execute(
-            select(User).options(selectinload(User.subscription)).where(User.email == email)
+            select(User)
+            .options(selectinload(User.subscription))
+            .where(User.email == email)
         )
         user = result.scalar_one_or_none()
 
@@ -216,11 +214,7 @@ class OAuthService:
             return user
 
         # 创建新用户（OAuth 用户没有密码）
-        user = User(
-            email=email,
-            password_hash=None,
-            auth_provider=provider
-        )
+        user = User(email=email, password_hash=None, auth_provider=provider)
         self.db.add(user)
         await self.db.flush()
 

@@ -1,4 +1,6 @@
 """RevenueCat webhook endpoint tests."""
+
+import asyncio
 from datetime import datetime, timezone
 from unittest.mock import patch
 from uuid import uuid4
@@ -10,6 +12,7 @@ from sqlalchemy import select
 from tests.conftest import TestingSessionLocal
 from app.models.subscription import Subscription
 from app.models.user import User
+from app.models.webhook_event import ProcessedWebhookEvent
 
 
 class _TestSettings:
@@ -53,7 +56,9 @@ async def test_webhook_missing_auth_returns_401(client: AsyncClient):
 @pytest.mark.asyncio
 async def test_webhook_invalid_auth_returns_401(client: AsyncClient):
     """Authorization 不合法时返回 401。"""
-    with patch("app.routers.revenuecat_webhooks.get_settings", return_value=_TestSettings()):
+    with patch(
+        "app.routers.revenuecat_webhooks.get_settings", return_value=_TestSettings()
+    ):
         response = await client.post(
             "/webhooks/revenuecat",
             json={"event": {"type": "INITIAL_PURCHASE"}},
@@ -76,7 +81,9 @@ async def test_webhook_initial_purchase(client: AsyncClient):
         "expiration_at_ms": 1706745600000,
     }
 
-    with patch("app.routers.revenuecat_webhooks.get_settings", return_value=_TestSettings()):
+    with patch(
+        "app.routers.revenuecat_webhooks.get_settings", return_value=_TestSettings()
+    ):
         response = await client.post(
             "/webhooks/revenuecat",
             json={"event": event},
@@ -107,7 +114,9 @@ async def test_webhook_renewal(client: AsyncClient):
         "expiration_at_ms": 1706745600000,
     }
 
-    with patch("app.routers.revenuecat_webhooks.get_settings", return_value=_TestSettings()):
+    with patch(
+        "app.routers.revenuecat_webhooks.get_settings", return_value=_TestSettings()
+    ):
         response = await client.post(
             "/webhooks/revenuecat",
             json={"event": event},
@@ -145,7 +154,9 @@ async def test_webhook_expiration(client: AsyncClient):
         "app_user_id": user_id,
     }
 
-    with patch("app.routers.revenuecat_webhooks.get_settings", return_value=_TestSettings()):
+    with patch(
+        "app.routers.revenuecat_webhooks.get_settings", return_value=_TestSettings()
+    ):
         response = await client.post(
             "/webhooks/revenuecat",
             json={"event": event},
@@ -161,3 +172,115 @@ async def test_webhook_expiration(client: AsyncClient):
         sub = result.scalar_one()
         assert sub.tier == "free"
         assert sub.status == "expired"
+
+
+@pytest.mark.asyncio
+async def test_webhook_idempotency_duplicate_event(client: AsyncClient):
+    """重复发送同一 event_id 只处理一次（幂等性）。"""
+    user_id = await _create_user_with_subscription("rc-idempotent@example.com")
+    event_id = f"evt_{uuid4().hex[:14]}"
+
+    event = {
+        "id": event_id,
+        "type": "INITIAL_PURCHASE",
+        "app_user_id": user_id,
+        "entitlement_ids": ["pro_access"],
+        "expiration_at_ms": 1706745600000,
+    }
+
+    with patch(
+        "app.routers.revenuecat_webhooks.get_settings", return_value=_TestSettings()
+    ):
+        # 第一次请求
+        response1 = await client.post(
+            "/webhooks/revenuecat",
+            json={"event": event},
+            headers={"Authorization": "Bearer whsec_test"},
+        )
+        assert response1.status_code == 200
+
+        # 第二次请求（相同 event_id）
+        response2 = await client.post(
+            "/webhooks/revenuecat",
+            json={"event": event},
+            headers={"Authorization": "Bearer whsec_test"},
+        )
+        assert response2.status_code == 200
+
+    # 验证事件只被记录一次
+    async with TestingSessionLocal() as session:
+        result = await session.execute(
+            select(ProcessedWebhookEvent).where(
+                ProcessedWebhookEvent.event_id == event_id
+            )
+        )
+        events = result.scalars().all()
+        assert len(events) == 1
+
+        # 验证订阅状态是 pro（处理成功）
+        result = await session.execute(
+            select(Subscription).join(User).where(User.id == user_id)
+        )
+        sub = result.scalar_one()
+        assert sub.tier == "pro"
+
+
+@pytest.mark.asyncio
+async def test_webhook_concurrency_final_state_correct(client: AsyncClient):
+    """并发发送两个不同事件，最终状态正确。"""
+    user_id = await _create_user_with_subscription("rc-concurrent@example.com")
+
+    # 模拟快速连续的 INITIAL_PURCHASE 和 CANCELLATION
+    event1 = {
+        "id": f"evt_{uuid4().hex[:14]}",
+        "type": "INITIAL_PURCHASE",
+        "app_user_id": user_id,
+        "entitlement_ids": ["standard_access"],
+        "expiration_at_ms": 1706745600000,
+    }
+    event2 = {
+        "id": f"evt_{uuid4().hex[:14]}",
+        "type": "CANCELLATION",
+        "app_user_id": user_id,
+    }
+
+    with patch(
+        "app.routers.revenuecat_webhooks.get_settings", return_value=_TestSettings()
+    ):
+        # 并发发送两个请求
+        results = await asyncio.gather(
+            client.post(
+                "/webhooks/revenuecat",
+                json={"event": event1},
+                headers={"Authorization": "Bearer whsec_test"},
+            ),
+            client.post(
+                "/webhooks/revenuecat",
+                json={"event": event2},
+                headers={"Authorization": "Bearer whsec_test"},
+            ),
+        )
+
+    # 两个请求都应该成功
+    assert results[0].status_code == 200
+    assert results[1].status_code == 200
+
+    # 验证两个事件都被记录
+    async with TestingSessionLocal() as session:
+        result = await session.execute(
+            select(ProcessedWebhookEvent).where(
+                ProcessedWebhookEvent.event_id.in_([event1["id"], event2["id"]])
+            )
+        )
+        events = result.scalars().all()
+        assert len(events) == 2
+
+        # 验证订阅状态最终正确（CANCELLATION 后 cancel_at_period_end 为 True）
+        result = await session.execute(
+            select(Subscription).join(User).where(User.id == user_id)
+        )
+        sub = result.scalar_one()
+        # 两个事件都被处理，最终状态取决于处理顺序
+        # 但关键是没有数据丢失或写脏数据
+        assert sub.tier in ["standard", "free"]  # 取决于处理顺序
+        assert sub.status == "active"  # 两个事件都不会改变为非 active

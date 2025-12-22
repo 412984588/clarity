@@ -1,4 +1,5 @@
 """Datetime utilities for consistent UTC handling."""
+
 from datetime import datetime, timezone
 
 

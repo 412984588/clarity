@@ -18,8 +18,13 @@ from app.models.user import User
 from app.services.auth_service import AuthService
 from app.services.oauth_service import OAuthService
 from app.schemas.auth import (
-    RegisterRequest, LoginRequest, TokenResponse,
-    RefreshRequest, OAuthRequest, ForgotPasswordRequest, ResetPasswordRequest
+    RegisterRequest,
+    LoginRequest,
+    TokenResponse,
+    RefreshRequest,
+    OAuthRequest,
+    ForgotPasswordRequest,
+    ResetPasswordRequest,
 )
 from app.utils.security import hash_password
 
@@ -27,10 +32,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/register", response_model=TokenResponse, status_code=201)
-async def register(
-    data: RegisterRequest,
-    db: AsyncSession = Depends(get_db)
-):
+async def register(data: RegisterRequest, db: AsyncSession = Depends(get_db)):
     """注册新用户"""
     service = AuthService(db)
     try:
@@ -44,10 +46,7 @@ async def register(
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(
-    data: LoginRequest,
-    db: AsyncSession = Depends(get_db)
-):
+async def login(data: LoginRequest, db: AsyncSession = Depends(get_db)):
     """邮箱登录"""
     service = AuthService(db)
     try:
@@ -65,10 +64,7 @@ async def login(
 
 
 @router.post("/refresh", response_model=TokenResponse)
-async def refresh(
-    data: RefreshRequest,
-    db: AsyncSession = Depends(get_db)
-):
+async def refresh(data: RefreshRequest, db: AsyncSession = Depends(get_db)):
     """刷新 access token"""
     service = AuthService(db)
     try:
@@ -85,13 +81,10 @@ async def refresh(
 
 @router.post("/forgot-password")
 async def forgot_password(
-    data: ForgotPasswordRequest,
-    db: AsyncSession = Depends(get_db)
+    data: ForgotPasswordRequest, db: AsyncSession = Depends(get_db)
 ):
     """忘记密码（始终返回 200，防止时序攻击）"""
-    result = await db.execute(
-        select(User).where(User.email == data.email)
-    )
+    result = await db.execute(select(User).where(User.email == data.email))
     user = result.scalar_one_or_none()
 
     # 始终执行 token 生成和 hash 计算，防止时序攻击
@@ -102,7 +95,7 @@ async def forgot_password(
         reset_token = PasswordResetToken(
             user_id=user.id,
             token_hash=token_hash,
-            expires_at=utc_now() + timedelta(minutes=30)
+            expires_at=utc_now() + timedelta(minutes=30),
         )
         db.add(reset_token)
         await db.commit()
@@ -113,8 +106,7 @@ async def forgot_password(
 
 @router.post("/reset-password")
 async def reset_password(
-    data: ResetPasswordRequest,
-    db: AsyncSession = Depends(get_db)
+    data: ResetPasswordRequest, db: AsyncSession = Depends(get_db)
 ):
     """重置密码"""
     token_hash = hashlib.sha256(data.token.encode()).hexdigest()
@@ -124,13 +116,15 @@ async def reset_password(
         .where(
             PasswordResetToken.token_hash == token_hash,
             PasswordResetToken.expires_at > utc_now(),
-            PasswordResetToken.used_at.is_(None)
+            PasswordResetToken.used_at.is_(None),
         )
     )
     reset_token = result.scalar_one_or_none()
 
     if not reset_token or not reset_token.user:
-        raise HTTPException(status_code=400, detail={"error": "INVALID_OR_EXPIRED_TOKEN"})
+        raise HTTPException(
+            status_code=400, detail={"error": "INVALID_OR_EXPIRED_TOKEN"}
+        )
 
     reset_token.user.password_hash = hash_password(data.new_password)  # type: ignore[assignment]
     reset_token.used_at = utc_now()  # type: ignore[assignment]
@@ -151,10 +145,7 @@ async def logout():
 
 
 @router.post("/oauth/google", response_model=TokenResponse)
-async def google_oauth(
-    data: OAuthRequest,
-    db: AsyncSession = Depends(get_db)
-):
+async def google_oauth(data: OAuthRequest, db: AsyncSession = Depends(get_db)):
     """Google OAuth 登录"""
     service = OAuthService(db)
     try:
@@ -174,10 +165,7 @@ async def google_oauth(
 
 
 @router.post("/oauth/apple", response_model=TokenResponse)
-async def apple_oauth(
-    data: OAuthRequest,
-    db: AsyncSession = Depends(get_db)
-):
+async def apple_oauth(data: OAuthRequest, db: AsyncSession = Depends(get_db)):
     """Apple Sign-in 登录"""
     service = OAuthService(db)
     try:
@@ -199,8 +187,7 @@ async def apple_oauth(
 
 @router.get("/devices")
 async def list_devices(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ):
     """获取当前用户的活跃设备列表"""
     # 只查询需要的字段，不加载关联数据
@@ -215,8 +202,10 @@ async def list_devices(
             "id": device.id,
             "device_name": device.device_name,
             "platform": device.platform,
-            "last_active_at": device.last_active_at.isoformat() if device.last_active_at else None,
-            "is_active": device.is_active
+            "last_active_at": device.last_active_at.isoformat()
+            if device.last_active_at
+            else None,
+            "is_active": device.is_active,
         }
         for device in devices
     ]
@@ -227,19 +216,20 @@ async def revoke_device(
     device_id: UUID,
     device_fingerprint: str = Header(..., alias="X-Device-Fingerprint"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """解绑设备"""
     result = await db.execute(
-        select(Device)
-        .where(Device.id == device_id, Device.user_id == current_user.id)
+        select(Device).where(Device.id == device_id, Device.user_id == current_user.id)
     )
     device = result.scalar_one_or_none()
     if not device:
         raise HTTPException(status_code=404, detail={"error": "DEVICE_NOT_FOUND"})
 
     if device.device_fingerprint == device_fingerprint:
-        raise HTTPException(status_code=400, detail={"error": "CANNOT_REMOVE_CURRENT_DEVICE"})
+        raise HTTPException(
+            status_code=400, detail={"error": "CANNOT_REMOVE_CURRENT_DEVICE"}
+        )
 
     # 使用 SQL 日期过滤，避免内存加载所有记录
     today = utc_now().date()
@@ -248,7 +238,7 @@ async def revoke_device(
         .select_from(Device)
         .where(
             Device.user_id == current_user.id,
-            func.date(Device.last_removal_at) == today
+            func.date(Device.last_removal_at) == today,
         )
     )
     if (removal_check.scalar() or 0) > 0:
@@ -258,9 +248,7 @@ async def revoke_device(
     device.last_removal_at = utc_now()  # type: ignore[assignment]
 
     # 批量删除会话，避免 N+1 问题
-    await db.execute(
-        delete(ActiveSession).where(ActiveSession.device_id == device_id)
-    )
+    await db.execute(delete(ActiveSession).where(ActiveSession.device_id == device_id))
 
     await db.commit()
     return None
@@ -268,8 +256,7 @@ async def revoke_device(
 
 @router.get("/sessions")
 async def list_sessions(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ):
     """获取当前用户的活跃会话"""
     # 只查询需要的字段，不加载 device 关联
@@ -277,7 +264,7 @@ async def list_sessions(
         select(ActiveSession)
         .where(
             ActiveSession.user_id == current_user.id,
-            ActiveSession.expires_at > utc_now()
+            ActiveSession.expires_at > utc_now(),
         )
         .order_by(ActiveSession.created_at.asc())
     )
@@ -286,8 +273,12 @@ async def list_sessions(
         {
             "id": session.id,
             "device_id": session.device_id,
-            "created_at": session.created_at.isoformat() if session.created_at else None,
-            "expires_at": session.expires_at.isoformat() if session.expires_at else None
+            "created_at": session.created_at.isoformat()
+            if session.created_at
+            else None,
+            "expires_at": session.expires_at.isoformat()
+            if session.expires_at
+            else None,
         }
         for session in sessions
     ]
@@ -297,13 +288,12 @@ async def list_sessions(
 async def revoke_session(
     session_id: UUID,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """终止会话"""
     result = await db.execute(
         select(ActiveSession).where(
-            ActiveSession.id == session_id,
-            ActiveSession.user_id == current_user.id
+            ActiveSession.id == session_id, ActiveSession.user_id == current_user.id
         )
     )
     session = result.scalar_one_or_none()

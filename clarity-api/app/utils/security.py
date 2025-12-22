@@ -25,28 +25,32 @@ def create_access_token(
     user_id: UUID,
     email: str,
     session_id: UUID,
-    expires_delta: Optional[timedelta] = None
+    expires_delta: Optional[timedelta] = None,
 ) -> str:
     """Create JWT access token"""
-    expire = utc_now() + (expires_delta or timedelta(minutes=settings.jwt_expire_minutes))
+    expire = utc_now() + (
+        expires_delta or timedelta(minutes=settings.jwt_expire_minutes)
+    )
     to_encode = {
         "sub": str(user_id),
         "email": email,
         "sid": str(session_id),
         "type": "access",
-        "exp": expire
+        "exp": expire,
     }
     return jwt.encode(to_encode, settings.jwt_secret, algorithm=settings.jwt_algorithm)
 
 
-def create_refresh_token(session_id: UUID, expires_delta: Optional[timedelta] = None) -> str:
+def create_refresh_token(
+    session_id: UUID, expires_delta: Optional[timedelta] = None
+) -> str:
     """Create JWT refresh token"""
     expire = utc_now() + (expires_delta or timedelta(days=30))
     to_encode = {
         "sub": str(session_id),
         "sid": str(session_id),
         "type": "refresh",
-        "exp": expire
+        "exp": expire,
     }
     return jwt.encode(to_encode, settings.jwt_secret, algorithm=settings.jwt_algorithm)
 
@@ -54,7 +58,9 @@ def create_refresh_token(session_id: UUID, expires_delta: Optional[timedelta] = 
 def decode_token(token: str) -> Optional[dict]:
     """Decode and validate JWT token"""
     try:
-        payload = jwt.decode(token, settings.jwt_secret, algorithms=[settings.jwt_algorithm])
+        payload = jwt.decode(
+            token, settings.jwt_secret, algorithms=[settings.jwt_algorithm]
+        )
         return payload
     except JWTError:
         return None
@@ -63,4 +69,5 @@ def decode_token(token: str) -> Optional[dict]:
 def hash_token(token: str) -> str:
     """Hash token for storage (use first 32 chars of sha256)"""
     import hashlib
+
     return hashlib.sha256(token.encode()).hexdigest()[:32]

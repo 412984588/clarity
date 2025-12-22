@@ -14,7 +14,7 @@ from app.utils.security import decode_token
 
 async def get_current_user(
     token: Optional[str] = Header(None, alias="Authorization"),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ) -> User:
     """从 Authorization header 获取当前用户"""
     if not token:
@@ -43,7 +43,7 @@ async def get_current_user(
         select(ActiveSession).where(
             ActiveSession.id == session_uuid,
             ActiveSession.user_id == user_uuid,
-            ActiveSession.expires_at > utc_now()
+            ActiveSession.expires_at > utc_now(),
         )
     )
     session = session_result.scalar_one_or_none()
@@ -51,9 +51,7 @@ async def get_current_user(
         raise HTTPException(status_code=401, detail={"error": "SESSION_REVOKED"})
 
     # 鉴权只需要 User 基础信息，不需要加载关联数据
-    result = await db.execute(
-        select(User).where(User.id == user_uuid)
-    )
+    result = await db.execute(select(User).where(User.id == user_uuid))
     user = result.scalar_one_or_none()
 
     if not user or not user.is_active:
