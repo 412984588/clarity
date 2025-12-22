@@ -19,7 +19,7 @@ const AuthGate: React.FC = () => {
     if (!isAuthenticated && !inAuthGroup) {
       router.replace('/login');
     } else if (isAuthenticated && inAuthGroup) {
-      router.replace('/(tabs)/settings');
+      router.replace('/(tabs)/home');
     }
   }, [isAuthenticated, isLoading, router, segments]);
 

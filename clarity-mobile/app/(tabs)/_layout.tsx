@@ -1,6 +1,8 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 
+import { t } from '../../i18n';
+
 const TabsLayout: React.FC = () => (
   <Tabs
     screenOptions={{
@@ -11,27 +13,33 @@ const TabsLayout: React.FC = () => (
     }}
   >
     <Tabs.Screen
+      name="home"
+      options={{
+        title: t('tabs.home'),
+      }}
+    />
+    <Tabs.Screen
       name="settings"
       options={{
-        title: 'Settings',
+        title: t('tabs.settings'),
       }}
     />
     <Tabs.Screen
       name="paywall"
       options={{
-        title: 'Paywall',
+        title: t('tabs.paywall'),
       }}
     />
     <Tabs.Screen
       name="devices"
       options={{
-        title: 'Devices',
+        title: t('tabs.devices'),
       }}
     />
     <Tabs.Screen
       name="sessions"
       options={{
-        title: 'Sessions',
+        title: t('tabs.sessions'),
       }}
     />
   </Tabs>
