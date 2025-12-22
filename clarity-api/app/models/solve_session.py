@@ -1,5 +1,5 @@
+from app.utils.datetime_utils import utc_now
 import uuid
-from datetime import datetime
 from enum import Enum
 
 from sqlalchemy import Column, String, DateTime, ForeignKey
@@ -32,7 +32,7 @@ class SolveSession(Base):
     device_id = Column(UUID(as_uuid=True), ForeignKey("devices.id", ondelete="SET NULL"), nullable=True)
     status = Column(String(50), default=SessionStatus.ACTIVE.value)
     current_step = Column(String(50), default=SolveStep.RECEIVE.value)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: utc_now())
     completed_at = Column(DateTime, nullable=True)
 
     # Relationships

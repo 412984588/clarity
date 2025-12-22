@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+from app.utils.datetime_utils import utc_now
+from datetime import timedelta
 from typing import Optional
 from uuid import UUID
 from passlib.context import CryptContext
@@ -27,7 +28,7 @@ def create_access_token(
     expires_delta: Optional[timedelta] = None
 ) -> str:
     """Create JWT access token"""
-    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=settings.jwt_expire_minutes))
+    expire = utc_now() + (expires_delta or timedelta(minutes=settings.jwt_expire_minutes))
     to_encode = {
         "sub": str(user_id),
         "email": email,
@@ -40,7 +41,7 @@ def create_access_token(
 
 def create_refresh_token(session_id: UUID, expires_delta: Optional[timedelta] = None) -> str:
     """Create JWT refresh token"""
-    expire = datetime.utcnow() + (expires_delta or timedelta(days=30))
+    expire = utc_now() + (expires_delta or timedelta(days=30))
     to_encode = {
         "sub": str(session_id),
         "sid": str(session_id),

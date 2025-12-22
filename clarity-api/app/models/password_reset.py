@@ -1,4 +1,4 @@
-from datetime import datetime
+from app.utils.datetime_utils import utc_now
 from uuid import uuid4
 
 from sqlalchemy import Column, DateTime, ForeignKey, String
@@ -16,6 +16,6 @@ class PasswordResetToken(Base):
     token_hash = Column(String(64), nullable=False)
     expires_at = Column(DateTime, nullable=False)
     used_at = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: utc_now())
 
     user = relationship("User", back_populates="password_reset_tokens")

@@ -1,5 +1,5 @@
+from app.utils.datetime_utils import utc_now
 import uuid
-from datetime import datetime
 from sqlalchemy import Column, String, DateTime, Boolean, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -15,9 +15,9 @@ class Device(Base):
     device_fingerprint = Column(String(255), nullable=False, index=True)
     device_name = Column(String(255), nullable=True)
     platform = Column(String(50), nullable=True)  # ios/android
-    last_active_at = Column(DateTime, default=datetime.utcnow)
+    last_active_at = Column(DateTime, default=lambda: utc_now())
     is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: utc_now())
     last_removal_at = Column(DateTime, nullable=True)  # 用于限制解绑频率
 
     # Relationships

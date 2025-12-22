@@ -5,6 +5,7 @@ import pytest
 from httpx import AsyncClient
 
 from app.utils.security import decode_token
+from app.routers import sessions as sessions_router
 
 
 async def _register_user(client: AsyncClient, email: str, fingerprint: str) -> str:
@@ -140,7 +141,13 @@ async def test_get_other_users_session_returns_404(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_sse_endpoint_returns_event_stream(client: AsyncClient):
+async def test_sse_endpoint_returns_event_stream(client: AsyncClient, monkeypatch: pytest.MonkeyPatch):
+    class FakeAIService:
+        async def stream(self, system_prompt: str, user_prompt: str):
+            for token in ["hello", "world"]:
+                yield token
+
+    monkeypatch.setattr(sessions_router, "AIService", FakeAIService)
     token = await _register_user(client, "session-sse@example.com", "session-device-006")
     create_resp = await client.post(
         "/sessions",
@@ -163,6 +170,7 @@ async def test_sse_endpoint_returns_event_stream(client: AsyncClient):
         body = (await response.aread()).decode()
 
     assert "event: token" in body
+    assert "hello" in body
     assert "event: done" in body
 
 

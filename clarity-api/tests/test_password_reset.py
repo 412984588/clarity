@@ -1,5 +1,7 @@
 """Password reset tests."""
-from datetime import datetime, timedelta
+from datetime import timedelta
+
+from app.utils.datetime_utils import utc_now
 import hashlib
 
 import pytest
@@ -73,7 +75,7 @@ async def test_reset_password_success(client: AsyncClient):
         reset_token = PasswordResetToken(
             user_id=user.id,
             token_hash=token_hash,
-            expires_at=datetime.utcnow() + timedelta(minutes=30)
+            expires_at=utc_now() + timedelta(minutes=30)
         )
         session.add(reset_token)
         await session.commit()
@@ -118,7 +120,7 @@ async def test_reset_password_token_single_use(client: AsyncClient):
         reset_token = PasswordResetToken(
             user_id=user.id,
             token_hash=token_hash,
-            expires_at=datetime.utcnow() + timedelta(minutes=30)
+            expires_at=utc_now() + timedelta(minutes=30)
         )
         session.add(reset_token)
         await session.commit()
@@ -157,7 +159,7 @@ async def test_reset_password_expired_token(client: AsyncClient):
         reset_token = PasswordResetToken(
             user_id=user.id,
             token_hash=token_hash,
-            expires_at=datetime.utcnow() - timedelta(minutes=1)
+            expires_at=utc_now() - timedelta(minutes=1)
         )
         session.add(reset_token)
         await session.commit()
@@ -195,7 +197,7 @@ async def test_reset_password_invalidates_sessions(client: AsyncClient):
         reset_token = PasswordResetToken(
             user_id=user.id,
             token_hash=token_hash,
-            expires_at=datetime.utcnow() + timedelta(minutes=30)
+            expires_at=utc_now() + timedelta(minutes=30)
         )
         session.add(reset_token)
         await session.commit()

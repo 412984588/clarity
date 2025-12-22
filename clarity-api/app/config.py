@@ -19,6 +19,14 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = 8000
 
+    # LLM 配置
+    llm_provider: str = "openai"
+    openai_api_key: str = ""
+    anthropic_api_key: str = ""
+    llm_model: str = "gpt-4o-mini"
+    llm_timeout: int = 30
+    llm_max_tokens: int = 1024
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

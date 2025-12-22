@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+from app.utils.datetime_utils import utc_now
+from datetime import timedelta
 from typing import Optional, Tuple
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -100,7 +101,7 @@ class AuthService:
             .where(
                 ActiveSession.id == session_uuid,
                 ActiveSession.token_hash == token_hash,
-                ActiveSession.expires_at > datetime.utcnow()
+                ActiveSession.expires_at > utc_now()
             )
         )
         session = result.scalar_one_or_none()
@@ -113,7 +114,7 @@ class AuthService:
         # Token rotation: 创建新 token，更新会话
         new_refresh = create_refresh_token(session.id)  # type: ignore[arg-type]
         session.token_hash = hash_token(new_refresh)  # type: ignore[assignment]
-        session.expires_at = datetime.utcnow() + timedelta(days=30)  # type: ignore[assignment]
+        session.expires_at = utc_now() + timedelta(days=30)  # type: ignore[assignment]
 
         access_token = create_access_token(user.id, user.email, session.id)  # type: ignore[arg-type]
 
@@ -163,7 +164,7 @@ class AuthService:
         if device:
             if device.user_id != user.id:
                 raise ValueError("DEVICE_BOUND_TO_OTHER")
-            device.last_active_at = datetime.utcnow()  # type: ignore[assignment]
+            device.last_active_at = utc_now()  # type: ignore[assignment]
             return device
 
         # 检查设备限制（tier 由调用方传入，避免懒加载）
@@ -192,7 +193,7 @@ class AuthService:
             user_id=user.id,
             device_id=device.id,
             token_hash="",  # Will be updated
-            expires_at=datetime.utcnow() + timedelta(days=30)
+            expires_at=utc_now() + timedelta(days=30)
         )
         self.db.add(session)
         await self.db.flush()

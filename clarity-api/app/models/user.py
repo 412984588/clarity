@@ -1,5 +1,5 @@
+from app.utils.datetime_utils import utc_now
 import uuid
-from datetime import datetime
 from sqlalchemy import Column, String, DateTime, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -17,8 +17,12 @@ class User(Base):
     auth_provider_id = Column(String(255), nullable=True)  # OAuth user ID
     locale = Column(String(10), default="en")
     is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: utc_now(), nullable=False)
+    updated_at = Column(
+        DateTime,
+        default=lambda: utc_now(),
+        onupdate=lambda: utc_now(),
+    )
 
     # Relationships
     devices = relationship("Device", back_populates="user", cascade="all, delete-orphan")
