@@ -11,7 +11,8 @@ DANGEROUS_PATTERNS = [
 ]
 
 _DANGEROUS_REGEXES = [
-    re.compile(pattern, flags=re.IGNORECASE | re.MULTILINE) for pattern in DANGEROUS_PATTERNS
+    re.compile(pattern, flags=re.IGNORECASE | re.MULTILINE)
+    for pattern in DANGEROUS_PATTERNS
 ]
 
 _EMAIL_RE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")

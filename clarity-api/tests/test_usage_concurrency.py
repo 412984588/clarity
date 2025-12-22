@@ -1,4 +1,5 @@
 """Usage concurrency tests."""
+
 import asyncio
 
 import pytest
@@ -11,11 +12,14 @@ from tests.conftest import TestingSessionLocal
 
 
 async def _register_user(client: AsyncClient, email: str, fingerprint: str) -> str:
-    response = await client.post("/auth/register", json={
-        "email": email,
-        "password": "Password123",
-        "device_fingerprint": fingerprint
-    })
+    response = await client.post(
+        "/auth/register",
+        json={
+            "email": email,
+            "password": "Password123",
+            "device_fingerprint": fingerprint,
+        },
+    )
     assert response.status_code == 201
     return response.json()["access_token"]
 
@@ -40,7 +44,9 @@ async def test_usage_session_count_concurrent_requests(client: AsyncClient):
     async with TestingSessionLocal() as session:
         user_result = await session.execute(select(User).where(User.email == email))
         user = user_result.scalar_one()
-        usage_result = await session.execute(select(Usage).where(Usage.user_id == user.id))
+        usage_result = await session.execute(
+            select(Usage).where(Usage.user_id == user.id)
+        )
         usages = usage_result.scalars().all()
 
     assert len(usages) == 1

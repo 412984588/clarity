@@ -11,9 +11,12 @@ from app.models.device import Device
 from app.models.session import ActiveSession
 from app.models.subscription import Subscription
 from app.utils.security import (
-    hash_password, verify_password,
-    create_access_token, create_refresh_token,
-    decode_token, hash_token
+    hash_password,
+    verify_password,
+    create_access_token,
+    create_refresh_token,
+    decode_token,
+    hash_token,
 )
 from app.schemas.auth import RegisterRequest, LoginRequest, TokenResponse
 
@@ -29,9 +32,7 @@ class AuthService:
     async def register(self, data: RegisterRequest) -> Tuple[User, TokenResponse]:
         """注册新用户"""
         # 检查邮箱是否已存在
-        existing = await self.db.execute(
-            select(User).where(User.email == data.email)
-        )
+        existing = await self.db.execute(select(User).where(User.email == data.email))
         if existing.scalar_one_or_none():
             raise ValueError("EMAIL_ALREADY_EXISTS")
 
@@ -39,7 +40,7 @@ class AuthService:
         user = User(
             email=data.email,
             password_hash=hash_password(data.password),
-            auth_provider="email"
+            auth_provider="email",
         )
         self.db.add(user)
         await self.db.flush()
@@ -49,7 +50,9 @@ class AuthService:
         self.db.add(subscription)
 
         # 创建设备（新用户默认 free tier）
-        device = await self._get_or_create_device(user, data.device_fingerprint, data.device_name, tier="free")
+        device = await self._get_or_create_device(
+            user, data.device_fingerprint, data.device_name, tier="free"
+        )
 
         # 创建会话和 tokens
         tokens = await self._create_session(user, device)
@@ -61,7 +64,9 @@ class AuthService:
         """邮箱登录"""
         # 查找用户
         result = await self.db.execute(
-            select(User).options(selectinload(User.subscription)).where(User.email == data.email)
+            select(User)
+            .options(selectinload(User.subscription))
+            .where(User.email == data.email)
         )
         user = result.scalar_one_or_none()
 
@@ -73,7 +78,9 @@ class AuthService:
 
         # 检查/创建设备（subscription 已通过 selectinload 预加载）
         tier = user.subscription.tier if user.subscription else "free"
-        device = await self._get_or_create_device(user, data.device_fingerprint, data.device_name, tier=tier)
+        device = await self._get_or_create_device(
+            user, data.device_fingerprint, data.device_name, tier=tier
+        )
 
         # 创建会话
         tokens = await self._create_session(user, device)
@@ -101,7 +108,7 @@ class AuthService:
             .where(
                 ActiveSession.id == session_uuid,
                 ActiveSession.token_hash == token_hash,
-                ActiveSession.expires_at > utc_now()
+                ActiveSession.expires_at > utc_now(),
             )
         )
         session = result.scalar_one_or_none()
@@ -121,17 +128,14 @@ class AuthService:
         await self.db.commit()
 
         return TokenResponse(
-            access_token=access_token,
-            refresh_token=new_refresh,
-            expires_in=3600
+            access_token=access_token, refresh_token=new_refresh, expires_in=3600
         )
 
     async def logout(self, user_id: UUID, token_hash: str) -> bool:
         """登出：使会话失效"""
         result = await self.db.execute(
             select(ActiveSession).where(
-                ActiveSession.user_id == user_id,
-                ActiveSession.token_hash == token_hash
+                ActiveSession.user_id == user_id, ActiveSession.token_hash == token_hash
             )
         )
         session = result.scalar_one_or_none()
@@ -145,19 +149,23 @@ class AuthService:
     async def get_user_by_id(self, user_id: UUID) -> Optional[User]:
         """获取用户"""
         result = await self.db.execute(
-            select(User).options(selectinload(User.subscription)).where(User.id == user_id)
+            select(User)
+            .options(selectinload(User.subscription))
+            .where(User.id == user_id)
         )
         return result.scalar_one_or_none()
 
     async def _get_or_create_device(
-        self, user: User, fingerprint: str, name: Optional[str] = None, tier: str = "free"
+        self,
+        user: User,
+        fingerprint: str,
+        name: Optional[str] = None,
+        tier: str = "free",
     ) -> Device:
         """获取或创建设备，检查设备限制"""
         # 查找现有设备
         result = await self.db.execute(
-            select(Device).where(
-                Device.device_fingerprint == fingerprint
-            )
+            select(Device).where(Device.device_fingerprint == fingerprint)
         )
         device = result.scalar_one_or_none()
 
@@ -169,7 +177,9 @@ class AuthService:
 
         # 检查设备限制（tier 由调用方传入，避免懒加载）
         result = await self.db.execute(
-            select(func.count(Device.id)).where(Device.user_id == user.id, Device.is_active.is_(True))
+            select(func.count(Device.id)).where(
+                Device.user_id == user.id, Device.is_active.is_(True)
+            )
         )
         device_count = result.scalar() or 0
 
@@ -181,7 +191,7 @@ class AuthService:
             user_id=user.id,
             device_fingerprint=fingerprint,
             device_name=name,
-            platform=self._detect_platform(name)
+            platform=self._detect_platform(name),
         )
         self.db.add(device)
         await self.db.flush()
@@ -193,7 +203,7 @@ class AuthService:
             user_id=user.id,
             device_id=device.id,
             token_hash="",  # Will be updated
-            expires_at=utc_now() + timedelta(days=30)
+            expires_at=utc_now() + timedelta(days=30),
         )
         self.db.add(session)
         await self.db.flush()
@@ -206,7 +216,7 @@ class AuthService:
             access_token=access_token,
             refresh_token=refresh_token,
             expires_in=3600,
-            user_id=user.id  # type: ignore[arg-type]
+            user_id=user.id,  # type: ignore[arg-type]
         )
 
     def _detect_platform(self, device_name: Optional[str]) -> Optional[str]:

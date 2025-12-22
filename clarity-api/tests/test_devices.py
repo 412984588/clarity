@@ -1,4 +1,5 @@
 """设备与会话管理测试"""
+
 from uuid import UUID, uuid4
 
 import pytest
@@ -53,19 +54,21 @@ async def _get_session_id(device_id: UUID) -> UUID:
 
 @pytest.mark.asyncio
 async def test_list_devices(client: AsyncClient):
-    response = await client.post("/auth/register", json={
-        "email": "device-list@example.com",
-        "password": "Password123",
-        "device_fingerprint": "device-list-001"
-    })
+    response = await client.post(
+        "/auth/register",
+        json={
+            "email": "device-list@example.com",
+            "password": "Password123",
+            "device_fingerprint": "device-list-001",
+        },
+    )
     access_token = response.json()["access_token"]
     user = _user_from_access_token(access_token)
 
     app.dependency_overrides[get_current_user] = lambda: user
     try:
         resp = await client.get(
-            "/auth/devices",
-            headers={"Authorization": f"Bearer {access_token}"}
+            "/auth/devices", headers={"Authorization": f"Bearer {access_token}"}
         )
     finally:
         app.dependency_overrides.pop(get_current_user, None)
@@ -78,19 +81,21 @@ async def test_list_devices(client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_list_sessions(client: AsyncClient):
-    response = await client.post("/auth/register", json={
-        "email": "session-list@example.com",
-        "password": "Password123",
-        "device_fingerprint": "session-list-001"
-    })
+    response = await client.post(
+        "/auth/register",
+        json={
+            "email": "session-list@example.com",
+            "password": "Password123",
+            "device_fingerprint": "session-list-001",
+        },
+    )
     access_token = response.json()["access_token"]
     user = _user_from_access_token(access_token)
 
     app.dependency_overrides[get_current_user] = lambda: user
     try:
         resp = await client.get(
-            "/auth/sessions",
-            headers={"Authorization": f"Bearer {access_token}"}
+            "/auth/sessions", headers={"Authorization": f"Bearer {access_token}"}
         )
     finally:
         app.dependency_overrides.pop(get_current_user, None)
@@ -102,20 +107,26 @@ async def test_list_sessions(client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_revoke_device_success(client: AsyncClient):
-    register_resp = await client.post("/auth/register", json={
-        "email": "revoke-device@example.com",
-        "password": "Password123",
-        "device_fingerprint": "device-old"
-    })
+    register_resp = await client.post(
+        "/auth/register",
+        json={
+            "email": "revoke-device@example.com",
+            "password": "Password123",
+            "device_fingerprint": "device-old",
+        },
+    )
     access_token = register_resp.json()["access_token"]
     user = _user_from_access_token(access_token)
     await _set_subscription_tier(user.id, "standard")
 
-    await client.post("/auth/login", json={
-        "email": "revoke-device@example.com",
-        "password": "Password123",
-        "device_fingerprint": "device-new"
-    })
+    await client.post(
+        "/auth/login",
+        json={
+            "email": "revoke-device@example.com",
+            "password": "Password123",
+            "device_fingerprint": "device-new",
+        },
+    )
 
     old_device_id = await _get_device_id("device-old")
 
@@ -125,8 +136,8 @@ async def test_revoke_device_success(client: AsyncClient):
             f"/auth/devices/{old_device_id}",
             headers={
                 "Authorization": f"Bearer {access_token}",
-                "X-Device-Fingerprint": "device-new"
-            }
+                "X-Device-Fingerprint": "device-new",
+            },
         )
     finally:
         app.dependency_overrides.pop(get_current_user, None)
@@ -136,11 +147,14 @@ async def test_revoke_device_success(client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_cannot_revoke_current_device(client: AsyncClient):
-    register_resp = await client.post("/auth/register", json={
-        "email": "revoke-current@example.com",
-        "password": "Password123",
-        "device_fingerprint": "device-current"
-    })
+    register_resp = await client.post(
+        "/auth/register",
+        json={
+            "email": "revoke-current@example.com",
+            "password": "Password123",
+            "device_fingerprint": "device-current",
+        },
+    )
     access_token = register_resp.json()["access_token"]
     user = _user_from_access_token(access_token)
     current_device_id = await _get_device_id("device-current")
@@ -151,8 +165,8 @@ async def test_cannot_revoke_current_device(client: AsyncClient):
             f"/auth/devices/{current_device_id}",
             headers={
                 "Authorization": f"Bearer {access_token}",
-                "X-Device-Fingerprint": "device-current"
-            }
+                "X-Device-Fingerprint": "device-current",
+            },
         )
     finally:
         app.dependency_overrides.pop(get_current_user, None)
@@ -163,25 +177,34 @@ async def test_cannot_revoke_current_device(client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_revoke_limit_once_per_day(client: AsyncClient):
-    register_resp = await client.post("/auth/register", json={
-        "email": "revoke-limit@example.com",
-        "password": "Password123",
-        "device_fingerprint": "device-a"
-    })
+    register_resp = await client.post(
+        "/auth/register",
+        json={
+            "email": "revoke-limit@example.com",
+            "password": "Password123",
+            "device_fingerprint": "device-a",
+        },
+    )
     access_token = register_resp.json()["access_token"]
     user = _user_from_access_token(access_token)
     await _set_subscription_tier(user.id, "pro")
 
-    await client.post("/auth/login", json={
-        "email": "revoke-limit@example.com",
-        "password": "Password123",
-        "device_fingerprint": "device-b"
-    })
-    await client.post("/auth/login", json={
-        "email": "revoke-limit@example.com",
-        "password": "Password123",
-        "device_fingerprint": "device-c"
-    })
+    await client.post(
+        "/auth/login",
+        json={
+            "email": "revoke-limit@example.com",
+            "password": "Password123",
+            "device_fingerprint": "device-b",
+        },
+    )
+    await client.post(
+        "/auth/login",
+        json={
+            "email": "revoke-limit@example.com",
+            "password": "Password123",
+            "device_fingerprint": "device-c",
+        },
+    )
 
     device_a_id = await _get_device_id("device-a")
     device_b_id = await _get_device_id("device-b")
@@ -192,15 +215,15 @@ async def test_revoke_limit_once_per_day(client: AsyncClient):
             f"/auth/devices/{device_a_id}",
             headers={
                 "Authorization": f"Bearer {access_token}",
-                "X-Device-Fingerprint": "device-c"
-            }
+                "X-Device-Fingerprint": "device-c",
+            },
         )
         second_resp = await client.delete(
             f"/auth/devices/{device_b_id}",
             headers={
                 "Authorization": f"Bearer {access_token}",
-                "X-Device-Fingerprint": "device-c"
-            }
+                "X-Device-Fingerprint": "device-c",
+            },
         )
     finally:
         app.dependency_overrides.pop(get_current_user, None)
@@ -212,20 +235,26 @@ async def test_revoke_limit_once_per_day(client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_revoke_session_success(client: AsyncClient):
-    register_resp = await client.post("/auth/register", json={
-        "email": "revoke-session@example.com",
-        "password": "Password123",
-        "device_fingerprint": "session-old"
-    })
+    register_resp = await client.post(
+        "/auth/register",
+        json={
+            "email": "revoke-session@example.com",
+            "password": "Password123",
+            "device_fingerprint": "session-old",
+        },
+    )
     access_token = register_resp.json()["access_token"]
     user = _user_from_access_token(access_token)
     await _set_subscription_tier(user.id, "standard")
 
-    await client.post("/auth/login", json={
-        "email": "revoke-session@example.com",
-        "password": "Password123",
-        "device_fingerprint": "session-new"
-    })
+    await client.post(
+        "/auth/login",
+        json={
+            "email": "revoke-session@example.com",
+            "password": "Password123",
+            "device_fingerprint": "session-new",
+        },
+    )
 
     old_device_id = await _get_device_id("session-old")
     old_session_id = await _get_session_id(old_device_id)
@@ -234,7 +263,7 @@ async def test_revoke_session_success(client: AsyncClient):
     try:
         resp = await client.delete(
             f"/auth/sessions/{old_session_id}",
-            headers={"Authorization": f"Bearer {access_token}"}
+            headers={"Authorization": f"Bearer {access_token}"},
         )
     finally:
         app.dependency_overrides.pop(get_current_user, None)
@@ -244,11 +273,14 @@ async def test_revoke_session_success(client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_revoke_session_not_found(client: AsyncClient):
-    register_resp = await client.post("/auth/register", json={
-        "email": "revoke-session-missing@example.com",
-        "password": "Password123",
-        "device_fingerprint": "session-missing"
-    })
+    register_resp = await client.post(
+        "/auth/register",
+        json={
+            "email": "revoke-session-missing@example.com",
+            "password": "Password123",
+            "device_fingerprint": "session-missing",
+        },
+    )
     access_token = register_resp.json()["access_token"]
     user = _user_from_access_token(access_token)
 
@@ -256,7 +288,7 @@ async def test_revoke_session_not_found(client: AsyncClient):
     try:
         resp = await client.delete(
             f"/auth/sessions/{uuid4()}",
-            headers={"Authorization": f"Bearer {access_token}"}
+            headers={"Authorization": f"Bearer {access_token}"},
         )
     finally:
         app.dependency_overrides.pop(get_current_user, None)

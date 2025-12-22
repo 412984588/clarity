@@ -1,0 +1,8 @@
+{
+    "name": "clarity-agents",
+    "language": "typescript",
+    "framework": "vercel-ai-sdk",
+    "provider": "anthropic",
+    "global_rules": "/Users/zhimingdeng/.claude/rules/11-multi-ai-orchestration.md",
+    "agents": []
+}

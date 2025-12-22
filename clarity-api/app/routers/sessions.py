@@ -72,9 +72,7 @@ async def _get_or_create_usage(
         period_start=period_start,
         session_count=0,
     )
-    stmt = stmt.on_conflict_do_nothing(
-        index_elements=["user_id", "period_start"]
-    )
+    stmt = stmt.on_conflict_do_nothing(index_elements=["user_id", "period_start"])
     await db.execute(stmt)
     await db.flush()
 
@@ -97,7 +95,7 @@ async def create_session(
     device_result = await db.execute(
         select(Device).where(
             Device.user_id == current_user.id,
-            Device.device_fingerprint == device_fingerprint
+            Device.device_fingerprint == device_fingerprint,
         )
     )
     device = device_result.scalar_one_or_none()
@@ -118,15 +116,18 @@ async def create_session(
 
     usage = await _get_or_create_usage(db, subscription)
     if sessions_limit > 0 and (usage.session_count or 0) >= sessions_limit:
-        raise HTTPException(status_code=403, detail={
-            "error": "QUOTA_EXCEEDED",
-            "usage": {
-                "used": int(usage.session_count or 0),
-                "limit": sessions_limit,
-                "tier": tier,
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "error": "QUOTA_EXCEEDED",
+                "usage": {
+                    "used": int(usage.session_count or 0),
+                    "limit": sessions_limit,
+                    "tier": tier,
+                },
+                "upgrade_url": "/subscriptions/checkout",
             },
-            "upgrade_url": "/subscriptions/checkout",
-        })
+        )
     usage.session_count = (usage.session_count or 0) + 1  # type: ignore[assignment]
 
     session = SolveSession(
@@ -161,7 +162,9 @@ async def list_sessions(
 ):
     """列出当前用户的 Solve 会话"""
     total_result = await db.execute(
-        select(func.count(SolveSession.id)).where(SolveSession.user_id == current_user.id)
+        select(func.count(SolveSession.id)).where(
+            SolveSession.user_id == current_user.id
+        )
     )
     total = total_result.scalar() or 0
 
@@ -191,8 +194,7 @@ async def get_session(
     """获取单个 Solve 会话"""
     result = await db.execute(
         select(SolveSession).where(
-            SolveSession.id == session_id,
-            SolveSession.user_id == current_user.id
+            SolveSession.id == session_id, SolveSession.user_id == current_user.id
         )
     )
     session = result.scalar_one_or_none()
@@ -211,8 +213,7 @@ async def stream_messages(
     """SSE 流式返回 LLM 回复"""
     result = await db.execute(
         select(SolveSession).where(
-            SolveSession.id == session_id,
-            SolveSession.user_id == current_user.id
+            SolveSession.id == session_id, SolveSession.user_id == current_user.id
         )
     )
     session = result.scalar_one_or_none()
@@ -234,10 +235,9 @@ async def stream_messages(
             payload = json.dumps({"content": token})
             yield f"event: token\ndata: {payload}\n\n"
         next_step = _next_step(current_step)
-        done_payload = json.dumps({
-            "next_step": next_step,
-            "emotion_detected": "neutral"
-        })
+        done_payload = json.dumps(
+            {"next_step": next_step, "emotion_detected": "neutral"}
+        )
         yield f"event: done\ndata: {done_payload}\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")

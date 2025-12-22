@@ -115,7 +115,9 @@ async def get_portal(
     if not subscription or not subscription.stripe_customer_id:
         raise HTTPException(status_code=404, detail={"error": "NO_SUBSCRIPTION"})
 
-    portal_url = await stripe_service.create_portal_session(str(subscription.stripe_customer_id))
+    portal_url = await stripe_service.create_portal_session(
+        str(subscription.stripe_customer_id)
+    )
     return PortalResponse(portal_url=portal_url)
 
 

@@ -25,11 +25,16 @@ class SolveStep(str, Enum):
 
 class SolveSession(Base):
     """Solve 会话模型"""
+
     __tablename__ = "solve_sessions"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    device_id = Column(UUID(as_uuid=True), ForeignKey("devices.id", ondelete="SET NULL"), nullable=True)
+    user_id = Column(
+        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    device_id = Column(
+        UUID(as_uuid=True), ForeignKey("devices.id", ondelete="SET NULL"), nullable=True
+    )
     status = Column(String(50), default=SessionStatus.ACTIVE.value)
     current_step = Column(String(50), default=SolveStep.RECEIVE.value)
     created_at = Column(DateTime, default=lambda: utc_now())

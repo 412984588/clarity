@@ -6,11 +6,14 @@ from httpx import AsyncClient
 
 async def _register_user(client: AsyncClient, email: str, fingerprint: str) -> str:
     """Helper to register user and get access token."""
-    response = await client.post("/auth/register", json={
-        "email": email,
-        "password": "Password123",
-        "device_fingerprint": fingerprint
-    })
+    response = await client.post(
+        "/auth/register",
+        json={
+            "email": email,
+            "password": "Password123",
+            "device_fingerprint": fingerprint,
+        },
+    )
     return response.json()["access_token"]
 
 
@@ -56,9 +59,7 @@ async def test_checkout_invalid_price_id(client: AsyncClient):
     headers = {"Authorization": f"Bearer {token}"}
 
     response = await client.post(
-        "/subscriptions/checkout",
-        json={"price_id": "invalid_price"},
-        headers=headers
+        "/subscriptions/checkout", json={"price_id": "invalid_price"}, headers=headers
     )
     assert response.status_code == 400
     assert response.json()["detail"]["error"] == "INVALID_PRICE_ID"
