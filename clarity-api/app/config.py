@@ -1,9 +1,12 @@
-from pydantic_settings import BaseSettings
 from functools import lru_cache
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
     """应用配置，从环境变量加载"""
+
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
     app_name: str = "Clarity API"
     debug: bool = False
@@ -40,10 +43,6 @@ class Settings(BaseSettings):
     revenuecat_webhook_secret: str = ""
     revenuecat_entitlement_standard: str = "standard_access"
     revenuecat_entitlement_pro: str = "pro_access"
-
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
 
 
 @lru_cache
