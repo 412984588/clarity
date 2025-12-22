@@ -3,9 +3,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.services.auth_service import AuthService
+from app.services.oauth_service import OAuthService
 from app.schemas.auth import (
     RegisterRequest, LoginRequest, TokenResponse,
-    RefreshRequest
+    RefreshRequest, OAuthRequest
 )
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -73,3 +74,49 @@ async def logout():
     """登出 - 需要 auth middleware (M4 实现)"""
     # TODO: Implement with auth middleware in M4
     pass
+
+
+@router.post("/oauth/google", response_model=TokenResponse)
+async def google_oauth(
+    data: OAuthRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    """Google OAuth 登录"""
+    service = OAuthService(db)
+    try:
+        user, tokens = await service.google_auth(data)
+        return tokens
+    except ValueError as e:
+        error_code = str(e)
+        if "GOOGLE_TOKEN_INVALID" in error_code:
+            raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"})
+        if error_code == "EMAIL_NOT_VERIFIED":
+            raise HTTPException(status_code=400, detail={"error": error_code})
+        if error_code == "DEVICE_LIMIT_REACHED":
+            raise HTTPException(status_code=403, detail={"error": error_code})
+        if error_code == "DEVICE_BOUND_TO_OTHER":
+            raise HTTPException(status_code=403, detail={"error": error_code})
+        raise HTTPException(status_code=400, detail={"error": error_code})
+
+
+@router.post("/oauth/apple", response_model=TokenResponse)
+async def apple_oauth(
+    data: OAuthRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    """Apple Sign-in 登录"""
+    service = OAuthService(db)
+    try:
+        user, tokens = await service.apple_auth(data)
+        return tokens
+    except ValueError as e:
+        error_code = str(e)
+        if "APPLE_TOKEN" in error_code:
+            raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"})
+        if error_code == "EMAIL_NOT_PROVIDED":
+            raise HTTPException(status_code=400, detail={"error": error_code})
+        if error_code == "DEVICE_LIMIT_REACHED":
+            raise HTTPException(status_code=403, detail={"error": error_code})
+        if error_code == "DEVICE_BOUND_TO_OTHER":
+            raise HTTPException(status_code=403, detail={"error": error_code})
+        raise HTTPException(status_code=400, detail={"error": error_code})
