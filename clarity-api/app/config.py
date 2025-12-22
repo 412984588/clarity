@@ -10,6 +10,12 @@ class Settings(BaseSettings):
     jwt_secret: str = "your-secret-key-change-in-production"
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 60
+
+    # OAuth 配置
+    google_client_id: str = ""
+    apple_client_id: str = ""
+
+    # Server 配置
     host: str = "0.0.0.0"
     port: int = 8000
 
