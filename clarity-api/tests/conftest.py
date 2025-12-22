@@ -11,7 +11,11 @@ from app.config import get_settings
 settings = get_settings()
 
 # 使用测试数据库，禁用连接池避免并发问题
-TEST_DATABASE_URL = settings.database_url.replace("/clarity", "/clarity_test")
+# CI 中 DATABASE_URL 已是 clarity_test，本地是 clarity 需替换
+if settings.database_url.endswith("/clarity_test"):
+    TEST_DATABASE_URL = settings.database_url
+else:
+    TEST_DATABASE_URL = settings.database_url.replace("/clarity", "/clarity_test")
 engine_test = create_async_engine(TEST_DATABASE_URL, echo=False, poolclass=NullPool)
 TestingSessionLocal = async_sessionmaker(engine_test, class_=AsyncSession, expire_on_commit=False)
 
