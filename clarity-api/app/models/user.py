@@ -1,17 +1,29 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import Column, String, DateTime
+from sqlalchemy import Column, String, DateTime, Boolean
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 from app.database import Base
 
 
 class User(Base):
-    """用户模型 - 初始版本"""
+    """用户模型 - 支持邮箱和 OAuth"""
     __tablename__ = "users"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String(255), unique=True, nullable=False, index=True)
+    password_hash = Column(String(255), nullable=True)  # NULL for OAuth users
+    auth_provider = Column(String(50), default="email")  # email/google/apple
+    auth_provider_id = Column(String(255), nullable=True)  # OAuth user ID
+    locale = Column(String(10), default="en")
+    is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationships
+    devices = relationship("Device", back_populates="user", cascade="all, delete-orphan")
+    sessions = relationship("ActiveSession", back_populates="user", cascade="all, delete-orphan")
+    subscription = relationship("Subscription", back_populates="user", uselist=False)
 
     def __repr__(self):
         return f"<User {self.email}>"
