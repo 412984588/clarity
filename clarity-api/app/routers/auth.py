@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+from app.utils.datetime_utils import utc_now
+from datetime import timedelta
 import hashlib
 import secrets
 from uuid import UUID
@@ -101,7 +102,7 @@ async def forgot_password(
         reset_token = PasswordResetToken(
             user_id=user.id,
             token_hash=token_hash,
-            expires_at=datetime.utcnow() + timedelta(minutes=30)
+            expires_at=utc_now() + timedelta(minutes=30)
         )
         db.add(reset_token)
         await db.commit()
@@ -122,7 +123,7 @@ async def reset_password(
         .options(selectinload(PasswordResetToken.user))
         .where(
             PasswordResetToken.token_hash == token_hash,
-            PasswordResetToken.expires_at > datetime.utcnow(),
+            PasswordResetToken.expires_at > utc_now(),
             PasswordResetToken.used_at.is_(None)
         )
     )
@@ -132,7 +133,7 @@ async def reset_password(
         raise HTTPException(status_code=400, detail={"error": "INVALID_OR_EXPIRED_TOKEN"})
 
     reset_token.user.password_hash = hash_password(data.new_password)  # type: ignore[assignment]
-    reset_token.used_at = datetime.utcnow()  # type: ignore[assignment]
+    reset_token.used_at = utc_now()  # type: ignore[assignment]
 
     await db.execute(
         delete(ActiveSession).where(ActiveSession.user_id == reset_token.user_id)
@@ -241,7 +242,7 @@ async def revoke_device(
         raise HTTPException(status_code=400, detail={"error": "CANNOT_REMOVE_CURRENT_DEVICE"})
 
     # 使用 SQL 日期过滤，避免内存加载所有记录
-    today = datetime.utcnow().date()
+    today = utc_now().date()
     removal_check = await db.execute(
         select(func.count())
         .select_from(Device)
@@ -254,7 +255,7 @@ async def revoke_device(
         raise HTTPException(status_code=429, detail={"error": "REMOVAL_LIMIT_EXCEEDED"})
 
     device.is_active = False  # type: ignore[assignment]
-    device.last_removal_at = datetime.utcnow()  # type: ignore[assignment]
+    device.last_removal_at = utc_now()  # type: ignore[assignment]
 
     # 批量删除会话，避免 N+1 问题
     await db.execute(
@@ -276,7 +277,7 @@ async def list_sessions(
         select(ActiveSession)
         .where(
             ActiveSession.user_id == current_user.id,
-            ActiveSession.expires_at > datetime.utcnow()
+            ActiveSession.expires_at > utc_now()
         )
         .order_by(ActiveSession.created_at.asc())
     )

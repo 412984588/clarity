@@ -1,6 +1,6 @@
+from app.utils.datetime_utils import utc_now
 import uuid
-from datetime import datetime
-from sqlalchemy import Column, String, DateTime, ForeignKey, Integer
+from sqlalchemy import Column, String, DateTime, ForeignKey, Integer, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from app.database import Base
@@ -18,8 +18,12 @@ class Subscription(Base):
     status = Column(String(50), default="active")  # active/canceled/past_due
     current_period_start = Column(DateTime, nullable=True)
     current_period_end = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: utc_now())
+    updated_at = Column(
+        DateTime,
+        default=lambda: utc_now(),
+        onupdate=lambda: utc_now(),
+    )
 
     # Relationships
     user = relationship("User", back_populates="subscription")
@@ -31,10 +35,18 @@ class Subscription(Base):
 class Usage(Base):
     """用量追踪"""
     __tablename__ = "usage"
+    __table_args__ = (
+        # 唯一约束防止并发重复创建同月 usage
+        UniqueConstraint("user_id", "period_start", name="uq_usage_user_period"),
+    )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     period_start = Column(DateTime, nullable=False)
     session_count = Column(Integer, default=0)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: utc_now())
+    updated_at = Column(
+        DateTime,
+        default=lambda: utc_now(),
+        onupdate=lambda: utc_now(),
+    )

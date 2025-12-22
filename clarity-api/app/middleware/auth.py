@@ -1,4 +1,4 @@
-from datetime import datetime
+from app.utils.datetime_utils import utc_now
 from typing import Optional
 from uuid import UUID
 
@@ -43,7 +43,7 @@ async def get_current_user(
         select(ActiveSession).where(
             ActiveSession.id == session_uuid,
             ActiveSession.user_id == user_uuid,
-            ActiveSession.expires_at > datetime.utcnow()
+            ActiveSession.expires_at > utc_now()
         )
     )
     session = session_result.scalar_one_or_none()

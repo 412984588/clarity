@@ -1,6 +1,5 @@
-import asyncio
+from app.utils.datetime_utils import utc_now
 import json
-from datetime import datetime
 from typing import AsyncGenerator
 from uuid import UUID
 
@@ -22,29 +21,62 @@ from app.schemas.session import (
     SessionResponse,
     UsageResponse,
 )
+from app.services.ai_service import AIService
+from app.services.content_filter import sanitize_user_input, strip_pii
 
 router = APIRouter(prefix="/sessions", tags=["sessions"])
 
-MOCK_RESPONSE = "I understand how you feel. Let me help you work through this."
 SESSION_LIMITS = {"free": 10, "standard": 100, "pro": 1000}
+STEP_SYSTEM_PROMPTS = {
+    SolveStep.RECEIVE.value: (
+        "You are Clarity, a supportive problem-solving coach. "
+        "In the Receive step, listen carefully, acknowledge feelings, and summarize the issue."
+    ),
+    SolveStep.CLARIFY.value: (
+        "You are Clarity. In the Clarify step, ask concise questions to uncover context, constraints, and goals."
+    ),
+    SolveStep.REFRAME.value: (
+        "You are Clarity. In the Reframe step, help reframe the problem into a solvable, actionable statement."
+    ),
+    SolveStep.OPTIONS.value: (
+        "You are Clarity. In the Options step, propose a few concrete options with brief trade-offs."
+    ),
+    SolveStep.COMMIT.value: (
+        "You are Clarity. In the Commit step, help the user choose a path and define the next small action."
+    ),
+}
 
 
 async def _get_or_create_usage(
     db: AsyncSession,
     user_id: UUID,
 ) -> Usage:
-    period_start = datetime.utcnow().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    result = await db.execute(
-        select(Usage)
-        .where(Usage.user_id == user_id)
-        .order_by(Usage.created_at.desc())
+    """获取或创建当月 Usage 记录，使用 PostgreSQL upsert 保证并发安全"""
+    from sqlalchemy.dialects.postgresql import insert as pg_insert
+
+    period_start = utc_now().replace(
+        day=1, hour=0, minute=0, second=0, microsecond=0
     )
-    usage = result.scalars().first()
-    if not usage or usage.period_start < period_start:
-        usage = Usage(user_id=user_id, period_start=period_start, session_count=0)
-        db.add(usage)
-        await db.flush()
-    return usage
+
+    # 使用 PostgreSQL 的 INSERT ON CONFLICT 实现并发安全的 upsert
+    stmt = pg_insert(Usage).values(
+        user_id=user_id,
+        period_start=period_start,
+        session_count=0,
+    )
+    stmt = stmt.on_conflict_do_nothing(
+        index_elements=["user_id", "period_start"]
+    )
+    await db.execute(stmt)
+    await db.flush()
+
+    # 查询并返回记录（无论是新建还是已存在）
+    result = await db.execute(
+        select(Usage).where(
+            Usage.user_id == user_id, Usage.period_start == period_start
+        )
+    )
+    return result.scalar_one()
 
 
 @router.post("", response_model=SessionCreateResponse, status_code=201)
@@ -155,7 +187,7 @@ async def stream_messages(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """SSE 流式返回 mock 回复"""
+    """SSE 流式返回 LLM 回复"""
     result = await db.execute(
         select(SolveSession).where(
             SolveSession.id == session_id,
@@ -168,15 +200,40 @@ async def stream_messages(
     if session.status == SessionStatus.COMPLETED.value:
         raise HTTPException(status_code=400, detail={"error": "SESSION_COMPLETED"})
 
+    current_step = str(session.current_step)
+    system_prompt = STEP_SYSTEM_PROMPTS.get(
+        current_step,
+        STEP_SYSTEM_PROMPTS[SolveStep.RECEIVE.value],
+    )
+    sanitized_input = strip_pii(sanitize_user_input(data.content))
+    ai_service = AIService()
+
     async def event_generator() -> AsyncGenerator[str, None]:
-        for word in MOCK_RESPONSE.split():
-            payload = json.dumps({"content": word})
+        async for token in ai_service.stream(system_prompt, sanitized_input):
+            payload = json.dumps({"content": token})
             yield f"event: token\ndata: {payload}\n\n"
-            await asyncio.sleep(0.05)
+        next_step = _next_step(current_step)
         done_payload = json.dumps({
-            "next_step": SolveStep.CLARIFY.value,
+            "next_step": next_step,
             "emotion_detected": "neutral"
         })
         yield f"event: done\ndata: {done_payload}\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+
+def _next_step(current_step: str) -> str:
+    step_order = [
+        SolveStep.RECEIVE.value,
+        SolveStep.CLARIFY.value,
+        SolveStep.REFRAME.value,
+        SolveStep.OPTIONS.value,
+        SolveStep.COMMIT.value,
+    ]
+    try:
+        idx = step_order.index(current_step)
+    except ValueError:
+        return SolveStep.RECEIVE.value
+    if idx + 1 >= len(step_order):
+        return step_order[-1]
+    return step_order[idx + 1]
