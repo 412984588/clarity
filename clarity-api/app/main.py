@@ -8,6 +8,7 @@ from app.routers import auth
 from app.routers import sessions
 from app.routers import subscriptions
 from app.routers import webhooks
+from app.routers import revenuecat_webhooks
 
 settings = get_settings()
 
@@ -32,6 +33,7 @@ app.include_router(auth.router)
 app.include_router(sessions.router)
 app.include_router(subscriptions.router)
 app.include_router(webhooks.router)
+app.include_router(revenuecat_webhooks.router)
 
 
 @app.get("/health")

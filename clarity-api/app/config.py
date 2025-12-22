@@ -35,6 +35,11 @@ class Settings(BaseSettings):
     stripe_success_url: str = ""
     stripe_cancel_url: str = ""
 
+    # RevenueCat 配置
+    revenuecat_webhook_secret: str = ""
+    revenuecat_entitlement_standard: str = "standard_access"
+    revenuecat_entitlement_pro: str = "pro_access"
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

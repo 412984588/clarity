@@ -3,15 +3,19 @@ import { apiRequest, refreshTokens, type ApiError } from '../services/api';
 import {
   clearTokens,
   clearUserEmail,
+  clearUserId,
   getDeviceFingerprint,
   getTokens,
   getUserEmail,
+  getUserId as getStoredUserId,
   saveTokens,
   saveUserEmail,
+  saveUserId,
 } from '../services/auth';
 
 type User = {
-  email: string;
+  id?: string;
+  email?: string;
 };
 
 type AuthContextValue = {
@@ -23,7 +27,13 @@ type AuthContextValue = {
   register: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshToken: () => Promise<void>;
-  setSession: (accessToken: string, refreshToken: string, email?: string | null) => Promise<void>;
+  setSession: (
+    accessToken: string,
+    refreshToken: string,
+    email?: string | null,
+    userId?: string | null
+  ) => Promise<void>;
+  getUserId: () => string | null;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -58,9 +68,9 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
       const tokens = await getTokens();
       if (tokens.refreshToken) {
         await refreshTokens();
-        const email = await getUserEmail();
-        if (email) {
-          setUser({ email });
+        const [email, userId] = await Promise.all([getUserEmail(), getStoredUserId()]);
+        if (email || userId) {
+          setUser({ email: email ?? undefined, id: userId ?? undefined });
         }
         setIsAuthenticated(true);
       } else {
@@ -69,6 +79,7 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
     } catch {
       await clearTokens();
       await clearUserEmail();
+      await clearUserId();
       setIsAuthenticated(false);
       setUser(null);
     } finally {
@@ -86,7 +97,11 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
 
     try {
       const deviceFingerprint = await getDeviceFingerprint();
-      const response = await apiRequest<{ access_token: string; refresh_token: string }>(
+      const response = await apiRequest<{
+        access_token: string;
+        refresh_token: string;
+        user_id?: string | null;
+      }>(
         '/auth/login',
         {
           method: 'POST',
@@ -96,7 +111,10 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
       );
       await saveTokens(response.access_token, response.refresh_token);
       await saveUserEmail(email);
-      setUser({ email });
+      if (response.user_id) {
+        await saveUserId(response.user_id);
+      }
+      setUser({ email, id: response.user_id ?? undefined });
       setIsAuthenticated(true);
     } catch (err) {
       setError(getErrorMessage(err));
@@ -112,7 +130,11 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
 
     try {
       const deviceFingerprint = await getDeviceFingerprint();
-      const response = await apiRequest<{ access_token: string; refresh_token: string }>(
+      const response = await apiRequest<{
+        access_token: string;
+        refresh_token: string;
+        user_id?: string | null;
+      }>(
         '/auth/register',
         {
           method: 'POST',
@@ -122,7 +144,10 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
       );
       await saveTokens(response.access_token, response.refresh_token);
       await saveUserEmail(email);
-      setUser({ email });
+      if (response.user_id) {
+        await saveUserId(response.user_id);
+      }
+      setUser({ email, id: response.user_id ?? undefined });
       setIsAuthenticated(true);
     } catch (err) {
       setError(getErrorMessage(err));
@@ -136,6 +161,7 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
     setIsLoading(true);
     await clearTokens();
     await clearUserEmail();
+    await clearUserId();
     setUser(null);
     setIsAuthenticated(false);
     setIsLoading(false);
@@ -147,9 +173,9 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
 
     try {
       await refreshTokens();
-      const email = await getUserEmail();
-      if (email) {
-        setUser({ email });
+      const [email, userId] = await Promise.all([getUserEmail(), getStoredUserId()]);
+      if (email || userId) {
+        setUser({ email: email ?? undefined, id: userId ?? undefined });
       }
       setIsAuthenticated(true);
     } catch (err) {
@@ -162,13 +188,23 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
   }, []);
 
   const setSession = useCallback(
-    async (accessToken: string, refreshTokenValue: string, email?: string | null) => {
+    async (
+      accessToken: string,
+      refreshTokenValue: string,
+      email?: string | null,
+      userId?: string | null
+    ) => {
       setIsLoading(true);
       setError(null);
       await saveTokens(accessToken, refreshTokenValue);
       if (email) {
         await saveUserEmail(email);
-        setUser({ email });
+        setUser({ email, id: userId ?? undefined });
+      } else if (userId) {
+        setUser({ id: userId });
+      }
+      if (userId) {
+        await saveUserId(userId);
       }
       setIsAuthenticated(true);
       setIsLoading(false);
@@ -176,9 +212,22 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
     []
   );
 
+  const getUserId = useCallback(() => user?.id ?? null, [user]);
+
   const value = useMemo(
-    () => ({ user, isAuthenticated, isLoading, error, login, register, logout, refreshToken, setSession }),
-    [user, isAuthenticated, isLoading, error, login, register, logout, refreshToken, setSession]
+    () => ({
+      user,
+      isAuthenticated,
+      isLoading,
+      error,
+      login,
+      register,
+      logout,
+      refreshToken,
+      setSession,
+      getUserId,
+    }),
+    [user, isAuthenticated, isLoading, error, login, register, logout, refreshToken, setSession, getUserId]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -5,6 +5,7 @@ const ACCESS_TOKEN_KEY = 'auth_access_token';
 const REFRESH_TOKEN_KEY = 'auth_refresh_token';
 const DEVICE_FINGERPRINT_KEY = 'device_fingerprint';
 const USER_EMAIL_KEY = 'auth_user_email';
+const USER_ID_KEY = 'auth_user_id';
 
 const bytesToHex = (bytes: Uint8Array): string =>
   Array.from(bytes)
@@ -56,4 +57,15 @@ export const getUserEmail = async (): Promise<string | null> =>
 
 export const clearUserEmail = async (): Promise<void> => {
   await SecureStore.deleteItemAsync(USER_EMAIL_KEY);
+};
+
+export const saveUserId = async (userId: string): Promise<void> => {
+  await SecureStore.setItemAsync(USER_ID_KEY, userId);
+};
+
+export const getUserId = async (): Promise<string | null> =>
+  SecureStore.getItemAsync(USER_ID_KEY);
+
+export const clearUserId = async (): Promise<void> => {
+  await SecureStore.deleteItemAsync(USER_ID_KEY);
 };
