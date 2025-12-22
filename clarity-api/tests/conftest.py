@@ -19,6 +19,9 @@ else:
 engine_test = create_async_engine(TEST_DATABASE_URL, echo=False, poolclass=NullPool)
 TestingSessionLocal = async_sessionmaker(engine_test, class_=AsyncSession, expire_on_commit=False)
 
+# 导出供其他测试文件使用
+__all__ = ["TestingSessionLocal", "TEST_DATABASE_URL"]
+
 
 @pytest_asyncio.fixture(scope="function")
 async def client() -> AsyncGenerator[AsyncClient, None]:
