@@ -88,6 +88,15 @@ const SettingsScreen: React.FC = () => {
         >
           <Text style={styles.actionButtonText}>Restore Purchases</Text>
         </Pressable>
+        {/* TODO: Integrate RevenueCat Customer Center when react-native-purchases-ui is installed */}
+        {/* See: https://www.revenuecat.com/docs/tools/customer-center */}
+        <Pressable
+          onPress={handleManageSubscription}
+          style={[styles.actionButton, isLoading && styles.disabledButton]}
+          disabled={isLoading}
+        >
+          <Text style={styles.actionButtonText}>Customer Center</Text>
+        </Pressable>
         {billingError && <Text style={styles.errorText}>{billingError}</Text>}
       </View>
     </View>
