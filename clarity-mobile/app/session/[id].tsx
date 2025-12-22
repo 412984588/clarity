@@ -13,6 +13,8 @@ import {
   View,
 } from 'react-native';
 
+import { AnimatedGradientBackground } from '../../components/AnimatedGradientBackground';
+import { useEmotionBackground } from '../../hooks/useEmotionBackground';
 import { t } from '../../i18n';
 import { createSession, patchSession, streamMessage } from '../../services/solve';
 import { updateStepEntry, getAllMessages } from '../../services/stepHistory';
@@ -220,6 +222,9 @@ const SessionScreen: React.FC = () => {
 
   const flatListRef = useRef<FlatList>(null);
 
+  // Emotion background hook
+  const { currentEmotion, isEnabled: emotionEnabled, setEmotion } = useEmotionBackground();
+
   // Initialize session
   useEffect(() => {
     const initSession = async () => {
@@ -291,6 +296,11 @@ const SessionScreen: React.FC = () => {
         setStreamingContent('');
         setIsStreaming(false);
 
+        // Update emotion based on detected emotion
+        if (data.emotion_detected) {
+          setEmotion(data.emotion_detected);
+        }
+
         // Save assistant message and mark step complete if transitioning
         await updateStepEntry(sessionId, currentStep, assistantMessage, !!data.next_step);
 
@@ -322,7 +332,7 @@ const SessionScreen: React.FC = () => {
         setStreamingContent('');
       },
     });
-  }, [sessionId, inputText, currentStep, isStreaming, streamingContent, parseOptions]);
+  }, [sessionId, inputText, currentStep, isStreaming, streamingContent, parseOptions, setEmotion]);
 
   // Handle option selection
   const handleOptionSelect = useCallback(
@@ -409,13 +419,18 @@ const SessionScreen: React.FC = () => {
         }}
       />
 
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={90}
+      <AnimatedGradientBackground
+        emotion={currentEmotion}
+        enabled={emotionEnabled}
+        style={styles.gradientContainer}
       >
-        {/* Crisis Overlay */}
-        {crisis && <CrisisAlert crisis={crisis} onDismiss={() => setCrisis(null)} />}
+        <KeyboardAvoidingView
+          style={styles.container}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={90}
+        >
+          {/* Crisis Overlay */}
+          {crisis && <CrisisAlert crisis={crisis} onDismiss={() => setCrisis(null)} />}
 
         {/* Step Progress */}
         <StepProgressBar currentStep={currentStep} />
@@ -487,21 +502,25 @@ const SessionScreen: React.FC = () => {
           </View>
         )}
 
-        {/* Complete State */}
-        {isComplete && (
-          <View style={styles.completeContainer}>
-            <Text style={styles.completeText}>{t('solve.completed')}</Text>
-            <Pressable style={styles.completeButton} onPress={() => router.back()}>
-              <Text style={styles.completeButtonText}>{t('common.done')}</Text>
-            </Pressable>
-          </View>
-        )}
-      </KeyboardAvoidingView>
+          {/* Complete State */}
+          {isComplete && (
+            <View style={styles.completeContainer}>
+              <Text style={styles.completeText}>{t('solve.completed')}</Text>
+              <Pressable style={styles.completeButton} onPress={() => router.back()}>
+                <Text style={styles.completeButtonText}>{t('common.done')}</Text>
+              </Pressable>
+            </View>
+          )}
+        </KeyboardAvoidingView>
+      </AnimatedGradientBackground>
     </>
   );
 };
 
 const styles = StyleSheet.create({
+  gradientContainer: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: '#f8fafc',

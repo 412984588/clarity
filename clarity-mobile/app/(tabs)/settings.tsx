@@ -1,8 +1,9 @@
 import { Link } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Linking, Platform, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import RevenueCatUI from 'react-native-purchases-ui';
 
+import { useEmotionBackground } from '../../hooks/useEmotionBackground';
 import { t } from '../../i18n';
 import { configureRevenueCat, loginRevenueCat, restorePurchases } from '../../services/revenuecat';
 import { useAuth } from '../../stores/authStore';
@@ -10,6 +11,8 @@ import { useAuth } from '../../stores/authStore';
 const SettingsScreen: React.FC = () => {
   const { user, logout, isLoading, getUserId } = useAuth();
   const [billingError, setBillingError] = useState<string | null>(null);
+  const { isEnabled: emotionBackgroundEnabled, toggleEnabled: toggleEmotionBackground } =
+    useEmotionBackground();
 
   const ensureRevenueCatReady = useCallback(async () => {
     await configureRevenueCat();
@@ -81,6 +84,22 @@ const SettingsScreen: React.FC = () => {
         <Link href="/(tabs)/sessions" style={styles.linkRow}>
           {t('settings.activeSessions')}
         </Link>
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.title}>{t('settings.preferences')}</Text>
+        <View style={styles.toggleRow}>
+          <View style={styles.toggleTextContainer}>
+            <Text style={styles.toggleLabel}>{t('settings.emotionBackground')}</Text>
+            <Text style={styles.toggleDesc}>{t('settings.emotionBackgroundDesc')}</Text>
+          </View>
+          <Switch
+            value={emotionBackgroundEnabled}
+            onValueChange={toggleEmotionBackground}
+            trackColor={{ false: '#e2e8f0', true: '#bfdbfe' }}
+            thumbColor={emotionBackgroundEnabled ? '#1d4ed8' : '#f4f4f5'}
+          />
+        </View>
       </View>
 
       <View style={styles.card}>
@@ -178,6 +197,25 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#dc2626',
     marginTop: 12,
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  toggleTextContainer: {
+    flex: 1,
+    marginRight: 12,
+  },
+  toggleLabel: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#1e293b',
+  },
+  toggleDesc: {
+    fontSize: 13,
+    color: '#64748b',
+    marginTop: 2,
   },
 });
 
