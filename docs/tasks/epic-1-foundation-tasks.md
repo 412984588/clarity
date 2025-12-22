@@ -3,7 +3,7 @@
 **Task List ID**: TASKS-EPIC-001
 **Source**: `docs/plan/epic-1-foundation-plan.md`
 **Created**: 2025-12-21
-**Total Tasks**: 23
+**Total Tasks**: 27
 
 ---
 
@@ -218,6 +218,7 @@ const styles = StyleSheet.create({
 | **Commands** | None (file creation only) |
 | **Files Created** | `clarity-mobile/README.md` |
 | **Verification** | File exists with setup instructions |
+| **Story Completion Check** | `cd clarity-mobile && npm run lint && npx tsc --noEmit` → exits 0 |
 
 **File: `clarity-mobile/README.md`**
 ```markdown
@@ -487,6 +488,7 @@ volumes:
 | **Commands** | None (file creation) |
 | **Files Created** | `clarity-api/README.md` |
 | **Verification** | File exists with complete instructions |
+| **Story Completion Check** | `cd clarity-api && poetry run ruff check . && poetry run mypy app --ignore-missing-imports` → exits 0 |
 
 ---
 
@@ -691,6 +693,7 @@ __all__ = ["User"]
 | **Commands** | None (file modification) |
 | **Files Modified** | `clarity-api/app/main.py` |
 | **Verification** | `curl http://localhost:8000/health` → `{"status":"healthy","database":"ok"}` |
+| **Story Completion Check** | `poetry run alembic upgrade head` exits 0 + `/health` returns `{"database":"ok"}` |
 
 **File: `app/main.py` (updated)**
 ```python
@@ -894,6 +897,7 @@ npx eas build:configure
 ``` |
 | **Files Created** | `clarity-mobile/eas.json` |
 | **Verification** | `npx eas build --platform all --non-interactive --dry-run` → shows config |
+| **Story Completion Check** | All CI workflows exist in `.github/workflows/` + Branch protection configured |
 
 **File: `eas.json`**
 ```json
@@ -912,7 +916,7 @@ npx eas build:configure
 
 ## Story 1.5: Set Up Development Environment Documentation
 
-**Tasks**: 3 | **Priority**: P2 | **Depends On**: Story 1.1, 1.2, 1.3
+**Tasks**: 4 | **Priority**: P2 | **Depends On**: Story 1.1, 1.2, 1.3
 
 ### ⬜ Task 1.5.1: Create Root README 🔗
 
@@ -947,6 +951,38 @@ npx eas build:configure
 | **Commands** | None (file creation) |
 | **Files Created** | `docs/troubleshooting.md` |
 | **Verification** | Common issues documented with solutions |
+
+---
+
+### ⬜ Task 1.5.4: Add Architecture Diagram 🔗
+
+| Field | Value |
+|-------|-------|
+| **ID** | T-1.5.4 |
+| **Dependencies** | T-1.5.3 |
+| **Commands** | None (file modification) |
+| **Files Modified** | `docs/setup.md` |
+| **Description** | Copy/embed the ASCII architecture diagram from `docs/architecture.md` into `docs/setup.md` under a new "## Architecture Overview" section |
+| **Verification** | `docs/setup.md` contains ASCII diagram showing Mobile → API → PostgreSQL flow |
+| **Story Completion Check** | All docs exist: `README.md`, `docs/setup.md`, `docs/troubleshooting.md` with architecture diagram |
+
+**Content to add in `docs/setup.md`:**
+```markdown
+## Architecture Overview
+
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│  clarity-mobile │────▶│   clarity-api   │────▶│   PostgreSQL    │
+│  (React Native) │     │    (FastAPI)    │     │    (Docker)     │
+└─────────────────┘     └─────────────────┘     └─────────────────┘
+        │                       │
+        ▼                       ▼
+   Expo Router              /health
+   Tab Navigation           /docs (Swagger)
+```
+
+For detailed architecture, see [docs/architecture.md](architecture.md).
+```
 
 ---
 
@@ -1018,6 +1054,9 @@ T-1.5.2                                     │       │
     │                                       │       │
     ▼                                       │       │
 T-1.5.3                             T-1.4.4 ◄───────┘
+    │
+    ▼
+T-1.5.4
 ```
 
 ---
@@ -1039,7 +1078,7 @@ T-1.5.3                             T-1.4.4 ◄───────┘
 ### Wave 4 (After Database Ready)
 - **T-1.4.1** (Backend CI)
 - **T-1.4.2** (Mobile CI) - can run with T-1.1.6
-- **T-1.5.1** → **T-1.5.2** → **T-1.5.3**
+- **T-1.5.1** → **T-1.5.2** → **T-1.5.3** → **T-1.5.4**
 - **T-1.4.4** (EAS Setup)
 
 ### Wave 5 (Final)
@@ -1055,8 +1094,8 @@ T-1.5.3                             T-1.4.4 ◄───────┘
 | 1.2 Backend Init | 7 | ⬜ 0/7 |
 | 1.3 Database | 6 | ⬜ 0/6 |
 | 1.4 CI/CD | 4 | ⬜ 0/4 |
-| 1.5 Documentation | 3 | ⬜ 0/3 |
-| **Total** | **26** | **⬜ 0/26** |
+| 1.5 Documentation | 4 | ⬜ 0/4 |
+| **Total** | **27** | **⬜ 0/27** |
 
 ---
 
@@ -1065,6 +1104,7 @@ T-1.5.3                             T-1.4.4 ◄───────┘
 | Date | Version | Description |
 |------|---------|-------------|
 | 2025-12-21 | 1.0 | Initial task list from Epic 1 plan |
+| 2025-12-21 | 1.1 | Fix gaps: add T-1.5.4 (Architecture Diagram), add Story Completion Checks, correct task count to 27 |
 
 ---
 
