@@ -202,6 +202,11 @@ const LoginScreen: React.FC = () => {
               Forgot password?
             </Link>
           </View>
+          <View style={styles.singleLinkRow}>
+            <Link href="/reset" style={styles.linkText}>
+              Have a reset token?
+            </Link>
+          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -302,6 +307,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 16,
+  },
+  singleLinkRow: {
+    marginTop: 12,
+    alignItems: 'center',
   },
   linkText: {
     color: '#1d4ed8',

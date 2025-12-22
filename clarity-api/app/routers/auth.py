@@ -1,21 +1,26 @@
-from datetime import datetime
+from datetime import datetime, timedelta
+import hashlib
+import secrets
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete, func
+from sqlalchemy.orm import selectinload
 
 from app.database import get_db
 from app.middleware.auth import get_current_user
 from app.models.device import Device
+from app.models.password_reset import PasswordResetToken
 from app.models.session import ActiveSession
 from app.models.user import User
 from app.services.auth_service import AuthService
 from app.services.oauth_service import OAuthService
 from app.schemas.auth import (
     RegisterRequest, LoginRequest, TokenResponse,
-    RefreshRequest, OAuthRequest
+    RefreshRequest, OAuthRequest, ForgotPasswordRequest, ResetPasswordRequest
 )
+from app.utils.security import hash_password
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -75,6 +80,66 @@ async def refresh(
         if error_code == "TOKEN_EXPIRED":
             raise HTTPException(status_code=401, detail={"error": error_code})
         raise HTTPException(status_code=400, detail={"error": error_code})
+
+
+@router.post("/forgot-password")
+async def forgot_password(
+    data: ForgotPasswordRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    """忘记密码（始终返回 200，防止时序攻击）"""
+    result = await db.execute(
+        select(User).where(User.email == data.email)
+    )
+    user = result.scalar_one_or_none()
+
+    # 始终执行 token 生成和 hash 计算，防止时序攻击
+    token = secrets.token_urlsafe(32)
+    token_hash = hashlib.sha256(token.encode()).hexdigest()
+
+    if user:
+        reset_token = PasswordResetToken(
+            user_id=user.id,
+            token_hash=token_hash,
+            expires_at=datetime.utcnow() + timedelta(minutes=30)
+        )
+        db.add(reset_token)
+        await db.commit()
+        print(f"Password reset link: http://localhost:8000/auth/reset?token={token}")
+
+    return {"message": "If an account exists, a reset link has been sent"}
+
+
+@router.post("/reset-password")
+async def reset_password(
+    data: ResetPasswordRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    """重置密码"""
+    token_hash = hashlib.sha256(data.token.encode()).hexdigest()
+    result = await db.execute(
+        select(PasswordResetToken)
+        .options(selectinload(PasswordResetToken.user))
+        .where(
+            PasswordResetToken.token_hash == token_hash,
+            PasswordResetToken.expires_at > datetime.utcnow(),
+            PasswordResetToken.used_at.is_(None)
+        )
+    )
+    reset_token = result.scalar_one_or_none()
+
+    if not reset_token or not reset_token.user:
+        raise HTTPException(status_code=400, detail={"error": "INVALID_OR_EXPIRED_TOKEN"})
+
+    reset_token.user.password_hash = hash_password(data.new_password)  # type: ignore[assignment]
+    reset_token.used_at = datetime.utcnow()  # type: ignore[assignment]
+
+    await db.execute(
+        delete(ActiveSession).where(ActiveSession.user_id == reset_token.user_id)
+    )
+
+    await db.commit()
+    return {"message": "Password reset successful"}
 
 
 @router.post("/logout", status_code=204)

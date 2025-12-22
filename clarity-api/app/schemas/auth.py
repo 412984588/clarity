@@ -46,6 +46,15 @@ class OAuthRequest(BaseModel):
     device_name: Optional[str] = None
 
 
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
+
 class UserResponse(BaseModel):
     id: UUID
     email: str

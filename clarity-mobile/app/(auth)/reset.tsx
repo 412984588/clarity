@@ -1,4 +1,4 @@
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
@@ -14,13 +14,32 @@ import {
 
 import { apiRequest, type ApiError } from '../../services/api';
 
-const getErrorMessage = (error: unknown): string => {
+type ResetErrorDetails = {
+  detail?: { error?: string } | string;
+  message?: string;
+};
+
+const getResetErrorMessage = (error: unknown): string => {
   if (typeof error === 'string') {
     return error;
   }
 
   if (error && typeof error === 'object') {
     const apiError = error as ApiError;
+    const details = apiError.details as ResetErrorDetails | undefined;
+    const detailValue = details?.detail;
+
+    if (detailValue && typeof detailValue === 'object') {
+      const code = detailValue.error;
+      if (typeof code === 'string') {
+        return code;
+      }
+    }
+
+    if (typeof detailValue === 'string') {
+      return detailValue;
+    }
+
     if (apiError.message) {
       return apiError.message;
     }
@@ -29,27 +48,36 @@ const getErrorMessage = (error: unknown): string => {
   return 'Something went wrong. Please try again.';
 };
 
-const ForgotScreen: React.FC = () => {
-  const [email, setEmail] = useState('');
+const ResetScreen: React.FC = () => {
+  const router = useRouter();
+  const [token, setToken] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async () => {
-    if (!email.trim()) {
-      setError('Please enter your email.');
+  const handleReset = async () => {
+    if (!token.trim() || !newPassword || !confirmPassword) {
+      setError('Please fill out all fields.');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setError('Passwords do not match.');
       return;
     }
 
     setError(null);
     setIsLoading(true);
     try {
-      await apiRequest<{ message: string }>('/auth/forgot-password', {
+      await apiRequest<{ message: string }>('/auth/reset-password', {
         method: 'POST',
         auth: false,
-        body: { email: email.trim() },
+        body: { token: token.trim(), new_password: newPassword },
       });
+      router.replace('/login');
     } catch (err) {
-      setError(getErrorMessage(err));
+      setError(getResetErrorMessage(err));
     } finally {
       setIsLoading(false);
     }
@@ -61,17 +89,36 @@ const ForgotScreen: React.FC = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Text style={styles.title}>Reset your password</Text>
-        <Text style={styles.subtitle}>Enter your email to receive a reset link.</Text>
+        <Text style={styles.title}>Set a new password</Text>
+        <Text style={styles.subtitle}>Enter the token from your email to continue.</Text>
 
         <View style={styles.card}>
-          <Text style={styles.label}>Email</Text>
+          <Text style={styles.label}>Reset token</Text>
           <TextInput
-            value={email}
-            onChangeText={setEmail}
-            placeholder="you@example.com"
+            value={token}
+            onChangeText={setToken}
+            placeholder="Paste your reset token"
             autoCapitalize="none"
-            keyboardType="email-address"
+            style={styles.input}
+            editable={!isLoading}
+          />
+
+          <Text style={styles.label}>New password</Text>
+          <TextInput
+            value={newPassword}
+            onChangeText={setNewPassword}
+            placeholder="Create a new password"
+            secureTextEntry
+            style={styles.input}
+            editable={!isLoading}
+          />
+
+          <Text style={styles.label}>Confirm new password</Text>
+          <TextInput
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            placeholder="Re-enter new password"
+            secureTextEntry
             style={styles.input}
             editable={!isLoading}
           />
@@ -79,27 +126,21 @@ const ForgotScreen: React.FC = () => {
           {error && <Text style={styles.errorText}>{error}</Text>}
 
           <Pressable
-            onPress={handleSubmit}
+            onPress={handleReset}
             style={[styles.primaryButton, isLoading && styles.disabledButton]}
             disabled={isLoading}
           >
             {isLoading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.primaryButtonText}>Send reset link</Text>
+              <Text style={styles.primaryButtonText}>Reset password</Text>
             )}
           </Pressable>
 
-          <Text style={styles.successText}>
-            If an account exists, a reset link has been sent.
-          </Text>
-
           <View style={styles.linksRow}>
-            <Link href="/reset" style={styles.linkText}>
-              Have a reset token?
-            </Link>
-            <Link href="/login" style={styles.linkText}>
-              Back to login
+            <Text style={styles.helperText}>Need a link instead?</Text>
+            <Link href="/forgot" style={styles.linkText}>
+              Request reset
             </Link>
           </View>
         </View>
@@ -160,11 +201,6 @@ const styles = StyleSheet.create({
     marginTop: 12,
     fontSize: 14,
   },
-  successText: {
-    color: '#0f172a',
-    marginTop: 14,
-    fontSize: 14,
-  },
   primaryButton: {
     backgroundColor: '#1d4ed8',
     paddingVertical: 14,
@@ -182,8 +218,13 @@ const styles = StyleSheet.create({
   },
   linksRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 16,
+    gap: 6,
+  },
+  helperText: {
+    color: '#64748b',
   },
   linkText: {
     color: '#1d4ed8',
@@ -191,4 +232,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ForgotScreen;
+export default ResetScreen;
