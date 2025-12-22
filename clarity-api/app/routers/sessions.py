@@ -13,6 +13,7 @@ from app.database import get_db
 from app.middleware.auth import get_current_user
 from app.models.device import Device
 from app.models.solve_session import SolveSession, SessionStatus, SolveStep
+from app.models.step_history import StepHistory
 from app.models.subscription import Subscription, Usage
 from app.models.user import User
 from app.schemas.session import (
@@ -23,7 +24,9 @@ from app.schemas.session import (
     UsageResponse,
 )
 from app.services.ai_service import AIService
+from app.services.analytics_service import AnalyticsService
 from app.services.content_filter import sanitize_user_input, strip_pii
+from app.services.state_machine import can_transition, get_next_step, is_final_step
 
 router = APIRouter(prefix="/sessions", tags=["sessions"])
 
@@ -31,19 +34,29 @@ SESSION_LIMITS = {"free": 10, "standard": 100, "pro": 0}
 STEP_SYSTEM_PROMPTS = {
     SolveStep.RECEIVE.value: (
         "You are Clarity, a supportive problem-solving coach. "
-        "In the Receive step, listen carefully, acknowledge feelings, and summarize the issue."
+        "In the Receive step, listen carefully, acknowledge feelings, and summarize the issue. "
+        "After responding, include a short line `NEXT_STEP: <step>` where <step> is one of "
+        "receive, clarify, reframe, options, commit."
     ),
     SolveStep.CLARIFY.value: (
         "You are Clarity. In the Clarify step, ask concise questions to uncover context, constraints, and goals."
+        " After responding, include a short line `NEXT_STEP: <step>` where <step> is one of "
+        "receive, clarify, reframe, options, commit."
     ),
     SolveStep.REFRAME.value: (
         "You are Clarity. In the Reframe step, help reframe the problem into a solvable, actionable statement."
+        " After responding, include a short line `NEXT_STEP: <step>` where <step> is one of "
+        "receive, clarify, reframe, options, commit."
     ),
     SolveStep.OPTIONS.value: (
         "You are Clarity. In the Options step, propose a few concrete options with brief trade-offs."
+        " After responding, include a short line `NEXT_STEP: <step>` where <step> is one of "
+        "receive, clarify, reframe, options, commit."
     ),
     SolveStep.COMMIT.value: (
         "You are Clarity. In the Commit step, help the user choose a path and define the next small action."
+        " After responding, include a short line `NEXT_STEP: <step>` where <step> is one of "
+        "receive, clarify, reframe, options, commit."
     ),
 }
 
@@ -138,6 +151,23 @@ async def create_session(
     )
     db.add(session)
     await db.flush()
+
+    # 创建初始 StepHistory
+    step_history = StepHistory(
+        session_id=session.id,
+        step=SolveStep.RECEIVE.value,
+        started_at=utc_now(),
+    )
+    db.add(step_history)
+
+    # 记录 session_started 事件
+    analytics_service = AnalyticsService(db)
+    await analytics_service.emit(
+        "session_started",
+        session.id,
+        {"user_id": str(current_user.id), "device_id": str(device.id)},
+    )
+
     await db.commit()
 
     return SessionCreateResponse(
@@ -229,32 +259,88 @@ async def stream_messages(
     )
     sanitized_input = strip_pii(sanitize_user_input(data.content))
     ai_service = AIService()
+    analytics_service = AnalyticsService(db)
+
+    try:
+        current_step_enum = SolveStep(current_step)
+    except ValueError:
+        current_step_enum = SolveStep.RECEIVE
+        session.current_step = current_step_enum.value
 
     async def event_generator() -> AsyncGenerator[str, None]:
+        # 获取或创建当前步骤的 StepHistory
+        step_history_result = await db.execute(
+            select(StepHistory)
+            .where(
+                StepHistory.session_id == session.id,
+                StepHistory.step == current_step_enum.value,
+                StepHistory.completed_at.is_(None),
+            )
+            .order_by(StepHistory.started_at.desc())
+            .limit(1)
+        )
+        step_history = step_history_result.scalar_one_or_none()
+        if not step_history:
+            step_history = StepHistory(
+                session_id=session.id,
+                step=current_step_enum.value,
+                started_at=utc_now(),
+            )
+            db.add(step_history)
+            await db.flush()
+
+        # 增加消息计数
+        step_history.message_count = (step_history.message_count or 0) + 1
+
+        # 流式输出 AI 响应
         async for token in ai_service.stream(system_prompt, sanitized_input):
             payload = json.dumps({"content": token})
             yield f"event: token\ndata: {payload}\n\n"
-        next_step = _next_step(current_step)
+
+        # 获取下一步
+        next_step_enum = get_next_step(current_step_enum)
+        next_step = (
+            next_step_enum.value if next_step_enum else current_step_enum.value
+        )
+        now = utc_now()
+
+        # 处理状态转换
+        if next_step_enum and can_transition(current_step_enum, next_step_enum):
+            step_history.completed_at = now
+            db.add(
+                StepHistory(
+                    session_id=session.id,
+                    step=next_step_enum.value,
+                    started_at=now,
+                )
+            )
+            session.current_step = next_step_enum.value
+            await analytics_service.emit(
+                "step_completed",
+                session.id,
+                {"from_step": current_step_enum.value, "to_step": next_step_enum.value},
+            )
+        elif is_final_step(current_step_enum):
+            # 最终步骤完成
+            if step_history.completed_at is None:
+                step_history.completed_at = now
+                await analytics_service.emit(
+                    "step_completed",
+                    session.id,
+                    {"step": current_step_enum.value},
+                )
+            session.status = SessionStatus.COMPLETED.value
+            session.completed_at = now
+            await analytics_service.emit(
+                "session_completed",
+                session.id,
+                {"final_step": current_step_enum.value},
+            )
+
+        await db.commit()
         done_payload = json.dumps(
             {"next_step": next_step, "emotion_detected": "neutral"}
         )
         yield f"event: done\ndata: {done_payload}\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
-
-
-def _next_step(current_step: str) -> str:
-    step_order = [
-        SolveStep.RECEIVE.value,
-        SolveStep.CLARIFY.value,
-        SolveStep.REFRAME.value,
-        SolveStep.OPTIONS.value,
-        SolveStep.COMMIT.value,
-    ]
-    try:
-        idx = step_order.index(current_step)
-    except ValueError:
-        return SolveStep.RECEIVE.value
-    if idx + 1 >= len(step_order):
-        return step_order[-1]
-    return step_order[idx + 1]
