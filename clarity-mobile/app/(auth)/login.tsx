@@ -16,6 +16,7 @@ import {
   View,
 } from 'react-native';
 
+import { t } from '../../i18n';
 import { apiRequest } from '../../services/api';
 import { getDeviceFingerprint } from '../../services/auth';
 import { useAuth } from '../../stores/authStore';
@@ -68,7 +69,7 @@ const LoginScreen: React.FC = () => {
         (response.authentication as { idToken?: string } | null)?.idToken ??
         (response.params?.id_token as string | undefined);
       if (!idToken) {
-        setOauthError('Google login did not return an id token.');
+        setOauthError(t('auth.googleNoIdToken'));
         return;
       }
 
@@ -86,7 +87,7 @@ const LoginScreen: React.FC = () => {
         await setSession(data.access_token, data.refresh_token, decodedEmail);
         setOauthError(null);
       } catch (_err) {
-        setOauthError('Google login failed. Please try again.');
+        setOauthError(t('auth.googleLoginFailed'));
       }
     };
 
@@ -111,7 +112,7 @@ const LoginScreen: React.FC = () => {
       });
 
       if (!credential.identityToken) {
-        setOauthError('Apple login did not return an identity token.');
+        setOauthError(t('auth.appleNoIdToken'));
         return;
       }
 
@@ -127,7 +128,7 @@ const LoginScreen: React.FC = () => {
 
       await setSession(data.access_token, data.refresh_token, credential.email ?? undefined);
     } catch (_err) {
-      setOauthError('Apple login failed. Please try again.');
+      setOauthError(t('auth.appleLoginFailed'));
     }
   };
 
@@ -139,26 +140,26 @@ const LoginScreen: React.FC = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Text style={styles.title}>Welcome Back</Text>
-        <Text style={styles.subtitle}>Sign in to continue to Clarity.</Text>
+        <Text style={styles.title}>{t('auth.welcomeBack')}</Text>
+        <Text style={styles.subtitle}>{t('auth.signInToContinue')}</Text>
 
         <View style={styles.card}>
-          <Text style={styles.label}>Email</Text>
+          <Text style={styles.label}>{t('common.email')}</Text>
           <TextInput
             value={email}
             onChangeText={setEmail}
-            placeholder="you@example.com"
+            placeholder={t('auth.emailPlaceholder')}
             autoCapitalize="none"
             keyboardType="email-address"
             style={styles.input}
             editable={!isLoading}
           />
 
-          <Text style={styles.label}>Password</Text>
+          <Text style={styles.label}>{t('common.password')}</Text>
           <TextInput
             value={password}
             onChangeText={setPassword}
-            placeholder="••••••••"
+            placeholder={t('auth.passwordPlaceholder')}
             secureTextEntry
             style={styles.input}
             editable={!isLoading}
@@ -176,7 +177,7 @@ const LoginScreen: React.FC = () => {
             {isLoading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.primaryButtonText}>Login</Text>
+              <Text style={styles.primaryButtonText}>{t('common.login')}</Text>
             )}
           </Pressable>
 
@@ -185,26 +186,26 @@ const LoginScreen: React.FC = () => {
             style={[styles.secondaryButton, (!request || isLoading) && styles.disabledButton]}
             disabled={!request || isLoading}
           >
-            <Text style={styles.secondaryButtonText}>Continue with Google</Text>
+            <Text style={styles.secondaryButtonText}>{t('auth.continueWithGoogle')}</Text>
           </Pressable>
 
           {Platform.OS === 'ios' && (
             <Pressable onPress={handleAppleLogin} style={styles.appleButton} disabled={isLoading}>
-              <Text style={styles.appleButtonText}>Continue with Apple</Text>
+              <Text style={styles.appleButtonText}>{t('auth.continueWithApple')}</Text>
             </Pressable>
           )}
 
           <View style={styles.linksRow}>
             <Link href="/register" style={styles.linkText}>
-              Create account
+              {t('auth.createAccount')}
             </Link>
             <Link href="/forgot" style={styles.linkText}>
-              Forgot password?
+              {t('auth.forgotPassword')}
             </Link>
           </View>
           <View style={styles.singleLinkRow}>
             <Link href="/reset" style={styles.linkText}>
-              Have a reset token?
+              {t('auth.haveResetToken')}
             </Link>
           </View>
         </View>

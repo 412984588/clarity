@@ -12,6 +12,7 @@ import {
   View,
 } from 'react-native';
 
+import { t } from '../../i18n';
 import { apiRequest, type ApiError } from '../../services/api';
 
 type ResetErrorDetails = {
@@ -45,7 +46,7 @@ const getResetErrorMessage = (error: unknown): string => {
     }
   }
 
-  return 'Something went wrong. Please try again.';
+  return t('forgot.somethingWentWrong');
 };
 
 const ResetScreen: React.FC = () => {
@@ -57,13 +58,18 @@ const ResetScreen: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleReset = async () => {
-    if (!token.trim() || !newPassword || !confirmPassword) {
-      setError('Please fill out all fields.');
+    if (!token.trim()) {
+      setError(t('reset.enterToken'));
+      return;
+    }
+
+    if (!newPassword) {
+      setError(t('reset.enterNewPassword'));
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError('Passwords do not match.');
+      setError(t('auth.passwordsDoNotMatch'));
       return;
     }
 
@@ -89,35 +95,35 @@ const ResetScreen: React.FC = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Text style={styles.title}>Set a new password</Text>
-        <Text style={styles.subtitle}>Enter the token from your email to continue.</Text>
+        <Text style={styles.title}>{t('reset.title')}</Text>
+        <Text style={styles.subtitle}>{t('reset.subtitle')}</Text>
 
         <View style={styles.card}>
-          <Text style={styles.label}>Reset token</Text>
+          <Text style={styles.label}>{t('reset.token')}</Text>
           <TextInput
             value={token}
             onChangeText={setToken}
-            placeholder="Paste your reset token"
+            placeholder={t('reset.tokenPlaceholder')}
             autoCapitalize="none"
             style={styles.input}
             editable={!isLoading}
           />
 
-          <Text style={styles.label}>New password</Text>
+          <Text style={styles.label}>{t('reset.newPassword')}</Text>
           <TextInput
             value={newPassword}
             onChangeText={setNewPassword}
-            placeholder="Create a new password"
+            placeholder={t('reset.newPasswordPlaceholder')}
             secureTextEntry
             style={styles.input}
             editable={!isLoading}
           />
 
-          <Text style={styles.label}>Confirm new password</Text>
+          <Text style={styles.label}>{t('auth.confirmPassword')}</Text>
           <TextInput
             value={confirmPassword}
             onChangeText={setConfirmPassword}
-            placeholder="Re-enter new password"
+            placeholder={t('auth.reenterPasswordPlaceholder')}
             secureTextEntry
             style={styles.input}
             editable={!isLoading}
@@ -133,14 +139,13 @@ const ResetScreen: React.FC = () => {
             {isLoading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.primaryButtonText}>Reset password</Text>
+              <Text style={styles.primaryButtonText}>{t('reset.resetPassword')}</Text>
             )}
           </Pressable>
 
           <View style={styles.linksRow}>
-            <Text style={styles.helperText}>Need a link instead?</Text>
             <Link href="/forgot" style={styles.linkText}>
-              Request reset
+              {t('forgot.sendResetLink')}
             </Link>
           </View>
         </View>
@@ -222,9 +227,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 16,
     gap: 6,
-  },
-  helperText: {
-    color: '#64748b',
   },
   linkText: {
     color: '#1d4ed8',

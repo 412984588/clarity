@@ -3,6 +3,7 @@ import React, { useCallback, useState } from 'react';
 import { Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import RevenueCatUI from 'react-native-purchases-ui';
 
+import { t } from '../../i18n';
 import { configureRevenueCat, loginRevenueCat, restorePurchases } from '../../services/revenuecat';
 import { useAuth } from '../../stores/authStore';
 
@@ -11,11 +12,10 @@ const SettingsScreen: React.FC = () => {
   const [billingError, setBillingError] = useState<string | null>(null);
 
   const ensureRevenueCatReady = useCallback(async () => {
-    // 确保 RevenueCat 已初始化并绑定当前用户
     await configureRevenueCat();
     const userId = getUserId();
     if (!userId) {
-      throw new Error('缺少用户 ID，请重新登录');
+      throw new Error(t('settings.missingUserId'));
     }
     await loginRevenueCat(userId);
   }, [getUserId]);
@@ -29,11 +29,11 @@ const SettingsScreen: React.FC = () => {
           : 'https://play.google.com/store/account/subscriptions';
       const supported = await Linking.canOpenURL(url);
       if (!supported) {
-        throw new Error('无法打开订阅管理页面');
+        throw new Error(t('settings.openSubscriptionFailed'));
       }
       await Linking.openURL(url);
     } catch (_err) {
-      setBillingError('打开订阅管理失败，请稍后重试。');
+      setBillingError(t('settings.openSubscriptionFailed'));
     }
   }, []);
 
@@ -43,7 +43,7 @@ const SettingsScreen: React.FC = () => {
       await ensureRevenueCatReady();
       await restorePurchases();
     } catch (_err) {
-      setBillingError('恢复购买失败，请稍后重试。');
+      setBillingError(t('settings.restorePurchasesFailed'));
     }
   }, [ensureRevenueCatReady]);
 
@@ -53,58 +53,58 @@ const SettingsScreen: React.FC = () => {
       await ensureRevenueCatReady();
       await RevenueCatUI.presentCustomerCenter();
     } catch (_err) {
-      setBillingError('打开客户中心失败，请稍后重试。');
+      setBillingError(t('settings.customerCenterFailed'));
     }
   }, [ensureRevenueCatReady]);
 
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <Text style={styles.title}>Account</Text>
-        <Text style={styles.label}>Signed in as</Text>
-        <Text style={styles.email}>{user?.email ?? 'Unknown user'}</Text>
+        <Text style={styles.title}>{t('settings.title')}</Text>
+        <Text style={styles.label}>{t('settings.signedInAs')}</Text>
+        <Text style={styles.email}>{user?.email ?? t('common.unknownUser')}</Text>
 
         <Pressable
           onPress={logout}
           style={[styles.logoutButton, isLoading && styles.disabledButton]}
           disabled={isLoading}
         >
-          <Text style={styles.logoutText}>Log out</Text>
+          <Text style={styles.logoutText}>{t('common.logout')}</Text>
         </Pressable>
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.title}>Security</Text>
+        <Text style={styles.title}>{t('settings.security')}</Text>
         <Link href="/(tabs)/devices" style={styles.linkRow}>
-          Manage Devices
+          {t('settings.manageDevices')}
         </Link>
         <Link href="/(tabs)/sessions" style={styles.linkRow}>
-          Active Sessions
+          {t('settings.activeSessions')}
         </Link>
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.title}>Subscription</Text>
+        <Text style={styles.title}>{t('settings.subscription')}</Text>
         <Pressable
           onPress={handleManageSubscription}
           style={[styles.actionButton, isLoading && styles.disabledButton]}
           disabled={isLoading}
         >
-          <Text style={styles.actionButtonText}>Manage Subscription</Text>
+          <Text style={styles.actionButtonText}>{t('settings.manageSubscription')}</Text>
         </Pressable>
         <Pressable
           onPress={handleRestorePurchases}
           style={[styles.actionButton, isLoading && styles.disabledButton]}
           disabled={isLoading}
         >
-          <Text style={styles.actionButtonText}>Restore Purchases</Text>
+          <Text style={styles.actionButtonText}>{t('settings.restorePurchases')}</Text>
         </Pressable>
         <Pressable
           onPress={handleCustomerCenter}
           style={[styles.actionButton, isLoading && styles.disabledButton]}
           disabled={isLoading}
         >
-          <Text style={styles.actionButtonText}>Customer Center</Text>
+          <Text style={styles.actionButtonText}>{t('settings.customerCenter')}</Text>
         </Pressable>
         {billingError && <Text style={styles.errorText}>{billingError}</Text>}
       </View>

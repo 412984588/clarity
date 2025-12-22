@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 
+import { t } from '../../i18n';
 import { apiRequest } from '../../services/api';
 import { getDeviceFingerprint } from '../../services/auth';
 
@@ -32,7 +33,7 @@ const DevicesScreen: React.FC = () => {
       setDevices(data);
       setError(null);
     } catch (_err) {
-      setError('Failed to load devices.');
+      setError(t('devices.loadFailed'));
     }
   }, []);
 
@@ -60,7 +61,7 @@ const DevicesScreen: React.FC = () => {
       });
       setDevices((prev) => prev.filter((device) => device.id !== deviceId));
     } catch (_err) {
-      setError('Failed to remove device.');
+      setError(t('devices.removeFailed'));
     }
   }, []);
 
@@ -70,8 +71,8 @@ const DevicesScreen: React.FC = () => {
       contentContainerStyle={styles.content}
       refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
     >
-      <Text style={styles.title}>Devices</Text>
-      <Text style={styles.subtitle}>Manage devices signed in to your account.</Text>
+      <Text style={styles.title}>{t('devices.title')}</Text>
+      <Text style={styles.subtitle}>{t('devices.subtitle')}</Text>
 
       {isLoading ? (
         <ActivityIndicator style={styles.loader} color="#1d4ed8" />
@@ -81,7 +82,7 @@ const DevicesScreen: React.FC = () => {
             <View key={device.id} style={styles.card}>
               <Text style={styles.deviceName}>{device.device_name}</Text>
               <Text style={styles.deviceMeta}>{device.platform}</Text>
-              <Text style={styles.deviceMeta}>{`Last active: ${device.last_active_at}`}</Text>
+              <Text style={styles.deviceMeta}>{`${t('devices.lastActive')}: ${device.last_active_at}`}</Text>
               <Pressable
                 onPress={() => handleRemove(device.id)}
                 style={[
@@ -91,12 +92,12 @@ const DevicesScreen: React.FC = () => {
                 disabled={device.is_active}
               >
                 <Text style={styles.removeButtonText}>
-                  {device.is_active ? 'Current Device' : 'Remove'}
+                  {device.is_active ? t('devices.currentDevice') : t('devices.remove')}
                 </Text>
               </Pressable>
             </View>
           ))}
-          {devices.length === 0 && <Text style={styles.emptyText}>No devices found.</Text>}
+          {devices.length === 0 && <Text style={styles.emptyText}>{t('devices.noDevices')}</Text>}
         </View>
       )}
 

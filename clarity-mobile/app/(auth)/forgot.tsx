@@ -12,6 +12,7 @@ import {
   View,
 } from 'react-native';
 
+import { t } from '../../i18n';
 import { apiRequest, type ApiError } from '../../services/api';
 
 const getErrorMessage = (error: unknown): string => {
@@ -26,7 +27,7 @@ const getErrorMessage = (error: unknown): string => {
     }
   }
 
-  return 'Something went wrong. Please try again.';
+  return t('forgot.somethingWentWrong');
 };
 
 const ForgotScreen: React.FC = () => {
@@ -36,7 +37,7 @@ const ForgotScreen: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!email.trim()) {
-      setError('Please enter your email.');
+      setError(t('forgot.enterEmail'));
       return;
     }
 
@@ -61,15 +62,15 @@ const ForgotScreen: React.FC = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Text style={styles.title}>Reset your password</Text>
-        <Text style={styles.subtitle}>Enter your email to receive a reset link.</Text>
+        <Text style={styles.title}>{t('forgot.title')}</Text>
+        <Text style={styles.subtitle}>{t('forgot.subtitle')}</Text>
 
         <View style={styles.card}>
-          <Text style={styles.label}>Email</Text>
+          <Text style={styles.label}>{t('common.email')}</Text>
           <TextInput
             value={email}
             onChangeText={setEmail}
-            placeholder="you@example.com"
+            placeholder={t('auth.emailPlaceholder')}
             autoCapitalize="none"
             keyboardType="email-address"
             style={styles.input}
@@ -86,20 +87,20 @@ const ForgotScreen: React.FC = () => {
             {isLoading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.primaryButtonText}>Send reset link</Text>
+              <Text style={styles.primaryButtonText}>{t('forgot.sendResetLink')}</Text>
             )}
           </Pressable>
 
           <Text style={styles.successText}>
-            If an account exists, a reset link has been sent.
+            {t('forgot.resetLinkSent')}
           </Text>
 
           <View style={styles.linksRow}>
             <Link href="/reset" style={styles.linkText}>
-              Have a reset token?
+              {t('auth.haveResetToken')}
             </Link>
             <Link href="/login" style={styles.linkText}>
-              Back to login
+              {t('forgot.backToLogin')}
             </Link>
           </View>
         </View>

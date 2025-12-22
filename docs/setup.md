@@ -171,6 +171,65 @@ curl -X POST http://localhost:8000/webhooks/revenuecat \
 
 > 参考: [RevenueCat Webhook Events](https://www.revenuecat.com/docs/webhooks)
 
+## Safety 行为与危机检测
+
+### Crisis Detector 概述
+
+后端集成了危机检测器 (`CrisisDetector`)，在处理用户输入时自动检测可能表示心理危机的内容。
+
+### 触发关键词
+
+检测器支持英语和西班牙语关键词（使用正则词边界匹配）：
+
+| 语言 | 关键词示例 |
+|------|-----------|
+| English | `suicide`, `kill myself`, `want to die`, `end my life`, `self-harm` |
+| Spanish | `suicidio`, `matarme`, `quiero morir`, `terminar con mi vida`, `autolesión` |
+
+### API 响应
+
+当检测到危机内容时，API 返回：
+
+```json
+{
+  "blocked": true,
+  "reason": "CRISIS",
+  "resources": {
+    "US": "988",
+    "ES": "717 003 717"
+  }
+}
+```
+
+### 热线号码
+
+| 国家/地区 | 热线 | 描述 |
+|----------|------|------|
+| 🇺🇸 United States | **988** | Suicide & Crisis Lifeline (24/7) |
+| 🇪🇸 Spain | **717 003 717** | Teléfono de la Esperanza (24/7) |
+
+### 测试危机检测
+
+```bash
+# 测试危机检测（应返回 blocked=true）
+curl -X POST http://localhost:8000/sessions/{session_id}/stream \
+  -H "Authorization: Bearer $ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"user_text": "I want to end my life"}'
+
+# 预期响应：
+# {"blocked": true, "reason": "CRISIS", "resources": {"US": "988", "ES": "717 003 717"}}
+```
+
+### Analytics 事件
+
+危机检测会触发 `crisis_detected` 分析事件，记录：
+- `session_id`: 会话 ID
+- `user_id`: 用户 ID
+- `timestamp`: 检测时间
+
+> ⚠️ **隐私说明**: 系统不会记录触发危机检测的具体文本内容。
+
 ## 常见问题
 
 详见 [troubleshooting.md](troubleshooting.md)
