@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import get_settings
 from app.database import get_db
 from app.routers import auth
+from app.routers import sessions
 
 settings = get_settings()
 
@@ -26,6 +27,7 @@ app.add_middleware(
 
 # 注册路由
 app.include_router(auth.router)
+app.include_router(sessions.router)
 
 
 @app.get("/health")

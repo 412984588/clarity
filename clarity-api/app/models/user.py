@@ -23,6 +23,7 @@ class User(Base):
     # Relationships
     devices = relationship("Device", back_populates="user", cascade="all, delete-orphan")
     sessions = relationship("ActiveSession", back_populates="user", cascade="all, delete-orphan")
+    solve_sessions = relationship("SolveSession", back_populates="user", cascade="all, delete-orphan")
     subscription = relationship("Subscription", back_populates="user", uselist=False)
     password_reset_tokens = relationship(
         "PasswordResetToken", back_populates="user", cascade="all, delete-orphan"
