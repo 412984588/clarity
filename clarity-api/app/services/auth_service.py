@@ -205,7 +205,8 @@ class AuthService:
         return TokenResponse(
             access_token=access_token,
             refresh_token=refresh_token,
-            expires_in=3600
+            expires_in=3600,
+            user_id=user.id  # type: ignore[arg-type]
         )
 
     def _detect_platform(self, device_name: Optional[str]) -> Optional[str]:

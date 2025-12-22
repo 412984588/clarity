@@ -17,6 +17,12 @@ const TabsLayout: React.FC = () => (
       }}
     />
     <Tabs.Screen
+      name="paywall"
+      options={{
+        title: 'Paywall',
+      }}
+    />
+    <Tabs.Screen
       name="devices"
       options={{
         title: 'Devices',

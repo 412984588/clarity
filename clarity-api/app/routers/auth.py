@@ -34,7 +34,7 @@ async def register(
     """注册新用户"""
     service = AuthService(db)
     try:
-        user, tokens = await service.register(data)
+        _, tokens = await service.register(data)
         return tokens
     except ValueError as e:
         error_code = str(e)
@@ -51,7 +51,7 @@ async def login(
     """邮箱登录"""
     service = AuthService(db)
     try:
-        user, tokens = await service.login(data)
+        _, tokens = await service.login(data)
         return tokens
     except ValueError as e:
         error_code = str(e)
