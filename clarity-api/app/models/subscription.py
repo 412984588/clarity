@@ -1,6 +1,6 @@
 from app.utils.datetime_utils import utc_now
 import uuid
-from sqlalchemy import Column, String, DateTime, ForeignKey, Integer, UniqueConstraint
+from sqlalchemy import Column, String, DateTime, ForeignKey, Integer, UniqueConstraint, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from app.database import Base
@@ -18,6 +18,7 @@ class Subscription(Base):
     status = Column(String(50), default="active")  # active/canceled/past_due
     current_period_start = Column(DateTime, nullable=True)
     current_period_end = Column(DateTime, nullable=True)
+    cancel_at_period_end = Column(Boolean, default=False)
     created_at = Column(DateTime, default=lambda: utc_now())
     updated_at = Column(
         DateTime,

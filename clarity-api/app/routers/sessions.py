@@ -1,4 +1,5 @@
 from app.utils.datetime_utils import utc_now
+from datetime import datetime
 import json
 from typing import AsyncGenerator
 from uuid import UUID
@@ -26,7 +27,7 @@ from app.services.content_filter import sanitize_user_input, strip_pii
 
 router = APIRouter(prefix="/sessions", tags=["sessions"])
 
-SESSION_LIMITS = {"free": 10, "standard": 100, "pro": 1000}
+SESSION_LIMITS = {"free": 10, "standard": 100, "pro": 0}
 STEP_SYSTEM_PROMPTS = {
     SolveStep.RECEIVE.value: (
         "You are Clarity, a supportive problem-solving coach. "
@@ -47,20 +48,27 @@ STEP_SYSTEM_PROMPTS = {
 }
 
 
+def _period_start_for_tier(subscription: Subscription) -> datetime:
+    if subscription.tier == "free":
+        anchor = subscription.created_at or utc_now()
+        return anchor.replace(hour=0, minute=0, second=0, microsecond=0)
+    if subscription.current_period_start:
+        return subscription.current_period_start  # type: ignore[return-value]
+    return utc_now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+
 async def _get_or_create_usage(
     db: AsyncSession,
-    user_id: UUID,
+    subscription: Subscription,
 ) -> Usage:
     """获取或创建当月 Usage 记录，使用 PostgreSQL upsert 保证并发安全"""
     from sqlalchemy.dialects.postgresql import insert as pg_insert
 
-    period_start = utc_now().replace(
-        day=1, hour=0, minute=0, second=0, microsecond=0
-    )
+    period_start = _period_start_for_tier(subscription)
 
     # 使用 PostgreSQL 的 INSERT ON CONFLICT 实现并发安全的 upsert
     stmt = pg_insert(Usage).values(
-        user_id=user_id,
+        user_id=subscription.user_id,
         period_start=period_start,
         session_count=0,
     )
@@ -73,7 +81,7 @@ async def _get_or_create_usage(
     # 查询并返回记录（无论是新建还是已存在）
     result = await db.execute(
         select(Usage).where(
-            Usage.user_id == user_id, Usage.period_start == period_start
+            Usage.user_id == subscription.user_id, Usage.period_start == period_start
         )
     )
     return result.scalar_one()
@@ -100,12 +108,25 @@ async def create_session(
         select(Subscription).where(Subscription.user_id == current_user.id)
     )
     subscription = subscription_result.scalar_one_or_none()
-    tier: str = str(subscription.tier) if subscription else "free"
+    if not subscription:
+        subscription = Subscription(user_id=current_user.id, tier="free")
+        db.add(subscription)
+        await db.flush()
+
+    tier: str = str(subscription.tier)
     sessions_limit: int = SESSION_LIMITS.get(tier, SESSION_LIMITS["free"])
 
-    usage = await _get_or_create_usage(db, current_user.id)  # type: ignore[arg-type]
-    if (usage.session_count or 0) >= sessions_limit:
-        raise HTTPException(status_code=403, detail={"error": "QUOTA_EXCEEDED"})
+    usage = await _get_or_create_usage(db, subscription)
+    if sessions_limit > 0 and (usage.session_count or 0) >= sessions_limit:
+        raise HTTPException(status_code=403, detail={
+            "error": "QUOTA_EXCEEDED",
+            "usage": {
+                "used": int(usage.session_count or 0),
+                "limit": sessions_limit,
+                "tier": tier,
+            },
+            "upgrade_url": "/subscriptions/checkout",
+        })
     usage.session_count = (usage.session_count or 0) + 1  # type: ignore[assignment]
 
     session = SolveSession(
