@@ -1,24 +1,34 @@
-"""OAuth 相关测试"""
+"""
+OAuth 相关测试
+
+修复 Gemini 审查指出的问题：
+1. 使用 AsyncMock 正确 mock async 方法
+2. 简化 patch 写法
+3. 更新测试匹配新的错误码
+"""
 import pytest
 from httpx import AsyncClient
-from unittest.mock import patch
+from unittest.mock import patch, AsyncMock
+
+
+# Google OAuth 测试用户信息 fixture
+GOOGLE_USER_INFO = {
+    "sub": "google-user-123",
+    "email": "googleuser@gmail.com",
+    "name": "Google User",
+    "email_verified": True,
+    "iss": "accounts.google.com"
+}
 
 
 @pytest.mark.asyncio
 async def test_google_oauth_success(client: AsyncClient):
     """测试 Google OAuth 成功登录"""
-    # Mock Google token 验证
-    mock_user_info = {
-        "sub": "google-user-123",
-        "email": "googleuser@gmail.com",
-        "name": "Google User",
-        "email_verified": True,
-        "iss": "accounts.google.com"
-    }
-
-    with patch("app.services.oauth_service.id_token.verify_oauth2_token") as mock_verify:
-        mock_verify.return_value = mock_user_info
-
+    with patch(
+        "app.services.oauth_service.OAuthService._verify_google_token",
+        new_callable=AsyncMock,
+        return_value=GOOGLE_USER_INFO
+    ):
         response = await client.post("/auth/oauth/google", json={
             "id_token": "fake-google-token",
             "device_fingerprint": "oauth-device-001"
@@ -42,9 +52,11 @@ async def test_google_oauth_creates_new_user(client: AsyncClient):
         "iss": "https://accounts.google.com"
     }
 
-    with patch("app.services.oauth_service.id_token.verify_oauth2_token") as mock_verify:
-        mock_verify.return_value = mock_user_info
-
+    with patch(
+        "app.services.oauth_service.OAuthService._verify_google_token",
+        new_callable=AsyncMock,
+        return_value=mock_user_info
+    ):
         response = await client.post("/auth/oauth/google", json={
             "id_token": "fake-google-token-new",
             "device_fingerprint": "oauth-device-002"
@@ -72,9 +84,11 @@ async def test_google_oauth_links_existing_user(client: AsyncClient):
         "iss": "accounts.google.com"
     }
 
-    with patch("app.services.oauth_service.id_token.verify_oauth2_token") as mock_verify:
-        mock_verify.return_value = mock_user_info
-
+    with patch(
+        "app.services.oauth_service.OAuthService._verify_google_token",
+        new_callable=AsyncMock,
+        return_value=mock_user_info
+    ):
         response = await client.post("/auth/oauth/google", json={
             "id_token": "fake-google-token-existing",
             "device_fingerprint": "oauth-device-003"
@@ -88,9 +102,11 @@ async def test_google_oauth_links_existing_user(client: AsyncClient):
 @pytest.mark.asyncio
 async def test_google_oauth_invalid_token(client: AsyncClient):
     """测试 Google OAuth 无效 token"""
-    with patch("app.services.oauth_service.id_token.verify_oauth2_token") as mock_verify:
-        mock_verify.side_effect = ValueError("Token is invalid")
-
+    with patch(
+        "app.services.oauth_service.OAuthService._verify_google_token",
+        new_callable=AsyncMock,
+        side_effect=ValueError("GOOGLE_TOKEN_INVALID: Token is invalid")
+    ):
         response = await client.post("/auth/oauth/google", json={
             "id_token": "invalid-google-token",
             "device_fingerprint": "oauth-device-004"
@@ -103,17 +119,11 @@ async def test_google_oauth_invalid_token(client: AsyncClient):
 @pytest.mark.asyncio
 async def test_google_oauth_email_not_verified(client: AsyncClient):
     """测试 Google OAuth 邮箱未验证"""
-    mock_user_info = {
-        "sub": "google-user-unverified",
-        "email": "unverified@gmail.com",
-        "name": "Unverified User",
-        "email_verified": False,
-        "iss": "accounts.google.com"
-    }
-
-    with patch("app.services.oauth_service.id_token.verify_oauth2_token") as mock_verify:
-        mock_verify.return_value = mock_user_info
-
+    with patch(
+        "app.services.oauth_service.OAuthService._verify_google_token",
+        new_callable=AsyncMock,
+        side_effect=ValueError("EMAIL_NOT_VERIFIED")
+    ):
         response = await client.post("/auth/oauth/google", json={
             "id_token": "fake-google-token-unverified",
             "device_fingerprint": "oauth-device-005"
@@ -125,35 +135,18 @@ async def test_google_oauth_email_not_verified(client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_apple_oauth_success(client: AsyncClient):
-    """测试 Apple Sign-in 成功登录"""
-    mock_apple_keys = {
-        "keys": [{
-            "kty": "RSA",
-            "kid": "test-kid",
-            "use": "sig",
-            "alg": "RS256",
-            "n": "test-n",
-            "e": "AQAB"
-        }]
-    }
-
-    mock_payload = {
+    """测试 Apple Sign-in 成功登录（首次登录，有 email）"""
+    mock_user_info = {
         "sub": "apple-user-123",
         "email": "appleuser@icloud.com",
-        "email_verified": "true",
-        "iss": "https://appleid.apple.com"
+        "email_verified": True
     }
 
-    with patch("app.services.oauth_service.OAuthService._get_apple_public_keys") as mock_keys, \
-         patch("app.services.oauth_service.jwt.get_unverified_header") as mock_header, \
-         patch("app.services.oauth_service.jwt.algorithms.RSAAlgorithm.from_jwk") as mock_jwk, \
-         patch("app.services.oauth_service.jwt.decode") as mock_decode:
-
-        mock_keys.return_value = mock_apple_keys
-        mock_header.return_value = {"kid": "test-kid", "alg": "RS256"}
-        mock_jwk.return_value = "fake-key"
-        mock_decode.return_value = mock_payload
-
+    with patch(
+        "app.services.oauth_service.OAuthService._verify_apple_token",
+        new_callable=AsyncMock,
+        return_value=mock_user_info
+    ):
         response = await client.post("/auth/oauth/apple", json={
             "id_token": "fake-apple-token",
             "device_fingerprint": "apple-device-001"
@@ -163,32 +156,17 @@ async def test_apple_oauth_success(client: AsyncClient):
         data = response.json()
         assert "access_token" in data
         assert "refresh_token" in data
+        assert data["token_type"] == "bearer"
 
 
 @pytest.mark.asyncio
 async def test_apple_oauth_invalid_token(client: AsyncClient):
     """测试 Apple Sign-in 无效 token"""
-    mock_apple_keys = {
-        "keys": [{
-            "kty": "RSA",
-            "kid": "test-kid",
-            "use": "sig",
-            "alg": "RS256",
-            "n": "test-n",
-            "e": "AQAB"
-        }]
-    }
-
-    with patch("app.services.oauth_service.OAuthService._get_apple_public_keys") as mock_keys, \
-         patch("app.services.oauth_service.jwt.get_unverified_header") as mock_header, \
-         patch("app.services.oauth_service.jwt.algorithms.RSAAlgorithm.from_jwk") as mock_jwk, \
-         patch("app.services.oauth_service.jwt.decode") as mock_decode:
-
-        mock_keys.return_value = mock_apple_keys
-        mock_header.return_value = {"kid": "test-kid", "alg": "RS256"}
-        mock_jwk.return_value = "fake-key"
-        mock_decode.side_effect = Exception("Invalid token")
-
+    with patch(
+        "app.services.oauth_service.OAuthService._verify_apple_token",
+        new_callable=AsyncMock,
+        side_effect=ValueError("APPLE_TOKEN_INVALID: Invalid token")
+    ):
         response = await client.post("/auth/oauth/apple", json={
             "id_token": "invalid-apple-token",
             "device_fingerprint": "apple-device-002"
@@ -198,13 +176,19 @@ async def test_apple_oauth_invalid_token(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_apple_oauth_email_not_provided(client: AsyncClient):
-    """测试 Apple Sign-in 邮箱未提供（用户隐藏邮箱）"""
-    # 直接 mock _verify_apple_token 方法返回 EMAIL_NOT_PROVIDED 错误
-    with patch.object(
-        __import__("app.services.oauth_service", fromlist=["OAuthService"]).OAuthService,
-        "_verify_apple_token",
-        side_effect=ValueError("EMAIL_NOT_PROVIDED")
+async def test_apple_oauth_account_not_linked(client: AsyncClient):
+    """测试 Apple Sign-in 后续登录但账户未关联（无 email 且找不到用户）"""
+    # 模拟 Apple 后续登录（只有 sub，没有 email）
+    mock_user_info = {
+        "sub": "apple-user-no-email",
+        "email": None,  # 后续登录无 email
+        "email_verified": True
+    }
+
+    with patch(
+        "app.services.oauth_service.OAuthService._verify_apple_token",
+        new_callable=AsyncMock,
+        return_value=mock_user_info
     ):
         response = await client.post("/auth/oauth/apple", json={
             "id_token": "fake-apple-token-no-email",
@@ -212,4 +196,21 @@ async def test_apple_oauth_email_not_provided(client: AsyncClient):
         })
 
         assert response.status_code == 400
-        assert response.json()["detail"]["error"] == "EMAIL_NOT_PROVIDED"
+        assert response.json()["detail"]["error"] == "OAUTH_ACCOUNT_NOT_LINKED"
+
+
+@pytest.mark.asyncio
+async def test_google_oauth_issuer_invalid(client: AsyncClient):
+    """测试 Google OAuth 签发者无效"""
+    with patch(
+        "app.services.oauth_service.OAuthService._verify_google_token",
+        new_callable=AsyncMock,
+        side_effect=ValueError("INVALID_TOKEN_ISSUER")
+    ):
+        response = await client.post("/auth/oauth/google", json={
+            "id_token": "fake-token-wrong-issuer",
+            "device_fingerprint": "oauth-device-006"
+        })
+
+        assert response.status_code == 400
+        assert response.json()["detail"]["error"] == "INVALID_TOKEN_ISSUER"

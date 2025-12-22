@@ -113,7 +113,8 @@ async def apple_oauth(
         error_code = str(e)
         if "APPLE_TOKEN" in error_code:
             raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"})
-        if error_code == "EMAIL_NOT_PROVIDED":
+        if error_code == "OAUTH_ACCOUNT_NOT_LINKED":
+            # Apple 后续登录但找不到用户记录
             raise HTTPException(status_code=400, detail={"error": error_code})
         if error_code == "DEVICE_LIMIT_REACHED":
             raise HTTPException(status_code=403, detail={"error": error_code})
