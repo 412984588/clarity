@@ -89,7 +89,7 @@ async def _check_and_record_event(
 
     result = await db.execute(stmt)
     # rowcount > 0 表示插入成功（新事件），0 表示冲突（已处理）
-    return result.rowcount > 0  # type: ignore[union-attr]
+    return result.rowcount > 0  # type: ignore[attr-defined]
 
 
 async def _upsert_subscription(
