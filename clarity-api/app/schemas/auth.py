@@ -1,7 +1,8 @@
-from pydantic import BaseModel, EmailStr, field_validator
+import re
 from typing import Optional
 from uuid import UUID
-import re
+
+from pydantic import BaseModel, ConfigDict, EmailStr, field_validator
 
 
 class RegisterRequest(BaseModel):
@@ -57,24 +58,22 @@ class ResetPasswordRequest(BaseModel):
 
 
 class UserResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     email: str
     auth_provider: str
     locale: str
 
-    class Config:
-        from_attributes = True
-
 
 class DeviceResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     device_name: Optional[str]
     platform: Optional[str]
     last_active_at: str
     is_current: bool = False
-
-    class Config:
-        from_attributes = True
 
 
 class ErrorResponse(BaseModel):
