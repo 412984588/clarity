@@ -1,11 +1,62 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 01:30
+**最后更新**: 2025-12-23 03:00
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 03:00] - Epic 7: Launch Readiness
+
+- [x] **环境配置**: 三环境变量文件 (dev/staging/prod)
+  - `.env.development`, `.env.staging`, `.env.production`, `.env.example`
+  - `EXPO_PUBLIC_API_URL` 按环境区分
+
+- [x] **动态配置**: `app.config.ts` 替代 `app.json`
+  - 从 `process.env.EXPO_PUBLIC_API_URL` 读取 API URL
+  - 添加 `extra.apiUrl` 配置
+
+- [x] **EAS Build**: 增强构建配置
+  - 三个 profile (development/preview/production) 各自注入环境变量
+  - 支持不同环境自动使用对应 API
+
+- [x] **Health 端点**: 后端健康检查增强
+  - `/health/ready`: Kubernetes readiness probe
+  - `/health/live`: Kubernetes liveness probe
+
+- [x] **Error Boundary**: 移动端错误捕获
+  - `components/ErrorBoundary.tsx`: Class 组件实现
+  - 错误日志存储到 AsyncStorage (最近 10 条)
+  - 友好的错误界面 + 重试按钮
+
+- [x] **合规文档**: 商店上架材料占位
+  - `docs/release/release-checklist.md`: 上架清单
+  - `docs/release/privacy.md`: 隐私政策模板
+  - `docs/release/support.md`: 支持页面模板
+
+- [x] **验收脚本**: 一键验证
+  - `scripts/verify-release.sh`: 完整验收流程
+  - Backend: ruff + mypy + pytest
+  - Mobile: lint + tsc
+
+- [x] **setup.md**: 添加 iOS/Android 调试说明
+  - iOS: Xcode 要求、模拟器、真机调试
+  - Android: Android Studio、SDK、真机调试
+  - 环境变量配置表
+
+> **新增文件**:
+> - `clarity-mobile/.env.*`, `app.config.ts`
+> - `clarity-mobile/components/ErrorBoundary.tsx`
+> - `docs/release/release-checklist.md`, `privacy.md`, `support.md`
+> - `docs/spec/epic-7-launch.md`, `plan/epic-7-launch-plan.md`, `tasks/epic-7-launch-tasks.md`
+> - `scripts/verify-release.sh`
+
+> **测试验证**:
+> - Backend: ruff ✅, mypy ✅ (39 files), pytest ✅ (103 passed)
+> - Mobile: lint ✅, tsc ✅
+
+---
 
 ### [2025-12-23 01:30] - Epic 6: Emotion Detection + UI Effects
 

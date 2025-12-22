@@ -68,17 +68,65 @@ cd clarity-mobile
 npm install
 ```
 
-### 2. 启动开发服务器
+### 2. 环境变量配置
+
+| 环境 | 文件 | API URL |
+|------|------|---------|
+| dev | `.env.development` | `http://localhost:8000` |
+| staging | `.env.staging` | `https://staging-api.clarity.app` |
+| prod | `.env.production` | `https://api.clarity.app` |
+
+```bash
+# 开发环境（默认）
+cp .env.example .env.development
+```
+
+### 3. 启动开发服务器
 
 ```bash
 npx expo start
 ```
 
-### 3. 运行应用
+### 4. 运行应用
 
 - iOS 模拟器：按 `i`
 - Android 模拟器：按 `a`
 - Expo Go：扫描二维码
+
+## iOS 本地调试
+
+### 环境要求
+- macOS 12+
+- Xcode 14+ (从 App Store 安装)
+- CocoaPods (`sudo gem install cocoapods`)
+
+### 模拟器调试
+```bash
+cd clarity-mobile
+npx expo start --ios
+```
+
+### 真机调试
+1. 注册 Apple Developer Account
+2. 在 Xcode 中配置 Signing & Capabilities
+3. 连接 iPhone，运行 `npx expo run:ios --device`
+
+## Android 本地调试
+
+### 环境要求
+- Android Studio (最新稳定版)
+- Android SDK (API 33+)
+- JDK 17+
+
+### 模拟器调试
+```bash
+cd clarity-mobile
+npx expo start --android
+```
+
+### 真机调试
+1. 手机开启 "开发者选项" → "USB 调试"
+2. 连接 USB，运行 `npx expo run:android --device`
 
 ## 验证安装
 
