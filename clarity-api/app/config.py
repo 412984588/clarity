@@ -27,6 +27,14 @@ class Settings(BaseSettings):
     llm_timeout: int = 30
     llm_max_tokens: int = 1024
 
+    # Stripe 配置
+    stripe_secret_key: str = ""
+    stripe_webhook_secret: str = ""
+    stripe_price_standard: str = ""
+    stripe_price_pro: str = ""
+    stripe_success_url: str = ""
+    stripe_cancel_url: str = ""
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
