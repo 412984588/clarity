@@ -1,11 +1,47 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-22 23:58
+**最后更新**: 2025-12-23 01:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 01:30] - Epic 6: Emotion Detection + UI Effects
+
+- [x] **Backend**: 情绪检测服务
+  - `app/services/emotion_detector.py`: EmotionType enum (anxious/sad/calm/confused/neutral)
+  - 关键词匹配 + 权重评分，支持 en/es/zh 三语言
+  - SSE done 事件返回 `emotion_detected` + `confidence` (0-1)
+  - 21 个测试用例全部通过
+
+- [x] **Mobile**: 情绪渐变背景
+  - `components/AnimatedGradientBackground.tsx`: 动画渐变组件
+  - `hooks/useEmotionBackground.ts`: 情绪状态 + AsyncStorage 持久化
+  - 300ms 平滑过渡动画 (Animated.timing)
+  - 颜色映射: anxious→橙红, sad→蓝紫, calm→绿, confused→黄橙, neutral→灰蓝
+
+- [x] **Settings**: 情绪背景开关
+  - `app/(tabs)/settings.tsx`: 添加 Preferences 卡片 + Switch 组件
+  - 存储 key: `@clarity/emotion_background_enabled`
+  - 默认开启
+
+- [x] **i18n**: 新增翻译 keys
+  - `settings.preferences`, `settings.emotionBackground`, `settings.emotionBackgroundDesc`
+  - 支持 en/es/zh 三语言
+
+> **新增文件**:
+> - `clarity-api/app/services/emotion_detector.py`
+> - `clarity-api/tests/test_emotion_detector.py`
+> - `clarity-mobile/components/AnimatedGradientBackground.tsx`
+> - `clarity-mobile/hooks/useEmotionBackground.ts`
+> - `docs/epic6-spec.md`, `docs/epic6-plan.md`, `docs/epic6-tasks.md`
+
+> **测试验证**:
+> - Backend: ruff ✅, mypy ✅ (39 files), pytest ✅ (103 passed)
+> - Mobile: lint ✅, tsc ✅
+
+---
 
 ### [2025-12-22 23:58] - Epic 5 Wave 4: QA Verification
 

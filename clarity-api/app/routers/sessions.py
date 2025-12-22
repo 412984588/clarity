@@ -29,6 +29,7 @@ from app.services.ai_service import AIService
 from app.services.analytics_service import AnalyticsService
 from app.services.content_filter import sanitize_user_input, strip_pii
 from app.services.crisis_detector import detect_crisis, get_crisis_response
+from app.services.emotion_detector import detect_emotion
 from app.services.state_machine import (
     can_transition,
     get_next_step,
@@ -346,6 +347,9 @@ async def stream_messages(
     ai_service = AIService()
     analytics_service = AnalyticsService(db)
 
+    # 情绪检测
+    emotion_result = detect_emotion(data.content)
+
     try:
         current_step_enum = SolveStep(current_step)
     except ValueError:
@@ -424,7 +428,11 @@ async def stream_messages(
 
         await db.commit()
         done_payload = json.dumps(
-            {"next_step": next_step, "emotion_detected": "neutral"}
+            {
+                "next_step": next_step,
+                "emotion_detected": emotion_result.emotion.value,
+                "confidence": emotion_result.confidence,
+            }
         )
         yield f"event: done\ndata: {done_payload}\n\n"
 

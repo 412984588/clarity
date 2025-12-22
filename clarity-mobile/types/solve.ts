@@ -6,6 +6,8 @@ export type SolveStep = 'receive' | 'clarify' | 'reframe' | 'options' | 'commit'
 
 export type SessionStatus = 'active' | 'completed' | 'abandoned';
 
+export type EmotionType = 'anxious' | 'sad' | 'calm' | 'confused' | 'neutral';
+
 export interface SolveSession {
   session_id: string;
   status: SessionStatus;
@@ -45,7 +47,8 @@ export interface CrisisResponse {
 
 export interface StreamDoneEvent {
   next_step?: SolveStep;
-  emotion_detected?: string;
+  emotion_detected?: EmotionType;
+  confidence?: number;
 }
 
 export interface SessionPatchRequest {
@@ -74,4 +77,13 @@ export const SOLVE_STEPS: { key: SolveStep; labelKey: string }[] = [
 
 export const getStepIndex = (step: SolveStep): number => {
   return SOLVE_STEPS.findIndex((s) => s.key === step);
+};
+
+// Emotion color gradients for background
+export const EMOTION_COLORS: Record<EmotionType, [string, string]> = {
+  anxious: ['#ff6b4a', '#ff4757'],
+  sad: ['#667eea', '#764ba2'],
+  calm: ['#48c774', '#2ecc71'],
+  confused: ['#ffa502', '#ff7f50'],
+  neutral: ['#a8b5c8', '#8395a7'],
 };
