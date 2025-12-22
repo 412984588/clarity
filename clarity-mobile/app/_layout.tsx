@@ -2,6 +2,7 @@ import { Slot, useRouter, useSegments } from 'expo-router';
 import React, { useEffect } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
+import { ErrorBoundary } from '../components/ErrorBoundary';
 import { AuthProvider, useAuth } from '../stores/authStore';
 
 const AuthGate: React.FC = () => {
@@ -35,9 +36,11 @@ const AuthGate: React.FC = () => {
 };
 
 const RootLayout: React.FC = () => (
-  <AuthProvider>
-    <AuthGate />
-  </AuthProvider>
+  <ErrorBoundary>
+    <AuthProvider>
+      <AuthGate />
+    </AuthProvider>
+  </ErrorBoundary>
 );
 
 const styles = StyleSheet.create({

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -47,6 +47,25 @@ async def health_check(db: AsyncSession = Depends(get_db)):
 
     status = "healthy" if db_status == "ok" else "degraded"
     return {"status": status, "database": db_status}
+
+
+@app.get("/health/ready")
+async def readiness_check(db: AsyncSession = Depends(get_db)):
+    """Kubernetes readiness probe - 检查数据库连接"""
+    try:
+        await db.execute(text("SELECT 1"))
+        return {"ready": True}
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail={"ready": False},
+        )
+
+
+@app.get("/health/live")
+async def liveness_check():
+    """Kubernetes liveness probe - 检查进程存活"""
+    return {"live": True}
 
 
 @app.get("/")
