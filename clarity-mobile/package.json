@@ -17,6 +17,7 @@
     "expo-apple-authentication": "~8.0.8",
     "expo-auth-session": "~7.0.10",
     "expo-crypto": "~15.0.8",
+    "expo-localization": "~17.0.8",
     "expo-router": "~6.0.21",
     "expo-secure-store": "~15.0.8",
     "expo-status-bar": "~3.0.9",
