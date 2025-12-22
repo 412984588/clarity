@@ -1,6 +1,7 @@
 import { Link } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import RevenueCatUI from 'react-native-purchases-ui';
 
 import { configureRevenueCat, loginRevenueCat, restorePurchases } from '../../services/revenuecat';
 import { useAuth } from '../../stores/authStore';
@@ -46,6 +47,16 @@ const SettingsScreen: React.FC = () => {
     }
   }, [ensureRevenueCatReady]);
 
+  const handleCustomerCenter = useCallback(async () => {
+    setBillingError(null);
+    try {
+      await ensureRevenueCatReady();
+      await RevenueCatUI.presentCustomerCenter();
+    } catch (_err) {
+      setBillingError('打开客户中心失败，请稍后重试。');
+    }
+  }, [ensureRevenueCatReady]);
+
   return (
     <View style={styles.container}>
       <View style={styles.card}>
@@ -88,10 +99,8 @@ const SettingsScreen: React.FC = () => {
         >
           <Text style={styles.actionButtonText}>Restore Purchases</Text>
         </Pressable>
-        {/* TODO: Integrate RevenueCat Customer Center when react-native-purchases-ui is installed */}
-        {/* See: https://www.revenuecat.com/docs/tools/customer-center */}
         <Pressable
-          onPress={handleManageSubscription}
+          onPress={handleCustomerCenter}
           style={[styles.actionButton, isLoading && styles.disabledButton]}
           disabled={isLoading}
         >

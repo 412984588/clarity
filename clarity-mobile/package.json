@@ -22,7 +22,8 @@
     "expo-web-browser": "~15.0.10",
     "react": "19.1.0",
     "react-native": "0.81.5",
-    "react-native-purchases": "^9.6.11"
+    "react-native-purchases": "^9.6.11",
+    "react-native-purchases-ui": "^9.6.11"
   },
   "devDependencies": {
     "@types/react": "~19.1.0",
