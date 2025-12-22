@@ -1,0 +1,43 @@
+import uuid
+from datetime import datetime
+from enum import Enum
+
+from sqlalchemy import Column, String, DateTime, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
+
+from app.database import Base
+
+
+class SessionStatus(str, Enum):
+    ACTIVE = "active"
+    COMPLETED = "completed"
+    ABANDONED = "abandoned"
+
+
+class SolveStep(str, Enum):
+    RECEIVE = "receive"
+    CLARIFY = "clarify"
+    REFRAME = "reframe"
+    OPTIONS = "options"
+    COMMIT = "commit"
+
+
+class SolveSession(Base):
+    """Solve 会话模型"""
+    __tablename__ = "solve_sessions"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    device_id = Column(UUID(as_uuid=True), ForeignKey("devices.id", ondelete="SET NULL"), nullable=True)
+    status = Column(String(50), default=SessionStatus.ACTIVE.value)
+    current_step = Column(String(50), default=SolveStep.RECEIVE.value)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    completed_at = Column(DateTime, nullable=True)
+
+    # Relationships
+    user = relationship("User", back_populates="solve_sessions")
+    device = relationship("Device")
+
+    def __repr__(self):
+        return f"<SolveSession {self.id}>"
