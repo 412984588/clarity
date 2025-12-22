@@ -12,6 +12,7 @@ import {
   View,
 } from 'react-native';
 
+import { t } from '../../i18n';
 import { useAuth } from '../../stores/authStore';
 
 const getPasswordStrength = (password: string): { label: string; color: string } => {
@@ -21,10 +22,10 @@ const getPasswordStrength = (password: string): { label: string; color: string }
   if (/[0-9]/.test(password)) score += 1;
   if (/[^A-Za-z0-9]/.test(password)) score += 1;
 
-  if (score >= 4) return { label: 'Strong', color: '#16a34a' };
-  if (score === 3) return { label: 'Good', color: '#2563eb' };
-  if (score === 2) return { label: 'Fair', color: '#f59e0b' };
-  return { label: 'Weak', color: '#dc2626' };
+  if (score >= 4) return { label: t('auth.strong'), color: '#16a34a' };
+  if (score === 3) return { label: t('auth.good'), color: '#2563eb' };
+  if (score === 2) return { label: t('auth.fair'), color: '#f59e0b' };
+  return { label: t('auth.weak'), color: '#dc2626' };
 };
 
 const RegisterScreen: React.FC = () => {
@@ -39,12 +40,12 @@ const RegisterScreen: React.FC = () => {
 
   const handleRegister = async () => {
     if (!email || !password || !confirmPassword) {
-      setLocalError('Please fill out all fields.');
+      setLocalError(t('auth.fillAllFields'));
       return;
     }
 
     if (!passwordsMatch) {
-      setLocalError('Passwords do not match.');
+      setLocalError(t('auth.passwordsDoNotMatch'));
       return;
     }
 
@@ -58,39 +59,39 @@ const RegisterScreen: React.FC = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Text style={styles.title}>Create account</Text>
-        <Text style={styles.subtitle}>Start your Clarity journey in minutes.</Text>
+        <Text style={styles.title}>{t('auth.createAccount')}</Text>
+        <Text style={styles.subtitle}>{t('auth.startJourney')}</Text>
 
         <View style={styles.card}>
-          <Text style={styles.label}>Email</Text>
+          <Text style={styles.label}>{t('common.email')}</Text>
           <TextInput
             value={email}
             onChangeText={setEmail}
-            placeholder="you@example.com"
+            placeholder={t('auth.emailPlaceholder')}
             autoCapitalize="none"
             keyboardType="email-address"
             style={styles.input}
             editable={!isLoading}
           />
 
-          <Text style={styles.label}>Password</Text>
+          <Text style={styles.label}>{t('common.password')}</Text>
           <TextInput
             value={password}
             onChangeText={setPassword}
-            placeholder="Create a password"
+            placeholder={t('auth.createPasswordPlaceholder')}
             secureTextEntry
             style={styles.input}
             editable={!isLoading}
           />
 
           <Text style={[styles.strengthText, { color: strength.color }]}
-          >{`Strength: ${strength.label}`}</Text>
+          >{`${t('auth.strength')}: ${strength.label}`}</Text>
 
-          <Text style={styles.label}>Confirm password</Text>
+          <Text style={styles.label}>{t('auth.confirmPassword')}</Text>
           <TextInput
             value={confirmPassword}
             onChangeText={setConfirmPassword}
-            placeholder="Re-enter password"
+            placeholder={t('auth.reenterPasswordPlaceholder')}
             secureTextEntry
             style={styles.input}
             editable={!isLoading}
@@ -108,14 +109,14 @@ const RegisterScreen: React.FC = () => {
             {isLoading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.primaryButtonText}>Create account</Text>
+              <Text style={styles.primaryButtonText}>{t('auth.createAccount')}</Text>
             )}
           </Pressable>
 
           <View style={styles.linksRow}>
-            <Text style={styles.helperText}>Already have an account?</Text>
+            <Text style={styles.helperText}>{t('auth.alreadyHaveAccount')}</Text>
             <Link href="/login" style={styles.linkText}>
-              Sign in
+              {t('auth.signIn')}
             </Link>
           </View>
         </View>

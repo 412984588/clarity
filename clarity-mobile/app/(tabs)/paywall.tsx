@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 
+import { t } from '../../i18n';
 import {
   configureRevenueCat,
   getOfferings,
@@ -39,13 +40,13 @@ const PaywallScreen: React.FC = () => {
       if (userId) {
         await loginRevenueCat(userId);
       } else {
-        throw new Error('缺少用户 ID，请重新登录');
+        throw new Error(t('paywall.missingUserId'));
       }
 
       const data = await getOfferings();
       setOfferings(data);
     } catch (_err) {
-      setError('加载订阅信息失败，请稍后重试。');
+      setError(t('paywall.loadFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -67,9 +68,9 @@ const PaywallScreen: React.FC = () => {
 
     try {
       await purchasePackage(packageToPurchase);
-      setNotice('购买成功，订阅已更新。');
+      setNotice(t('paywall.purchaseSuccess'));
     } catch (_err) {
-      setError('购买失败，请稍后重试。');
+      setError(t('paywall.purchaseFailed'));
     } finally {
       setIsPurchasing(false);
     }
@@ -82,9 +83,9 @@ const PaywallScreen: React.FC = () => {
 
     try {
       await restorePurchases();
-      setNotice('已恢复购买记录。');
+      setNotice(t('paywall.restoreSuccess'));
     } catch (_err) {
-      setError('恢复购买失败，请稍后重试。');
+      setError(t('settings.restorePurchasesFailed'));
     } finally {
       setIsPurchasing(false);
     }
@@ -92,8 +93,8 @@ const PaywallScreen: React.FC = () => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Upgrade your plan</Text>
-      <Text style={styles.subtitle}>Unlock more sessions and priority support.</Text>
+      <Text style={styles.title}>{t('paywall.title')}</Text>
+      <Text style={styles.subtitle}>{t('paywall.subtitle')}</Text>
 
       {isLoading ? (
         <ActivityIndicator style={styles.loader} color="#1d4ed8" />
@@ -112,13 +113,13 @@ const PaywallScreen: React.FC = () => {
                 style={[styles.primaryButton, isPurchasing && styles.disabledButton]}
                 disabled={isPurchasing}
               >
-                <Text style={styles.primaryButtonText}>Purchase</Text>
+                <Text style={styles.primaryButtonText}>{t('paywall.purchase')}</Text>
               </Pressable>
             </View>
           ))}
 
           {availablePackages.length === 0 && (
-            <Text style={styles.emptyText}>No available packages.</Text>
+            <Text style={styles.emptyText}>{t('paywall.noPackages')}</Text>
           )}
         </View>
       )}
@@ -128,7 +129,7 @@ const PaywallScreen: React.FC = () => {
         style={[styles.secondaryButton, isPurchasing && styles.disabledButton]}
         disabled={isPurchasing}
       >
-        <Text style={styles.secondaryButtonText}>Restore Purchases</Text>
+        <Text style={styles.secondaryButtonText}>{t('settings.restorePurchases')}</Text>
       </Pressable>
 
       {notice && <Text style={styles.noticeText}>{notice}</Text>}

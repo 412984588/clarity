@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 
+import { t } from '../../i18n';
 import { apiRequest } from '../../services/api';
 
 type Session = {
@@ -30,7 +31,7 @@ const SessionsScreen: React.FC = () => {
       setSessions(data);
       setError(null);
     } catch (_err) {
-      setError('Failed to load sessions.');
+      setError(t('sessions.loadFailed'));
     }
   }, []);
 
@@ -54,7 +55,7 @@ const SessionsScreen: React.FC = () => {
       await apiRequest(`/auth/sessions/${sessionId}`, { method: 'DELETE' });
       setSessions((prev) => prev.filter((session) => session.id !== sessionId));
     } catch (_err) {
-      setError('Failed to terminate session.');
+      setError(t('sessions.terminateFailed'));
     }
   }, []);
 
@@ -64,8 +65,8 @@ const SessionsScreen: React.FC = () => {
       contentContainerStyle={styles.content}
       refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
     >
-      <Text style={styles.title}>Active Sessions</Text>
-      <Text style={styles.subtitle}>Review and revoke active sessions.</Text>
+      <Text style={styles.title}>{t('sessions.title')}</Text>
+      <Text style={styles.subtitle}>{t('sessions.subtitle')}</Text>
 
       {isLoading ? (
         <ActivityIndicator style={styles.loader} color="#1d4ed8" />
@@ -73,17 +74,17 @@ const SessionsScreen: React.FC = () => {
         <View style={styles.list}>
           {sessions.map((session) => (
             <View key={session.id} style={styles.card}>
-              <Text style={styles.sessionTitle}>{`Session ${session.id}`}</Text>
-              <Text style={styles.sessionMeta}>{`Device: ${session.device_id}`}</Text>
-              <Text style={styles.sessionMeta}>{`Created: ${session.created_at}`}</Text>
-              <Text style={styles.sessionMeta}>{`Expires: ${session.expires_at}`}</Text>
+              <Text style={styles.sessionTitle}>{`${t('sessions.session')} ${session.id}`}</Text>
+              <Text style={styles.sessionMeta}>{`${t('sessions.device')}: ${session.device_id}`}</Text>
+              <Text style={styles.sessionMeta}>{`${t('sessions.created')}: ${session.created_at}`}</Text>
+              <Text style={styles.sessionMeta}>{`${t('sessions.expires')}: ${session.expires_at}`}</Text>
               <Pressable onPress={() => handleTerminate(session.id)} style={styles.terminateButton}>
-                <Text style={styles.terminateButtonText}>Terminate</Text>
+                <Text style={styles.terminateButtonText}>{t('sessions.terminate')}</Text>
               </Pressable>
             </View>
           ))}
           {sessions.length === 0 && (
-            <Text style={styles.emptyText}>No active sessions.</Text>
+            <Text style={styles.emptyText}>{t('sessions.noSessions')}</Text>
           )}
         </View>
       )}
