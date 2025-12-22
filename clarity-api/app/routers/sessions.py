@@ -21,12 +21,20 @@ from app.schemas.session import (
     SessionCreateResponse,
     SessionListResponse,
     SessionResponse,
+    SessionUpdateRequest,
+    SessionUpdateResponse,
     UsageResponse,
 )
 from app.services.ai_service import AIService
 from app.services.analytics_service import AnalyticsService
 from app.services.content_filter import sanitize_user_input, strip_pii
-from app.services.state_machine import can_transition, get_next_step, is_final_step
+from app.services.crisis_detector import detect_crisis, get_crisis_response
+from app.services.state_machine import (
+    can_transition,
+    get_next_step,
+    is_final_step,
+    validate_transition,
+)
 
 router = APIRouter(prefix="/sessions", tags=["sessions"])
 
@@ -164,7 +172,7 @@ async def create_session(
     analytics_service = AnalyticsService(db)
     await analytics_service.emit(
         "session_started",
-        session.id,
+        session.id,  # type: ignore[arg-type]
         {"user_id": str(current_user.id), "device_id": str(device.id)},
     )
 
@@ -233,6 +241,70 @@ async def get_session(
     return SessionResponse.model_validate(session)
 
 
+@router.patch("/{session_id}", response_model=SessionUpdateResponse)
+async def update_session(
+    session_id: UUID,
+    updates: SessionUpdateRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """更新 Solve 会话"""
+    result = await db.execute(
+        select(SolveSession).where(
+            SolveSession.id == session_id, SolveSession.user_id == current_user.id
+        )
+    )
+    session = result.scalar_one_or_none()
+    if not session:
+        raise HTTPException(status_code=404, detail={"error": "SESSION_NOT_FOUND"})
+
+    if updates.status is not None:
+        try:
+            status_enum = SessionStatus(updates.status)
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=400, detail={"error": "INVALID_STATUS"}
+            ) from exc
+        session.status = status_enum.value  # type: ignore[assignment]
+        if status_enum == SessionStatus.COMPLETED:
+            session.completed_at = utc_now()  # type: ignore[assignment]
+
+    if updates.current_step is not None:
+        try:
+            next_step_enum = SolveStep(updates.current_step)
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=400, detail={"error": "INVALID_STEP"}
+            ) from exc
+        try:
+            current_step_enum = SolveStep(str(session.current_step))
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=400, detail={"error": "INVALID_CURRENT_STEP"}
+            ) from exc
+        if not validate_transition(current_step_enum, next_step_enum):
+            raise HTTPException(
+                status_code=400, detail={"error": "INVALID_STEP_TRANSITION"}
+            )
+        session.current_step = next_step_enum.value  # type: ignore[assignment]
+
+    if updates.locale is not None:
+        session.locale = updates.locale  # type: ignore[assignment]
+    if updates.first_step_action is not None:
+        session.first_step_action = updates.first_step_action  # type: ignore[assignment]
+    if updates.reminder_time is not None:
+        session.reminder_time = updates.reminder_time  # type: ignore[assignment]
+
+    await db.commit()
+
+    return SessionUpdateResponse(
+        id=str(session.id),
+        status=str(session.status),
+        current_step=str(session.current_step),
+        updated_at=utc_now(),
+    )
+
+
 @router.post("/{session_id}/messages")
 async def stream_messages(
     session_id: UUID,
@@ -252,6 +324,19 @@ async def stream_messages(
     if session.status == SessionStatus.COMPLETED.value:
         raise HTTPException(status_code=400, detail={"error": "SESSION_COMPLETED"})
 
+    # 危机检测 - 在处理消息之前检查
+    crisis_result = detect_crisis(data.content)
+    if crisis_result.blocked:
+        analytics_service = AnalyticsService(db)
+        await analytics_service.emit(
+            "crisis_detected",
+            session.id,  # type: ignore[arg-type]
+            {"keyword": crisis_result.matched_keyword},
+        )
+        await db.commit()
+        # 返回危机资源响应，不继续 Solve 流程
+        return get_crisis_response()
+
     current_step = str(session.current_step)
     system_prompt = STEP_SYSTEM_PROMPTS.get(
         current_step,
@@ -265,7 +350,7 @@ async def stream_messages(
         current_step_enum = SolveStep(current_step)
     except ValueError:
         current_step_enum = SolveStep.RECEIVE
-        session.current_step = current_step_enum.value
+        session.current_step = current_step_enum.value  # type: ignore[assignment]
 
     async def event_generator() -> AsyncGenerator[str, None]:
         # 获取或创建当前步骤的 StepHistory
@@ -290,7 +375,7 @@ async def stream_messages(
             await db.flush()
 
         # 增加消息计数
-        step_history.message_count = (step_history.message_count or 0) + 1
+        step_history.message_count = (step_history.message_count or 0) + 1  # type: ignore[assignment]
 
         # 流式输出 AI 响应
         async for token in ai_service.stream(system_prompt, sanitized_input):
@@ -306,7 +391,7 @@ async def stream_messages(
 
         # 处理状态转换
         if next_step_enum and can_transition(current_step_enum, next_step_enum):
-            step_history.completed_at = now
+            step_history.completed_at = now  # type: ignore[assignment]
             db.add(
                 StepHistory(
                     session_id=session.id,
@@ -314,26 +399,26 @@ async def stream_messages(
                     started_at=now,
                 )
             )
-            session.current_step = next_step_enum.value
+            session.current_step = next_step_enum.value  # type: ignore[assignment]
             await analytics_service.emit(
                 "step_completed",
-                session.id,
+                session.id,  # type: ignore[arg-type]
                 {"from_step": current_step_enum.value, "to_step": next_step_enum.value},
             )
         elif is_final_step(current_step_enum):
             # 最终步骤完成
             if step_history.completed_at is None:
-                step_history.completed_at = now
+                step_history.completed_at = now  # type: ignore[assignment]
                 await analytics_service.emit(
                     "step_completed",
-                    session.id,
+                    session.id,  # type: ignore[arg-type]
                     {"step": current_step_enum.value},
                 )
-            session.status = SessionStatus.COMPLETED.value
-            session.completed_at = now
+            session.status = SessionStatus.COMPLETED.value  # type: ignore[assignment]
+            session.completed_at = now  # type: ignore[assignment]
             await analytics_service.emit(
                 "session_completed",
-                session.id,
+                session.id,  # type: ignore[arg-type]
                 {"final_step": current_step_enum.value},
             )
 

@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.models.solve_session import SolveStep
 
@@ -50,3 +50,18 @@ class SSETokenEvent(BaseModel):
 class SSEDoneEvent(BaseModel):
     next_step: str
     emotion_detected: str
+
+
+class SessionUpdateRequest(BaseModel):
+    status: Optional[str] = Field(default=None)
+    current_step: Optional[str] = Field(default=None)
+    locale: Optional[str] = Field(default=None)
+    first_step_action: Optional[str] = Field(default=None)
+    reminder_time: Optional[datetime] = Field(default=None)
+
+
+class SessionUpdateResponse(BaseModel):
+    id: str
+    status: str
+    current_step: str
+    updated_at: datetime
