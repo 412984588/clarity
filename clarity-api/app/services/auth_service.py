@@ -86,7 +86,11 @@ class AuthService:
         if not payload or payload.get("type") != "refresh":
             raise ValueError("INVALID_TOKEN")
 
-        session_id = payload.get("sub")
+        session_id = payload.get("sid") or payload.get("sub")
+        try:
+            session_uuid = UUID(str(session_id))
+        except (TypeError, ValueError):
+            raise ValueError("INVALID_TOKEN")
         token_hash = hash_token(refresh_token)
 
         # 查找有效会话
@@ -94,7 +98,7 @@ class AuthService:
             select(ActiveSession)
             .options(selectinload(ActiveSession.user))
             .where(
-                ActiveSession.id == session_id,
+                ActiveSession.id == session_uuid,
                 ActiveSession.token_hash == token_hash,
                 ActiveSession.expires_at > datetime.utcnow()
             )
@@ -111,7 +115,7 @@ class AuthService:
         session.token_hash = hash_token(new_refresh)  # type: ignore[assignment]
         session.expires_at = datetime.utcnow() + timedelta(days=30)  # type: ignore[assignment]
 
-        access_token = create_access_token(user.id, user.email)
+        access_token = create_access_token(user.id, user.email, session.id)  # type: ignore[arg-type]
 
         await self.db.commit()
 
@@ -193,7 +197,7 @@ class AuthService:
         self.db.add(session)
         await self.db.flush()
 
-        access_token = create_access_token(user.id, user.email)  # type: ignore[arg-type]
+        access_token = create_access_token(user.id, user.email, session.id)  # type: ignore[arg-type]
         refresh_token = create_refresh_token(session.id)  # type: ignore[arg-type]
         session.token_hash = hash_token(refresh_token)  # type: ignore[assignment]
 
