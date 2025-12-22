@@ -1,0 +1,3 @@
+# Clarity API
+
+FastAPI backend.
