@@ -103,6 +103,74 @@ npm run lint
 npx tsc --noEmit
 ```
 
+## 订阅同步验证（本地/测试环境）
+
+### 1. 模拟 RevenueCat Webhook 事件
+
+```bash
+# 获取测试用户 ID（从数据库或创建新用户）
+USER_ID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+
+# 模拟 INITIAL_PURCHASE 事件
+curl -X POST http://localhost:8000/webhooks/revenuecat \
+  -H "Authorization: Bearer $REVENUECAT_WEBHOOK_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "event": {
+      "id": "evt_test_001",
+      "type": "INITIAL_PURCHASE",
+      "app_user_id": "'"$USER_ID"'",
+      "entitlement_ids": ["standard_access"],
+      "expiration_at_ms": 1735689600000
+    }
+  }'
+# 应返回 {"received": true}
+```
+
+### 2. 验证后端订阅状态
+
+```bash
+# 获取 access token（通过登录或注册）
+ACCESS_TOKEN="eyJ..."
+
+# 查询当前订阅
+curl http://localhost:8000/subscriptions/current \
+  -H "Authorization: Bearer $ACCESS_TOKEN"
+# 应返回 {"tier": "standard", "status": "active", ...}
+```
+
+### 3. 验证 App 端同步
+
+1. 登录 App，进入 Settings 页面
+2. 订阅状态应显示 "Standard" 或 "Pro"
+3. 点击 "Manage Subscription" 应能跳转系统订阅管理页
+
+### 4. 测试幂等性
+
+```bash
+# 发送相同 event.id 两次
+curl -X POST http://localhost:8000/webhooks/revenuecat \
+  -H "Authorization: Bearer $REVENUECAT_WEBHOOK_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{"event": {"id": "evt_test_001", "type": "INITIAL_PURCHASE", "app_user_id": "'"$USER_ID"'"}}'
+
+# 第二次应该立即返回 {"received": true} 但不会重复处理
+# 查询 processed_webhook_events 表确认只有一条记录
+```
+
+### RevenueCat Webhook Event Types
+
+| Event | 触发场景 | 订阅状态变化 |
+|-------|---------|-------------|
+| `INITIAL_PURCHASE` | 首次购买 | tier → standard/pro, status → active |
+| `RENEWAL` | 自动续费 | current_period_end 更新 |
+| `CANCELLATION` | 取消续订 | cancel_at_period_end → true |
+| `EXPIRATION` | 订阅到期 | tier → free, status → expired |
+| `BILLING_ISSUE` | 付款失败 | status → past_due |
+| `PRODUCT_CHANGE` | 升级/降级 | tier 变化 |
+
+> 参考: [RevenueCat Webhook Events](https://www.revenuecat.com/docs/webhooks)
+
 ## 常见问题
 
 详见 [troubleshooting.md](troubleshooting.md)
