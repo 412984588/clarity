@@ -50,7 +50,43 @@
 | **Status** | BLOCKED |
 | **Reason** | Apple Developer Account not configured |
 
-> iOS build requires Apple Developer Program membership ($99/year).
+### Prerequisites (Not Met)
+
+| Requirement | Status | Notes |
+|-------------|--------|-------|
+| Apple Developer Account | ❌ BLOCKED | Requires $99/year enrollment |
+| App Store Connect access | ❌ BLOCKED | Depends on Developer Account |
+| Provisioning Profile | ❌ BLOCKED | Cannot create without account |
+| Distribution Certificate | ❌ BLOCKED | Cannot create without account |
+
+### Planned Build Steps (When Account Available)
+
+1. **Enroll in Apple Developer Program**
+   - Visit: https://developer.apple.com/programs/enroll/
+   - Complete enrollment ($99/year)
+   - Wait for approval (usually 24-48 hours)
+
+2. **Configure EAS for iOS**
+   ```bash
+   # Login to EAS (already done)
+   eas login
+
+   # Configure iOS credentials
+   eas credentials
+   # Select: iOS > Build Credentials > Set up
+   ```
+
+3. **Run iOS Preview Build**
+   ```bash
+   eas build --platform ios --profile preview
+   ```
+
+4. **Install on Device**
+   - Download .ipa from EAS dashboard
+   - Use TestFlight or ad-hoc distribution
+   - Or scan QR code from Expo dashboard
+
+> **Current Status**: iOS build is BLOCKED until Apple Developer Account is configured.
 > Will be added when account is available.
 
 ---
