@@ -86,6 +86,11 @@ class OAuthService:
                 # Apple 后续登录但找不到用户记录（数据异常）
                 raise ValueError("OAUTH_ACCOUNT_NOT_LINKED")
             user = await self._get_or_create_user(email, provider, provider_id)
+        elif provider_id:
+            # 已存在用户，记录 provider_id 以支持后续登录
+            if not user.auth_provider_id or user.auth_provider == provider:
+                user.auth_provider = provider  # type: ignore[assignment]
+                user.auth_provider_id = provider_id  # type: ignore[assignment]
 
         # 获取 tier 用于设备限制检查
         tier = user.subscription.tier if user.subscription else "free"
@@ -189,9 +194,17 @@ class OAuthService:
         self, provider: str, provider_id: str
     ) -> Optional[User]:
         """通过 OAuth provider_id 查找用户"""
-        # 目前 User 模型没有 provider_id 字段，通过 email 关联
-        # TODO: 未来可添加 User.google_id / User.apple_id 字段
-        return None
+        if not provider_id:
+            return None
+        result = await self.db.execute(
+            select(User)
+            .options(selectinload(User.subscription))
+            .where(
+                User.auth_provider == provider,
+                User.auth_provider_id == provider_id,
+            )
+        )
+        return result.scalar_one_or_none()
 
     async def _get_or_create_user(
         self, email: str, provider: str, provider_id: Optional[str] = None
@@ -210,11 +223,19 @@ class OAuthService:
         user = result.scalar_one_or_none()
 
         if user:
-            # 已存在的用户，保留原有 provider
+            # 已存在的用户，尝试记录 provider_id 以支持后续登录
+            if provider_id and (not user.auth_provider_id or user.auth_provider == provider):
+                user.auth_provider = provider  # type: ignore[assignment]
+                user.auth_provider_id = provider_id  # type: ignore[assignment]
             return user
 
         # 创建新用户（OAuth 用户没有密码）
-        user = User(email=email, password_hash=None, auth_provider=provider)
+        user = User(
+            email=email,
+            password_hash=None,
+            auth_provider=provider,
+            auth_provider_id=provider_id,
+        )
         self.db.add(user)
         await self.db.flush()
 

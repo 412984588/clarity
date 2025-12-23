@@ -44,9 +44,29 @@ const parseJson = async <T>(response: Response): Promise<T | null> => {
   }
 };
 
+type ErrorPayload = {
+  message?: string;
+  detail?: unknown;
+};
+
 const createApiError = async (response: Response): Promise<ApiError> => {
-  const payload = await parseJson<{ message?: string; detail?: string }>(response);
-  const message = payload?.message ?? payload?.detail ?? response.statusText ?? 'Request failed';
+  const payload = await parseJson<ErrorPayload>(response);
+  let message = response.statusText ?? 'Request failed';
+
+  if (payload) {
+    if (typeof payload.message === 'string') {
+      message = payload.message;
+    } else if (typeof payload.detail === 'string') {
+      message = payload.detail;
+    } else if (Array.isArray(payload.detail)) {
+      const first = payload.detail[0] as { msg?: string; message?: string } | undefined;
+      if (first?.msg) {
+        message = String(first.msg);
+      } else if (first?.message) {
+        message = String(first.message);
+      }
+    }
+  }
 
   return {
     status: response.status,

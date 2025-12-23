@@ -221,6 +221,7 @@ const SessionScreen: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const flatListRef = useRef<FlatList>(null);
+  const streamingRef = useRef('');
 
   // Emotion background hook
   const { currentEmotion, isEnabled: emotionEnabled, setEmotion } = useEmotionBackground();
@@ -274,6 +275,7 @@ const SessionScreen: React.FC = () => {
     setInputText('');
     setIsStreaming(true);
     setStreamingContent('');
+    streamingRef.current = '';
     setError(null);
 
     // Save user message to history
@@ -281,13 +283,15 @@ const SessionScreen: React.FC = () => {
 
     await streamMessage(sessionId, userMessage.content, currentStep, {
       onToken: (content) => {
-        setStreamingContent((prev) => prev + content);
+        streamingRef.current += content;
+        setStreamingContent(streamingRef.current);
       },
       onDone: async (data: StreamDoneEvent) => {
+        const fullContent = streamingRef.current;
         const assistantMessage: Message = {
           id: `assistant-${Date.now()}`,
           role: 'assistant',
-          content: streamingContent,
+          content: fullContent,
           step: currentStep,
           timestamp: new Date().toISOString(),
         };
@@ -295,6 +299,7 @@ const SessionScreen: React.FC = () => {
         setMessages((prev) => [...prev, assistantMessage]);
         setStreamingContent('');
         setIsStreaming(false);
+        streamingRef.current = '';
 
         // Update emotion based on detected emotion
         if (data.emotion_detected) {
@@ -309,7 +314,7 @@ const SessionScreen: React.FC = () => {
 
           // Parse options if entering options step
           if (data.next_step === 'options') {
-            const parsed = parseOptions(streamingContent);
+            const parsed = parseOptions(fullContent);
             if (parsed.length > 0) {
               setOptions(parsed);
             }
@@ -325,14 +330,16 @@ const SessionScreen: React.FC = () => {
         setCrisis(data);
         setIsStreaming(false);
         setStreamingContent('');
+        streamingRef.current = '';
       },
       onError: (err) => {
         setError(err.message);
         setIsStreaming(false);
         setStreamingContent('');
+        streamingRef.current = '';
       },
     });
-  }, [sessionId, inputText, currentStep, isStreaming, streamingContent, parseOptions, setEmotion]);
+  }, [sessionId, inputText, currentStep, isStreaming, parseOptions, setEmotion]);
 
   // Handle option selection
   const handleOptionSelect = useCallback(

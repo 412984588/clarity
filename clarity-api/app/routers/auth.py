@@ -1,6 +1,7 @@
 from app.utils.datetime_utils import utc_now
 from datetime import timedelta
 import hashlib
+import logging
 import secrets
 from uuid import UUID
 
@@ -9,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete, func
 from sqlalchemy.orm import selectinload
 
+from app.config import get_settings
 from app.database import get_db
 from app.middleware.auth import get_current_user
 from app.models.device import Device
@@ -26,7 +28,10 @@ from app.schemas.auth import (
     ForgotPasswordRequest,
     ResetPasswordRequest,
 )
-from app.utils.security import hash_password
+from app.utils.security import decode_token, hash_password
+
+logger = logging.getLogger(__name__)
+settings = get_settings()
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -99,7 +104,11 @@ async def forgot_password(
         )
         db.add(reset_token)
         await db.commit()
-        print(f"Password reset link: http://localhost:8000/auth/reset?token={token}")
+        if settings.debug:
+            logger.info(
+                "Password reset link: http://localhost:8000/auth/reset?token=%s",
+                token,
+            )
 
     return {"message": "If an account exists, a reset link has been sent"}
 
@@ -138,10 +147,36 @@ async def reset_password(
 
 
 @router.post("/logout", status_code=204)
-async def logout():
-    """登出 - 需要 auth middleware (M4 实现)"""
-    # TODO: Implement with auth middleware in M4
-    pass
+async def logout(
+    token: str | None = Header(None, alias="Authorization"),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """登出 - 使当前 access token 对应 session 失效"""
+    if not token:
+        raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"})
+
+    if token.startswith("Bearer "):
+        token = token.split(" ", 1)[1]
+
+    payload = decode_token(token)
+    if not payload or payload.get("type") != "access":
+        raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"})
+
+    session_id = payload.get("sid")
+    try:
+        session_uuid = UUID(str(session_id))
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=401, detail={"error": "SESSION_NOT_FOUND"})
+
+    await db.execute(
+        delete(ActiveSession).where(
+            ActiveSession.id == session_uuid,
+            ActiveSession.user_id == current_user.id,
+        )
+    )
+    await db.commit()
+    return None
 
 
 @router.post("/oauth/google", response_model=TokenResponse)

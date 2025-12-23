@@ -201,10 +201,29 @@ async def test_apple_oauth_invalid_token(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_apple_oauth_account_not_linked(client: AsyncClient):
-    """测试 Apple Sign-in 后续登录但账户未关联（无 email 且找不到用户）"""
-    # 模拟 Apple 后续登录（只有 sub，没有 email）
-    mock_user_info = {
+async def test_apple_oauth_subsequent_login_succeeds(client: AsyncClient):
+    """测试 Apple Sign-in 后续登录（无 email）可通过 provider_id 找回用户"""
+    first_login_info = {
+        "sub": "apple-user-no-email",
+        "email": "appleuser@icloud.com",
+        "email_verified": True,
+    }
+
+    with patch(
+        "app.services.oauth_service.OAuthService._verify_apple_token",
+        new_callable=AsyncMock,
+        return_value=first_login_info,
+    ):
+        first_response = await client.post(
+            "/auth/oauth/apple",
+            json={
+                "id_token": "fake-apple-token-first",
+                "device_fingerprint": "apple-device-003",
+            },
+        )
+        assert first_response.status_code == 200
+
+    subsequent_login_info = {
         "sub": "apple-user-no-email",
         "email": None,  # 后续登录无 email
         "email_verified": True,
@@ -213,7 +232,7 @@ async def test_apple_oauth_account_not_linked(client: AsyncClient):
     with patch(
         "app.services.oauth_service.OAuthService._verify_apple_token",
         new_callable=AsyncMock,
-        return_value=mock_user_info,
+        return_value=subsequent_login_info,
     ):
         response = await client.post(
             "/auth/oauth/apple",
@@ -223,8 +242,8 @@ async def test_apple_oauth_account_not_linked(client: AsyncClient):
             },
         )
 
-        assert response.status_code == 400
-        assert response.json()["detail"]["error"] == "OAUTH_ACCOUNT_NOT_LINKED"
+        assert response.status_code == 200
+        assert "access_token" in response.json()
 
 
 @pytest.mark.asyncio

@@ -159,6 +159,11 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
 
   const logout = useCallback(async () => {
     setIsLoading(true);
+    try {
+      await apiRequest('/auth/logout', { method: 'POST' });
+    } catch {
+      // Ignore logout errors, still clear local session
+    }
     await clearTokens();
     await clearUserEmail();
     await clearUserId();
