@@ -145,6 +145,7 @@
 | **Launch readiness** | See `docs/release/launch-readiness.md` | High |
 | **One-page update** | See `docs/release/one-page-update.md` | High |
 | **QA test plan** | See `docs/release/qa-test-plan.md` | High |
+| **QA execution log** | See `docs/release/qa-execution-log.md` | High |
 | Finalize hosting provider decision | Vercel vs Railway vs Fly.io | High |
 | Finalize database provider decision | Neon vs Supabase vs RDS | High |
 | Prepare Stripe products/prices | Create in Stripe test mode | Medium |
