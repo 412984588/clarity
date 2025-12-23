@@ -1,11 +1,31 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 18:05
+**最后更新**: 2025-12-23 18:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 18:30] - Project Status Summary
+
+- [x] **项目状态总结文档**: `docs/release/project-status-summary.md`
+  - Epic 1-8 完成概览
+  - Epic 9 当前进度
+  - Blockers 清单 (域名 + Apple Developer 账号)
+  - 本机部署预演结果: PASS
+  - 下一步清单 (可立即做 vs 需账号后做)
+  - 假设与未知列表
+
+> **文档结构**:
+> 1. Completed Epics
+> 2. Current Progress (Epic 9)
+> 3. Blockers
+> 4. Local Deployment Rehearsal
+> 5. Next Steps
+> 6. Assumptions & Unknowns
+
+---
 
 ### [2025-12-23 18:05] - Fix: APP_VERSION + Smoke Script
 

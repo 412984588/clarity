@@ -1,11 +1,20 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 18:05
+**最后更新**: 2025-12-23 18:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 18:30] - Project Status Summary
+
+- [x] **产出**: `docs/release/project-status-summary.md`
+- [x] **内容**: Epic 概览 + Blockers + 下一步清单
+
+> 详见 `docs/PROGRESS.md`
+
+---
 
 ### [2025-12-23 18:05] - Fix: APP_VERSION + Smoke Script
 
