@@ -142,6 +142,7 @@
 | **Demo script ready** | See `docs/release/demo-script.md` | High |
 | **Launch dependencies** | See `docs/release/launch-dependencies.md` | High |
 | **Launch readiness** | See `docs/release/launch-readiness.md` | High |
+| **One-page update** | See `docs/release/one-page-update.md` | High |
 | Finalize hosting provider decision | Vercel vs Railway vs Fly.io | High |
 | Finalize database provider decision | Neon vs Supabase vs RDS | High |
 | Prepare Stripe products/prices | Create in Stripe test mode | Medium |

@@ -1,11 +1,20 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 19:30
+**最后更新**: 2025-12-23 19:45
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 19:45] - One Page Status Update
+
+- [x] **产出**: `docs/release/one-page-update.md`
+- [x] **内容**: 投资人/合作方一页版简报
+
+> 详见 `docs/PROGRESS.md`
+
+---
 
 ### [2025-12-23 19:30] - Launch Readiness Scorecard
 
