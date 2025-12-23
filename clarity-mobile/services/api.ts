@@ -1,4 +1,5 @@
 import { clearTokens, getTokens, saveTokens } from './auth';
+import { API_URL } from './config';
 
 type ApiRequestOptions = {
   method?: string;
@@ -12,8 +13,6 @@ export type ApiError = {
   message: string;
   details?: unknown;
 };
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8000';
 
 const buildHeaders = async (auth: boolean, extra?: Record<string, string>): Promise<Record<string, string>> => {
   const headers: Record<string, string> = {
