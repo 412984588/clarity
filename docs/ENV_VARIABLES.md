@@ -1,7 +1,7 @@
 # Environment Variables Reference
 
 **Version**: 1.0
-**Last Updated**: 2025-12-22
+**Last Updated**: 2025-12-23
 
 This document lists all environment variables used by the Clarity API.
 
@@ -16,9 +16,10 @@ This document lists all environment variables used by the Clarity API.
 | `JWT_SECRET` | Yes | JWT signing secret |
 | `GOOGLE_CLIENT_ID` | Yes | Google OAuth Client ID |
 | `APPLE_CLIENT_ID` | Yes | Apple Sign In Client ID |
-| `LLM_PROVIDER` | Yes | LLM provider (`openai` or `anthropic`) |
+| `LLM_PROVIDER` | Yes | LLM provider (`openai`, `anthropic`, `openrouter`) |
 | `OPENAI_API_KEY` | Conditional | Required if `LLM_PROVIDER=openai` |
 | `ANTHROPIC_API_KEY` | Conditional | Required if `LLM_PROVIDER=anthropic` |
+| `OPENROUTER_API_KEY` | Conditional | Required if `LLM_PROVIDER=openrouter` |
 | `STRIPE_SECRET_KEY` | Yes | Stripe API secret key |
 | `STRIPE_WEBHOOK_SECRET` | Yes | Stripe webhook signing secret |
 | `REVENUECAT_WEBHOOK_SECRET` | Yes | RevenueCat webhook secret |
@@ -90,7 +91,7 @@ APPLE_CLIENT_ID=com.yourcompany.clarity
 
 #### `LLM_PROVIDER`
 - **Required**: Yes
-- **Values**: `openai` | `anthropic`
+- **Values**: `openai` | `anthropic` | `openrouter`
 - **Description**: Which LLM provider to use
 
 #### `OPENAI_API_KEY`
@@ -100,6 +101,23 @@ APPLE_CLIENT_ID=com.yourcompany.clarity
 #### `ANTHROPIC_API_KEY`
 - **Required**: If `LLM_PROVIDER=anthropic`
 - **Source**: [Anthropic Console](https://console.anthropic.com/settings/keys)
+
+#### `OPENROUTER_API_KEY`
+- **Required**: If `LLM_PROVIDER=openrouter`
+- **Source**: [OpenRouter Keys](https://openrouter.ai/keys)
+
+#### `OPENROUTER_BASE_URL`
+- **Required**: No
+- **Default**: `https://openrouter.ai/api/v1`
+- **Description**: OpenRouter base URL
+
+#### `OPENROUTER_APP_NAME`
+- **Required**: No
+- **Description**: Optional app name header for OpenRouter
+
+#### `OPENROUTER_REFERER`
+- **Required**: No
+- **Description**: Optional HTTP referer header for OpenRouter
 
 #### `LLM_MODEL`
 - **Required**: No
