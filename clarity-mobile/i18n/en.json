@@ -128,7 +128,17 @@
     "openSubscriptionFailed": "Failed to open subscription management.",
     "restorePurchasesFailed": "Failed to restore purchases. Please try again.",
     "customerCenterFailed": "Failed to open customer center. Please try again.",
-    "missingUserId": "Missing user ID. Please log in again."
+    "missingUserId": "Missing user ID. Please log in again.",
+    "dataPrivacy": "Data & Privacy",
+    "exportData": "Export My Data",
+    "exportFailed": "Failed to export data. Please try again.",
+    "exportShareTitle": "Clarity Data Export",
+    "deleteAccount": "Delete Account",
+    "deleteAccountConfirmTitle": "Delete your account?",
+    "deleteAccountConfirmBody": "This will permanently delete your account and data. This action cannot be undone.",
+    "deleteAccountConfirmAction": "Delete account",
+    "deleteAccountSuccess": "Account deleted.",
+    "deleteAccountFailed": "Failed to delete account. Please try again."
   },
   "devices": {
     "title": "Devices",

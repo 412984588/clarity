@@ -55,6 +55,7 @@
 | 21 | Review Notes 已填写 | [ ] | 测试账号、特殊说明 |
 | 22 | In-App Purchase 已配置（如有） | [ ] | 订阅产品 |
 | 23 | Sign in with Apple 已实现（如用第三方登录） | [ ] | Apple 要求 |
+| 24 | In-app Account Deletion 已提供 | [ ] | App Store 要求 |
 
 ---
 
@@ -107,6 +108,7 @@
 | 21 | App Access 说明已填写 | [ ] | 如需登录才能使用 |
 | 22 | Ads Declaration 已完成 | [ ] | 是否包含广告 |
 | 23 | Government Apps Declaration（如适用） | [ ] | |
+| 24 | In-app Account Deletion 已提供 | [ ] | Play Store 要求 |
 
 ---
 

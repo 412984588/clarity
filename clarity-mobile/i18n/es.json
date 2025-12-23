@@ -128,7 +128,17 @@
     "openSubscriptionFailed": "Error al abrir la gestión de suscripción.",
     "restorePurchasesFailed": "Error al restaurar compras. Inténtalo de nuevo.",
     "customerCenterFailed": "Error al abrir el centro de atención. Inténtalo de nuevo.",
-    "missingUserId": "Falta el ID de usuario. Inicia sesión de nuevo."
+    "missingUserId": "Falta el ID de usuario. Inicia sesión de nuevo.",
+    "dataPrivacy": "Datos y privacidad",
+    "exportData": "Exportar mis datos",
+    "exportFailed": "No se pudo exportar los datos. Inténtalo de nuevo.",
+    "exportShareTitle": "Exportación de datos de Clarity",
+    "deleteAccount": "Eliminar cuenta",
+    "deleteAccountConfirmTitle": "¿Eliminar tu cuenta?",
+    "deleteAccountConfirmBody": "Esto eliminará permanentemente tu cuenta y tus datos. Esta acción no se puede deshacer.",
+    "deleteAccountConfirmAction": "Eliminar cuenta",
+    "deleteAccountSuccess": "Cuenta eliminada.",
+    "deleteAccountFailed": "No se pudo eliminar la cuenta. Inténtalo de nuevo."
   },
   "devices": {
     "title": "Dispositivos",
