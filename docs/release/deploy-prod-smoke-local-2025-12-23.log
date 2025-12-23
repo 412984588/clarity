@@ -1,0 +1,24 @@
+
+==========================================
+ Production Smoke Tests
+==========================================
+Base URL: http://localhost:8000
+
+Testing /health...
+ /health - healthy (HTTP 200)
+    Response: {"status":"healthy","version":"1.0.0","database":"connected"}
+
+Testing /health/ready...
+ /health/ready - ready (HTTP 200)
+
+Testing /health/live...
+ /health/live - live (HTTP 200)
+
+Testing webhook endpoints...
+ /webhooks/stripe - reachable (HTTP 400)
+ /webhooks/revenuecat - reachable (HTTP 401)
+
+==========================================
+ Summary
+==========================================
+ All smoke tests passed!
