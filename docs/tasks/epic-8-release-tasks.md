@@ -23,7 +23,7 @@
 - [ ] **Task 1.2.1**: 实现 /health 端点
   - 返回 JSON: `{ "status": "healthy", "version": "x.x.x", "database": "connected" }`
   - 检查数据库连接
-  - 文件: `clarity-api/app/routers/health.py`
+  - 文件: `clarity-api/app/main.py`
 
 - [ ] **Task 1.2.2**: 添加健康检查测试
   - 文件: `clarity-api/tests/test_health.py`

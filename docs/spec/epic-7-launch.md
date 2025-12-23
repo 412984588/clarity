@@ -159,7 +159,7 @@ curl http://localhost:8000/health
 | Mobile Lint | `npm run lint` | No errors |
 | Mobile Types | `npx tsc --noEmit` | No errors |
 | DB Migration | `alembic upgrade head` | Up to date |
-| Health Check | `curl /health` | `{"status":"healthy"}` |
+| Health Check | `curl /health` | `{"status":"healthy","version":"1.0.0","database":"connected"}` |
 
 ---
 

@@ -112,7 +112,7 @@ APP_VERSION=1.0.0
 
 ### Post-Deployment
 
-- [ ] `/health` returns `{"status":"healthy"}`
+- [ ] `/health` returns `{"status":"healthy","version":"1.0.0","database":"connected"}`
 - [ ] `/health/ready` returns `{"ready":true}`
 - [ ] `/health/live` returns `{"live":true}`
 - [ ] Stripe webhook test event succeeds

@@ -51,7 +51,7 @@
 1. FastAPI project created with Poetry for dependency management
 2. Folder structure matches architecture doc (`routers/`, `services/`, `models/`, `middleware/`)
 3. Environment configuration via Pydantic Settings (`.env` support)
-4. Health check endpoint (`GET /health`) returns `{"status": "healthy"}`
+4. Health check endpoint (`GET /health`) returns `{"status":"healthy","version":"1.0.0","database":"connected"}`
 5. OpenAPI docs accessible at `/docs`
 6. Dockerfile and docker-compose.yml for local development
 7. README with setup instructions
