@@ -28,6 +28,7 @@
 | [Go/No-Go Minutes](go-no-go-minutes.md) | 发布决策会议纪要模板 | READY |
 | [Ownership Matrix](ownership-matrix.md) | 上线 RACI/负责人矩阵 | READY |
 | [Launch Communications](launch-communications.md) | 上线沟通计划 | READY |
+| [Release Approval Checklist](release-approval-checklist.md) | 发布审批清单 | READY |
 | [One-Page Update](one-page-update.md) | 投资人/合作方一页版简报 | READY |
 
 ---

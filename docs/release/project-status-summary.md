@@ -152,6 +152,7 @@
 | **Launch day runbook** | See `docs/release/launch-day-runbook.md` | High |
 | **Incident response** | See `docs/release/incident-response.md` | High |
 | **Launch communications** | See `docs/release/launch-communications.md` | High |
+| **Release approval checklist** | See `docs/release/release-approval-checklist.md` | High |
 | Finalize hosting provider decision | Vercel vs Railway vs Fly.io | High |
 | Finalize database provider decision | Neon vs Supabase vs RDS | High |
 | Prepare Stripe products/prices | Create in Stripe test mode | Medium |
