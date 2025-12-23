@@ -1,11 +1,20 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 22:30
+**最后更新**: 2025-12-23 22:45
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 22:45] - 上线指标与监控清单
+
+- [x] **产出**: `docs/release/release-metrics.md`
+- [x] **内容**: KPI Categories + Metrics Table + Alert Thresholds
+
+> 详见 `docs/PROGRESS.md`
+
+---
 
 ### [2025-12-23 22:30] - 发布审批清单
 
