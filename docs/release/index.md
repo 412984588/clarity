@@ -82,6 +82,7 @@
 | Document | Purpose | Status |
 |----------|---------|--------|
 | [Privacy Policy](privacy.md) | 隐私政策 | READY |
+| [Privacy Compliance Checklist](privacy-compliance-checklist.md) | 数据隐私与合规清单 | READY |
 | [Support](support.md) | 用户支持信息 | READY |
 
 ---
