@@ -4,7 +4,7 @@
 
 ### 数据库连接失败
 
-**现象**：`/health` 返回 `{"database":"error"}`
+**现象**：`/health` 返回 `{"status":"degraded","version":"1.0.0","database":"error"}`
 
 **排查步骤**：
 
