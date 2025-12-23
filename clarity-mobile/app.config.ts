@@ -17,6 +17,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: 'com.clarity.mobile',
+    infoPlist: {
+      ITSAppUsesNonExemptEncryption: false,
+    },
   },
   android: {
     adaptiveIcon: {
@@ -38,5 +41,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ],
   extra: {
     apiUrl: process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8000',
+    eas: {
+      projectId: '13e48ca4-1654-44fe-bbce-d67c3ddbaa47',
+    },
   },
 });
