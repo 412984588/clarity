@@ -1,10 +1,48 @@
-# Support (Placeholder)
+# Support
+
+This is the public support page for Clarity. It can be published as-is or customized.
+
+---
 
 ## Contact
-- Email: support@clarity.app
 
-## FAQ
-- TODO
+- Email: support@clarity.app
+- Support Hours: TBD (e.g., Mon-Fri, 9am-6pm local time)
+- Target Response Time: 1 business day (TBD)
+
+---
+
+## Common Questions
+
+### I cannot log in
+- Use the "Forgot password" link on the login screen.
+- If you signed up with Google/Apple, use the same provider to sign in.
+
+### The app is not responding
+- Check your network connection.
+- Force quit the app and reopen it.
+
+### I have a subscription or billing issue
+- Email support with your account email and a brief description.
+
+### AI responses look incomplete or slow
+- Check your network.
+- If the issue persists, contact support.
+
+---
 
 ## Troubleshooting
-- TODO
+
+- See `docs/troubleshooting.md` for common fixes.
+
+---
+
+## Status Updates
+
+- Status page: TBD
+
+---
+
+## Privacy
+
+- Privacy Policy: `docs/release/privacy.md`

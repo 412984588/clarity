@@ -1,11 +1,20 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 08:32
+**最后更新**: 2025-12-23 08:39
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 08:39] - Support/Privacy 文档草稿
+
+- [x] **Support Page**: `docs/release/support.md`
+- [x] **Privacy Policy Draft**: `docs/release/privacy.md`
+
+> 说明：为发布准备的草稿版本，需 Legal review 后再发布
+
+---
 
 ### [2025-12-23 08:32] - QA 执行日志（部分完成）
 
