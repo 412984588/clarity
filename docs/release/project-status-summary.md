@@ -59,7 +59,7 @@
 | Local Deploy Rehearsal | **PASS** | All health endpoints green |
 | Android Preview Build | **PASS** | APK available for download |
 | iOS Preview Build | **BLOCKED** | Apple Developer Account required |
-| Release Verification Script | **PASS** | 103 tests, lint, type check |
+| Release Verification Script | **PASS** | 103 tests, lint, type check (`docs/release/verify-2025-12-23.log`) |
 
 ### Not Started
 
