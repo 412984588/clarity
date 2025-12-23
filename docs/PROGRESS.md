@@ -1,11 +1,22 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 10:40
+**最后更新**: 2025-12-23 10:53
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 10:53] - QA 执行日志补充（自动化证据）
+
+- [x] **QA Execution Log**: `docs/release/qa-execution-log.md`
+  - PASS 14 / BLOCKED 4 / NOT RUN 16
+  - 覆盖 AUTH/ACC/SUB-usage/SSE/Webhook/Safety
+- [ ] **待人工执行**: Solve/Emotion/i18n/错误场景
+
+> 说明：基于 pytest 结果补齐，人工 QA 后再更新
+
+---
 
 ### [2025-12-23 10:40] - 发布验证日志刷新
 
