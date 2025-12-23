@@ -1,11 +1,21 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 08:39
+**最后更新**: 2025-12-23 09:45
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 09:45] - Manual QA Checklist
+
+- [x] **产出**: `docs/release/manual-qa-checklist.md`
+- [x] **索引更新**: `docs/release/index.md`
+- [x] **状态更新**: `docs/release/project-status-summary.md`
+
+> 详见 `docs/PROGRESS.md`
+
+---
 
 ### [2025-12-23 08:39] - Support/Privacy 文档草稿
 

@@ -52,6 +52,7 @@
 |----------|---------|--------|
 | [QA Test Plan](qa-test-plan.md) | QA/UAT 测试计划 (25 条用例) | READY |
 | [QA Execution Log](qa-execution-log.md) | QA/UAT 执行记录模板 | READY |
+| [Manual QA Checklist](manual-qa-checklist.md) | 手工 QA 执行清单 | READY |
 | [Local Deploy Verify](local-deploy-verify.md) | 本地部署验证结果 | READY |
 | [Local Smoke Log (2025-12-23)](deploy-prod-smoke-local-2025-12-23.log) | deploy_prod_smoke.sh 本地运行日志 | READY |
 | [Release Verify Log (2025-12-23)](verify-2025-12-23.log) | 最新发布验证日志 | READY |
