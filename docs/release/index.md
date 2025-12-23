@@ -87,6 +87,18 @@
 
 ---
 
+## 6. Operations & Support
+
+运维与支持相关文档。
+
+| Document | Purpose | Status |
+|----------|---------|--------|
+| [Support Playbook](support-playbook.md) | 用户支持流程与常见问题 | READY |
+| [Status Page Templates](status-page-templates.md) | 状态页消息模板 | READY |
+| [Ops Handover](ops-handover.md) | 运维交接文档 | READY |
+
+---
+
 ## Document Flow
 
 从准备到上线的推荐阅读顺序：

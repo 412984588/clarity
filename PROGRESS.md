@@ -1,11 +1,22 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 23:15
+**最后更新**: 2025-12-23 23:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 23:30] - Support & Ops 文档包
+
+- [x] **产出**: 3 份 Support & Ops 文档
+  - `docs/release/support-playbook.md`
+  - `docs/release/status-page-templates.md`
+  - `docs/release/ops-handover.md`
+
+> 详见 `docs/PROGRESS.md`
+
+---
 
 ### [2025-12-23 23:15] - 数据隐私与合规清单
 
