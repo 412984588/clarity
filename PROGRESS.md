@@ -1,11 +1,20 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 20:15
+**最后更新**: 2025-12-23 20:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 20:30] - Demo Script 修正
+
+- [x] **产出**: `docs/release/demo-script.md` 更新
+- [x] **内容**: 补全上线依赖 + FAQ 修正 + Checklist 计数
+
+> 详见 `docs/PROGRESS.md`
+
+---
 
 ### [2025-12-23 20:15] - QA/UAT Test Plan
 
@@ -55,7 +64,7 @@
 ### [2025-12-23 19:00] - Demo Script + Checklist
 
 - [x] **产出**: `docs/release/demo-script.md`
-- [x] **内容**: 3 分钟话术 + 10 步 Checklist + 8 条 FAQ
+- [x] **内容**: 3 分钟话术 + 13 项 Checklist + 8 条 FAQ
 
 > 详见 `docs/PROGRESS.md`
 

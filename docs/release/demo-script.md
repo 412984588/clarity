@@ -45,9 +45,9 @@
 
 > "目前 Android 预览版已可下载测试，iOS 版待 Apple 开发者账号开通后上线。
 >
-> 后端部署文档、环境变量、数据库迁移脚本都已准备就绪，只需配置好域名和云服务账号即可上线。
+> 后端上线需要配置：域名、托管服务（Vercel/Railway/Fly.io）、PostgreSQL（Neon/Supabase/RDS）、LLM API Key（OpenAI 或 Anthropic）、Stripe/RevenueCat 生产环境。移动端还需要 Apple Developer 账号（iOS）和 Google Play Console（Android）。
 >
-> 有问题欢迎提问！"
+> 代码和文档都已准备就绪，有问题欢迎提问！"
 
 ---
 
@@ -105,7 +105,7 @@
 
 ### Q5: AI 响应用的是什么模型？
 
-> "支持 OpenAI（GPT-4）和 Anthropic（Claude）双引擎，通过环境变量切换。演示时需要配置对应的 API Key。"
+> "支持 OpenAI 和 Anthropic 双引擎，模型可通过环境变量配置。演示时需要配置对应的 API Key。"
 
 ### Q6: 数据存在哪里？
 
@@ -113,11 +113,11 @@
 
 ### Q7: 情绪检测准确吗？
 
-> "情绪检测基于关键词匹配和权重评分，支持中英西三语。准确度约 80%，后续可接入专业情感分析 API 提升精度。"
+> "情绪检测基于启发式规则（关键词匹配 + 权重评分），支持中英西三语，尚未进行系统化评测。后续可接入专业情感分析 API 提升精度。"
 
 ### Q8: 上线还需要做什么？
 
-> "主要是账号配置：域名、Apple Developer、Google Play Console、Stripe Live Mode。代码层面已准备就绪，文档也齐全。"
+> "后端需要：域名、托管服务（Vercel/Railway/Fly.io）、PostgreSQL（Neon/Supabase/RDS）、LLM API Key（OpenAI 或 Anthropic）、Stripe Live Mode、RevenueCat 生产配置。移动端需要：Apple Developer 账号（$99/年）、Google Play Console（$25 一次性）。代码和文档都已准备就绪。"
 
 ---
 
