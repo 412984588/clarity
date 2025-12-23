@@ -1,11 +1,20 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 19:00
+**最后更新**: 2025-12-23 19:15
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 19:15] - Launch Dependencies Tracker
+
+- [x] **产出**: `docs/release/launch-dependencies.md`
+- [x] **内容**: 16 项依赖追踪 + 关键路径 + 依赖分组
+
+> 详见 `docs/PROGRESS.md`
+
+---
 
 ### [2025-12-23 19:00] - Demo Script + Checklist
 

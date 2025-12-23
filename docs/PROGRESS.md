@@ -1,11 +1,23 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 19:00
+**最后更新**: 2025-12-23 19:15
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 19:15] - Launch Dependencies Tracker
+
+- [x] **上线依赖追踪表**: `docs/release/launch-dependencies.md`
+  - 16 项依赖追踪（Domain/Apple/Google/Stripe/RevenueCat/LLM/Monitoring）
+  - 状态标记：READY / BLOCKED / UNKNOWN
+  - 关键路径图示
+  - 依赖分组（可立即行动 / 需账号付费 / 需 Production URL）
+
+> 追踪上线所需的所有外部账号、域名、API 密钥等
+
+---
 
 ### [2025-12-23 19:00] - Demo Script + Checklist
 
