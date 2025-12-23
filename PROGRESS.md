@@ -1,11 +1,20 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 23:30
+**最后更新**: 2025-12-23 08:11
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 08:11] - 账号/部署执行清单
+
+- [x] **产出**: `docs/release/account-deploy-action-list.md`
+- [x] **模板**: `docs/release/account-deploy-execution-template.md`
+
+> 详见 `docs/PROGRESS.md`
+
+---
 
 ### [2025-12-23 23:30] - Support & Ops 文档包
 

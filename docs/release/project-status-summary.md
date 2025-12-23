@@ -139,6 +139,8 @@
 | Task | Description | Priority |
 |------|-------------|----------|
 | **Release docs hub** | See `docs/release/index.md` | High |
+| **Account/deploy action list** | See `docs/release/account-deploy-action-list.md` | High |
+| **Account/deploy execution template** | See `docs/release/account-deploy-execution-template.md` | High |
 | **Run local demo** | See `docs/release/local-demo-runbook.md` | High |
 | **Demo script ready** | See `docs/release/demo-script.md` | High |
 | **Launch dependencies** | See `docs/release/launch-dependencies.md` | High |
@@ -216,4 +218,3 @@
 | Production Deploy | **BLOCKED** - Needs domain + accounts |
 
 **Ready for production once blockers are resolved**
-
