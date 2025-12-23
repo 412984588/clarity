@@ -1,11 +1,27 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 22:30
+**最后更新**: 2025-12-23 22:45
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 22:45] - 上线指标与监控清单
+
+- [x] **上线指标与监控清单**: `docs/release/release-metrics.md`
+  - Purpose & Scope（目的与范围）
+  - KPI Categories（5 类：Acquisition / Activation / Retention / Revenue / Reliability）
+  - Metrics Table（30+ 指标，含 Definition / Target / Data Source / Status）
+  - Monitoring Checklist（10 项监控就位检查）
+  - Alert Thresholds（3 级告警：Critical / Warning / Informational）
+  - Dashboard Requirements（Operations + Business）
+  - Data Collection Notes（埋点事件 + 第三方数据源）
+  - Related Documents
+
+> 定义上线后需要监控的关键指标和告警阈值
+
+---
 
 ### [2025-12-23 22:30] - 发布审批清单
 
