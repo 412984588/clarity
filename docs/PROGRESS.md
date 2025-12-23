@@ -1,11 +1,27 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 17:55
+**最后更新**: 2025-12-23 18:05
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 18:05] - Fix: APP_VERSION + Smoke Script
+
+- [x] **APP_VERSION 修复**
+  - `app/config.py`: 添加 `app_version: str = "1.0.0"` 字段
+  - `app/main.py`: `/health` 改用 `settings.app_version`
+
+- [x] **Smoke 脚本 macOS 兼容**
+  - `scripts/deploy_prod_smoke.sh`: `head -n -1` → `sed '$d'`
+
+- [x] **文档更新**
+  - `docs/release/local-deploy-verify.md`: 已知问题 → 已修复
+
+> **验证**: 103 测试通过 + 冒烟测试全绿
+
+---
 
 ### [2025-12-23 17:55] - Epic 9: Local Deploy Preflight
 

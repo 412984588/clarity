@@ -39,8 +39,6 @@ app.include_router(revenuecat_webhooks.router)
 @app.get("/health")
 async def health_check(db: AsyncSession = Depends(get_db)):
     """健康检查端点（含数据库状态和版本号）"""
-    import os
-
     try:
         await db.execute(text("SELECT 1"))
         db_status = "connected"
@@ -48,11 +46,10 @@ async def health_check(db: AsyncSession = Depends(get_db)):
         db_status = "error"
 
     health_status = "healthy" if db_status == "connected" else "degraded"
-    version = os.getenv("APP_VERSION", "1.0.0")
 
     return {
         "status": health_status,
-        "version": version,
+        "version": settings.app_version,
         "database": db_status,
     }
 

@@ -32,7 +32,7 @@ echo ""
 # Test /health
 echo "Testing /health..."
 HEALTH_RESPONSE=$(curl -s -w "\n%{http_code}" "$BASE_URL/health" 2>/dev/null)
-HEALTH_BODY=$(echo "$HEALTH_RESPONSE" | head -n -1)
+HEALTH_BODY=$(echo "$HEALTH_RESPONSE" | sed '$d')
 HEALTH_CODE=$(echo "$HEALTH_RESPONSE" | tail -n 1)
 
 if [ "$HEALTH_CODE" = "200" ] && echo "$HEALTH_BODY" | grep -q '"status":"healthy"'; then
@@ -47,7 +47,7 @@ fi
 echo ""
 echo "Testing /health/ready..."
 READY_RESPONSE=$(curl -s -w "\n%{http_code}" "$BASE_URL/health/ready" 2>/dev/null)
-READY_BODY=$(echo "$READY_RESPONSE" | head -n -1)
+READY_BODY=$(echo "$READY_RESPONSE" | sed '$d')
 READY_CODE=$(echo "$READY_RESPONSE" | tail -n 1)
 
 if [ "$READY_CODE" = "200" ] && echo "$READY_BODY" | grep -q '"ready":true'; then
@@ -61,7 +61,7 @@ fi
 echo ""
 echo "Testing /health/live..."
 LIVE_RESPONSE=$(curl -s -w "\n%{http_code}" "$BASE_URL/health/live" 2>/dev/null)
-LIVE_BODY=$(echo "$LIVE_RESPONSE" | head -n -1)
+LIVE_BODY=$(echo "$LIVE_RESPONSE" | sed '$d')
 LIVE_CODE=$(echo "$LIVE_RESPONSE" | tail -n 1)
 
 if [ "$LIVE_CODE" = "200" ] && echo "$LIVE_BODY" | grep -q '"live":true'; then

@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
     app_name: str = "Clarity API"
+    app_version: str = "1.0.0"
     debug: bool = False
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/clarity"
     jwt_secret: str = "your-secret-key-change-in-production"

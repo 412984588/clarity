@@ -1,11 +1,21 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 17:55
+**最后更新**: 2025-12-23 18:05
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 18:05] - Fix: APP_VERSION + Smoke Script
+
+- [x] **APP_VERSION**: 添加到 Settings 类
+- [x] **Smoke 脚本**: macOS 兼容 (`sed '$d'`)
+- [x] **验证**: 103 测试 + 冒烟全绿
+
+> 详见 `docs/PROGRESS.md`
+
+---
 
 ### [2025-12-23 17:55] - Epic 9: Local Deploy Preflight
 
