@@ -1,16 +1,19 @@
 import { Link } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { Linking, Platform, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
+import { Alert, Linking, Platform, Pressable, Share, StyleSheet, Switch, Text, View } from 'react-native';
 import RevenueCatUI from 'react-native-purchases-ui';
 
 import { useEmotionBackground } from '../../hooks/useEmotionBackground';
 import { t } from '../../i18n';
+import { deleteAccount, exportAccountData } from '../../services/account';
 import { configureRevenueCat, loginRevenueCat, restorePurchases } from '../../services/revenuecat';
 import { useAuth } from '../../stores/authStore';
 
 const SettingsScreen: React.FC = () => {
   const { user, logout, isLoading, getUserId } = useAuth();
   const [billingError, setBillingError] = useState<string | null>(null);
+  const [accountError, setAccountError] = useState<string | null>(null);
+  const [accountBusy, setAccountBusy] = useState(false);
   const { isEnabled: emotionBackgroundEnabled, toggleEnabled: toggleEmotionBackground } =
     useEmotionBackground();
 
@@ -60,6 +63,52 @@ const SettingsScreen: React.FC = () => {
     }
   }, [ensureRevenueCatReady]);
 
+  const handleExportData = useCallback(async () => {
+    setAccountError(null);
+    setAccountBusy(true);
+    try {
+      const data = await exportAccountData();
+      const payload = JSON.stringify(data, null, 2);
+      await Share.share({
+        title: t('settings.exportShareTitle'),
+        message: payload,
+      });
+    } catch (_err) {
+      setAccountError(t('settings.exportFailed'));
+    } finally {
+      setAccountBusy(false);
+    }
+  }, []);
+
+  const handleDeleteAccount = useCallback(async () => {
+    setAccountError(null);
+    setAccountBusy(true);
+    try {
+      await deleteAccount();
+      await logout();
+      Alert.alert(t('settings.deleteAccountSuccess'));
+    } catch (_err) {
+      setAccountError(t('settings.deleteAccountFailed'));
+    } finally {
+      setAccountBusy(false);
+    }
+  }, [logout]);
+
+  const confirmDeleteAccount = useCallback(() => {
+    Alert.alert(
+      t('settings.deleteAccountConfirmTitle'),
+      t('settings.deleteAccountConfirmBody'),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('settings.deleteAccountConfirmAction'),
+          style: 'destructive',
+          onPress: handleDeleteAccount,
+        },
+      ]
+    );
+  }, [handleDeleteAccount]);
+
   return (
     <View style={styles.container}>
       <View style={styles.card}>
@@ -106,26 +155,45 @@ const SettingsScreen: React.FC = () => {
         <Text style={styles.title}>{t('settings.subscription')}</Text>
         <Pressable
           onPress={handleManageSubscription}
-          style={[styles.actionButton, isLoading && styles.disabledButton]}
-          disabled={isLoading}
+          style={[styles.actionButton, (isLoading || accountBusy) && styles.disabledButton]}
+          disabled={isLoading || accountBusy}
         >
           <Text style={styles.actionButtonText}>{t('settings.manageSubscription')}</Text>
         </Pressable>
         <Pressable
           onPress={handleRestorePurchases}
-          style={[styles.actionButton, isLoading && styles.disabledButton]}
-          disabled={isLoading}
+          style={[styles.actionButton, (isLoading || accountBusy) && styles.disabledButton]}
+          disabled={isLoading || accountBusy}
         >
           <Text style={styles.actionButtonText}>{t('settings.restorePurchases')}</Text>
         </Pressable>
         <Pressable
           onPress={handleCustomerCenter}
-          style={[styles.actionButton, isLoading && styles.disabledButton]}
-          disabled={isLoading}
+          style={[styles.actionButton, (isLoading || accountBusy) && styles.disabledButton]}
+          disabled={isLoading || accountBusy}
         >
           <Text style={styles.actionButtonText}>{t('settings.customerCenter')}</Text>
         </Pressable>
         {billingError && <Text style={styles.errorText}>{billingError}</Text>}
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.title}>{t('settings.dataPrivacy')}</Text>
+        <Pressable
+          onPress={handleExportData}
+          style={[styles.actionButton, (isLoading || accountBusy) && styles.disabledButton]}
+          disabled={isLoading || accountBusy}
+        >
+          <Text style={styles.actionButtonText}>{t('settings.exportData')}</Text>
+        </Pressable>
+        <Pressable
+          onPress={confirmDeleteAccount}
+          style={[styles.dangerButton, (isLoading || accountBusy) && styles.disabledButton]}
+          disabled={isLoading || accountBusy}
+        >
+          <Text style={styles.dangerButtonText}>{t('settings.deleteAccount')}</Text>
+        </Pressable>
+        {accountError && <Text style={styles.errorText}>{accountError}</Text>}
       </View>
     </View>
   );
@@ -189,6 +257,17 @@ const styles = StyleSheet.create({
   },
   actionButtonText: {
     color: '#1e293b',
+    fontWeight: '600',
+  },
+  dangerButton: {
+    marginTop: 12,
+    paddingVertical: 12,
+    borderRadius: 12,
+    backgroundColor: '#fee2e2',
+    alignItems: 'center',
+  },
+  dangerButtonText: {
+    color: '#b91c1c',
     fontWeight: '600',
   },
   disabledButton: {

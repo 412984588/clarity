@@ -157,7 +157,7 @@
 |--------------|---------------|--------|--------|
 | 数据访问请求 | 30 天内 | Email / In-app | [ ] TBD |
 | 数据删除请求 | 30 天内 | Email / In-app | [ ] TBD |
-| 数据导出请求 | 30 天内 | Email / In-app | [ ] TBD |
+| 数据导出请求 | 30 天内 | In-app | [x] `/account/export` |
 
 ---
 
@@ -178,7 +178,7 @@
 |---|------|--------|-------|-------|
 | 5 | App Privacy Questionnaire 已完成 (iOS) | [ ] | Mobile Lead | App Store Connect |
 | 6 | Data Safety Form 已完成 (Android) | [ ] | Mobile Lead | Play Console |
-| 7 | 删除账号功能已实现 | [ ] | Backend Lead | App Store 要求 |
+| 7 | 删除账号功能已实现 | [x] | Backend Lead | 设置页内提供 |
 | 8 | Sign in with Apple 已实现（如用第三方登录） | [ ] | Mobile Lead | Apple 要求 |
 
 ### Technical Compliance
@@ -208,10 +208,8 @@
 
 | Gap | Impact | Plan | Owner | Deadline |
 |-----|--------|------|-------|----------|
-| 删除账号功能 | App Store 要求 | 实现 API + UI | Backend/Mobile | TBD |
 | App Store 隐私标签 | 提交必须 | 填写问卷 | Mobile Lead | TBD |
 | Play Store 数据安全 | 提交必须 | 填写表单 | Mobile Lead | TBD |
-| 数据导出功能 | 用户权利 | 实现导出 API | Backend | TBD |
 
 ### Medium Priority (Post-Launch)
 
