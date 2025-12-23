@@ -87,41 +87,25 @@ docker compose down
 
 ---
 
-## Known Issues
+## Resolved Issues (Fixed in PR #38)
 
-### 1. APP_VERSION in .env.example
+### 1. APP_VERSION in .env.example ✅
 
-**Issue**: `.env.example` contains `APP_VERSION=1.0.0` but `Settings` class in `app/config.py` does not define this field, causing Pydantic validation error
+**Issue**: `.env.example` contains `APP_VERSION=1.0.0` but `Settings` class did not define this field
 
-**Error**:
-```
-pydantic_core._pydantic_core.ValidationError: 1 validation error for Settings
-app_version
-  Extra inputs are not permitted
-```
+**Fix**: Added `app_version: str = "1.0.0"` to `Settings` class in `app/config.py`
 
-**Workaround**: Remove `APP_VERSION` line from `.env` before running
+**Related Change**: Updated `/health` endpoint to use `settings.app_version` instead of `os.getenv()`
 
-**Fix Required**: Either:
-- Add `app_version: str = "1.0.0"` to Settings class, or
-- Remove `APP_VERSION` from `.env.example`
+### 2. deploy_prod_smoke.sh macOS Compatibility ✅
 
-### 2. deploy_prod_smoke.sh macOS Compatibility
+**Issue**: Script used `head -n -1` which fails on macOS BSD
 
-**Issue**: Script uses `head -1` which fails on macOS with "illegal line count"
-
-**Workaround**: Run manual curl commands instead
-
-**Fix Required**: Update script to use `head -n 1` for POSIX compatibility
+**Fix**: Replaced `head -n -1` with `sed '$d'` for POSIX compatibility
 
 ---
 
 ## Blockers
 
-| Blocker | Severity | Impact |
-|---------|----------|--------|
-| APP_VERSION config mismatch | Low | Manual workaround available |
-| Smoke script macOS issue | Low | Manual testing works |
-
-**No Critical Blockers** - Local deployment verified successfully
+**None** - All issues resolved
 
