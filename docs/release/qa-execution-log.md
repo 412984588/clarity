@@ -11,10 +11,10 @@
 
 | Status | Count |
 |--------|-------|
-| **PASS** | 14 |
+| **PASS** | 13 |
 | **FAIL** | 0 |
-| **BLOCKED** | 4 |
-| **NOT RUN** | 16 |
+| **BLOCKED** | 12 |
+| **NOT RUN** | 9 |
 | **Total** | 34 |
 
 **Overall Result**: IN PROGRESS
@@ -34,14 +34,14 @@
 | AUTH-07 | Auth | 设备已绑定其他账号 | NOT RUN | |
 | ACC-01 | Account | 导出账号数据 | PASS | pytest `tests/test_account.py` |
 | ACC-02 | Account | 删除账号 | PASS | pytest `tests/test_account.py` |
-| SOLVE-01 | Solve | Step 1: Receive 输入问题 | NOT RUN | |
-| SOLVE-02 | Solve | Step 2: Clarify 回答追问 | NOT RUN | |
-| SOLVE-03 | Solve | Step 3: Reframe 重新定义 | NOT RUN | |
-| SOLVE-04 | Solve | Step 4: Options 选择方案 | NOT RUN | |
-| SOLVE-05 | Solve | Step 5: Commit 设定行动 | NOT RUN | |
-| SOLVE-06 | Solve | SSE 流式响应完整 | PASS | pytest `tests/test_llm_stream.py` |
-| EMO-01 | Emotion | 检测焦虑情绪 | NOT RUN | |
-| EMO-02 | Emotion | 检测平静情绪 | NOT RUN | |
+| SOLVE-01 | Solve | Step 1: Receive 输入问题 | BLOCKED | LLM provider 401 (OpenAI/Anthropic), SSE aborted |
+| SOLVE-02 | Solve | Step 2: Clarify 回答追问 | BLOCKED | LLM provider 401 (OpenAI/Anthropic), SSE aborted |
+| SOLVE-03 | Solve | Step 3: Reframe 重新定义 | BLOCKED | LLM provider 401 (OpenAI/Anthropic), SSE aborted |
+| SOLVE-04 | Solve | Step 4: Options 选择方案 | BLOCKED | LLM provider 401 (OpenAI/Anthropic), SSE aborted |
+| SOLVE-05 | Solve | Step 5: Commit 设定行动 | BLOCKED | LLM provider 401 (OpenAI/Anthropic), SSE aborted |
+| SOLVE-06 | Solve | SSE 流式响应完整 | BLOCKED | LLM provider 401 (OpenAI/Anthropic), SSE aborted |
+| EMO-01 | Emotion | 检测焦虑情绪 | BLOCKED | LLM provider 401 (OpenAI/Anthropic), SSE aborted |
+| EMO-02 | Emotion | 检测平静情绪 | BLOCKED | LLM provider 401 (OpenAI/Anthropic), SSE aborted |
 | HEALTH-01 | Health | GET /health | PASS | Local smoke 2025-12-23 |
 | HEALTH-02 | Health | GET /health/ready | PASS | Local smoke 2025-12-23 |
 | HEALTH-03 | Health | GET /health/live | PASS | Local smoke 2025-12-23 |
@@ -68,6 +68,7 @@
 | Apple Developer 账号未开通 | AUTH-05 无法测试 | 等待账号开通 |
 | Stripe/RevenueCat 未激活 | SUB-01/02/03 无法测试 | 标记 BLOCKED，优先测试其他 |
 | 域名未配置 | 无法测试生产环境 | 使用本地环境验证 |
+| LLM provider 未授权 | Solve/Emotion 流程无法测试 | 更新 OpenAI/Anthropic API Key |
 
 ---
 
@@ -106,3 +107,4 @@
 |------|--------|-------------|--------|-------|
 | 2025-12-23 | Automation (Codex) | Local | IN PROGRESS | Health endpoints via deploy_prod_smoke.sh |
 | 2025-12-23 | Automation (Codex) | Local | IN PROGRESS | Updated with pytest evidence (106 tests) |
+| 2025-12-23 | Automation (Codex) | Local | IN PROGRESS | Solve/Emotion blocked: LLM provider 401 |
