@@ -148,6 +148,7 @@
 | **One-page update** | See `docs/release/one-page-update.md` | High |
 | **QA test plan** | See `docs/release/qa-test-plan.md` | High |
 | **QA execution log** | See `docs/release/qa-execution-log.md` | High |
+| **Manual QA checklist** | See `docs/release/manual-qa-checklist.md` | High |
 | **Risk register** | See `docs/release/risk-register.md` | High |
 | **Go/No-Go minutes** | See `docs/release/go-no-go-minutes.md` | High |
 | **Ownership matrix** | See `docs/release/ownership-matrix.md` | High |

@@ -1,11 +1,23 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 08:39
+**最后更新**: 2025-12-23 09:45
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 09:45] - Manual QA Checklist
+
+- [x] **Manual QA Checklist**: `docs/release/manual-qa-checklist.md`
+  - Auth / Solve / Emotion / Devices / Sessions / Paywall / Error / i18n
+  - BLOCKED 标注规则与失败记录提示
+- [x] **Index 更新**: `docs/release/index.md`
+- [x] **状态汇总更新**: `docs/release/project-status-summary.md`
+
+> 说明：用于人工 QA 执行的逐项清单，配合 `qa-execution-log.md` 记录结果
+
+---
 
 ### [2025-12-23 08:39] - Support/Privacy 文档草稿
 

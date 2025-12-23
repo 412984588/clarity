@@ -132,4 +132,5 @@
 - 本机演示手册: `docs/release/local-demo-runbook.md`
 - 演示话术: `docs/release/demo-script.md`
 - 本地部署验证: `docs/release/local-deploy-verify.md`
+- Manual QA Checklist: `docs/release/manual-qa-checklist.md`
 - 上线准备度: `docs/release/launch-readiness.md`
