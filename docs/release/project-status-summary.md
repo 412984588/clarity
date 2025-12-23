@@ -31,7 +31,7 @@
 
 ### Test Coverage
 
-- **Backend**: 103 tests passing (ruff + mypy + pytest)
+- **Backend**: 106 tests passing (ruff + mypy + pytest)
 - **Mobile**: ESLint + TypeScript clean
 - **i18n**: English, Spanish, Chinese (110+ keys)
 
@@ -59,7 +59,7 @@
 | Local Deploy Rehearsal | **PASS** | All health endpoints green (`docs/release/deploy-prod-smoke-local-2025-12-23.log`) |
 | Android Preview Build | **PASS** | APK available for download |
 | iOS Preview Build | **BLOCKED** | Apple Developer Account required |
-| Release Verification Script | **PASS** | 103 tests, lint, type check (`docs/release/verify-2025-12-23.log`) |
+| Release Verification Script | **PASS** | 106 tests, lint, type check (`docs/release/verify-2025-12-23.log`) |
 
 ### Not Started
 

@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-Clarity 代码库已完成全部 8 个 Epic 的开发，通过 103 个后端测试，本地部署验证全部通过，Android 预览版 APK 可下载测试。然而，生产上线仍被 **2 个关键阻塞项** 所阻挡：域名未配置、Apple Developer 账号未开通。一旦这些阻塞项解除，可在 1-2 天内完成生产部署。
+Clarity 代码库已完成全部 8 个 Epic 的开发，通过 106 个后端测试，本地部署验证全部通过，Android 预览版 APK 可下载测试。然而，生产上线仍被 **2 个关键阻塞项** 所阻挡：域名未配置、Apple Developer 账号未开通。一旦这些阻塞项解除，可在 1-2 天内完成生产部署。
 
 ---
 
@@ -18,9 +18,9 @@ Clarity 代码库已完成全部 8 个 Epic 的开发，通过 103 个后端测�
 
 | Category | Requirement | Status | Evidence | Blocker |
 |----------|-------------|--------|----------|---------|
-| Backend Tests | All tests pass | **READY** | 103 tests passing | - |
+| Backend Tests | All tests pass | **READY** | 106 tests passing | - |
 | Backend Lint | Ruff clean | **READY** | `ruff check .` no errors | - |
-| Backend Types | mypy clean | **READY** | 39 files, no issues | - |
+| Backend Types | mypy clean | **READY** | 40 files, no issues | - |
 | Mobile Lint | ESLint clean | **READY** | `npm run lint` no errors | - |
 | Mobile Types | TypeScript clean | **READY** | `tsc --noEmit` no errors | - |
 
@@ -88,7 +88,7 @@ Clarity 代码库已完成全部 8 个 Epic 的开发，通过 103 个后端测�
 
 | # | Criteria | Current Status |
 |---|----------|----------------|
-| 1 | All backend tests pass (103/103) | **READY** |
+| 1 | All backend tests pass (106/106) | **READY** |
 | 2 | Local deployment smoke tests pass | **READY** |
 | 3 | Production domain configured with SSL | **BLOCKED** |
 | 4 | Database instance created and migrated | **BLOCKED** |

@@ -1,11 +1,26 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 09:50
+**最后更新**: 2025-12-23 10:40
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 10:40] - 发布验证日志刷新
+
+- [x] **Release Verify Log**: `docs/release/verify-2025-12-23.log`
+  - Backend: 106 tests
+  - mypy: 40 files
+  - Mobile: ESLint + tsc 全绿
+- [x] **状态同步**: 更新汇总/评分卡/一页报告
+  - `docs/release/project-status-summary.md`
+  - `docs/release/launch-readiness.md`
+  - `docs/release/one-page-update.md`
+
+> 由 `./scripts/verify-release.sh` 重新生成
+
+---
 
 ### [2025-12-23 09:50] - Support/Local Deploy 文档清理
 
