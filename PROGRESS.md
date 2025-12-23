@@ -1,11 +1,20 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 19:45
+**最后更新**: 2025-12-23 20:00
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 20:00] - Release Documentation Hub
+
+- [x] **产出**: `docs/release/index.md`
+- [x] **内容**: Release 文档导航页（单一入口）
+
+> 详见 `docs/PROGRESS.md`
+
+---
 
 ### [2025-12-23 19:45] - One Page Status Update
 

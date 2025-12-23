@@ -138,6 +138,7 @@
 
 | Task | Description | Priority |
 |------|-------------|----------|
+| **Release docs hub** | See `docs/release/index.md` | High |
 | **Run local demo** | See `docs/release/local-demo-runbook.md` | High |
 | **Demo script ready** | See `docs/release/demo-script.md` | High |
 | **Launch dependencies** | See `docs/release/launch-dependencies.md` | High |
