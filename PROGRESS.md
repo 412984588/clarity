@@ -1,11 +1,21 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-22 21:05
+**最后更新**: 2025-12-23 17:55
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 17:55] - Epic 9: Local Deploy Preflight
+
+- [x] **iOS 文档**: BLOCKED (缺 Apple Developer 账号)
+- [x] **本机部署预演**: PASS
+- [x] **产出**: `docs/release/local-deploy-verify.md`
+
+> 详见 `docs/PROGRESS.md`
+
+---
 
 ### [2025-12-22 21:05] - Backend CI 全绿修复
 

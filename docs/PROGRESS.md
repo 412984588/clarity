@@ -1,11 +1,37 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 09:45
+**最后更新**: 2025-12-23 17:55
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 17:55] - Epic 9: Local Deploy Preflight
+
+- [x] **iOS 文档补齐**: 虽然无 Apple Developer 账号，仍完善了步骤说明
+  - `docs/release/eas-preview-verify.md`: 添加 iOS 前置条件表 + 计划步骤
+  - `docs/release/eas-preview.md`: 添加 iOS 构建步骤小节
+  - 状态: BLOCKED (缺 Apple Developer 账号 $99/年)
+
+- [x] **本机部署预演**: PASS
+  - 前置检查: Docker/Poetry/Node 全部可用
+  - 数据库启动: PostgreSQL 容器正常
+  - 迁移执行: Alembic 迁移成功
+  - API 启动: Uvicorn 正常监听 8000 端口
+  - 冒烟测试: /health, /health/ready, /health/live 全部 PASS
+
+- [x] **文档产出**: `docs/release/local-deploy-verify.md`
+  - 前置检查表
+  - 执行命令清单
+  - 结果摘要
+  - 已知问题 (APP_VERSION 配置不匹配)
+
+> **已知问题**:
+> - `.env.example` 中 APP_VERSION 在 Settings 中未定义，需移除后才能启动
+> - `deploy_prod_smoke.sh` 在 macOS 上 `head -1` 不兼容
+
+---
 
 ### [2025-12-23 09:45] - Epic 9: Production Deployment (In Progress)
 
