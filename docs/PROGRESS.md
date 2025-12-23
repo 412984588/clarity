@@ -401,7 +401,9 @@
 
 > **已知问题**:
 > - `.env.example` 中 APP_VERSION 在 Settings 中未定义，需移除后才能启动
-> - `deploy_prod_smoke.sh` 在 macOS 上 `head -1` 不兼容
+> - `deploy_prod_smoke.sh` 在 macOS 上 `head -n -1` 不兼容
+>
+> **已修复**: 见 [2025-12-23 18:05] 记录
 
 ---
 

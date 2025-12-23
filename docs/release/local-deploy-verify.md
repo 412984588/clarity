@@ -32,7 +32,6 @@ git status
 # 2. Setup environment
 cd clarity-api
 cp .env.example .env
-# Note: Remove APP_VERSION line (see Known Issues)
 
 # 3. Start database
 docker compose up -d db
