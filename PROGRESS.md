@@ -1,11 +1,20 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 22:15
+**最后更新**: 2025-12-23 22:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 22:30] - 发布审批清单
+
+- [x] **产出**: `docs/release/release-approval-checklist.md`
+- [x] **内容**: Required Approvals + Readiness Gates + Sign-off Section
+
+> 详见 `docs/PROGRESS.md`
+
+---
 
 ### [2025-12-23 22:15] - 上线沟通计划
 
