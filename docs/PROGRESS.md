@@ -1,11 +1,26 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 20:30
+**最后更新**: 2025-12-23 20:45
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 20:45] - QA/UAT 执行记录模板
+
+- [x] **执行记录模板**: `docs/release/qa-execution-log.md`
+  - Title / Date / Environment / Build / Tester
+  - Summary（PASS/FAIL/BLOCKED 计数）
+  - Test Run Table（Case ID / Area / Result / Notes）
+  - Blockers & Risks
+  - Issues Found（Severity / Case ID / Description / Status）
+  - Sign-off（QA Lead / Dev Lead / Product Owner）
+  - History（测试轮次记录）
+
+> 配合 qa-test-plan.md 使用，一个定义用例，一个记录执行结果
+
+---
 
 ### [2025-12-23 20:30] - Demo Script 修正
 
