@@ -1,11 +1,23 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 18:30
+**最后更新**: 2025-12-23 18:45
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 18:45] - Local Demo Runbook
+
+- [x] **本机演示运行手册**: `docs/release/local-demo-runbook.md`
+  - 5 分钟快速启动流程
+  - 5 条演示路径 (Health/API Docs/Register/Mobile/Solve Flow)
+  - 已知限制清单 (iOS/Stripe/OAuth)
+  - 清理关闭流程
+
+> 引用了 `docs/setup.md`，避免重复
+
+---
 
 ### [2025-12-23 18:30] - Project Status Summary
 
