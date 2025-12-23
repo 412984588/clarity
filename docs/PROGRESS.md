@@ -1,11 +1,45 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 23:15
+**最后更新**: 2025-12-23 23:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 23:30] - Support & Ops 文档包
+
+- [x] **Support Playbook**: `docs/release/support-playbook.md`
+  - Purpose & Scope
+  - Support Channels（Internal 4 + External 6）
+  - Triage Levels（P0/P1/P2/P3 定义 + 决策树）
+  - Response SLA（首次响应 + 解决时间目标）
+  - Escalation Path（何时升级 + 升级流程）
+  - Common Issues & Macros（8 条：登录/订阅/AI/数据/闪退/退款/隐私/功能请求）
+  - Handoff to Engineering（Handoff Template）
+  - Related Documents
+
+- [x] **Status Page Templates**: `docs/release/status-page-templates.md`
+  - Purpose
+  - Template 1: Planned Maintenance
+  - Template 2: Incident Start
+  - Template 3: Update (Every 30–60 min)
+  - Template 4: Resolved
+  - Guidelines（写作原则 + 避免内容 + 更新频率）
+  - Related Documents
+
+- [x] **Ops Handover**: `docs/release/ops-handover.md`
+  - Purpose
+  - Ownership & On-call（占位：负责人表 + On-call 轮值）
+  - Runbooks & Key Links（引用现有 8 份核心文档）
+  - Deployment & Rollback Summary（快速参考 + 关键脚本）
+  - Monitoring & Alerts（关键指标 + 告警设置 + 监控工具占位）
+  - Open Items / TBD（待配置 5 项 + 待优化 5 项 + 待决策 5 项）
+  - Related Documents
+
+> 完整的运维与支持流程文档，涵盖用户支持、状态沟通、运维交接三大场景
+
+---
 
 ### [2025-12-23 23:15] - 数据隐私与合规清单
 
