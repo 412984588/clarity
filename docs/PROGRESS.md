@@ -1,11 +1,24 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 19:15
+**最后更新**: 2025-12-23 19:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 19:30] - Launch Readiness Scorecard
+
+- [x] **上线准备度评分卡**: `docs/release/launch-readiness.md`
+  - Executive Summary（当前状态：NO-GO）
+  - Readiness Scorecard（28 项检查：17 READY / 7 BLOCKED / 4 UNKNOWN）
+  - Go/No-Go Criteria（5 条 Go + 5 条 No-Go）
+  - Evidence Index（8 份证据文档链接）
+  - Next Actions（无账号可做 vs 需账号后做）
+
+> **结论**: 2 个关键阻塞项（域名 + Apple Developer），解除后 1-2 天可上线
+
+---
 
 ### [2025-12-23 19:15] - Launch Dependencies Tracker
 

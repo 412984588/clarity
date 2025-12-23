@@ -1,11 +1,20 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 19:15
+**最后更新**: 2025-12-23 19:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 19:30] - Launch Readiness Scorecard
+
+- [x] **产出**: `docs/release/launch-readiness.md`
+- [x] **内容**: Go/No-Go 评估 + 28 项检查 + 证据链接
+
+> 详见 `docs/PROGRESS.md`
+
+---
 
 ### [2025-12-23 19:15] - Launch Dependencies Tracker
 
