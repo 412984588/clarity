@@ -1,11 +1,20 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 21:30
+**最后更新**: 2025-12-23 21:45
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 21:45] - 上线当天运行手册
+
+- [x] **产出**: `docs/release/launch-day-runbook.md`
+- [x] **内容**: Timeline + Checklist + Launch Steps + Rollback
+
+> 详见 `docs/PROGRESS.md`
+
+---
 
 ### [2025-12-23 21:30] - 上线 RACI/负责人矩阵
 
