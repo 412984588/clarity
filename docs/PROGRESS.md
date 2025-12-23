@@ -1,11 +1,26 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 22:00
+**最后更新**: 2025-12-23 22:15
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 22:15] - 上线沟通计划
+
+- [x] **上线沟通计划**: `docs/release/launch-communications.md`
+  - Purpose & Audience（5 类受众）
+  - Channels（内部 5 渠道 + 外部 6 渠道）
+  - Timeline（Pre-launch / Launch / Post-launch 共 20+ 活动）
+  - Message Templates（5 条：内部通知、外部公告、状态更新、问题通报、投资人通报）
+  - Approvals（6 类内容审批矩阵 + SLA）
+  - Escalation Matrix（升级条件 + 路径 + 紧急联系人）
+  - Related Documents
+
+> 定义上线前后的沟通策略、渠道和消息模板
+
+---
 
 ### [2025-12-23 22:00] - 故障响应手册
 
