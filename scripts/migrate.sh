@@ -11,7 +11,7 @@
 #   heads    - Check for multiple heads
 # =============================================================================
 
-set -e
+set -euo pipefail
 
 # Colors
 RED='\033[0;31m'
@@ -35,14 +35,65 @@ log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
-check_env() {
-    if [ -z "$DATABASE_URL" ]; then
-        if [ -f .env ]; then
-            export $(grep -v '^#' .env | xargs)
-        fi
+load_database_url_from_env() {
+    if [ ! -f .env ]; then
+        return 0
     fi
 
-    if [ -z "$DATABASE_URL" ]; then
+    local env_url
+    env_url=$(python3 - <<'PY'
+from pathlib import Path
+import re
+
+path = Path(".env")
+value = ""
+for line in path.read_text().splitlines():
+    line = line.strip()
+    if not line or line.startswith("#"):
+        continue
+    if line.startswith("export "):
+        line = line[len("export "):].strip()
+    if not line.startswith("DATABASE_URL="):
+        continue
+    _, raw = line.split("=", 1)
+    raw = raw.strip()
+    if (raw.startswith('"') and raw.endswith('"')) or (raw.startswith("'") and raw.endswith("'")):
+        value = raw[1:-1]
+    else:
+        value = re.split(r"\s+#", raw, maxsplit=1)[0].strip()
+    break
+print(value)
+PY
+)
+
+    if [ -n "$env_url" ]; then
+        export DATABASE_URL="$env_url"
+    fi
+}
+
+normalize_database_url() {
+    python3 - <<'PY'
+import os
+
+url = os.environ.get("DATABASE_URL", "")
+if not url:
+    raise SystemExit(1)
+if url.startswith("postgres://"):
+    url = "postgresql://" + url[len("postgres://"):]
+if url.startswith("postgresql+asyncpg://"):
+    url = "postgresql://" + url[len("postgresql+asyncpg://"):]
+if url.startswith("postgresql+psycopg://"):
+    url = "postgresql://" + url[len("postgresql+psycopg://"):]
+print(url)
+PY
+}
+
+check_env() {
+    if [ -z "${DATABASE_URL:-}" ]; then
+        load_database_url_from_env
+    fi
+
+    if [ -z "${DATABASE_URL:-}" ]; then
         log_error "DATABASE_URL not set. Please set it in .env or environment."
         exit 1
     fi
@@ -76,16 +127,15 @@ create_backup() {
 
     log_info "Creating backup: $BACKUP_FILE"
 
-    # Extract connection info from DATABASE_URL
-    # Format: postgresql+asyncpg://user:pass@host:port/dbname
-    DB_HOST=$(echo $DATABASE_URL | sed -n 's/.*@\([^:]*\):.*/\1/p')
-    DB_PORT=$(echo $DATABASE_URL | sed -n 's/.*:\([0-9]*\)\/.*/\1/p')
-    DB_NAME=$(echo $DATABASE_URL | sed -n 's/.*\/\([^?]*\).*/\1/p')
-    DB_USER=$(echo $DATABASE_URL | sed -n 's/.*\/\/\([^:]*\):.*/\1/p')
-
     if command -v pg_dump &> /dev/null; then
-        PGPASSWORD=$(echo $DATABASE_URL | sed -n 's/.*:\/\/[^:]*:\([^@]*\)@.*/\1/p') \
-            pg_dump -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -F c -f "$BACKUP_FILE" 2>/dev/null || {
+        local pg_dump_url
+        pg_dump_url=$(normalize_database_url)
+        if [ -z "$pg_dump_url" ]; then
+            log_warn "DATABASE_URL is invalid. Skipping backup."
+            return 1
+        fi
+
+        pg_dump "$pg_dump_url" -F c -f "$BACKUP_FILE" 2>/dev/null || {
             log_warn "pg_dump failed. Skipping backup."
             return 1
         }
