@@ -14,8 +14,8 @@
 | **PASS** | 3 |
 | **FAIL** | 0 |
 | **BLOCKED** | 4 |
-| **NOT RUN** | 18 |
-| **Total** | 25 |
+| **NOT RUN** | 20 |
+| **Total** | 27 |
 
 **Overall Result**: IN PROGRESS
 
@@ -30,6 +30,8 @@
 | AUTH-03 | Auth | 邮箱登录密码错误 | NOT RUN | |
 | AUTH-04 | Auth | Google OAuth 登录 | NOT RUN | |
 | AUTH-05 | Auth | Apple Sign-In 登录 | BLOCKED | 需 Apple Developer |
+| ACC-01 | Account | 导出账号数据 | NOT RUN | |
+| ACC-02 | Account | 删除账号 | NOT RUN | |
 | SOLVE-01 | Solve | Step 1: Receive 输入问题 | NOT RUN | |
 | SOLVE-02 | Solve | Step 2: Clarify 回答追问 | NOT RUN | |
 | SOLVE-03 | Solve | Step 3: Reframe 重新定义 | NOT RUN | |
