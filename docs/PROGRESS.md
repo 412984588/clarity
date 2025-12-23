@@ -1,11 +1,21 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 10:53
+**最后更新**: 2025-12-23 11:05
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 11:05] - QA 执行日志更新（LLM 未授权）
+
+- [x] **QA Execution Log**: `docs/release/qa-execution-log.md`
+  - Solve/Emotion 标记 BLOCKED（OpenAI/Anthropic 401）
+  - Blocker 清单新增 LLM provider 未授权
+
+> 说明：本地 API 可用，但流式响应被 LLM 认证拦截
+
+---
 
 ### [2025-12-23 10:53] - QA 执行日志补充（自动化证据）
 
