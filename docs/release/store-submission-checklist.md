@@ -32,7 +32,7 @@
 | 8 | Primary Category 已选择 | [ ] | Health & Fitness / Lifestyle |
 | 9 | Secondary Category 已选择（可选） | [ ] | |
 | 10 | Age Rating 问卷已完成 | [ ] | |
-| 11 | App Privacy 问卷已完成 | [ ] | 数据收集声明 |
+| 11 | App Privacy 问卷已完成 | [ ] | See `docs/release/store-privacy-answers.md` |
 
 ### Build & Submission
 
@@ -77,7 +77,7 @@
 | 5 | App Name 已填写 | [ ] | "Clarity" |
 | 6 | App Category 已选择 | [ ] | Health & Fitness |
 | 7 | Content Rating 问卷已完成 | [ ] | IARC |
-| 8 | Data Safety 问卷已完成 | [ ] | 数据收集声明 |
+| 8 | Data Safety 问卷已完成 | [ ] | See `docs/release/store-privacy-answers.md` |
 | 9 | Target Audience 已声明 | [ ] | 不面向儿童 |
 
 ### Build & Submission

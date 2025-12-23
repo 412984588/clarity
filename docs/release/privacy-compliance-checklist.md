@@ -176,8 +176,8 @@
 
 | # | Item | Status | Owner | Notes |
 |---|------|--------|-------|-------|
-| 5 | App Privacy Questionnaire 已完成 (iOS) | [ ] | Mobile Lead | App Store Connect |
-| 6 | Data Safety Form 已完成 (Android) | [ ] | Mobile Lead | Play Console |
+| 5 | App Privacy Questionnaire 已完成 (iOS) | [ ] | Mobile Lead | See `docs/release/store-privacy-answers.md` |
+| 6 | Data Safety Form 已完成 (Android) | [ ] | Mobile Lead | See `docs/release/store-privacy-answers.md` |
 | 7 | 删除账号功能已实现 | [x] | Backend Lead | 设置页内提供 |
 | 8 | Sign in with Apple 已实现（如用第三方登录） | [ ] | Mobile Lead | Apple 要求 |
 
