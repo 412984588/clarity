@@ -1,11 +1,25 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 20:00
+**最后更新**: 2025-12-23 20:15
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 20:15] - QA/UAT Test Plan
+
+- [x] **QA/UAT 测试计划**: `docs/release/qa-test-plan.md`
+  - Scope & Objectives
+  - Test Environments（Local/Preview/Production）
+  - Test Data & Accounts
+  - 25 条测试用例（Auth/Solve/Emotion/Health/Subscription/Error/i18n）
+  - Acceptance Criteria + Exit Criteria
+  - Risks & Blockers
+
+> 覆盖核心功能验证，支付相关标记为 BLOCKED
+
+---
 
 ### [2025-12-23 20:00] - Release Documentation Hub
 

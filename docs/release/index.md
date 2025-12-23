@@ -39,12 +39,13 @@
 
 ---
 
-## 3. Local Verification
+## 3. Testing & Verification
 
-本地验证相关文档。
+测试与验证相关文档。
 
 | Document | Purpose | Status |
 |----------|---------|--------|
+| [QA Test Plan](qa-test-plan.md) | QA/UAT 测试计划 (25 条用例) | READY |
 | [Local Deploy Verify](local-deploy-verify.md) | 本地部署验证结果 | READY |
 | [EAS Preview Verify](eas-preview-verify.md) | EAS Preview 构建验证 | READY |
 | [EAS Preview](eas-preview.md) | EAS Preview 配置指南 | READY |
