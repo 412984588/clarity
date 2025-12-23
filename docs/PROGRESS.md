@@ -1,11 +1,48 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 03:00
+**最后更新**: 2025-12-23 09:45
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 09:45] - Epic 9: Production Deployment (In Progress)
+
+- [x] **Spec/Plan/Tasks**: 完整文档三件套
+  - `docs/spec/epic-9-production-deploy.md`: 部署规格
+  - `docs/plan/epic-9-production-deploy-plan.md`: 7 阶段实施计划
+  - `docs/tasks/epic-9-production-deploy-tasks.md`: 30+ 任务清单
+
+- [x] **Runbook**: `docs/PROD_DEPLOY.md`
+  - 8 步部署流程
+  - 验收命令和预期输出
+  - 回滚程序
+
+- [x] **Smoke 脚本**: `scripts/deploy_prod_smoke.sh`
+  - 测试 /health, /health/ready, /health/live
+  - 测试 webhook 端点可达性
+
+- [x] **ENV_VARIABLES.md 增强**
+  - Production Provider Examples
+  - Verification Commands
+
+> **状态**: 文档/脚本完成，待实际部署执行
+
+---
+
+### [2025-12-23 09:15] - Epic 8: Release & Deployment
+
+- [x] **环境变量文档**: `docs/ENV_VARIABLES.md`
+- [x] **数据库迁移指南**: `docs/DATABASE_MIGRATION.md`
+- [x] **迁移脚本**: `scripts/migrate.sh`
+- [x] **发布指南**: `RELEASE.md`
+- [x] **变更日志**: `CHANGELOG.md`
+- [x] **健康检查增强**: `/health` 返回 version
+
+> **PR**: #32 已合并
+
+---
 
 ### [2025-12-23 03:00] - Epic 7: Launch Readiness
 
@@ -233,4 +270,5 @@ npx tsc --noEmit               # (no output = success)
 
 ## 下一步
 
-- [ ] Epic 6: 用户反馈 + 迭代
+- [ ] Epic 9: 执行生产部署（按 PROD_DEPLOY.md 操作）
+- [ ] Epic 10: 用户反馈 + 迭代

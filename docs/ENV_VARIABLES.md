@@ -209,3 +209,48 @@ stringData:
   DATABASE_URL: postgresql+asyncpg://...
   JWT_SECRET: ...
 ```
+
+---
+
+## Production Provider Examples
+
+### Neon (PostgreSQL)
+```bash
+DATABASE_URL=postgresql+asyncpg://user:pass@ep-xxx.us-east-1.aws.neon.tech/clarity?sslmode=require
+```
+
+### Vercel
+```bash
+vercel env add DATABASE_URL production
+vercel env add JWT_SECRET production
+```
+
+### Railway
+```bash
+railway variables set DATABASE_URL="postgresql+asyncpg://..."
+railway variables set JWT_SECRET="..."
+```
+
+### Fly.io
+```bash
+fly secrets set DATABASE_URL="postgresql+asyncpg://..."
+fly secrets set JWT_SECRET="..."
+```
+
+---
+
+## Verification Commands
+
+```bash
+# Health check
+curl https://api.clarity.app/health
+# Expected: {"status":"healthy","version":"1.0.0","database":"connected"}
+
+# Readiness
+curl https://api.clarity.app/health/ready
+# Expected: {"ready":true}
+
+# Liveness
+curl https://api.clarity.app/health/live
+# Expected: {"live":true}
+```
