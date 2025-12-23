@@ -1,11 +1,20 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 09:45
+**最后更新**: 2025-12-23 09:50
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 09:50] - Support/Local Deploy 文档清理
+
+- [x] **Support 草稿**: 增加 Legal review 标注
+- [x] **Local deploy 文档**: 移除过时的 APP_VERSION 注释
+
+> 详见 `docs/PROGRESS.md`
+
+---
 
 ### [2025-12-23 09:45] - Manual QA Checklist
 
