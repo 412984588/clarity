@@ -1,6 +1,6 @@
 # App Store Privacy + Play Data Safety (Draft)
 
-Status: Draft. Confirm assumptions before submitting in App Store Connect / Play Console.
+Status: Draft. Answers locked based on current codebase; re-validate before submission.
 Last Updated: 2025-12-23
 
 ---
@@ -60,7 +60,7 @@ Third-party processors:
 
 ---
 
-## Assumptions to Confirm
+## Decisions (based on current codebase)
 
 1) No ads SDKs, no third-party analytics beyond listed processors.  
 2) No location collection, no contacts, no photo/video/audio uploads.  
