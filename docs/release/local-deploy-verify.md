@@ -96,15 +96,7 @@ docker compose down
 
 ## Resolved Issues (Fixed in PR #38)
 
-### 1. APP_VERSION in .env.example ✅
-
-**Issue**: `.env.example` contains `APP_VERSION=1.0.0` but `Settings` class did not define this field
-
-**Fix**: Added `app_version: str = "1.0.0"` to `Settings` class in `app/config.py`
-
-**Related Change**: Updated `/health` endpoint to use `settings.app_version` instead of `os.getenv()`
-
-### 2. deploy_prod_smoke.sh macOS Compatibility ✅
+### 1. deploy_prod_smoke.sh macOS Compatibility ✅
 
 **Issue**: Script used `head -n -1` which fails on macOS BSD
 

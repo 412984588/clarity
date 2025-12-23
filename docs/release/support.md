@@ -2,6 +2,8 @@
 
 This is the public support page for Clarity. It can be published as-is or customized.
 
+**Status**: Draft. Requires legal review before publishing.
+
 ---
 
 ## Contact
