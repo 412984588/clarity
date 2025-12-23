@@ -1,9 +1,9 @@
 # QA/UAT Execution Log
 
-**Test Run Date**: YYYY-MM-DD
-**Environment**: Local Demo / Preview Build / Production
-**Build/Version**: 1.0.0 / APK Build ID / TestFlight Build
-**Tester**: [Name]
+**Test Run Date**: 2025-12-23
+**Environment**: Local
+**Build/Version**: 1.0.0 (local)
+**Tester**: Automation (Codex)
 
 ---
 
@@ -11,13 +11,13 @@
 
 | Status | Count |
 |--------|-------|
-| **PASS** | 0 |
+| **PASS** | 3 |
 | **FAIL** | 0 |
-| **BLOCKED** | 0 |
-| **NOT RUN** | 25 |
+| **BLOCKED** | 4 |
+| **NOT RUN** | 18 |
 | **Total** | 25 |
 
-**Overall Result**: NOT STARTED / IN PROGRESS / PASS / FAIL
+**Overall Result**: IN PROGRESS
 
 ---
 
@@ -37,9 +37,9 @@
 | SOLVE-05 | Solve | Step 5: Commit 设定行动 | NOT RUN | |
 | EMO-01 | Emotion | 检测焦虑情绪 | NOT RUN | |
 | EMO-02 | Emotion | 检测平静情绪 | NOT RUN | |
-| HEALTH-01 | Health | GET /health | NOT RUN | |
-| HEALTH-02 | Health | GET /health/ready | NOT RUN | |
-| HEALTH-03 | Health | GET /health/live | NOT RUN | |
+| HEALTH-01 | Health | GET /health | PASS | Local smoke 2025-12-23 |
+| HEALTH-02 | Health | GET /health/ready | PASS | Local smoke 2025-12-23 |
+| HEALTH-03 | Health | GET /health/live | PASS | Local smoke 2025-12-23 |
 | SUB-01 | Subscription | 查看订阅计划 | BLOCKED | Stripe 未激活 |
 | SUB-02 | Subscription | Stripe 支付流程 | BLOCKED | Stripe 未激活 |
 | SUB-03 | Subscription | RevenueCat 移动端订阅 | BLOCKED | RevenueCat 未配置 |
@@ -87,6 +87,7 @@
 - 测试用例定义见: `docs/release/qa-test-plan.md`
 - 验收标准见: `docs/release/qa-test-plan.md#acceptance-criteria`
 - 退出标准见: `docs/release/qa-test-plan.md#exit-criteria`
+- 本次已验证健康检查，日志：`docs/release/deploy-prod-smoke-local-2025-12-23.log`
 
 ---
 
@@ -94,4 +95,4 @@
 
 | Date | Tester | Environment | Result | Notes |
 |------|--------|-------------|--------|-------|
-| YYYY-MM-DD | [Name] | Local Demo | IN PROGRESS | 首轮测试 |
+| 2025-12-23 | Automation (Codex) | Local | IN PROGRESS | Health endpoints via deploy_prod_smoke.sh |

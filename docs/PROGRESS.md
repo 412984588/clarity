@@ -1,11 +1,19 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 08:26
+**最后更新**: 2025-12-23 08:32
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 08:32] - QA 执行日志（部分完成）
+
+- [x] **QA Execution Log**: `docs/release/qa-execution-log.md`
+- [x] **已完成**: HEALTH-01/02/03 (本地 smoke)
+- [ ] **未完成**: Auth/Solve/Emotion/Subscription/i18n/Errors
+
+---
 
 ### [2025-12-23 08:26] - 本地 Smoke 脚本日志
 
