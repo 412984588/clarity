@@ -12,6 +12,12 @@ from app.routers import revenuecat_webhooks
 
 settings = get_settings()
 
+if (
+    not settings.debug
+    and settings.jwt_secret in {"", "your-secret-key-change-in-production"}
+):
+    raise RuntimeError("JWT_SECRET must be set to a secure value in production")
+
 app = FastAPI(
     title=settings.app_name,
     description="Universal problem-solving assistant API",

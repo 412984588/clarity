@@ -173,6 +173,12 @@ class AuthService:
             if device.user_id != user.id:
                 raise ValueError("DEVICE_BOUND_TO_OTHER")
             device.last_active_at = utc_now()  # type: ignore[assignment]
+            if not device.is_active:
+                device.is_active = True  # type: ignore[assignment]
+            if name and device.device_name != name:
+                device.device_name = name  # type: ignore[assignment]
+            if not device.platform:
+                device.platform = self._detect_platform(name)  # type: ignore[assignment]
             return device
 
         # 检查设备限制（tier 由调用方传入，避免懒加载）
