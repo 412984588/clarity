@@ -1,11 +1,26 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 21:00
+**最后更新**: 2025-12-23 21:15
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 21:15] - Go/No-Go 会议纪要模板
+
+- [x] **会议纪要模板**: `docs/release/go-no-go-minutes.md`
+  - Meeting Info（Date / Attendees / Duration）
+  - Agenda（5 项）
+  - Readiness Review（引用 launch-readiness.md）
+  - Blockers Review（引用 risk-register.md）
+  - Decision（GO / NO-GO / GO WITH CONDITIONS）
+  - Conditions & Owners + Action Items
+  - Sign-off
+
+> 用于发布决策会议记录和追踪
+
+---
 
 ### [2025-12-23 21:00] - 上线风险登记表
 
