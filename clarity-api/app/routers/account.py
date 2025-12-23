@@ -13,15 +13,16 @@ from app.models.device import Device
 from app.models.session import ActiveSession
 from app.models.solve_session import SolveSession
 from app.models.step_history import StepHistory
-from app.models.subscription import Subscription
 from app.models.user import User
 from app.utils.datetime_utils import utc_now
 
 router = APIRouter(prefix="/account", tags=["account"])
 
 
-def _dt(value: Optional[datetime]) -> Optional[str]:
-    return value.isoformat() if value else None
+def _dt(value: object | None) -> Optional[str]:
+    if isinstance(value, datetime):
+        return value.isoformat()
+    return None
 
 
 @router.get("/export")
@@ -166,8 +167,11 @@ async def delete_account(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> None:
-    result = await db.execute(delete(User).where(User.id == current_user.id))
-    if result.rowcount == 0:
+    result = await db.execute(
+        delete(User).where(User.id == current_user.id).returning(User.id)
+    )
+    deleted_id = result.scalar_one_or_none()
+    if not deleted_id:
         raise HTTPException(status_code=404, detail={"error": "USER_NOT_FOUND"})
     await db.commit()
     return None
