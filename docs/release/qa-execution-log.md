@@ -11,11 +11,11 @@
 
 | Status | Count |
 |--------|-------|
-| **PASS** | 3 |
+| **PASS** | 14 |
 | **FAIL** | 0 |
 | **BLOCKED** | 4 |
-| **NOT RUN** | 20 |
-| **Total** | 27 |
+| **NOT RUN** | 16 |
+| **Total** | 34 |
 
 **Overall Result**: IN PROGRESS
 
@@ -25,18 +25,21 @@
 
 | Case ID | Area | Scenario | Result | Notes |
 |---------|------|----------|--------|-------|
-| AUTH-01 | Auth | 邮箱注册新用户 | NOT RUN | |
-| AUTH-02 | Auth | 邮箱登录已有用户 | NOT RUN | |
-| AUTH-03 | Auth | 邮箱登录密码错误 | NOT RUN | |
-| AUTH-04 | Auth | Google OAuth 登录 | NOT RUN | |
+| AUTH-01 | Auth | 邮箱注册新用户 | PASS | pytest `tests/test_auth.py` |
+| AUTH-02 | Auth | 邮箱登录已有用户 | PASS | pytest `tests/test_auth.py` |
+| AUTH-03 | Auth | 邮箱登录密码错误 | PASS | pytest `tests/test_auth.py` |
+| AUTH-04 | Auth | Google OAuth 登录 | PASS | pytest `tests/test_oauth.py` (mocked token) |
 | AUTH-05 | Auth | Apple Sign-In 登录 | BLOCKED | 需 Apple Developer |
-| ACC-01 | Account | 导出账号数据 | NOT RUN | |
-| ACC-02 | Account | 删除账号 | NOT RUN | |
+| AUTH-06 | Auth | 设备数量超限 | NOT RUN | |
+| AUTH-07 | Auth | 设备已绑定其他账号 | NOT RUN | |
+| ACC-01 | Account | 导出账号数据 | PASS | pytest `tests/test_account.py` |
+| ACC-02 | Account | 删除账号 | PASS | pytest `tests/test_account.py` |
 | SOLVE-01 | Solve | Step 1: Receive 输入问题 | NOT RUN | |
 | SOLVE-02 | Solve | Step 2: Clarify 回答追问 | NOT RUN | |
 | SOLVE-03 | Solve | Step 3: Reframe 重新定义 | NOT RUN | |
 | SOLVE-04 | Solve | Step 4: Options 选择方案 | NOT RUN | |
 | SOLVE-05 | Solve | Step 5: Commit 设定行动 | NOT RUN | |
+| SOLVE-06 | Solve | SSE 流式响应完整 | PASS | pytest `tests/test_llm_stream.py` |
 | EMO-01 | Emotion | 检测焦虑情绪 | NOT RUN | |
 | EMO-02 | Emotion | 检测平静情绪 | NOT RUN | |
 | HEALTH-01 | Health | GET /health | PASS | Local smoke 2025-12-23 |
@@ -45,12 +48,16 @@
 | SUB-01 | Subscription | 查看订阅计划 | BLOCKED | Stripe 未激活 |
 | SUB-02 | Subscription | Stripe 支付流程 | BLOCKED | Stripe 未激活 |
 | SUB-03 | Subscription | RevenueCat 移动端订阅 | BLOCKED | RevenueCat 未配置 |
+| SUB-04 | Subscription | 查看使用量 | PASS | pytest `tests/test_subscriptions.py` |
 | ERR-01 | Error | 网络断开时提交 | NOT RUN | |
 | ERR-02 | Error | API 返回 500 | NOT RUN | |
 | ERR-03 | Error | Token 过期 | NOT RUN | |
 | I18N-01 | i18n | 切换到英文 | NOT RUN | |
 | I18N-02 | i18n | 切换到西班牙语 | NOT RUN | |
 | I18N-03 | i18n | 中文情绪检测 | NOT RUN | |
+| WEBHOOK-01 | Webhook | Stripe 端点可达 | PASS | pytest `tests/test_webhooks.py` |
+| WEBHOOK-02 | Webhook | RevenueCat 端点可达 | PASS | pytest `tests/test_revenuecat_webhooks.py` |
+| SAFETY-01 | Safety | 触发危机关键词 | PASS | pytest `tests/test_crisis_detector.py` |
 
 ---
 
@@ -98,3 +105,4 @@
 | Date | Tester | Environment | Result | Notes |
 |------|--------|-------------|--------|-------|
 | 2025-12-23 | Automation (Codex) | Local | IN PROGRESS | Health endpoints via deploy_prod_smoke.sh |
+| 2025-12-23 | Automation (Codex) | Local | IN PROGRESS | Updated with pytest evidence (106 tests) |
