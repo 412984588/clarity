@@ -1,11 +1,28 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 23:00
+**最后更新**: 2025-12-23 23:15
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 23:15] - 数据隐私与合规清单
+
+- [x] **数据隐私与合规清单**: `docs/release/privacy-compliance-checklist.md`
+  - Purpose & Scope（目的与范围，适用法规）
+  - Data Inventory（11 类个人数据 + 5 类敏感数据）
+  - Consent & Disclosure（同意要求 + 披露要求）
+  - Data Security（传输加密 + 静态加密 + 访问控制）
+  - Third-party Processors（9 个第三方处理商 + AI Provider 考量）
+  - User Rights（7 项用户权利 + 请求处理 SLA）
+  - Compliance Checklist（17 项：Legal 4 + App Store 4 + Technical 6 + Process 3）
+  - Known Gaps / TBD（High 4 + Medium 4 + Low 3）
+  - Related Documents
+
+> 确保 Clarity 在数据隐私和合规方面满足 GDPR/CCPA/PIPL 及 App Store 要求
+
+---
 
 ### [2025-12-23 23:00] - App Store / Play Store 提交清单
 

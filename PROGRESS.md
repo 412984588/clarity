@@ -1,11 +1,20 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 23:00
+**最后更新**: 2025-12-23 23:15
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 23:15] - 数据隐私与合规清单
+
+- [x] **产出**: `docs/release/privacy-compliance-checklist.md`
+- [x] **内容**: Data Inventory + Third-party Processors + Compliance Checklist
+
+> 详见 `docs/PROGRESS.md`
+
+---
 
 ### [2025-12-23 23:00] - App Store / Play Store 提交清单
 

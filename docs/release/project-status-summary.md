@@ -155,6 +155,7 @@
 | **Release approval checklist** | See `docs/release/release-approval-checklist.md` | High |
 | **Release metrics** | See `docs/release/release-metrics.md` | High |
 | **Store submission checklist** | See `docs/release/store-submission-checklist.md` | High |
+| **Privacy compliance checklist** | See `docs/release/privacy-compliance-checklist.md` | High |
 | Finalize hosting provider decision | Vercel vs Railway vs Fly.io | High |
 | Finalize database provider decision | Neon vs Supabase vs RDS | High |
 | Prepare Stripe products/prices | Create in Stripe test mode | Medium |
