@@ -692,8 +692,8 @@ __all__ = ["User"]
 | **Dependencies** | T-1.3.5 |
 | **Commands** | None (file modification) |
 | **Files Modified** | `clarity-api/app/main.py` |
-| **Verification** | `curl http://localhost:8000/health` → `{"status":"healthy","database":"ok"}` |
-| **Story Completion Check** | `poetry run alembic upgrade head` exits 0 + `/health` returns `{"database":"ok"}` |
+| **Verification** | `curl http://localhost:8000/health` → `{"status":"healthy","version":"1.0.0","database":"connected"}` |
+| **Story Completion Check** | `poetry run alembic upgrade head` exits 0 + `/health` returns `{"database":"connected"}` |
 
 **File: `app/main.py` (updated)**
 ```python

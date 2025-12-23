@@ -520,14 +520,14 @@ poetry run pytest -v      # 82 passed in 16.92s
 ```bash
 docker compose up -d db   # Container clarity-api-db-1 Running
 poetry run alembic upgrade head  # Will assume transactional DDL (already up to date)
-curl http://localhost:8000/health  # {"status":"healthy","database":"ok"}
+curl http://localhost:8000/health  # {"status":"healthy","version":"1.0.0","database":"connected"}
 ```
 
 | 命令 | 结果 |
 |------|------|
 | `docker compose up -d db` | ✅ Container Running |
 | `alembic upgrade head` | ✅ Already up to date |
-| `curl /health` | ✅ `{"status":"healthy","database":"ok"}` |
+| `curl /health` | ✅ `{"status":"healthy","version":"1.0.0","database":"connected"}` |
 
 #### Mobile 验证
 

@@ -868,8 +868,8 @@ async def health_check(db: AsyncSession = Depends(get_db)):
     except Exception:
         db_status = "error"
 
-    status = "healthy" if db_status == "ok" else "degraded"
-    status_code = 200 if db_status == "ok" else 503
+    status = "healthy" if db_status == "connected" else "degraded"
+    status_code = 200 if db_status == "connected" else 503
 
     return {"status": status, "database": db_status}
 
@@ -883,7 +883,7 @@ async def root():
 ```bash
 # 数据库正常时
 curl http://localhost:8000/health
-# 预期：{"status":"healthy","database":"ok"}
+# 预期：{"status":"healthy","version":"1.0.0","database":"connected"}
 
 # 数据库关闭时
 docker-compose stop db
@@ -1240,7 +1240,7 @@ poetry run alembic upgrade head
 poetry run uvicorn app.main:app --reload
 ```
 
-Verify: http://localhost:8000/health should return `{"status":"healthy","database":"ok"}`
+Verify: http://localhost:8000/health should return `{"status":"healthy","version":"1.0.0","database":"connected"}`
 
 ## Step 3: Mobile Setup
 
@@ -1427,7 +1427,7 @@ pyenv local 3.11
 
 - [ ] `npm install && npx expo start` 成功启动移动端
 - [ ] `poetry install && poetry run uvicorn app.main:app` 成功启动后端
-- [ ] `curl localhost:8000/health` 返回 `{"status":"healthy","database":"ok"}`
+- [ ] `curl localhost:8000/health` 返回 `{"status":"healthy","version":"1.0.0","database":"connected"}`
 - [ ] `curl localhost:8000/docs` 返回 Swagger UI
 - [ ] `docker-compose up` 成功启动所有服务
 - [ ] `alembic upgrade head` 成功执行迁移

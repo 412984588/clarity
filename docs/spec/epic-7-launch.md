@@ -80,7 +80,7 @@
 
 ### 3.1 后端 Health/Metrics 端点
 
-**现有**: `/health` 返回 `{"status":"healthy","database":"ok"}`
+**现有**: `/health` 返回 `{"status":"healthy","version":"1.0.0","database":"connected"}`
 
 **增强**:
 - `/health/ready`: Kubernetes readiness probe

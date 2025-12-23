@@ -172,7 +172,7 @@ Database is required for all data persistence. Migration system ensures schema c
 
 2. **Given** Alembic configured, **When** developer runs `alembic upgrade head`, **Then** `users` table exists with columns: id, email, created_at
 
-3. **Given** database connection, **When** `/health` is called, **Then** response includes `{"database": "ok"}`
+3. **Given** database connection, **When** `/health` is called, **Then** response includes `{"database": "connected"}`
 
 4. **Given** database is down, **When** `/health` is called, **Then** response includes `{"database": "error"}` with status 503
 
