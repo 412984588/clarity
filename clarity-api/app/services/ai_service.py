@@ -22,6 +22,8 @@ class AIService:
             return self._stream_openai(system_prompt, user_prompt)
         elif self.provider == "anthropic":
             return self._stream_anthropic(system_prompt, user_prompt)
+        elif self.provider == "openrouter":
+            return self._stream_openrouter(system_prompt, user_prompt)
         else:
             raise ValueError(f"Unsupported LLM provider: {self.provider}")
 
@@ -70,6 +72,55 @@ class AIService:
             async with client.stream(
                 "POST",
                 "https://api.openai.com/v1/chat/completions",
+                headers=headers,
+                json=payload,
+            ) as response:
+                response.raise_for_status()
+                async for line in response.aiter_lines():
+                    if not line or not line.startswith("data:"):
+                        continue
+                    data = line[len("data:") :].strip()
+                    if data == "[DONE]":
+                        break
+                    try:
+                        payload = json.loads(data)
+                    except json.JSONDecodeError:
+                        continue
+                    delta = payload.get("choices", [{}])[0].get("delta", {})
+                    content = delta.get("content")
+                    if content:
+                        yield content
+
+    async def _stream_openrouter(
+        self, system_prompt: str, user_prompt: str
+    ) -> AsyncGenerator[str, None]:
+        api_key = self.settings.openrouter_api_key
+        if not api_key:
+            raise ValueError("OPENROUTER_API_KEY is not configured")
+
+        base_url = self.settings.openrouter_base_url.rstrip("/")
+        payload = {
+            "model": self.settings.llm_model,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            "stream": True,
+            "max_tokens": self.settings.llm_max_tokens,
+        }
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        }
+        if self.settings.openrouter_referer:
+            headers["HTTP-Referer"] = self.settings.openrouter_referer
+        if self.settings.openrouter_app_name:
+            headers["X-Title"] = self.settings.openrouter_app_name
+
+        async with httpx.AsyncClient(timeout=self.timeout) as client:
+            async with client.stream(
+                "POST",
+                f"{base_url}/chat/completions",
                 headers=headers,
                 json=payload,
             ) as response:
