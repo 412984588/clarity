@@ -1,4 +1,4 @@
-from collections import OrderedDict
+import hashlib
 from datetime import datetime, timezone
 from typing import Optional
 from uuid import UUID
@@ -7,19 +7,16 @@ import stripe
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 
 from app.config import get_settings
 from app.database import get_db
 from app.models.subscription import Subscription, Usage
+from app.models.webhook_event import ProcessedWebhookEvent
 from app.services import stripe_service
 from app.utils.datetime_utils import utc_now
 
 router = APIRouter(prefix="/webhooks", tags=["webhooks"])
-
-# LRU-style 幂等性缓存，防止内存无限增长
-# 生产环境建议迁移到 Redis (TTL=24h)
-_MAX_PROCESSED_EVENTS = 10000
-processed_event_ids: OrderedDict[str, bool] = OrderedDict()
 
 
 def _resolve_tier(price_id: str) -> Optional[str]:
@@ -41,6 +38,32 @@ def _period_end_from_timestamp(timestamp: Optional[int]) -> Optional[datetime]:
     if timestamp is None:
         return None
     return datetime.fromtimestamp(timestamp, tz=timezone.utc).replace(tzinfo=None)
+
+
+def _compute_payload_hash(payload: bytes) -> str:
+    return hashlib.sha256(payload).hexdigest()
+
+
+async def _check_and_record_event(
+    db: AsyncSession, event_id: str, event_type: str, payload_hash: str
+) -> bool:
+    if not event_id:
+        return True
+
+    stmt = (
+        pg_insert(ProcessedWebhookEvent)
+        .values(
+            event_id=event_id,
+            event_type=event_type,
+            source="stripe",
+            payload_hash=payload_hash,
+            processed_at=datetime.now(timezone.utc).replace(tzinfo=None),
+        )
+        .on_conflict_do_nothing(index_elements=["event_id"])
+    )
+
+    result = await db.execute(stmt)
+    return result.rowcount > 0  # type: ignore[attr-defined]
 
 
 async def _get_subscription(
@@ -101,15 +124,14 @@ async def stripe_webhook(
         raise HTTPException(status_code=400, detail={"error": "INVALID_SIGNATURE"})
 
     event_id = str(event.get("id") or "")
-    if event_id and event_id in processed_event_ids:
+    event_type = str(event.get("type") or "")
+    payload_hash = _compute_payload_hash(payload)
+    is_new_event = await _check_and_record_event(
+        db, event_id=event_id, event_type=event_type, payload_hash=payload_hash
+    )
+    if not is_new_event:
         return {"received": True}
-    if event_id:
-        processed_event_ids[event_id] = True
-        # LRU 淘汰：超过最大容量时删除最早的条目
-        while len(processed_event_ids) > _MAX_PROCESSED_EVENTS:
-            processed_event_ids.popitem(last=False)
 
-    event_type = event.get("type")
     data_object = event.get("data", {}).get("object", {})
 
     if event_type == "checkout.session.completed":

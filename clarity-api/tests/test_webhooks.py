@@ -11,6 +11,7 @@ from sqlalchemy import select
 from tests.conftest import TestingSessionLocal
 from app.models.subscription import Subscription
 from app.models.user import User
+from app.models.webhook_event import ProcessedWebhookEvent
 
 
 async def _create_user_with_subscription(email: str) -> str:
@@ -101,6 +102,57 @@ async def test_webhook_checkout_completed(client: AsyncClient):
 
     assert response.status_code == 200
     assert response.json() == {"received": True}
+
+
+@pytest.mark.asyncio
+async def test_webhook_stripe_idempotency(client: AsyncClient):
+    """Duplicate Stripe events are ignored via DB idempotency."""
+    user_id = await _create_user_with_subscription("webhook-idempotency@example.com")
+
+    event = {
+        "id": f"evt_{uuid4().hex[:14]}",
+        "type": "checkout.session.completed",
+        "data": {
+            "object": {
+                "customer": "cus_new_customer",
+                "subscription": "sub_new_subscription",
+                "client_reference_id": user_id,
+                "metadata": {"user_id": user_id, "price_id": "price_standard"},
+            }
+        },
+    }
+
+    with patch("app.routers.webhooks.stripe_service") as mock_stripe:
+        mock_stripe.verify_webhook.return_value = event
+        with patch("app.routers.webhooks.get_settings") as mock_settings:
+            mock_settings.return_value.stripe_price_standard = "price_standard"
+            mock_settings.return_value.stripe_price_pro = "price_pro"
+
+            first = await client.post(
+                "/webhooks/stripe",
+                content=json.dumps(event),
+                headers={
+                    "Content-Type": "application/json",
+                    "Stripe-Signature": "valid_sig",
+                },
+            )
+            second = await client.post(
+                "/webhooks/stripe",
+                content=json.dumps(event),
+                headers={
+                    "Content-Type": "application/json",
+                    "Stripe-Signature": "valid_sig",
+                },
+            )
+
+    assert first.status_code == 200
+    assert second.status_code == 200
+
+    async with TestingSessionLocal() as session:
+        result = await session.execute(select(ProcessedWebhookEvent))
+        events = result.scalars().all()
+        assert len(events) == 1
+        assert events[0].source == "stripe"
 
 
 @pytest.mark.asyncio
