@@ -1,11 +1,28 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 22:45
+**最后更新**: 2025-12-23 23:00
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 23:00] - App Store / Play Store 提交清单
+
+- [x] **应用商店提交清单**: `docs/release/store-submission-checklist.md`
+  - Purpose（目的说明）
+  - iOS Submission Checklist（23 项：Account/Config/Build/Review）
+  - Android Submission Checklist（23 项：Account/Config/Build/Listing/Compliance）
+  - Required Assets（截图尺寸、图标、文案、URLs）
+  - Versioning & Release Tracks（iOS/Android 发布轨道 + Staged Rollout）
+  - Review Notes / Reviewer Instructions（审核说明占位）
+  - Blockers（8 项：账号、隐私政策、支付合规等）
+  - Submission Timeline
+  - Related Documents
+
+> 完整的 iOS / Android 应用商店提交流程清单
+
+---
 
 ### [2025-12-23 22:45] - 上线指标与监控清单
 

@@ -69,6 +69,7 @@
 | [Launch Day Runbook](launch-day-runbook.md) | 上线当天运行手册 | READY |
 | [Incident Response](incident-response.md) | 故障响应手册 | READY |
 | [Release Metrics](release-metrics.md) | 上线指标与监控清单 | READY |
+| [Store Submission Checklist](store-submission-checklist.md) | App Store / Play Store 提交清单 | READY |
 | [Release Checklist](release-checklist.md) | 发布检查清单 | READY |
 | [RELEASE](../../RELEASE.md) | 版本发布说明 | READY |
 
