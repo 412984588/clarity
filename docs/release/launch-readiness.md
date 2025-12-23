@@ -32,7 +32,7 @@ Clarity 代码库已完成全部 8 个 Epic 的开发，通过 103 个后端测�
 | Database | PostgreSQL starts | **READY** | Container running | - |
 | Migrations | Alembic runs | **READY** | `alembic upgrade head` success | - |
 | API Server | Uvicorn starts | **READY** | Listening on port 8000 | - |
-| Health Check | /health returns 200 | **READY** | `{"status":"healthy","version":"1.0.0"}` | - |
+| Health Check | /health returns 200 | **READY** | `{"status":"healthy","version":"1.0.0","database":"connected"}` | - |
 | Smoke Tests | All endpoints green | **READY** | /health, /ready, /live PASS | - |
 
 ### Mobile Builds
