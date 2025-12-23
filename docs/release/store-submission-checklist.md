@@ -225,8 +225,8 @@ Password: [待填写]
 |---------|----------|--------|--------|------------|
 | **Apple Developer Account** | iOS | 无法构建/提交 | BLOCKED | 注册 Apple Developer Program |
 | **Google Play Account** | Android | 无法提交 | BLOCKED | 注册 Google Play Developer |
-| **Privacy Policy URL** | Both | 必须有有效 URL | PENDING | 部署隐私政策页面 |
-| **Support URL** | Both | 必须有有效 URL | PENDING | 部署支持页面 |
+| **Privacy Policy URL** | Both | 必须有有效 URL | PENDING | 部署隐私政策页面（草稿：`docs/release/privacy.md`） |
+| **Support URL** | Both | 必须有有效 URL | PENDING | 部署支持页面（草稿：`docs/release/support.md`） |
 | **Terms of Service** | Both | 推荐 | PENDING | 部署服务条款页面 |
 | **In-App Purchase Setup** | Both | 订阅功能必须 | PENDING | 配置 Stripe/RevenueCat |
 | **Sign in with Apple** | iOS | 若用第三方登录则必须 | PENDING | 实现 Apple Sign-In |
