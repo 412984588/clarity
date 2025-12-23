@@ -25,6 +25,7 @@
 | [Launch Readiness](launch-readiness.md) | 上线准备度评分卡 (Go/No-Go) | READY |
 | [Launch Dependencies](launch-dependencies.md) | 上线依赖追踪表 | READY |
 | [Risk Register](risk-register.md) | 上线风险登记表 | READY |
+| [Go/No-Go Minutes](go-no-go-minutes.md) | 发布决策会议纪要模板 | READY |
 | [One-Page Update](one-page-update.md) | 投资人/合作方一页版简报 | READY |
 
 ---
