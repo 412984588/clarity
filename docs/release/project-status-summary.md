@@ -56,7 +56,7 @@
 
 | Item | Status | Notes |
 |------|--------|-------|
-| Local Deploy Rehearsal | **PASS** | All health endpoints green |
+| Local Deploy Rehearsal | **PASS** | All health endpoints green (`docs/release/deploy-prod-smoke-local-2025-12-23.log`) |
 | Android Preview Build | **PASS** | APK available for download |
 | iOS Preview Build | **BLOCKED** | Apple Developer Account required |
 | Release Verification Script | **PASS** | 103 tests, lint, type check (`docs/release/verify-2025-12-23.log`) |
