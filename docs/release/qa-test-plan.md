@@ -12,6 +12,7 @@
 
 本测试计划覆盖 Clarity 应用的核心功能验证，包括：
 - 用户认证（邮箱、Google、Apple）
+- 账号数据导出与删除
 - Solve 问题解决流程（5 步）
 - 情绪检测与 UI 反馈
 - 后端健康检查端点
@@ -60,6 +61,8 @@
 | **AUTH-03** | Auth | 邮箱登录密码错误 | 显示错误提示，不跳转 | NOT RUN |
 | **AUTH-04** | Auth | Google OAuth 登录 | 跳转 Google，授权后返回登录成功 | NOT RUN |
 | **AUTH-05** | Auth | Apple Sign-In 登录 | 跳转 Apple，授权后返回登录成功 | BLOCKED |
+| **ACC-01** | Account | 导出账号数据 | 导出 JSON 可分享 | NOT RUN |
+| **ACC-02** | Account | 删除账号 | 删除后返回登录，账号不可再用 | NOT RUN |
 | **SOLVE-01** | Solve | Step 1: Receive 输入问题 | 问题保存，进入 Clarify | NOT RUN |
 | **SOLVE-02** | Solve | Step 2: Clarify 回答追问 | AI 提问，用户回答后进入 Reframe | NOT RUN |
 | **SOLVE-03** | Solve | Step 3: Reframe 重新定义 | 显示重新定义的问题 | NOT RUN |

@@ -48,6 +48,8 @@
 - [ ] **A7 Reset password**: Use token to reset and login. If no token flow, mark BLOCKED.
 - [ ] **A8 Google OAuth**: Login via Google succeeds. If client IDs not configured, mark BLOCKED.
 - [ ] **A9 Apple Sign-In (iOS)**: Login via Apple succeeds. If no Apple Dev account, mark BLOCKED.
+- [ ] **A10 Export data**: Settings -> Data & Privacy -> Export My Data shows share sheet with JSON.
+- [ ] **A11 Delete account**: Settings -> Data & Privacy -> Delete Account confirms and returns to login.
 
 ### B. Solve 5-Step Flow
 
