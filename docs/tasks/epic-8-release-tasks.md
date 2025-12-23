@@ -21,7 +21,7 @@
 
 ### 1.2 健康检查端点
 - [ ] **Task 1.2.1**: 实现 /health 端点
-  - 返回 JSON: `{ "status": "healthy", "version": "x.x.x", "db": "connected" }`
+  - 返回 JSON: `{ "status": "healthy", "version": "x.x.x", "database": "connected" }`
   - 检查数据库连接
   - 文件: `clarity-api/app/routers/health.py`
 
