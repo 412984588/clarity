@@ -363,7 +363,7 @@ PORT=8000
 cd clarity-api
 poetry run uvicorn app.main:app --reload &
 sleep 3 && curl http://localhost:8000/health
-``` → returns `{"status":"healthy"}` |
+``` → returns `{"status":"healthy"}`（当前实现还包含 version 和 database 字段） |
 
 **File: `app/main.py`**
 ```python
@@ -728,12 +728,16 @@ async def health_check(db: AsyncSession = Depends(get_db)):
     """健康检查端点（含数据库状态）"""
     try:
         await db.execute(text("SELECT 1"))
-        db_status = "ok"
+        db_status = "connected"
     except Exception:
         db_status = "error"
 
-    status = "healthy" if db_status == "ok" else "degraded"
-    return {"status": status, "database": db_status}
+    health_status = "healthy" if db_status == "connected" else "degraded"
+    return {
+        "status": health_status,
+        "version": settings.app_version,
+        "database": db_status,
+    }
 
 
 @app.get("/")

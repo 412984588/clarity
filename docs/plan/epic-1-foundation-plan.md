@@ -467,7 +467,7 @@ async def root():
 poetry run uvicorn app.main:app --reload
 # 另一个终端：
 curl http://localhost:8000/health
-# 预期：{"status":"healthy"}
+# 预期：{"status":"healthy"}（当前实现还包含 version 和 database 字段）
 ```
 
 ### Task 1.2.5: Create Dockerfile
@@ -541,7 +541,7 @@ volumes:
 ```bash
 docker-compose up -d
 curl http://localhost:8000/health
-# 预期：{"status":"healthy"}
+# 预期：{"status":"healthy"}（当前实现还包含 version 和 database 字段）
 docker-compose down
 ```
 
@@ -864,14 +864,17 @@ async def health_check(db: AsyncSession = Depends(get_db)):
     """健康检查端点（含数据库状态）"""
     try:
         await db.execute(text("SELECT 1"))
-        db_status = "ok"
+        db_status = "connected"
     except Exception:
         db_status = "error"
 
-    status = "healthy" if db_status == "connected" else "degraded"
-    status_code = 200 if db_status == "connected" else 503
+    health_status = "healthy" if db_status == "connected" else "degraded"
 
-    return {"status": status, "database": db_status}
+    return {
+        "status": health_status,
+        "version": settings.app_version,
+        "database": db_status,
+    }
 
 
 @app.get("/")
@@ -888,7 +891,7 @@ curl http://localhost:8000/health
 # 数据库关闭时
 docker-compose stop db
 curl http://localhost:8000/health
-# 预期：{"status":"degraded","database":"error"} 或连接错误
+# 预期：{"status":"degraded","version":"1.0.0","database":"error"} 或连接错误
 docker-compose start db
 ```
 
