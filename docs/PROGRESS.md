@@ -1,11 +1,23 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 20:45
+**最后更新**: 2025-12-23 21:00
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 21:00] - 上线风险登记表
+
+- [x] **风险登记表**: `docs/release/risk-register.md`
+  - Overview（1 段）
+  - Risk Table（12 条风险）
+  - 覆盖：域名、Apple/Google 账号、Stripe/RevenueCat、LLM Key、OAuth、数据库、监控、发布窗口、回滚、QA
+  - Impact / Likelihood Matrix
+
+> 用于上线决策参考和风险跟踪
+
+---
 
 ### [2025-12-23 20:45] - QA/UAT 执行记录模板
 
