@@ -115,6 +115,8 @@ Clarity 代码库已完成全部 8 个 Epic 的开发，通过 103 个后端测�
 | Project Status Summary | `docs/release/project-status-summary.md` | Overall project status |
 | Launch Dependencies | `docs/release/launch-dependencies.md` | Dependency tracking |
 | Local Deploy Verify | `docs/release/local-deploy-verify.md` | Local smoke test results |
+| Local Smoke Log (2025-12-23) | `docs/release/deploy-prod-smoke-local-2025-12-23.log` | deploy_prod_smoke.sh output |
+| Release Verify Log (2025-12-23) | `docs/release/verify-2025-12-23.log` | Lint/type/test verification |
 | EAS Preview Verify | `docs/release/eas-preview-verify.md` | Mobile build status |
 | Demo Script | `docs/release/demo-script.md` | Stakeholder demo guide |
 | Prod Deploy Runbook | `docs/PROD_DEPLOY.md` | Deployment steps |
