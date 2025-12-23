@@ -13,7 +13,11 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.clarity.mobile",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -31,6 +35,13 @@
       "expo-secure-store",
       "expo-router",
       "expo-localization"
-    ]
+    ],
+    "extra": {
+      "apiUrl": "http://localhost:8000",
+      "router": {},
+      "eas": {
+        "projectId": "13e48ca4-1654-44fe-bbce-d67c3ddbaa47"
+      }
+    }
   }
 }
