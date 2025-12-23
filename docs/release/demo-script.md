@@ -60,7 +60,7 @@
 - [ ] Docker 已启动（`docker info` 无报错）
 - [ ] PostgreSQL 容器运行中（`docker compose up -d db`）
 - [ ] 后端服务启动（`poetry run uvicorn app.main:app --port 8000`）
-- [ ] `/health` 返回 `{"status":"healthy"}`
+- [ ] `/health` 返回 `{"status":"healthy","version":"1.0.0","database":"connected"}`
 
 ### 演示账号
 

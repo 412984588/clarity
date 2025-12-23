@@ -134,7 +134,7 @@ npx expo start --android
 
 ```bash
 curl http://localhost:8000/health
-# 应返回 {"status":"healthy","database":"ok"}
+# 应返回 {"status":"healthy","version":"1.0.0","database":"connected"}
 ```
 
 ### 代码质量检查
