@@ -1,11 +1,27 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 21:45
+**最后更新**: 2025-12-23 22:00
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 22:00] - 故障响应手册
+
+- [x] **故障响应手册**: `docs/release/incident-response.md`
+  - Purpose & Scope（范围定义）
+  - Severity Levels（P0/P1/P2 定义 + Matrix）
+  - Detection & Triage（信号来源 + 初步判断）
+  - Response Workflow（5 阶段：Detection → Triage → Contain → Recover → Postmortem）
+  - Communication Plan（内部/外部 + Message Templates）
+  - Rollback Decision Guide（何时回滚 + 回滚流程）
+  - Postmortem Template（最简复盘模板）
+  - Related Documents
+
+> 定义生产环境故障的响应流程、通信规范和复盘模板
+
+---
 
 ### [2025-12-23 21:45] - 上线当天运行手册
 
