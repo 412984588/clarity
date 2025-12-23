@@ -26,6 +26,7 @@
 | [Launch Dependencies](launch-dependencies.md) | 上线依赖追踪表 | READY |
 | [Risk Register](risk-register.md) | 上线风险登记表 | READY |
 | [Go/No-Go Minutes](go-no-go-minutes.md) | 发布决策会议纪要模板 | READY |
+| [Ownership Matrix](ownership-matrix.md) | 上线 RACI/负责人矩阵 | READY |
 | [One-Page Update](one-page-update.md) | 投资人/合作方一页版简报 | READY |
 
 ---

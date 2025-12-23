@@ -148,6 +148,7 @@
 | **QA execution log** | See `docs/release/qa-execution-log.md` | High |
 | **Risk register** | See `docs/release/risk-register.md` | High |
 | **Go/No-Go minutes** | See `docs/release/go-no-go-minutes.md` | High |
+| **Ownership matrix** | See `docs/release/ownership-matrix.md` | High |
 | Finalize hosting provider decision | Vercel vs Railway vs Fly.io | High |
 | Finalize database provider decision | Neon vs Supabase vs RDS | High |
 | Prepare Stripe products/prices | Create in Stripe test mode | Medium |
