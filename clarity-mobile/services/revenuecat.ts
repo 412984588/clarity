@@ -1,8 +1,7 @@
 import Purchases, { CustomerInfo, PurchasesOfferings, PurchasesPackage } from 'react-native-purchases';
 import { Platform } from 'react-native';
 
-const REVENUECAT_API_KEY_IOS = 'appl_xxx'; // TODO: 配置
-const REVENUECAT_API_KEY_ANDROID = 'goog_xxx'; // TODO: 配置
+import { REVENUECAT_API_KEY_ANDROID, REVENUECAT_API_KEY_IOS } from './config';
 
 export const configureRevenueCat = async (): Promise<void> => {
   try {

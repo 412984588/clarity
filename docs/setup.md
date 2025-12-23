@@ -81,6 +81,10 @@ npm install
 cp .env.example .env.development
 ```
 
+RevenueCat 需要配置以下变量（构建时注入）：
+- `EXPO_PUBLIC_REVENUECAT_API_KEY_IOS`
+- `EXPO_PUBLIC_REVENUECAT_API_KEY_ANDROID`
+
 ### 3. 启动开发服务器
 
 ```bash

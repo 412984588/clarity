@@ -4,6 +4,7 @@
  */
 
 import { getDeviceFingerprint, getTokens } from './auth';
+import { API_URL } from './config';
 
 import type {
   SolveSession,
@@ -13,8 +14,6 @@ import type {
   SessionPatchRequest,
   SessionPatchResponse,
 } from '../types/solve';
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8000';
 
 /**
  * Create a new solve session
@@ -49,6 +48,53 @@ export interface StreamCallbacks {
   onCrisis: (data: CrisisResponse) => void;
   onError: (error: Error) => void;
 }
+
+const handleSseData = (dataStr: string, callbacks: StreamCallbacks): boolean => {
+  if (!dataStr || dataStr === '[DONE]') {
+    return false;
+  }
+
+  try {
+    const data = JSON.parse(dataStr);
+
+    if (data?.blocked && data?.reason === 'CRISIS') {
+      callbacks.onCrisis(data as CrisisResponse);
+      return true;
+    }
+
+    if (data?.content !== undefined) {
+      callbacks.onToken(data.content);
+    }
+
+    if (data?.next_step !== undefined || data?.emotion_detected !== undefined) {
+      callbacks.onDone(data as StreamDoneEvent);
+    }
+  } catch {
+    return false;
+  }
+
+  return false;
+};
+
+const parseSseText = (text: string, callbacks: StreamCallbacks): boolean => {
+  const lines = text.split('\n');
+  let handled = false;
+  for (const line of lines) {
+    if (line.startsWith('event: ')) {
+      continue;
+    }
+
+    if (line.startsWith('data: ')) {
+      handled = true;
+      const shouldStop = handleSseData(line.slice(6), callbacks);
+      if (shouldStop) {
+        return true;
+      }
+    }
+  }
+
+  return handled;
+};
 
 /**
  * Send a message to the session and stream the response
@@ -96,9 +142,17 @@ export const streamMessage = async (
   }
 
   // Handle SSE stream
-  const reader = response.body?.getReader();
+  const reader = response.body?.getReader?.();
   if (!reader) {
-    callbacks.onError(new Error('No response body'));
+    const text = await response.text();
+    if (!text) {
+      callbacks.onError(new Error('Empty response body'));
+      return;
+    }
+    const handled = parseSseText(text, callbacks);
+    if (!handled) {
+      callbacks.onError(new Error('Stream not supported'));
+    }
     return;
   }
 
@@ -125,29 +179,9 @@ export const streamMessage = async (
         }
 
         if (line.startsWith('data: ')) {
-          const dataStr = line.slice(6);
-          if (!dataStr) continue;
-
-          try {
-            const data = JSON.parse(dataStr);
-
-            // Check for crisis in stream
-            if (data.blocked && data.reason === 'CRISIS') {
-              callbacks.onCrisis(data as CrisisResponse);
-              return;
-            }
-
-            // Token event
-            if (data.content !== undefined) {
-              callbacks.onToken(data.content);
-            }
-
-            // Done event
-            if (data.next_step !== undefined || data.emotion_detected !== undefined) {
-              callbacks.onDone(data as StreamDoneEvent);
-            }
-          } catch {
-            // Ignore parse errors for partial data
+          const shouldStop = handleSseData(line.slice(6), callbacks);
+          if (shouldStop) {
+            return;
           }
         }
       }
