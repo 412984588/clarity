@@ -68,7 +68,7 @@
 | Apple Developer 账号未开通 | AUTH-05 无法测试 | 等待账号开通 |
 | Stripe/RevenueCat 未激活 | SUB-01/02/03 无法测试 | 标记 BLOCKED，优先测试其他 |
 | 域名未配置 | 无法测试生产环境 | 使用本地环境验证 |
-| LLM provider 未授权 | Solve/Emotion 流程无法测试 | 更新 OpenAI/Anthropic API Key |
+| LLM provider 未授权 | Solve/Emotion 流程无法测试 | OpenAI 401（LLM_PROVIDER=openai），请更新 OpenAI Key 或切换到 Anthropic |
 
 ---
 
@@ -108,3 +108,4 @@
 | 2025-12-23 | Automation (Codex) | Local | IN PROGRESS | Health endpoints via deploy_prod_smoke.sh |
 | 2025-12-23 | Automation (Codex) | Local | IN PROGRESS | Updated with pytest evidence (106 tests) |
 | 2025-12-23 | Automation (Codex) | Local | IN PROGRESS | Solve/Emotion blocked: LLM provider 401 |
+| 2025-12-23 | Automation (Codex) | Local | IN PROGRESS | Retest after .env update: OpenAI 401 persists |

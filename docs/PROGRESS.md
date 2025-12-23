@@ -1,11 +1,21 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 11:05
+**最后更新**: 2025-12-23 16:33
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-23 16:33] - QA Solve/Emotion 复测仍被阻塞
+
+- [x] **QA Execution Log**: `docs/release/qa-execution-log.md`
+  - OpenAI 401 仍存在（LLM_PROVIDER=openai）
+  - Solve/Emotion 保持 BLOCKED
+
+> 需要更新 OpenAI Key 或切换到 Anthropic 后再复测
+
+---
 
 ### [2025-12-23 11:05] - QA 执行日志更新（LLM 未授权）
 
