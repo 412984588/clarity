@@ -65,6 +65,7 @@
 | Document | Purpose | Status |
 |----------|---------|--------|
 | [Account & Deploy Action List](account-deploy-action-list.md) | 账号/部署最短行动清单 | READY |
+| [Account & Deploy Execution Template](account-deploy-execution-template.md) | 账号/部署执行模板 | READY |
 | [Prod Preflight](prod-preflight.md) | 生产部署预检清单 | READY |
 | [PROD_DEPLOY](../PROD_DEPLOY.md) | 生产部署 Runbook | READY |
 | [Launch Day Runbook](launch-day-runbook.md) | 上线当天运行手册 | READY |
