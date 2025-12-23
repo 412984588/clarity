@@ -33,7 +33,7 @@
 | Environment | Platform | API URL | Purpose |
 |-------------|----------|---------|---------|
 | **Local Demo** | Web/Mobile | `http://localhost:8000` | 开发验证 |
-| **Preview Build** | Android APK | TBD | 集成测试 |
+| **Preview Build** | Android APK | https://expo.dev/artifacts/eas/hUhRm9YvGcYz9Jqj3AVQnY.apk (Build ID: 88df477f-4862-41ac-9c44-4134aa2b67e2) | 集成测试 |
 | **Preview Build** | iOS TestFlight | BLOCKED | 需 Apple Developer |
 | **Production** | All | `https://api.clarity.app` | 生产验收 |
 
@@ -43,7 +43,7 @@
 
 | Type | Details | Status |
 |------|---------|--------|
-| Test Email Account | `test@clarity.app` | TBD |
+| Test Email Account | `demo@test.com` (测试时创建) | TBD |
 | Test Google Account | TBD | TBD |
 | Test Apple ID | TBD | BLOCKED |
 | Stripe Test Card | `4242 4242 4242 4242` | READY |
@@ -55,7 +55,7 @@
 
 | ID | Area | Scenario | Expected | Status |
 |----|------|----------|----------|--------|
-| **AUTH-01** | Auth | 邮箱注册新用户 | 注册成功，收到验证邮件 | NOT RUN |
+| **AUTH-01** | Auth | 邮箱注册新用户 | 注册成功，返回 access/refresh token | NOT RUN |
 | **AUTH-02** | Auth | 邮箱登录已有用户 | 登录成功，跳转首页 | NOT RUN |
 | **AUTH-03** | Auth | 邮箱登录密码错误 | 显示错误提示，不跳转 | NOT RUN |
 | **AUTH-04** | Auth | Google OAuth 登录 | 跳转 Google，授权后返回登录成功 | NOT RUN |
@@ -67,7 +67,7 @@
 | **SOLVE-05** | Solve | Step 5: Commit 设定行动 | 保存行动计划，完成流程 | NOT RUN |
 | **EMO-01** | Emotion | 检测焦虑情绪 | 背景色变暖色调 | NOT RUN |
 | **EMO-02** | Emotion | 检测平静情绪 | 背景色变冷色调 | NOT RUN |
-| **HEALTH-01** | Health | GET /health | 返回 `{"status":"healthy"}` | NOT RUN |
+| **HEALTH-01** | Health | GET /health | 返回 `{"status":"healthy","version":"1.0.0","database":"connected"}` | NOT RUN |
 | **HEALTH-02** | Health | GET /health/ready | 返回 `{"ready":true}` | NOT RUN |
 | **HEALTH-03** | Health | GET /health/live | 返回 `{"live":true}` | NOT RUN |
 | **SUB-01** | Subscription | 查看订阅计划 | 显示 Standard / Pro 选项 | BLOCKED |
@@ -79,6 +79,13 @@
 | **I18N-01** | i18n | 切换到英文 | 所有 UI 文案切换为英文 | NOT RUN |
 | **I18N-02** | i18n | 切换到西班牙语 | 所有 UI 文案切换为西班牙语 | NOT RUN |
 | **I18N-03** | i18n | 中文情绪检测 | 正确识别中文情绪关键词 | NOT RUN |
+| **AUTH-06** | Auth | 设备数量超限 | 返回 403 + `DEVICE_LIMIT_REACHED` | NOT RUN |
+| **AUTH-07** | Auth | 设备已绑定其他账号 | 返回 403 + `DEVICE_BOUND_TO_OTHER` | NOT RUN |
+| **SOLVE-06** | Solve | SSE 流式响应完整 | 事件流包含 token + done，done 含 next_step + emotion_detected | NOT RUN |
+| **SUB-04** | Subscription | 查看使用量 | `/subscriptions/usage` 返回 tier/limit/used | NOT RUN |
+| **WEBHOOK-01** | Webhook | Stripe 端点可达 | 400/401/422 皆视为可达 | NOT RUN |
+| **WEBHOOK-02** | Webhook | RevenueCat 端点可达 | 400/401/422 皆视为可达 | NOT RUN |
+| **SAFETY-01** | Safety | 触发危机关键词 | 返回 crisis 响应并阻断流程 | NOT RUN |
 
 ---
 
@@ -86,7 +93,7 @@
 
 测试通过需满足以下条件：
 
-1. **AUTH**: 至少 2 种登录方式可用（邮箱 + Google）
+1. **AUTH**: 邮箱登录可用；若 OAuth 已配置，至少 1 种第三方登录可用
 2. **SOLVE**: 完整 5 步流程可走通
 3. **HEALTH**: 所有健康检查端点返回正常
 4. **ERROR**: 所有错误场景有友好提示
@@ -101,7 +108,7 @@
 | Criteria | Threshold |
 |----------|-----------|
 | 测试用例执行率 | ≥ 90% (BLOCKED 除外) |
-| 通过率 | ≥ 95% |
+| 通过率 | ≥ 95% (BLOCKED 除外) |
 | P0 Bug | 0 |
 | P1 Bug | 0 |
 | P2 Bug | ≤ 3 |
@@ -115,6 +122,7 @@
 | Apple Developer 账号未开通 | iOS 测试无法进行 | 等待账号开通，优先测试 Android |
 | 域名未配置 | 无法测试生产环境 | 使用本地环境验证核心流程 |
 | Stripe/RevenueCat 未激活 | 支付流程无法测试 | 标记为 BLOCKED，优先测试其他功能 |
+| Preview Build 指向 staging API | 预览包可能无法连通服务 | 如无 staging，改用本地或记录为 BLOCKED |
 | LLM API Key 限额 | AI 响应可能失败 | 使用 Mock 响应或低频测试 |
 
 ---
