@@ -1,7 +1,7 @@
 # Environment Variables Reference
 
 **Version**: 1.0
-**Last Updated**: 2025-12-23
+**Last Updated**: 2025-12-24
 
 This document lists all environment variables used by the Clarity API.
 
@@ -20,6 +20,7 @@ This document lists all environment variables used by the Clarity API.
 | `OPENAI_API_KEY` | Conditional | Required if `LLM_PROVIDER=openai` |
 | `ANTHROPIC_API_KEY` | Conditional | Required if `LLM_PROVIDER=anthropic` |
 | `OPENROUTER_API_KEY` | Conditional | Required if `LLM_PROVIDER=openrouter` |
+| `OPENROUTER_REASONING_FALLBACK` | No | Use reasoning tokens if OpenRouter content is empty |
 | `STRIPE_SECRET_KEY` | Yes | Stripe API secret key |
 | `STRIPE_WEBHOOK_SECRET` | Yes | Stripe webhook signing secret |
 | `REVENUECAT_WEBHOOK_SECRET` | Yes | RevenueCat webhook secret |
@@ -119,10 +120,17 @@ APPLE_CLIENT_ID=com.yourcompany.clarity
 - **Required**: No
 - **Description**: Optional HTTP referer header for OpenRouter
 
+#### `OPENROUTER_REASONING_FALLBACK`
+- **Required**: No
+- **Default**: `false`
+- **Description**: If OpenRouter streaming returns only reasoning tokens, emit them as content
+- **Note**: This may surface model reasoning text; enable only when you accept that behavior
+
 #### `LLM_MODEL`
 - **Required**: No
 - **Default**: `gpt-4o-mini`
 - **Description**: Model identifier
+- **OpenRouter**: For DeepSeek, prefer `deepseek/deepseek-chat` unless you enable `OPENROUTER_REASONING_FALLBACK`
 
 #### `LLM_TIMEOUT`
 - **Required**: No
