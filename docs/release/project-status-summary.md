@@ -164,6 +164,7 @@ Clarity is currently in a free beta testing phase. Payment functionality (Stripe
 
 | Task | Description | Priority |
 |------|-------------|----------|
+| **🚀 Free Beta - Start Here** | See `docs/release/free-beta-start-here.md` - 1-hour setup + 7-day plan | **High** |
 | **Free beta launch checklist** | See `docs/release/free-beta-launch-checklist.md` | High |
 | **Free beta tester guide** | See `docs/release/free-beta-tester-guide.md` | High |
 | **Free beta invite templates** | See `docs/release/free-beta-invite-templates.md` | High |

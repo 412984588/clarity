@@ -7,6 +7,14 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2025-12-24 18:00] - Free Beta Start Here 指南 + 文档一致性修正
+
+- [x] **新增**: `docs/release/free-beta-start-here.md` - 快速入门指南（1小时上手 + 7天计划）
+- [x] **修正**: `index.md` - 补充 free-beta-start-here.md + store-privacy-answers.md
+- [x] **更新**: `project-status-summary.md` - Next Steps 首位新增快速入口
+
+> 详见 `docs/PROGRESS.md`
+
 ### [2025-12-24 17:30] - Beta → Production 过渡规划文档
 
 - [x] **新增**: `docs/release/beta-exit-criteria.md` - Beta 退出标准（Go/No-Go）

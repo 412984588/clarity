@@ -40,6 +40,7 @@
 
 | Document | Purpose | Status |
 |----------|---------|--------|
+| [**Free Beta - Start Here** 🚀](free-beta-start-here.md) | **快速入门指南（1小时上手 + 7天计划）** | **READY** |
 | [Free Beta Launch Checklist](free-beta-launch-checklist.md) | 免费内测上线清单（Pre-Launch/Launch Day/Week 1） | READY |
 | [Free Beta Tester Guide](free-beta-tester-guide.md) | 测试者完整指南（安装/测试/反馈） | READY |
 | [Free Beta Invite Templates](free-beta-invite-templates.md) | 邀请与沟通模板（Invite/Welcome/Reminder/Follow-up） | READY |
@@ -110,6 +111,7 @@
 |----------|---------|--------|
 | [Privacy Policy](privacy.md) | 隐私政策 | READY |
 | [Privacy Compliance Checklist](privacy-compliance-checklist.md) | 数据隐私与合规清单 | READY |
+| [Store Privacy Answers](store-privacy-answers.md) | App Store / Play Store 隐私问卷答案（草稿） | READY |
 | [Support](support.md) | 用户支持信息 | READY |
 
 ---
