@@ -114,6 +114,12 @@ async def stripe_webhook(
     stripe_signature: Optional[str] = Header(None, alias="Stripe-Signature"),
     db: AsyncSession = Depends(get_db),
 ):
+    settings = get_settings()
+    if not settings.payments_enabled:
+        raise HTTPException(
+            status_code=501, detail={"error": "PAYMENTS_DISABLED"}
+        )
+
     payload = await request.body()
     if not stripe_signature:
         raise HTTPException(status_code=400, detail={"error": "MISSING_SIGNATURE"})

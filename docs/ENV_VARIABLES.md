@@ -14,6 +14,8 @@ This document lists all environment variables used by the Clarity API.
 | `DEBUG` | Yes | Enable debug mode (set `false` in production) |
 | `DATABASE_URL` | Yes | PostgreSQL connection string |
 | `JWT_SECRET` | Yes | JWT signing secret |
+| `BETA_MODE` | No | Enable free beta mode with relaxed limits |
+| `PAYMENTS_ENABLED` | No | Enable payment features (Stripe/RevenueCat) |
 | `GOOGLE_CLIENT_ID` | Yes | Google OAuth Client ID |
 | `APPLE_CLIENT_ID` | Yes | Apple Sign In Client ID |
 | `LLM_PROVIDER` | Yes | LLM provider (`openai`, `anthropic`, `openrouter`) |
@@ -21,9 +23,9 @@ This document lists all environment variables used by the Clarity API.
 | `ANTHROPIC_API_KEY` | Conditional | Required if `LLM_PROVIDER=anthropic` |
 | `OPENROUTER_API_KEY` | Conditional | Required if `LLM_PROVIDER=openrouter` |
 | `OPENROUTER_REASONING_FALLBACK` | No | Use reasoning tokens if OpenRouter content is empty |
-| `STRIPE_SECRET_KEY` | Yes | Stripe API secret key |
-| `STRIPE_WEBHOOK_SECRET` | Yes | Stripe webhook signing secret |
-| `REVENUECAT_WEBHOOK_SECRET` | Yes | RevenueCat webhook secret |
+| `STRIPE_SECRET_KEY` | Conditional | Required if `PAYMENTS_ENABLED=true` |
+| `STRIPE_WEBHOOK_SECRET` | Conditional | Required if `PAYMENTS_ENABLED=true` |
+| `REVENUECAT_WEBHOOK_SECRET` | Conditional | Required if `PAYMENTS_ENABLED=true` |
 
 ---
 
@@ -63,6 +65,41 @@ JWT_SECRET=your-256-bit-secret-key
 - **Required**: No
 - **Default**: `0.0.0.0:8000`
 - **Description**: Server binding address
+
+---
+
+### Free Beta Mode
+
+#### `BETA_MODE`
+- **Required**: No
+- **Default**: `false`
+- **Description**: Enable free beta mode with relaxed device and session limits
+- **When to use**: For testing with friends/early testers before production launch
+- **Effects**:
+  - Device limit increased from 3 to 10
+  - Session limits removed (unlimited sessions)
+  - No payment enforcement
+- **Production**: Must be `false`
+
+```bash
+BETA_MODE=true
+```
+
+#### `PAYMENTS_ENABLED`
+- **Required**: No
+- **Default**: `true`
+- **Description**: Enable payment features (Stripe/RevenueCat endpoints)
+- **When to use**: Set to `false` for free beta testing without payment infrastructure
+- **Effects**:
+  - When `false`: All payment endpoints return `501 Not Implemented`
+  - When `true`: Full Stripe and RevenueCat integration
+- **Production**: Must be `true` for monetization
+
+```bash
+PAYMENTS_ENABLED=false
+```
+
+**Note**: For free beta testing, typically set `BETA_MODE=true` and `PAYMENTS_ENABLED=false`. This allows early testers to use the app without payment flows while providing relaxed usage limits.
 
 ---
 
@@ -199,12 +236,23 @@ APPLE_CLIENT_ID=com.yourcompany.clarity
 Before deploying to production, verify:
 
 - [ ] `DEBUG=false`
+- [ ] `BETA_MODE=false` (disable free beta mode)
+- [ ] `PAYMENTS_ENABLED=true` (enable payment features)
 - [ ] `JWT_SECRET` is a unique, random 256-bit key
 - [ ] `DATABASE_URL` points to production database
 - [ ] All OAuth credentials are production keys
 - [ ] All Stripe keys are `sk_live_*` (not `sk_test_*`)
 - [ ] `SENTRY_DSN` is configured for error tracking
 - [ ] No secrets are committed to version control
+
+### Free Beta Checklist
+
+For free beta testing deployment, verify:
+
+- [ ] `BETA_MODE=true` (enable relaxed limits)
+- [ ] `PAYMENTS_ENABLED=false` (disable payment endpoints)
+- [ ] All other core settings configured correctly
+- [ ] Mobile app has `EXPO_PUBLIC_BILLING_ENABLED=false`
 
 ---
 

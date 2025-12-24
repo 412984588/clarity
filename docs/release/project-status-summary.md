@@ -69,6 +69,19 @@ Clarity is currently in a free beta testing phase. Payment functionality (Stripe
 | iOS Preview Build | **BLOCKED** | Apple Developer Account required |
 | Release Verification Script | **PASS** | 106 tests, lint, type check (`docs/release/verify-2025-12-23.log`) |
 
+### Free Beta Mode Implementation (Complete)
+
+| Component | Status | Changes |
+|-----------|--------|---------|
+| **Backend Config** | **COMPLETE** | `BETA_MODE` and `PAYMENTS_ENABLED` flags added |
+| **Backend Logic** | **COMPLETE** | Device limits relaxed (10), session limits removed, payment endpoints disabled |
+| **Mobile Config** | **COMPLETE** | `BILLING_ENABLED` flag added to config |
+| **Mobile UI** | **COMPLETE** | Paywall tab hidden, subscription card hidden, beta notice added |
+| **i18n** | **COMPLETE** | Beta mode strings added (EN/ES/ZH) |
+| **Documentation** | **COMPLETE** | ENV_VARIABLES.md, free-beta-tester-guide.md updated |
+
+**Summary**: Free Beta mode fully implemented. When `BETA_MODE=true` and `PAYMENTS_ENABLED=false`, the app operates without payment flows, with relaxed usage limits for early testers.
+
 ### Not Started
 
 | Phase | Reason |

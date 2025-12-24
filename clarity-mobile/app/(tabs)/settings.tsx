@@ -6,6 +6,7 @@ import RevenueCatUI from 'react-native-purchases-ui';
 import { useEmotionBackground } from '../../hooks/useEmotionBackground';
 import { t } from '../../i18n';
 import { deleteAccount, exportAccountData } from '../../services/account';
+import { BETA_MODE, BILLING_ENABLED } from '../../services/config';
 import { configureRevenueCat, loginRevenueCat, restorePurchases } from '../../services/revenuecat';
 import { useAuth } from '../../stores/authStore';
 
@@ -151,8 +152,16 @@ const SettingsScreen: React.FC = () => {
         </View>
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.title}>{t('settings.subscription')}</Text>
+      {BETA_MODE && (
+        <View style={styles.card}>
+          <Text style={styles.title}>{t('settings.betaMode')}</Text>
+          <Text style={styles.betaText}>{t('settings.betaModeDesc')}</Text>
+        </View>
+      )}
+
+      {BILLING_ENABLED && (
+        <View style={styles.card}>
+          <Text style={styles.title}>{t('settings.subscription')}</Text>
         <Pressable
           onPress={handleManageSubscription}
           style={[styles.actionButton, (isLoading || accountBusy) && styles.disabledButton]}
@@ -175,7 +184,8 @@ const SettingsScreen: React.FC = () => {
           <Text style={styles.actionButtonText}>{t('settings.customerCenter')}</Text>
         </Pressable>
         {billingError && <Text style={styles.errorText}>{billingError}</Text>}
-      </View>
+        </View>
+      )}
 
       <View style={styles.card}>
         <Text style={styles.title}>{t('settings.dataPrivacy')}</Text>
@@ -295,6 +305,11 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#64748b',
     marginTop: 2,
+  },
+  betaText: {
+    fontSize: 14,
+    color: '#64748b',
+    lineHeight: 20,
   },
 });
 

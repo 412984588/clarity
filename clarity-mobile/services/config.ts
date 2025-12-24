@@ -12,3 +12,7 @@ export const API_URL = resolveApiUrl();
 export const REVENUECAT_API_KEY_IOS = process.env.EXPO_PUBLIC_REVENUECAT_API_KEY_IOS ?? '';
 export const REVENUECAT_API_KEY_ANDROID =
   process.env.EXPO_PUBLIC_REVENUECAT_API_KEY_ANDROID ?? '';
+
+// Free Beta 模式配置
+export const BETA_MODE = process.env.EXPO_PUBLIC_BETA_MODE === 'true';
+export const BILLING_ENABLED = process.env.EXPO_PUBLIC_BILLING_ENABLED !== 'false';

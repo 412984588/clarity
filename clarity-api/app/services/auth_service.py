@@ -19,10 +19,12 @@ from app.utils.security import (
     hash_token,
 )
 from app.schemas.auth import RegisterRequest, LoginRequest, TokenResponse
+from app.config import get_settings
 
 
 # 设备限制
 DEVICE_LIMITS = {"free": 1, "standard": 2, "pro": 3}
+BETA_DEVICE_LIMIT = 10  # Free Beta 模式设备上限
 
 
 class AuthService:
@@ -189,7 +191,11 @@ class AuthService:
         )
         device_count = result.scalar() or 0
 
-        if device_count >= DEVICE_LIMITS.get(tier, 1):
+        # Beta 模式放宽设备限制
+        settings = get_settings()
+        max_devices = BETA_DEVICE_LIMIT if settings.beta_mode else DEVICE_LIMITS.get(tier, 1)
+
+        if device_count >= max_devices:
             raise ValueError("DEVICE_LIMIT_REACHED")
 
         # 创建新设备

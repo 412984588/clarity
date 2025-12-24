@@ -175,7 +175,8 @@ Please be aware of these known limitations during the beta:
 - **Stripe integration**: Disabled for beta
 - **RevenueCat**: Not configured
 - **Subscription plans**: Not available
-- **Payment screens**: May appear but are non-functional
+- **Payment UI**: Hidden in beta builds (Paywall tab and subscription card removed)
+- **Backend payment endpoints**: Return `501 Not Implemented` when disabled
 
 ### Platform Limitations
 - **iOS**: Not available (requires Apple Developer Account)
