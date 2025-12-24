@@ -22,6 +22,7 @@
 | Document | Purpose | Status |
 |----------|---------|--------|
 | [Project Status Summary](project-status-summary.md) | 项目全局状态总结 | READY |
+| [Remaining Work Report](remaining-work.md) | 未完成项统计与下一步行动 | READY |
 | [Launch Readiness](launch-readiness.md) | 上线准备度评分卡 (Go/No-Go) | READY |
 | [Launch Dependencies](launch-dependencies.md) | 上线依赖追踪表 | READY |
 | [Risk Register](risk-register.md) | 上线风险登记表 | READY |
