@@ -34,7 +34,7 @@
 | Environment | Platform | API URL | Purpose |
 |-------------|----------|---------|---------|
 | **Local Demo** | Web/Mobile | `http://localhost:8000` | 开发验证 |
-| **Preview Build** | Android APK | https://expo.dev/artifacts/eas/hUhRm9YvGcYz9Jqj3AVQnY.apk (Build ID: 88df477f-4862-41ac-9c44-4134aa2b67e2) | 集成测试 |
+| **Preview Build** | Android APK | https://expo.dev/artifacts/eas/cwHBq3tAhSrhLcQnewsmpy.apk (Build ID: 5d5e7b57-44f7-4729-b627-e40bc93dbb76) | 集成测试 |
 | **Preview Build** | iOS TestFlight | BLOCKED | 需 Apple Developer |
 | **Production** | All | `https://api.clarity.app` | 生产验收 |
 

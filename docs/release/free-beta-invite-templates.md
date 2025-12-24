@@ -177,7 +177,7 @@ Best,
 
 **Placeholders**:
 - `[Name]` - Tester name
-- `[APK Download Link]` - https://expo.dev/artifacts/eas/hUhRm9YvGcYz9Jqj3AVQnY.apk
+- `[APK Download Link]` - https://expo.dev/artifacts/eas/cwHBq3tAhSrhLcQnewsmpy.apk
 - `[Your Email]` - Your contact email
 - `[Your Phone]` - Your phone number (optional)
 - `[Your Name]` - Your name

@@ -7,6 +7,14 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2025-12-24 21:30] - Release 文档盘点 + APK 链接检查
+
+- [x] **新增**: release-docs-inventory.md（50 份文档清单与分类）
+- [x] **APK 链接一致性**: 更新 4 份文档（PROGRESS / invite-templates / eas-preview / qa-test-plan）
+- [x] **引用更新**: index.md + project-status-summary.md
+
+> 详见 `docs/PROGRESS.md`
+
 ### [2025-12-24 20:05] - Android Preview Build 刷新
 
 - [x] **新 Build**: 5d5e7b57 (包含 Free Beta Mode + Support Pack)
