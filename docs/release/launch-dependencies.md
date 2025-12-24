@@ -21,10 +21,10 @@
 
 | Category | Dependency | 账号/资源 | Status | 负责人 | 预计时间 | 备注 |
 |----------|------------|-----------|--------|--------|----------|------|
-| **Infrastructure** | Domain | `api.clarity.app` | BLOCKED | | | 需购买域名并配置 DNS |
-| **Infrastructure** | Hosting Provider | Vercel / Railway / Fly.io | UNKNOWN | | | 需决定托管服务商 |
-| **Infrastructure** | PostgreSQL | Neon / Supabase / RDS | UNKNOWN | | | 需决定数据库托管商 |
-| **Mobile - iOS** | Apple Developer Account | Apple Developer Program | BLOCKED | | | 需 $99/年订阅 |
+| **Infrastructure** | Domain | `api.clarity.app` | BLOCKED | | | 需购买域名并配置 DNS → [Domain & Hosting Setup Guide](domain-hosting-setup-guide.md) |
+| **Infrastructure** | Hosting Provider | Vercel / Railway / Fly.io | UNKNOWN | | | 需决定托管服务商 → [Domain & Hosting Setup Guide](domain-hosting-setup-guide.md) |
+| **Infrastructure** | PostgreSQL | Neon / Supabase / RDS | UNKNOWN | | | 需决定数据库托管商 → [Domain & Hosting Setup Guide](domain-hosting-setup-guide.md) |
+| **Mobile - iOS** | Apple Developer Account | Apple Developer Program | BLOCKED | | | 需 $99/年订阅 → [Apple Developer Setup Guide](apple-developer-setup-guide.md) |
 | **Mobile - iOS** | App Store Connect | App Store 提交 | BLOCKED | | | 依赖 Apple Developer Account |
 | **Mobile - iOS** | Apple Sign-In Credentials | Services ID + Key | BLOCKED | | | 依赖 Apple Developer Account |
 | **Mobile - Android** | Google Play Console | Play Console 账号 | DEFERRED | | | 商店提交在免费内测阶段延后 |

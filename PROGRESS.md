@@ -1,11 +1,18 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-24 23:00
+**最后更新**: 2025-12-24 23:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-24 23:30] - Production 阻塞项解除指南
+
+- [x] **新增**: 2 个指南（domain-hosting-setup-guide.md / apple-developer-setup-guide.md）
+- [x] **引用更新**: 4 份文档（launch-dependencies / index / project-status-summary / remaining-work）
+
+> 详见 `docs/PROGRESS.md`
 
 ### [2025-12-24 23:00] - Beta Issue Intake + GitHub Issue 模板
 

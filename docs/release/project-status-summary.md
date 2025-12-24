@@ -165,6 +165,8 @@ Clarity is currently in a free beta testing phase. Payment functionality (Stripe
 | Task | Description | Priority |
 |------|-------------|----------|
 | **🚀 Free Beta - Start Here** | See `docs/release/free-beta-start-here.md` - 1-hour setup + 7-day plan | **High** |
+| **Domain & Hosting Setup Guide** | See `docs/release/domain-hosting-setup-guide.md` - 域名/托管/数据库配置指南 | High |
+| **Apple Developer Setup Guide** | See `docs/release/apple-developer-setup-guide.md` - Apple Developer 账号配置指南 | High |
 | **Free beta launch checklist** | See `docs/release/free-beta-launch-checklist.md` | High |
 | **Free beta tester guide** | See `docs/release/free-beta-tester-guide.md` | High |
 | **Free beta invite templates** | See `docs/release/free-beta-invite-templates.md` | High |

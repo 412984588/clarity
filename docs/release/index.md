@@ -97,6 +97,8 @@
 
 | Document | Purpose | Status |
 |----------|---------|--------|
+| [Domain & Hosting Setup Guide](domain-hosting-setup-guide.md) | 域名与托管配置指南（解除生产阻塞） | READY |
+| [Apple Developer Setup Guide](apple-developer-setup-guide.md) | Apple Developer 账号配置指南（解除 iOS 阻塞） | READY |
 | [Account & Deploy Action List](account-deploy-action-list.md) | 账号/部署最短行动清单 | READY |
 | [Account & Deploy Execution Template](account-deploy-execution-template.md) | 账号/部署执行模板 | READY |
 | [Prod Preflight](prod-preflight.md) | 生产部署预检清单 | READY |
