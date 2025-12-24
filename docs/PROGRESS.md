@@ -7,6 +7,70 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2025-12-24 19:30] - Free Beta 支持与对外分享包
+
+- [x] **新增文档 A**: `docs/release/beta-known-issues.md`
+  - Purpose & Scope（透明化 Bug 追踪）
+  - Status Legend（6 个状态：Open/Investigating/Fix in Progress/Fixed/Deferred/Won't Fix）
+  - Known Issues Tables（按优先级分类：P0/P1/P2/P3）
+    - 字段：ID / Area / Description / Impact / Workaround / Status / First Seen / Last Updated / Owner / Notes
+  - Priority Targets（P0: 0 issues / P1: ≤2 issues / P2: ≤10 issues / P3: backlog）
+  - Platform-specific Issues / Known Limitations（非 Bug 的功能限制）
+  - Statistics Tracking（周趋势统计）
+  - Related Documents
+
+- [x] **新增文档 B**: `docs/release/beta-support-macros.md`
+  - Purpose & Scope（预写回复模板）
+  - Tone & Guidelines（Friendly / Clear / Responsive / Transparent）
+  - 8 个 Response Templates（每条含 Subject + Message + Placeholders）
+    1. Acknowledge Bug Report（24h SLA）
+    2. Request More Info（调试信息请求）
+    3. Provide Workaround（临时解决方案）
+    4. Fix Shipped（修复发布通知）
+    5. Close as Duplicate（重复报告关闭）
+    6. Feature Request Acknowledgement（功能请求确认）
+    7. Out of Scope / Deferred（超范围/延期说明）
+    8. Data/Privacy Request（数据/隐私请求处理）
+  - When to Use Which Template（使用场景映射表）
+  - Customization Tips（个性化建议）
+  - Related Documents
+
+- [x] **新增文档 C**: `docs/release/beta-share-pack.md`
+  - Purpose & Audience（对外分享指南）
+  - What to Share（6 个可对外文档：Tester Guide / Feedback Form / Bug Template / Known Issues / Privacy Policy）
+  - What NOT to Share（15+ 内部文档 + 理由 + 受众范围）
+  - Quick Send Checklist（7 步检查：移除内部备注 / 验证链接 / 更新日期 / 个性化 / 隐私检查 / APK 测试 / 支持联系）
+  - Suggested Package（新测试者资料包：Email Subject + Body + Links）
+  - Suggested Message（简短版 + 详细版）
+  - Update Scenarios（3 个场景：新 Build / 安装帮助 / Bug 验证）
+  - FAQs for Testers（8 条可对外 FAQ）
+  - Related Documents
+
+- [x] **更新文档**: `docs/release/free-beta-start-here.md`
+  - "What to Send" 段落添加 Quick Reference 链接（指向 beta-share-pack.md）
+  - Feedback Channels 添加 beta-known-issues.md 链接
+  - 新增 Pro Tip 提示使用 beta-share-pack.md
+
+- [x] **更新文档**: `docs/release/free-beta-launch-checklist.md`
+  - Related Documents → During Launch 新增 3 个文档
+    - Beta Share Pack
+    - Beta Known Issues
+    - Beta Support Macros
+
+- [x] **更新文档**: `docs/release/index.md`
+  - Free Beta Testing 分区新增 3 个文档
+    - Beta Share Pack（对外分享包）
+    - Beta Known Issues（已知问题追踪表）
+    - Beta Support Macros（支持回复模板）
+
+- [x] **更新文档**: `docs/release/project-status-summary.md`
+  - Next Steps → Without Account/Domain (Can Do Now) 新增 3 项
+    - Beta share pack - What to share externally
+    - Beta known issues - Track bug status
+    - Beta support macros - Response templates
+
+> **用途**：完善 Free Beta 支持体系，提供透明的 Bug 追踪、标准化支持回复、明确对外分享边界
+
 ### [2025-12-24 18:00] - Free Beta Start Here 指南 + 文档一致性修正
 
 - [x] **新增文档**: `docs/release/free-beta-start-here.md`

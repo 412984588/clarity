@@ -298,9 +298,12 @@ Since this is a beta (no production deployment), "rollback" means:
 **During Launch:**
 - [Free Beta Tester Guide](free-beta-tester-guide.md)
 - [Free Beta Invite Templates](free-beta-invite-templates.md)
+- [Beta Share Pack](beta-share-pack.md)
 - [Beta Tester Tracker](beta-tester-tracker.md)
 - [Free Beta Ops Playbook](free-beta-ops-playbook.md)
 - [Beta Release Notes Template](beta-release-notes-template.md)
+- [Beta Known Issues](beta-known-issues.md)
+- [Beta Support Macros](beta-support-macros.md)
 - [Launch Communications](launch-communications.md)
 - [Feedback Triage](feedback-triage.md)
 - [Bug Report Template](bug-report-template.md)

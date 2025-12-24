@@ -137,6 +137,8 @@
 
 ## What to Send
 
+**Quick Reference**: See [Beta Share Pack](beta-share-pack.md) for pre-written templates and what's safe to share externally.
+
 **Tester onboarding package** (send via email):
 
 1. **[Free Beta Tester Guide](free-beta-tester-guide.md)**
@@ -149,12 +151,15 @@
 3. **Feedback Channels**
    - [Beta Feedback Form](beta-feedback-form.md) - General feedback
    - [Bug Report Template](bug-report-template.md) - Bug reports
+   - [Beta Known Issues](beta-known-issues.md) - Check before reporting
    - Your email/Slack for urgent issues
 
 4. **Expectations**
    - Time commitment: 2-3 sessions (30 min each) over 7 days
    - Response time: You'll reply within 24 hours to feedback
    - Incentive (optional): Thank you note, early access, credit in app
+
+**Pro Tip**: Use [Beta Share Pack](beta-share-pack.md) for ready-to-send email templates and FAQs.
 
 ---
 

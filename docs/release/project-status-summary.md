@@ -168,12 +168,15 @@ Clarity is currently in a free beta testing phase. Payment functionality (Stripe
 | **Free beta launch checklist** | See `docs/release/free-beta-launch-checklist.md` | High |
 | **Free beta tester guide** | See `docs/release/free-beta-tester-guide.md` | High |
 | **Free beta invite templates** | See `docs/release/free-beta-invite-templates.md` | High |
+| **Beta share pack** | See `docs/release/beta-share-pack.md` - What to share externally | High |
 | **Beta tester tracker** | See `docs/release/beta-tester-tracker.md` | High |
 | **Free beta ops playbook** | See `docs/release/free-beta-ops-playbook.md` | High |
 | **Beta release notes template** | See `docs/release/beta-release-notes-template.md` | High |
 | **Feedback triage workflow** | See `docs/release/feedback-triage.md` | High |
 | **Beta feedback form** | See `docs/release/beta-feedback-form.md` | High |
 | **Bug report template** | See `docs/release/bug-report-template.md` | High |
+| **Beta known issues** | See `docs/release/beta-known-issues.md` - Track bug status | High |
+| **Beta support macros** | See `docs/release/beta-support-macros.md` - Response templates | High |
 | **Beta exit criteria** | See `docs/release/beta-exit-criteria.md` | High |
 | **Beta to production plan** | See `docs/release/beta-to-production-plan.md` | High |
 | **Beta weekly status template** | See `docs/release/beta-weekly-status-template.md` | High |
