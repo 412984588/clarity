@@ -33,6 +33,7 @@
 | [Release Approval Checklist](release-approval-checklist.md) | 发布审批清单 | READY |
 | [One-Page Update](one-page-update.md) | 投资人/合作方一页版简报 | READY |
 | [Placeholders to Fill](placeholders-to-fill.md) | 占位符/TBD 待填项清单（上线前必填） | READY |
+| [Placeholders Intake Form](placeholders-intake-form.md) | 待填信息表单（可直接填写，一站式数据收集） | READY |
 
 ---
 

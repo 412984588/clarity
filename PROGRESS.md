@@ -1,11 +1,19 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-25 00:00
+**最后更新**: 2025-12-25 00:15
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-25 00:15] - 待填信息表单（可直接填写）
+
+- [x] **新增**: placeholders-intake-form.md（7 个可填表格，一站式数据收集）
+- [x] **表单内容**: Company/Domain/Apple/OAuth/Support/Beta Ops/Contacts（含 20+ 团队角色）
+- [x] **文档更新**: 3 份（placeholders-to-fill / index / project-status-summary）
+
+> 详见 `docs/PROGRESS.md`
 
 ### [2025-12-25 00:00] - 占位符/TBD 待填项清单
 

@@ -1,11 +1,35 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-25 00:00
+**最后更新**: 2025-12-25 00:15
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-25 00:15] - 待填信息表单（可直接填写）
+
+- [x] **新增文档**: `docs/release/placeholders-intake-form.md` (~390 lines)
+  - Purpose & How to Use（单一表单，集中填写所有占位符）
+  - Critical Info Summary（15 项最关键待填项）
+  - Intake Form Sections（7 个可填表格）:
+    1. Company & Legal（公司信息/联系方式）
+    2. Domain / Hosting / Database（域名/托管/数据库选择）
+    3. Apple Developer / App Store（Apple 账号/Bundle ID/Team ID）
+    4. OAuth / External Services（测试账号/API Keys）
+    5. Monitoring & Support（支持时间/SLA/状态页）
+    6. Beta Operations（Beta 协调员/结束日期/反馈表单）
+    7. Contacts & Owners（团队角色：Ownership Matrix 8 人 + Launch Day Runbook 7 人 + Beta Checklist 5 人 + Launch Comms 4 人）
+  - Where This Info Is Used（值用在哪些文档）
+  - Progress Tracking（完成度追踪）
+  - Next Steps（填完后如何复制到各文档）
+
+- [x] **文档更新**: 3 份文档
+  - `docs/release/placeholders-to-fill.md` - How to Use 加入新表单链接（Quick Start 提示）
+  - `docs/release/index.md` - Status & Planning 分区新增 placeholders-intake-form.md
+  - `docs/release/project-status-summary.md` - Next Steps 新增表单引用
+
+> **目的**: 提供一站式数据收集表单，用户在一个文件里填完所有占位符，然后批量复制到各文档（避免跨 15+ 文件查找）
 
 ### [2025-12-25 00:00] - 占位符/TBD 待填项清单
 
