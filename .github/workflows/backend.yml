@@ -44,6 +44,8 @@ jobs:
       - run: poetry run alembic upgrade head
         env:
           DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/clarity_test
+          JWT_SECRET: test-jwt-secret-for-ci-only
       - run: poetry run pytest -v
         env:
           DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/clarity_test
+          JWT_SECRET: test-jwt-secret-for-ci-only
