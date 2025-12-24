@@ -7,6 +7,28 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2025-12-24 18:00] - Free Beta Start Here 指南 + 文档一致性修正
+
+- [x] **新增文档**: `docs/release/free-beta-start-here.md`
+  - Purpose & Audience (快速入门指南)
+  - What You Can Do Now (Free Beta)（5 条可用功能）
+  - What's Blocked (Production)（3 项阻塞状态）
+  - 1-Hour Setup Checklist（3 阶段：Pre-Flight / Tester Onboarding / First Session Support）
+  - First 7 Days Plan（每日行动 + 每周节奏）
+  - Who to Invite（推荐测试者类型 5-10 人）
+  - What to Send（测试者资料包 4 项）
+  - How to Track Progress（日常监控 + 周报 + 指标）
+  - Related Documents（4 类共 20+ 文档链接）
+
+- [x] **文档一致性修正**: `docs/release/index.md`
+  - Free Beta Testing 分区新增 `free-beta-start-here.md`（首位，突出显示）
+  - Legal & Support 分区补充 `store-privacy-answers.md`（之前遗漏）
+
+- [x] **更新文档**: `docs/release/project-status-summary.md`
+  - Next Steps 首位新增 `free-beta-start-here.md`（快速入口）
+
+> 详见 `PROGRESS.md`
+
 ### [2025-12-24 17:30] - Beta → Production 过渡规划文档
 
 - [x] **新增文档 A**: `docs/release/beta-exit-criteria.md`
