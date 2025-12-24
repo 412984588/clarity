@@ -1,11 +1,41 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-25 00:15
+**最后更新**: 2025-12-25 00:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-25 00:30] - Beta 邀请消息包 + Release Notes
+
+- [x] **新增文档 A**: `docs/release/beta-launch-message.md` (~450 lines)
+  - Links Used（APK/Tester Guide/Feedback Form/Bug Template/Issue Intake/Known Issues/GitHub）
+  - Message Templates（6 个模板）:
+    1. Short DM (1-2 paragraphs)
+    2. Email Short
+    3. Email Detailed
+    4. Reminder (Day 3)
+    5. Reminder (Day 7)
+    6. Thank You + Feedback Request
+  - Do & Don't（外发注意事项）
+
+- [x] **新增文档 B**: `docs/release/beta-release-notes-2025-12-24.md` (~350 lines)
+  - Release Header（Build ID: 5d5e7b57 / APK link / Commit: f11f3f7）
+  - Highlights（Free Beta Mode / GitHub Issue Templates / Beta Docs）
+  - What's New（Free Beta Mode / GitHub Templates / Beta Docs Suite / Multi-language）
+  - Improved（Emotion Detection / User Auth / Solve Flow）
+  - Fixed（5 dev issues）
+  - Known Issues（Platform-specific / Known Limitations）
+  - Call for Feedback（5 high priority test areas）
+  - How to Install/Update
+
+- [x] **文档更新**: 3 份文档
+  - `docs/release/beta-share-pack.md` - Important Links 新增 2 个文档
+  - `docs/release/index.md` - Free Beta Testing 分区新增 2 个文档
+  - `docs/release/project-status-summary.md` - Next Steps 新增 2 个文档引用
+
+> **目的**: 提供可直接发送的 Beta 邀请消息模板 + 当前版本完整 Release Notes，方便快速邀请测试者并沟通最新进展
 
 ### [2025-12-25 00:15] - 待填信息表单（可直接填写）
 

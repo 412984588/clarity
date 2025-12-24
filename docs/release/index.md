@@ -47,6 +47,8 @@
 | [Free Beta Launch Checklist](free-beta-launch-checklist.md) | 免费内测上线清单（Pre-Launch/Launch Day/Week 1） | READY |
 | [Free Beta Tester Guide](free-beta-tester-guide.md) | 测试者完整指南（安装/测试/反馈） | READY |
 | [Free Beta Invite Templates](free-beta-invite-templates.md) | 邀请与沟通模板（Invite/Welcome/Reminder/Follow-up） | READY |
+| [Beta Launch Message](beta-launch-message.md) | 可直接发送的邀请消息包（Short DM/Email/Reminder/Thank You） | READY |
+| [Beta Release Notes (2025-12-24)](beta-release-notes-2025-12-24.md) | 当前版本 Release Notes（v1.0.0-beta） | READY |
 | [Beta Share Pack](beta-share-pack.md) | 对外分享包（可分享内容 + 邮件模板 + FAQs） | READY |
 | [Beta Tester Tracker](beta-tester-tracker.md) | 测试者状态追踪表（Tester ID/Status/Feedback） | READY |
 | [Free Beta Ops Playbook](free-beta-ops-playbook.md) | 运营手册（Daily/Weekly Checklist/Quality Gates） | READY |

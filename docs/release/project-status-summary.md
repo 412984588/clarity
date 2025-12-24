@@ -170,6 +170,8 @@ Clarity is currently in a free beta testing phase. Payment functionality (Stripe
 | **Free beta launch checklist** | See `docs/release/free-beta-launch-checklist.md` | High |
 | **Free beta tester guide** | See `docs/release/free-beta-tester-guide.md` | High |
 | **Free beta invite templates** | See `docs/release/free-beta-invite-templates.md` | High |
+| **Beta launch message** | See `docs/release/beta-launch-message.md` - Ready-to-send invite messages | High |
+| **Beta release notes (2025-12-24)** | See `docs/release/beta-release-notes-2025-12-24.md` - Current version Release Notes | High |
 | **Beta share pack** | See `docs/release/beta-share-pack.md` - What to share externally | High |
 | **Beta tester tracker** | See `docs/release/beta-tester-tracker.md` | High |
 | **Free beta ops playbook** | See `docs/release/free-beta-ops-playbook.md` | High |
