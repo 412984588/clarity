@@ -1,6 +1,6 @@
 # Release Documentation Inventory
 
-**Version**: 1.0
+**Version**: 1.1
 **Last Updated**: 2025-12-24
 **Purpose**: Complete inventory of all release documentation with categorization
 
@@ -50,6 +50,9 @@ This document provides a comprehensive inventory of all release-related document
 | [beta-exit-criteria.md](beta-exit-criteria.md) | Beta exit criteria (Go/No-Go) | Internal | Free Beta | Checklist | No |
 | [beta-to-production-plan.md](beta-to-production-plan.md) | Beta → Production transition plan (Phases/Workstreams/Timeline) | Internal | Free Beta | Process | No |
 | [beta-weekly-status-template.md](beta-weekly-status-template.md) | Weekly report template (KPIs/Progress/Decisions) | Internal | Free Beta | Template | No |
+| [beta-feedback-summary-template.md](beta-feedback-summary-template.md) | Feedback summary report template (weekly aggregation) | External | Free Beta | Template | Yes |
+| [beta-retrospective-template.md](beta-retrospective-template.md) | Beta retrospective template (Goals vs Outcomes/Learnings/Production Gap) | Internal | Free Beta | Template | No |
+| [beta-issue-intake.md](beta-issue-intake.md) | Beta issue intake guide (reporting channels/severity/SLA/privacy) | External | Free Beta | Guide | Yes |
 | **3. Demo & Presentation** | | | | | |
 | [demo-script.md](demo-script.md) | 3-minute external demo script + checklist | External | Both | Guide | Yes |
 | [local-demo-runbook.md](local-demo-runbook.md) | Local demo runbook | Internal | Both | Process | No |
@@ -61,6 +64,8 @@ This document provides a comprehensive inventory of all release-related document
 | [eas-preview-verify.md](eas-preview-verify.md) | EAS Preview build verification | Internal | Free Beta | Report | No |
 | [eas-preview.md](eas-preview.md) | EAS Preview configuration guide | Internal | Free Beta | Guide | No |
 | **5. Production Deployment** | | | | | |
+| [domain-hosting-setup-guide.md](domain-hosting-setup-guide.md) | Domain/hosting/database setup guide (unblock production deployment) | Internal | Production | Guide | No |
+| [apple-developer-setup-guide.md](apple-developer-setup-guide.md) | Apple Developer account setup guide (unblock iOS deployment) | Internal | Production | Guide | No |
 | [account-deploy-action-list.md](account-deploy-action-list.md) | Account/deployment shortest action list | Internal | Production | Checklist | No |
 | [account-deploy-execution-template.md](account-deploy-execution-template.md) | Account/deployment execution template | Internal | Production | Template | No |
 | [prod-preflight.md](prod-preflight.md) | Production deployment preflight checklist | Internal | Production | Checklist | No |
@@ -88,37 +93,37 @@ This document provides a comprehensive inventory of all release-related document
 
 | Audience | Count |
 |----------|-------|
-| Internal | 39 |
-| External | 11 |
-| **Total** | **50** |
+| Internal | 42 |
+| External | 13 |
+| **Total** | **55** |
 
 ### By Stage
 
 | Stage | Count |
 |-------|-------|
-| Free Beta | 18 |
-| Production | 13 |
+| Free Beta | 21 |
+| Production | 15 |
 | Both | 19 |
-| **Total** | **50** |
+| **Total** | **55** |
 
 ### By Status
 
 | Status | Count |
 |--------|-------|
 | Checklist | 14 |
-| Template | 10 |
+| Template | 12 |
 | Process | 8 |
-| Guide | 10 |
+| Guide | 13 |
 | Report | 8 |
-| **Total** | **50** |
+| **Total** | **55** |
 
 ### By Shareability
 
 | Shareable | Count |
 |-----------|-------|
-| Yes | 11 |
-| No | 39 |
-| **Total** | **50** |
+| Yes | 13 |
+| No | 42 |
+| **Total** | **55** |
 
 ---
 
