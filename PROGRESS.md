@@ -1,11 +1,20 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-24 07:00
+**最后更新**: 2025-12-24 08:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-24 08:30] - Free Beta 模式代码实现
+
+- [x] **后端**: 添加 `BETA_MODE` 和 `PAYMENTS_ENABLED` 配置，放宽限制，禁用支付端点
+- [x] **移动端**: 隐藏 paywall tab 和订阅卡片，添加 Beta 模式提示
+- [x] **i18n**: 添加 Beta 相关文案（EN/ES/ZH）
+- [x] **文档**: 更新 ENV_VARIABLES.md, free-beta-tester-guide.md, project-status-summary.md
+
+> 详见 `docs/PROGRESS.md`
 
 ### [2025-12-24 07:00] - Free Beta 测试者文档包
 

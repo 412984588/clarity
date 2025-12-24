@@ -121,6 +121,8 @@
     "preferences": "Preferences",
     "emotionBackground": "Emotion Gradient Background",
     "emotionBackgroundDesc": "Change background color based on detected emotion",
+    "betaMode": "Free Beta",
+    "betaModeDesc": "You're using the free beta version. Payment features are disabled during beta testing.",
     "subscription": "Subscription",
     "manageSubscription": "Manage Subscription",
     "restorePurchases": "Restore Purchases",

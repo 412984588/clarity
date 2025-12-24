@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = 8000
 
+    # Free Beta 配置
+    beta_mode: bool = False
+    payments_enabled: bool = True
+
     # LLM 配置
     llm_provider: str = "openai"
     openai_api_key: str = ""

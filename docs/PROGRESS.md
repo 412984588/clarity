@@ -1,11 +1,45 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-24 07:00
+**最后更新**: 2025-12-24 08:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-24 08:30] - Free Beta 模式代码实现
+
+- [x] **后端配置**:
+  - `clarity-api/app/config.py`: 添加 `beta_mode` 和 `payments_enabled` 配置项
+  - `clarity-api/.env.example`: 添加 `BETA_MODE` 和 `PAYMENTS_ENABLED` 环境变量
+  - `docs/ENV_VARIABLES.md`: 文档化新变量，添加 Free Beta Checklist
+
+- [x] **后端逻辑**:
+  - `app/services/auth_service.py`: Beta 模式放宽设备限制（3 → 10）
+  - `app/routers/sessions.py`: Beta 模式移除 session 限制（10 → 无限）
+  - `app/routers/subscriptions.py`: payments_enabled=false 时返回 501
+  - `app/routers/webhooks.py`: payments_enabled=false 时返回 501
+  - `app/routers/revenuecat_webhooks.py`: payments_enabled=false 时返回 501
+
+- [x] **移动端配置**:
+  - `services/config.ts`: 添加 `BETA_MODE` 和 `BILLING_ENABLED` 读取
+  - `.env.example`: 添加 `EXPO_PUBLIC_BETA_MODE` 和 `EXPO_PUBLIC_BILLING_ENABLED`
+  - `eas.json`: preview profile 添加 `EXPO_PUBLIC_BILLING_ENABLED=false`
+
+- [x] **移动端 UI**:
+  - `app/(tabs)/_layout.tsx`: 条件隐藏 paywall tab
+  - `app/(tabs)/settings.tsx`: 隐藏订阅卡片，添加 Beta 模式提示卡
+  - `i18n/en.json, es.json, zh.json`: 添加 `settings.betaMode` 和 `settings.betaModeDesc`
+
+- [x] **文档更新**:
+  - `docs/release/free-beta-tester-guide.md`: 更新 Known Limitations（付费 UI 已隐藏）
+  - `docs/release/project-status-summary.md`: 新增 Free Beta Mode Implementation 部分
+
+- [ ] **下一步**: 创建 PR 并测试验证
+
+> **启用方式**:
+> - 后端: `BETA_MODE=true` + `PAYMENTS_ENABLED=false`
+> - 移动端: `EXPO_PUBLIC_BILLING_ENABLED=false`
 
 ### [2025-12-24 07:00] - Free Beta 测试者文档包
 

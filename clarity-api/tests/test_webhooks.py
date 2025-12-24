@@ -90,6 +90,7 @@ async def test_webhook_checkout_completed(client: AsyncClient):
         with patch("app.routers.webhooks.get_settings") as mock_settings:
             mock_settings.return_value.stripe_price_standard = "price_standard"
             mock_settings.return_value.stripe_price_pro = "price_pro"
+            mock_settings.return_value.payments_enabled = True
 
             response = await client.post(
                 "/webhooks/stripe",
@@ -127,6 +128,7 @@ async def test_webhook_stripe_idempotency(client: AsyncClient):
         with patch("app.routers.webhooks.get_settings") as mock_settings:
             mock_settings.return_value.stripe_price_standard = "price_standard"
             mock_settings.return_value.stripe_price_pro = "price_pro"
+            mock_settings.return_value.payments_enabled = True
 
             first = await client.post(
                 "/webhooks/stripe",

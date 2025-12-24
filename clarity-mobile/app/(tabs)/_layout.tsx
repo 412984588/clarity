@@ -2,6 +2,7 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 
 import { t } from '../../i18n';
+import { BILLING_ENABLED } from '../../services/config';
 
 const TabsLayout: React.FC = () => (
   <Tabs
@@ -24,12 +25,14 @@ const TabsLayout: React.FC = () => (
         title: t('tabs.settings'),
       }}
     />
-    <Tabs.Screen
-      name="paywall"
-      options={{
-        title: t('tabs.paywall'),
-      }}
-    />
+    {BILLING_ENABLED && (
+      <Tabs.Screen
+        name="paywall"
+        options={{
+          title: t('tabs.paywall'),
+        }}
+      />
+    )}
     <Tabs.Screen
       name="devices"
       options={{

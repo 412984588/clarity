@@ -9,6 +9,7 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import get_settings
 from app.database import get_db
 from app.middleware.auth import get_current_user
 from app.models.device import Device
@@ -135,6 +136,11 @@ async def create_session(
 
     tier: str = str(subscription.tier)
     sessions_limit: int = SESSION_LIMITS.get(tier, SESSION_LIMITS["free"])
+
+    # Beta 模式移除 session 限制
+    settings = get_settings()
+    if settings.beta_mode:
+        sessions_limit = 0  # 0 表示无限制
 
     usage = await _get_or_create_usage(db, subscription)
     if sessions_limit > 0 and (usage.session_count or 0) >= sessions_limit:

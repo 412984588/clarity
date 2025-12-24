@@ -121,6 +121,8 @@
     "preferences": "偏好设置",
     "emotionBackground": "情绪渐变背景",
     "emotionBackgroundDesc": "根据检测到的情绪改变背景颜色",
+    "betaMode": "免费内测",
+    "betaModeDesc": "你正在使用免费内测版本，内测期间付费功能暂不可用",
     "subscription": "订阅",
     "manageSubscription": "管理订阅",
     "restorePurchases": "恢复购买",
