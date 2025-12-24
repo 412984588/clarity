@@ -11,9 +11,9 @@
 
 | Status | Count |
 |--------|-------|
-| **PASS** | 13 |
-| **FAIL** | 0 |
-| **BLOCKED** | 12 |
+| **PASS** | 15 |
+| **FAIL** | 6 |
+| **BLOCKED** | 4 |
 | **NOT RUN** | 9 |
 | **Total** | 34 |
 
@@ -34,14 +34,14 @@
 | AUTH-07 | Auth | 设备已绑定其他账号 | NOT RUN | |
 | ACC-01 | Account | 导出账号数据 | PASS | pytest `tests/test_account.py` |
 | ACC-02 | Account | 删除账号 | PASS | pytest `tests/test_account.py` |
-| SOLVE-01 | Solve | Step 1: Receive 输入问题 | BLOCKED | LLM provider 401 (OpenAI/Anthropic), SSE aborted |
-| SOLVE-02 | Solve | Step 2: Clarify 回答追问 | BLOCKED | LLM provider 401 (OpenAI/Anthropic), SSE aborted |
-| SOLVE-03 | Solve | Step 3: Reframe 重新定义 | BLOCKED | LLM provider 401 (OpenAI/Anthropic), SSE aborted |
-| SOLVE-04 | Solve | Step 4: Options 选择方案 | BLOCKED | LLM provider 401 (OpenAI/Anthropic), SSE aborted |
-| SOLVE-05 | Solve | Step 5: Commit 设定行动 | BLOCKED | LLM provider 401 (OpenAI/Anthropic), SSE aborted |
-| SOLVE-06 | Solve | SSE 流式响应完整 | BLOCKED | LLM provider 401 (OpenAI/Anthropic), SSE aborted |
-| EMO-01 | Emotion | 检测焦虑情绪 | BLOCKED | LLM provider 401 (OpenAI/Anthropic), SSE aborted |
-| EMO-02 | Emotion | 检测平静情绪 | BLOCKED | LLM provider 401 (OpenAI/Anthropic), SSE aborted |
+| SOLVE-01 | Solve | Step 1: Receive 输入问题 | FAIL | OpenRouter 返回 done 但无 token 内容 |
+| SOLVE-02 | Solve | Step 2: Clarify 回答追问 | FAIL | OpenRouter 返回 done 但无 token 内容 |
+| SOLVE-03 | Solve | Step 3: Reframe 重新定义 | FAIL | OpenRouter 返回 done 但无 token 内容 |
+| SOLVE-04 | Solve | Step 4: Options 选择方案 | FAIL | OpenRouter 返回 done 但无 token 内容 |
+| SOLVE-05 | Solve | Step 5: Commit 设定行动 | FAIL | OpenRouter 返回 done 但无 token 内容 |
+| SOLVE-06 | Solve | SSE 流式响应完整 | FAIL | 无 `event: token`，仅返回 done |
+| EMO-01 | Emotion | 检测焦虑情绪 | PASS | SSE done: `emotion_detected=anxious` |
+| EMO-02 | Emotion | 检测平静情绪 | PASS | SSE done: `emotion_detected=calm` |
 | HEALTH-01 | Health | GET /health | PASS | Local smoke 2025-12-23 |
 | HEALTH-02 | Health | GET /health/ready | PASS | Local smoke 2025-12-23 |
 | HEALTH-03 | Health | GET /health/live | PASS | Local smoke 2025-12-23 |
@@ -68,7 +68,7 @@
 | Apple Developer 账号未开通 | AUTH-05 无法测试 | 等待账号开通 |
 | Stripe/RevenueCat 未激活 | SUB-01/02/03 无法测试 | 标记 BLOCKED，优先测试其他 |
 | 域名未配置 | 无法测试生产环境 | 使用本地环境验证 |
-| LLM provider 未授权 | Solve/Emotion 流程无法测试 | OpenAI 401（LLM_PROVIDER=openai），请更新 OpenAI Key 或切换到 Anthropic |
+| OpenRouter 模型无 content | Solve 流程无 AI 文本输出 | 换模型或兼容 reasoning 字段 |
 
 ---
 
@@ -76,7 +76,7 @@
 
 | Issue ID | Severity | Case ID | Description | Status |
 |----------|----------|---------|-------------|--------|
-| - | - | - | (无问题发现) | - |
+| QA-LLM-01 | P1 | SOLVE-01..06 | OpenRouter 返回 reasoning 但 content 为空，SSE 无 token 输出 | OPEN |
 
 **Severity Legend**: P0 (Critical) / P1 (High) / P2 (Medium) / P3 (Low)
 
@@ -108,4 +108,4 @@
 | 2025-12-23 | Automation (Codex) | Local | IN PROGRESS | Health endpoints via deploy_prod_smoke.sh |
 | 2025-12-23 | Automation (Codex) | Local | IN PROGRESS | Updated with pytest evidence (106 tests) |
 | 2025-12-23 | Automation (Codex) | Local | IN PROGRESS | Solve/Emotion blocked: LLM provider 401 |
-| 2025-12-23 | Automation (Codex) | Local | IN PROGRESS | Retest after .env update: OpenAI 401 persists |
+| 2025-12-23 | Automation (Codex) | Local | IN PROGRESS | Retest with OpenRouter: done-only, no token content |
