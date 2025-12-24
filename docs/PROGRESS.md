@@ -1,11 +1,60 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-24 06:30
+**最后更新**: 2025-12-24 07:00
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-24 07:00] - Free Beta 测试者文档包
+
+- [x] **Free Beta Tester Guide**: `docs/release/free-beta-tester-guide.md`
+  - Purpose & Scope（免费内测 / 不含支付）
+  - Supported Platforms（Android 可用；iOS BLOCKED）
+  - Getting the App（引用 APK 链接：https://expo.dev/artifacts/eas/hUhRm9YvGcYz9Jqj3AVQnY.apk）
+  - Account & Access（测试账号/自建账号/Google OAuth）
+  - Test Scenarios（10 条测试场景：账号/Solve 流程/情绪检测/多语言/历史/设备/导出/错误/边界/体验）
+  - Known Limitations（无支付/无 iOS/无商店提交/简易基础设施）
+  - Privacy & Data（引用 privacy.md + 数据收集说明）
+  - How to Send Feedback（引用反馈表单 + Bug 模板 + 直接联系）
+  - Contact / Support（测试协调员 + 技术支持 + 升级流程）
+  - FAQ（8 条常见问题）
+
+- [x] **Beta Feedback Form**: `docs/release/beta-feedback-form.md`
+  - Tester Information（昵称/设备/OS/版本/测试日期/时长）
+  - Session Summary（满意度 1-5 + 整体评价 + 功能测试清单）
+  - Most Impressive / Most Confusing Feature
+  - Bugs Encountered（3 个 Bug 报告位 + 严重性 + 复现步骤 + 预期/实际 + 截图）
+  - Suggestions for Improvement（功能/UX/UI/文案）
+  - Additional Feedback（5 星评价条件 + 推荐意愿 + 持续测试意愿 + 联系方式）
+  - Consent（反馈使用授权 + 匿名引用授权）
+  - How to Submit（邮件/Web 表单/直接消息）
+
+- [x] **Bug Report Template**: `docs/release/bug-report-template.md`
+  - Bug ID / Title / Severity（Critical/High/Medium/Low）
+  - Environment（Platform/Device/OS/App Version/Build ID/Network/Date&Time）
+  - Steps to Reproduce（前置条件 + 详细步骤 + 复现频率）
+  - Expected vs Actual Behavior（预期行为 + 实际行为 + 影响）
+  - Evidence（截图/录屏/错误消息/日志/导出数据）
+  - Additional Context（尝试的 Workarounds + 相关 Bugs + 环境特殊说明）
+  - Reporter Information（姓名/邮箱/联系时间/测试者类型/后续可用性）
+  - Internal Use Only（分配/优先级/状态/修复版本/解决备注）
+  - Examples（2 个完整示例：App Crash + Visual Glitch）
+
+- [x] **索引更新**: `docs/release/index.md`
+  - 新增 "2. Free Beta Testing" 分区（3 份文档）
+  - 原有分区编号顺延：Demo & Presentation → 3, Testing & Verification → 4, Production Deployment → 5, Legal & Support → 6, Operations & Support → 7
+
+- [x] **状态汇总更新**: `docs/release/project-status-summary.md`
+  - Next Steps → Without Account/Domain (Can Do Now) 新增 3 项：
+    - Free beta tester guide
+    - Beta feedback form
+    - Bug report template
+
+> **用途**：为朋友内测阶段提供完整指导，包括安装、测试、反馈、Bug 报告全流程
+
+---
 
 ### [2025-12-24 06:30] - Remaining Work 深度更新（Beta vs Production）
 

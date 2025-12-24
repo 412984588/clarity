@@ -1,6 +1,6 @@
 # Release Documentation Hub
 
-**Last Updated**: 2025-12-23
+**Last Updated**: 2025-12-24
 **Single Entry Point for All Release Documentation**
 
 ---
@@ -34,7 +34,19 @@
 
 ---
 
-## 2. Demo & Presentation
+## 2. Free Beta Testing
+
+免费内测阶段文档（朋友测试 / 不含支付）。
+
+| Document | Purpose | Status |
+|----------|---------|--------|
+| [Free Beta Tester Guide](free-beta-tester-guide.md) | 测试者完整指南（安装/测试/反馈） | READY |
+| [Beta Feedback Form](beta-feedback-form.md) | 测试反馈表单模板 | READY |
+| [Bug Report Template](bug-report-template.md) | Bug 报告模板 | READY |
+
+---
+
+## 3. Demo & Presentation
 
 演示与展示相关文档。
 
@@ -45,7 +57,7 @@
 
 ---
 
-## 3. Testing & Verification
+## 4. Testing & Verification
 
 测试与验证相关文档。
 
@@ -62,7 +74,7 @@
 
 ---
 
-## 4. Production Deployment
+## 5. Production Deployment
 
 生产部署相关文档。
 
@@ -81,7 +93,7 @@
 
 ---
 
-## 5. Legal & Support
+## 6. Legal & Support
 
 法律与支持相关文档。
 
@@ -93,7 +105,7 @@
 
 ---
 
-## 6. Operations & Support
+## 7. Operations & Support
 
 运维与支持相关文档。
 
