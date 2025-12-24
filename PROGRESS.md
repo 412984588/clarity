@@ -7,6 +7,13 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2025-12-24 22:00] - Free Beta 复盘与反馈汇总模板
+
+- [x] **新增**: 2 个模板（beta-feedback-summary-template.md / beta-retrospective-template.md）
+- [x] **引用更新**: 3 份文档（free-beta-ops-playbook / index / project-status-summary）
+
+> 详见 `docs/PROGRESS.md`
+
 ### [2025-12-24 21:30] - Release 文档盘点 + APK 链接检查
 
 - [x] **新增**: release-docs-inventory.md（50 份文档清单与分类）

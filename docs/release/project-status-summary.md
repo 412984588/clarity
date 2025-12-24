@@ -180,6 +180,8 @@ Clarity is currently in a free beta testing phase. Payment functionality (Stripe
 | **Beta exit criteria** | See `docs/release/beta-exit-criteria.md` | High |
 | **Beta to production plan** | See `docs/release/beta-to-production-plan.md` | High |
 | **Beta weekly status template** | See `docs/release/beta-weekly-status-template.md` | High |
+| **Beta feedback summary template** | See `docs/release/beta-feedback-summary-template.md` - 反馈汇总（每周） | High |
+| **Beta retrospective template** | See `docs/release/beta-retrospective-template.md` - 复盘（Beta 结束时） | High |
 | **Remaining work report** | See `docs/release/remaining-work.md` | High |
 | **Release docs hub** | See `docs/release/index.md` | High |
 | **Release docs inventory** | See `docs/release/release-docs-inventory.md` - 50 份文档清单与分类 | High |
