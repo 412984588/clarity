@@ -14,8 +14,8 @@
 | **PASS** | 15 |
 | **FAIL** | 6 |
 | **BLOCKED** | 4 |
-| **NOT RUN** | 9 |
-| **Total** | 34 |
+| **NOT RUN** | 8 |
+| **Total** | 33 |
 
 **Overall Result**: IN PROGRESS
 
