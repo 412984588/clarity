@@ -282,8 +282,8 @@ Domain Purchase → Hosting Setup → Backend Deploy → Mobile Build → Store 
 
 | 编号 | 阻塞项 | 影响 | Free Beta | Production | 解决方案 | 预计时间 |
 |------|--------|------|-----------|------------|----------|----------|
-| **B1** | 域名未配置 (api.clarity.app) | 无法部署生产后端 | ✅ 不阻塞 | 🔴 阻塞 | 购买域名 + 配置 DNS | 1-2 天 |
-| **B2** | Apple Developer Account | iOS 无法构建和提交 | ✅ 不阻塞 | 🔴 阻塞 | 注册 Apple Developer Program ($99/年) | 1-2 天 |
+| **B1** | 域名未配置 (api.clarity.app) | 无法部署生产后端 | ✅ 不阻塞 | 🔴 阻塞 | 购买域名 + 配置 DNS → [Domain & Hosting Setup Guide](domain-hosting-setup-guide.md) | 1-2 天 |
+| **B2** | Apple Developer Account | iOS 无法构建和提交 | ✅ 不阻塞 | 🔴 阻塞 | 注册 Apple Developer Program ($99/年) → [Apple Developer Setup Guide](apple-developer-setup-guide.md) | 1-2 天 |
 
 ---
 
@@ -594,6 +594,8 @@ Phase 5 (Payment Enablement)
 | **P3** | 配置 Sentry 项目 | 错误监控（可选） | 1 小时 |
 
 **相关文档**：
+- `docs/release/domain-hosting-setup-guide.md` - 域名/托管/数据库配置指南
+- `docs/release/apple-developer-setup-guide.md` - Apple Developer 账号配置指南
 - `docs/release/local-demo-runbook.md` - 本机演示指南
 - `docs/release/demo-script.md` - 演示话术
 - `docs/release/qa-test-plan.md` - 测试计划

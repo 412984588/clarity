@@ -1,11 +1,49 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-24 23:00
+**最后更新**: 2025-12-24 23:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-24 23:30] - Production 阻塞项解除指南
+
+- [x] **新增文档 A**: `docs/release/domain-hosting-setup-guide.md`
+  - Purpose（域名/托管/数据库配置指南，解除生产阻塞）
+  - Decisions Needed（域名选择/注册商/托管商/PostgreSQL 托管商）
+  - Inputs Required（注册信息/付款方式/环境变量）
+  - Step-by-Step Setup（5 阶段流程）:
+    * Phase 1: Domain Registration (Namecheap/Cloudflare/GoDaddy 对比)
+    * Phase 2: Hosting Provider Setup (Vercel/Railway/Fly.io 对比)
+    * Phase 3: PostgreSQL Database Setup (Neon/Supabase/Railway 对比)
+    * Phase 4: DNS & SSL Configuration (CNAME/Cloudflare Proxy/Let's Encrypt)
+    * Phase 5: Environment Targets (Dev/Staging/Production 环境设置)
+  - Completion Criteria（21 项完成检查清单）
+  - Risks & Common Issues（4 个风险及解决方案）
+  - Time Estimates（最快 2-3 小时，保守 1-2 天）
+
+- [x] **新增文档 B**: `docs/release/apple-developer-setup-guide.md`
+  - Purpose（Apple Developer 账号配置指南，解除 iOS 阻塞）
+  - Account Types Comparison（Individual vs Organization 决策矩阵）
+  - Prerequisites（Individual/Organization 不同要求，含 D-U-N-S Number）
+  - Enrollment Steps（5 阶段流程）:
+    * Phase 1: Prepare Apple ID (双因素认证/付款方式)
+    * Phase 2: Enroll in Apple Developer Program (Individual/Organization 分流)
+    * Phase 3: Access App Store Connect (Team 管理/角色分配)
+    * Phase 4: Certificates & Identifiers Overview (EAS Build 自动处理)
+    * Phase 5: Enable Apple Sign-In (Services ID/Private Key 配置)
+  - Common Blockers & Solutions（4 个常见阻塞：D-U-N-S 延迟/付款拒绝/审核/2FA）
+  - Time Estimates（Individual: 50分钟，Organization: 1h + 1-3天审核 + D-U-N-S 等待）
+  - Completion Criteria（22 项完成检查清单）
+
+- [x] **文档引用更新**: 4 份文档
+  - `docs/release/launch-dependencies.md` - 4 个阻塞项（Domain/Hosting/PostgreSQL/Apple Developer）添加指南链接
+  - `docs/release/index.md` - Production Deployment 分区新增 2 个指南
+  - `docs/release/project-status-summary.md` - Next Steps 新增 2 个指南引用
+  - `docs/release/remaining-work.md` - Critical Blockers 表格添加指南链接 + 相关文档列表新增 2 个引用
+
+> **目的**: 为解除 2 个生产关键阻塞提供完整操作指南（域名/托管/数据库 + Apple Developer 账号）
 
 ### [2025-12-24 23:00] - Beta Issue Intake + GitHub Issue 模板
 
