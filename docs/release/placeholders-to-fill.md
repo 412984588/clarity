@@ -20,6 +20,8 @@ This document tracks all placeholders, TBD items, and missing information across
 
 ## How to Use
 
+**💡 Quick Start**: Use the [Placeholders Intake Form](placeholders-intake-form.md) to fill all values in one place, then copy them into the respective documents.
+
 1. **Review** this inventory before each milestone (Beta Launch, Production Launch)
 2. **Assign** owners to each placeholder item
 3. **Fill in** actual values and mark as "Done"
