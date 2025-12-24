@@ -19,6 +19,8 @@ class _TestSettings:
     revenuecat_webhook_secret = "whsec_test"
     revenuecat_entitlement_standard = "standard_access"
     revenuecat_entitlement_pro = "pro_access"
+    beta_mode = False
+    payments_enabled = True
 
 
 async def _create_user_with_subscription(email: str) -> str:
