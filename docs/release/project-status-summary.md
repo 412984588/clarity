@@ -182,6 +182,7 @@ Clarity is currently in a free beta testing phase. Payment functionality (Stripe
 | **Beta weekly status template** | See `docs/release/beta-weekly-status-template.md` | High |
 | **Remaining work report** | See `docs/release/remaining-work.md` | High |
 | **Release docs hub** | See `docs/release/index.md` | High |
+| **Release docs inventory** | See `docs/release/release-docs-inventory.md` - 50 份文档清单与分类 | High |
 | **Account/deploy action list** | See `docs/release/account-deploy-action-list.md` | High |
 | **Account/deploy execution template** | See `docs/release/account-deploy-execution-template.md` | High |
 | **Run local demo** | See `docs/release/local-demo-runbook.md` | High |

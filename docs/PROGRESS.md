@@ -7,6 +7,29 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2025-12-24 21:30] - Release 文档盘点 + APK 链接一致性检查
+
+- [x] **新增文档**: `docs/release/release-docs-inventory.md`
+  - Purpose（文档清单与分类总览）
+  - Inventory Table（50 份文档 × 6 维度：Document/Purpose/Audience/Stage/Status/Shareable）
+  - Summary Counts（按 Audience/Stage/Status/Shareable 统计）
+  - Notes（分类标准说明）
+  - Related Documents
+
+- [x] **APK 链接一致性检查**: 全仓扫描 `expo.dev/artifacts/eas/` 并统一更新
+  - 最新链接：`cwHBq3tAhSrhLcQnewsmpy.apk` (Build ID: `5d5e7b57`)
+  - 更新 4 份文档：
+    * `docs/PROGRESS.md` (第279行)
+    * `docs/release/free-beta-invite-templates.md` (第180行 - 占位符)
+    * `docs/release/eas-preview.md` (完整更新：日期/Build ID/URLs)
+    * `docs/release/qa-test-plan.md` (第37行 - 测试环境表)
+
+- [x] **文档引用更新**: 2 份文档
+  - `docs/release/index.md` - Quick Links 新增 inventory 入口
+  - `docs/release/project-status-summary.md` - Next Steps 新增 inventory 引用
+
+> **统计结果**: 50 份文档（Internal: 39 / External: 11 | Free Beta: 18 / Production: 13 / Both: 19）
+
 ### [2025-12-24 20:05] - Android Preview Build 刷新（含 Free Beta Mode）
 
 - [x] **EAS Build**: 新 Android Preview Build 已完成
@@ -276,7 +299,7 @@
 - [x] **Free Beta Tester Guide**: `docs/release/free-beta-tester-guide.md`
   - Purpose & Scope（免费内测 / 不含支付）
   - Supported Platforms（Android 可用；iOS BLOCKED）
-  - Getting the App（引用 APK 链接：https://expo.dev/artifacts/eas/hUhRm9YvGcYz9Jqj3AVQnY.apk）
+  - Getting the App（引用 APK 链接：https://expo.dev/artifacts/eas/cwHBq3tAhSrhLcQnewsmpy.apk）
   - Account & Access（测试账号/自建账号/Google OAuth）
   - Test Scenarios（10 条测试场景：账号/Solve 流程/情绪检测/多语言/历史/设备/导出/错误/边界/体验）
   - Known Limitations（无支付/无 iOS/无商店提交/简易基础设施）
