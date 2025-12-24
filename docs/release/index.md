@@ -59,6 +59,7 @@
 | [Beta Weekly Status Template](beta-weekly-status-template.md) | 周报模板（KPIs/Progress/Decisions） | READY |
 | [Beta Feedback Summary Template](beta-feedback-summary-template.md) | 反馈汇总模板（Data Sources/Top Issues/Sentiment/Action Plan） | READY |
 | [Beta Retrospective Template](beta-retrospective-template.md) | 复盘模板（Goals vs Outcomes/Learnings/Production Gap） | READY |
+| [Beta Issue Intake Guide](beta-issue-intake.md) | Issue 接收指南（报告渠道/严重性/响应时间/隐私） | READY |
 
 ---
 
