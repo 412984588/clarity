@@ -1,7 +1,7 @@
 # Remaining Work Report
 
 **Generated**: 2025-12-24
-**Version**: 2.0.0
+**Version**: 2.1.0
 **Phase**: Free Beta (No Payments)
 
 ---
@@ -11,6 +11,8 @@
 Clarity 项目的核心代码开发已全部完成（Epic 1-7），包括用户认证、AI 对话、Solve 流程、订阅支付、情绪检测等所有功能模块。106 个后端测试全部通过，移动端 lint 和类型检查全部通过，本地部署验收成功，Android 预览版 APK 可下载测试。
 
 **当前阶段**：项目进入 **免费内测（Free Beta）**阶段，支付功能（Stripe/RevenueCat）和商店提交（App Store/Play Store）已延后。
+
+**Free Beta Mode 已实现**：PR #97 已合并，`BETA_MODE` 和 `PAYMENTS_ENABLED` 配置已添加到代码库，移动端已隐藏付费 UI，后端已放宽设备和会话限制。
 
 **Free Beta 状态**：**GO** - 可立即进行朋友测试
 - ✅ Android 预览版 APK 可分发

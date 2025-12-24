@@ -1,11 +1,46 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-24 08:30
+**最后更新**: 2025-12-24 14:00
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-24 14:00] - Free Beta Launch Pack 文档补齐
+
+- [x] **新增文档 A**: `docs/release/free-beta-launch-checklist.md`
+  - Purpose & Scope (Free Beta launch guide)
+  - Prerequisites (APK, backend, testers)
+  - Roles & Owners (Project Lead, Dev Lead, PM, QA, Support)
+  - Assets & Access (APK link, backend URL, test accounts)
+  - Launch Checklist (Pre-Launch / Launch Day / Week 1)
+  - Communications (引用 launch-communications.md)
+  - Feedback & Triage (引用 bug-report-template / qa-execution-log)
+  - Monitoring & KPIs (引用 release-metrics.md)
+  - Pause / Rollback Criteria
+  - Success Criteria & Related Documents
+
+- [x] **新增文档 B**: `docs/release/feedback-triage.md`
+  - Purpose (Feedback triage workflow for Free Beta)
+  - Intake Channels (Email / Form / Slack / GitHub)
+  - Severity Levels (P0-P3 with SLA)
+  - Triage Workflow (7-step process with decision matrix)
+  - Duplicate Handling
+  - Verification & Closure
+  - Reporting Cadence (Daily / Weekly summaries)
+  - Example Issue Entries
+
+- [x] **更新文档**: `docs/release/remaining-work.md` v2.0.0 → v2.1.0
+  - 添加说明：Free Beta Mode 已实现（PR #97 已合并）
+
+- [x] **更新文档**: `docs/release/index.md`
+  - Free Beta Testing 分区新增 2 个文档
+
+- [x] **更新文档**: `docs/release/project-status-summary.md`
+  - Next Steps 新增 Free Beta launch checklist 和 feedback triage
+
+> 详见 `PROGRESS.md`
 
 ### [2025-12-24 08:30] - Free Beta 模式代码实现
 

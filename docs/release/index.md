@@ -40,7 +40,9 @@
 
 | Document | Purpose | Status |
 |----------|---------|--------|
+| [Free Beta Launch Checklist](free-beta-launch-checklist.md) | 免费内测上线清单（Pre-Launch/Launch Day/Week 1） | READY |
 | [Free Beta Tester Guide](free-beta-tester-guide.md) | 测试者完整指南（安装/测试/反馈） | READY |
+| [Feedback Triage Workflow](feedback-triage.md) | 反馈分类处理流程（Severity/SLA/Owner） | READY |
 | [Beta Feedback Form](beta-feedback-form.md) | 测试反馈表单模板 | READY |
 | [Bug Report Template](bug-report-template.md) | Bug 报告模板 | READY |
 
