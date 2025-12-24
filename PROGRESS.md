@@ -1,11 +1,19 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 16:33
+**最后更新**: 2025-12-24 03:57
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-24 03:57] - QA Solve/Emotion 复测（OpenRouter）
+
+- [x] **QA Log**: Solve FAIL（OpenRouter 无 token 内容），Emotion PASS
+
+> 详见 `docs/PROGRESS.md`
+
+---
 
 ### [2025-12-23 16:33] - QA Solve/Emotion 复测
 

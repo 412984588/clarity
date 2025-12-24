@@ -1,11 +1,22 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-23 16:33
+**最后更新**: 2025-12-24 03:57
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-24 03:57] - QA Solve/Emotion 复测（OpenRouter）
+
+- [x] **QA Execution Log**: `docs/release/qa-execution-log.md`
+  - Solve 流程 FAIL：OpenRouter 返回 done 但无 token 内容
+  - Emotion PASS：done payload 正常返回情绪
+  - 新增问题: QA-LLM-01 (P1)
+
+> 需要更换模型或兼容 reasoning 字段才能恢复 Solve 文本输出
+
+---
 
 ### [2025-12-23 16:33] - QA Solve/Emotion 复测仍被阻塞
 
