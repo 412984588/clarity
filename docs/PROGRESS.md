@@ -1,11 +1,35 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-24 04:00
+**最后更新**: 2025-12-24 05:05
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-24 05:05] - 免费内测阶段 / 支付延期
+
+- [x] **阶段调整**: 项目进入**免费内测（Free Beta）**阶段
+  - 支付功能（Stripe/RevenueCat）延后至正式上线
+  - 移动端商店提交（App Store/Play Store）延后
+  - 内测通过 Android 预览版 APK + 本地/简易部署环境
+- [x] **文档更新**: 统一标记支付相关项为 DEFERRED
+  - `docs/release/project-status-summary.md`（新增"当前阶段"说明 + Blockers 重组）
+  - `docs/release/launch-dependencies.md`（Stripe/RevenueCat/Play Store 标记 DEFERRED）
+  - `docs/release/launch-readiness.md`（更新 Summary: Production NO-GO / Beta GO）
+  - `docs/release/risk-register.md`（支付风险降级为 Low Impact/DEFERRED）
+  - `docs/release/qa-test-plan.md`（SUB/WEBHOOK 测试标记 DEFERRED）
+  - `docs/release/release-metrics.md`（Revenue 指标标记 DEFERRED）
+  - `docs/release/demo-script.md`（Q3/Q8 更新：明确免费内测阶段）
+  - `docs/release/store-submission-checklist.md`（增加 Beta 说明：商店提交延后）
+- [x] **Status Legend**: 新增 DEFERRED 状态说明（3 个文档）
+  - launch-dependencies.md
+  - risk-register.md
+  - launch-readiness.md（Summary 新增 DEFERRED 统计）
+
+> **策略调整**：当前阶段专注核心功能验证，支付和商店发布推迟到内测完成后
+
+---
 
 ### [2025-12-24 04:00] - Remaining Work 报告
 

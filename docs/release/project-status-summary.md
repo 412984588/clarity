@@ -5,6 +5,14 @@
 
 ---
 
+## Current Phase
+
+**Status**: **Free Beta (No Payments)**
+
+Clarity is currently in a free beta testing phase. Payment functionality (Stripe/RevenueCat) has been deferred and is not required for this phase. The focus is on validating core features with friends and early testers before implementing monetization.
+
+---
+
 ## Table of Contents
 
 1. [Completed Epics](#completed-epics)
@@ -81,11 +89,18 @@
 | **Domain not configured** | Cannot deploy to `api.clarity.app` | Purchase/configure DNS for custom domain |
 | **Apple Developer Account** | iOS build & App Store submission blocked | Enroll in Apple Developer Program ($99/year) |
 
+### Deferred for Beta
+
+| Item | Status | Notes |
+|------|--------|-------|
+| Stripe live mode activation | **DEFERRED** | Not required for free beta |
+| RevenueCat production setup | **DEFERRED** | Not required for free beta |
+| Google Play Console | **DEFERRED** | Store submission deferred for beta |
+
 ### Non-Critical (Can Proceed Without)
 
 | Item | Status | Notes |
 |------|--------|-------|
-| Google Play Console | **Pending** | Required for Android store submission ($25 one-time) |
 | Sentry DSN | **Pending** | Optional for MVP, recommended for production |
 | Production LLM API Key | **Pending** | OpenAI or Anthropic production key |
 
@@ -95,8 +110,6 @@
 |------|--------|
 | Hosting provider selection | Pending - options: Vercel, Railway, Fly.io |
 | PostgreSQL provider selection | Pending - options: Neon, Supabase, RDS |
-| Stripe live mode activation | Pending confirmation |
-| RevenueCat production setup | Pending confirmation |
 
 ---
 
@@ -165,8 +178,6 @@
 | **Ops handover** | See `docs/release/ops-handover.md` | High |
 | Finalize hosting provider decision | Vercel vs Railway vs Fly.io | High |
 | Finalize database provider decision | Neon vs Supabase vs RDS | High |
-| Prepare Stripe products/prices | Create in Stripe test mode | Medium |
-| Prepare RevenueCat entitlements | Configure in dashboard | Medium |
 | End-to-end flow testing on Android | Test with preview APK | Medium |
 | Performance profiling | Identify bottlenecks before prod | Low |
 
@@ -177,11 +188,7 @@
 | Configure `api.clarity.app` DNS | Domain purchase | Point to hosting provider |
 | Create production PostgreSQL | Provider account | Neon/Supabase/RDS |
 | Deploy backend to production | Domain + DB | Run migrations, verify health |
-| Configure Stripe webhook | Production URL | `https://api.clarity.app/webhooks/stripe` |
-| Configure RevenueCat webhook | Production URL | `https://api.clarity.app/webhooks/revenuecat` |
-| iOS preview/production build | Apple Developer ($99) | EAS Build + credentials |
-| iOS App Store submission | Apple Developer | TestFlight then App Store |
-| Android Play Store submission | Google Play ($25) | Internal testing then production |
+| iOS preview build | Apple Developer ($99) | EAS Build + credentials (for beta testing) |
 
 ---
 

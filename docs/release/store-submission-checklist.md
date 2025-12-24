@@ -11,6 +11,19 @@
 
 ---
 
+## **IMPORTANT: Free Beta Phase**
+
+**Current Status**: 商店提交在**免费内测阶段延后**。
+
+当前阶段仅通过以下方式进行测试：
+- **Android**: EAS Preview Build（APK 直接分发）
+- **iOS**: 待 Apple Developer 账号开通后使用 TestFlight 内部测试
+- **Backend**: 本地部署或简易托管环境
+
+正式的 App Store 和 Google Play Store 提交将在免费内测完成、确认付费模式后进行。
+
+---
+
 ## iOS Submission Checklist
 
 ### Account & Certificates

@@ -1,14 +1,17 @@
 # Launch Readiness Scorecard (Go/No-Go)
 
-**Version**: 1.0
-**Assessment Date**: 2025-12-23
-**Overall Status**: **NO-GO** (Critical Blockers Exist)
+**Version**: 1.1
+**Assessment Date**: 2025-12-24
+**Overall Status**: **NO-GO for Production** | **GO for Free Beta**
+**Phase**: Free Beta (No Payments)
 
 ---
 
 ## Executive Summary
 
-Clarity 代码库已完成全部 8 个 Epic 的开发，通过 106 个后端测试，本地部署验证全部通过，Android 预览版 APK 可下载测试。然而，生产上线仍被 **2 个关键阻塞项** 所阻挡：域名未配置、Apple Developer 账号未开通。一旦这些阻塞项解除，可在 1-2 天内完成生产部署。
+**Current Phase**: Clarity is entering **Free Beta** phase with payment functionality deferred.
+
+Clarity 代码库已完成全部 8 个 Epic 的开发，通过 106 个后端测试，本地部署验证全部通过，Android 预览版 APK 可下载测试。**当前阶段为免费内测（朋友测试）**，Stripe/RevenueCat 支付功能已延后，移动端不进行商店提交。生产上线仍被 **2 个关键阻塞项** 所阻挡：域名未配置、Apple Developer 账号未开通。对于免费 Beta 测试，可以仅使用 Android 预览版和本地部署环境进行验证。
 
 ---
 
@@ -57,10 +60,10 @@ Clarity 代码库已完成全部 8 个 Epic 的开发，通过 106 个后端测�
 
 | Category | Requirement | Status | Evidence | Blocker |
 |----------|-------------|--------|----------|---------|
-| Stripe Live Mode | API keys ready | **UNKNOWN** | Need confirmation | - |
-| Stripe Webhook | Endpoint configured | **BLOCKED** | - | Needs production URL |
-| RevenueCat Prod | Entitlements ready | **UNKNOWN** | Need confirmation | - |
-| RevenueCat Webhook | Endpoint configured | **BLOCKED** | - | Needs production URL |
+| Stripe Live Mode | API keys ready | **DEFERRED** | Not required for free beta | - |
+| Stripe Webhook | Endpoint configured | **DEFERRED** | Not required for free beta | - |
+| RevenueCat Prod | Entitlements ready | **DEFERRED** | Not required for free beta | - |
+| RevenueCat Webhook | Endpoint configured | **DEFERRED** | Not required for free beta | - |
 | OpenAI API Key | Production key | **UNKNOWN** | Need confirmation | - |
 | Sentry DSN | Project created | **UNKNOWN** | Optional but recommended | - |
 
@@ -160,9 +163,13 @@ Clarity 代码库已完成全部 8 个 Epic 的开发，通过 106 个后端测�
 |--------|-------|
 | Total Requirements | 28 |
 | READY | 17 (61%) |
-| BLOCKED | 7 (25%) |
-| UNKNOWN | 4 (14%) |
-| Critical Blockers | 2 |
-| Decision | **NO-GO** |
+| BLOCKED | 5 (18%) |
+| UNKNOWN | 2 (7%) |
+| DEFERRED | 4 (14%) |
+| Critical Blockers (Production) | 2 |
+| Critical Blockers (Free Beta) | 0 |
+| Decision (Production) | **NO-GO** |
+| Decision (Free Beta) | **GO** |
 
-**Estimated Time to GO**: 1-2 days after domain + Apple Developer Account resolved
+**Estimated Time to Production GO**: 1-2 days after domain + Apple Developer Account resolved
+**Free Beta Status**: **READY** - Can proceed with Android preview + local deployment

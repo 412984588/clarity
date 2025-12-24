@@ -73,9 +73,9 @@
 | **HEALTH-01** | Health | GET /health | 返回 `{"status":"healthy","version":"1.0.0","database":"connected"}` | NOT RUN |
 | **HEALTH-02** | Health | GET /health/ready | 返回 `{"ready":true}` | NOT RUN |
 | **HEALTH-03** | Health | GET /health/live | 返回 `{"live":true}` | NOT RUN |
-| **SUB-01** | Subscription | 查看订阅计划 | 显示 Standard / Pro 选项 | BLOCKED |
-| **SUB-02** | Subscription | Stripe 支付流程 | 跳转 Stripe，完成支付后更新状态 | BLOCKED |
-| **SUB-03** | Subscription | RevenueCat 移动端订阅 | 触发 App Store / Play Store 购买 | BLOCKED |
+| **SUB-01** | Subscription | 查看订阅计划 | 显示 Standard / Pro 选项 | DEFERRED |
+| **SUB-02** | Subscription | Stripe 支付流程 | 跳转 Stripe，完成支付后更新状态 | DEFERRED |
+| **SUB-03** | Subscription | RevenueCat 移动端订阅 | 触发 App Store / Play Store 购买 | DEFERRED |
 | **ERR-01** | Error | 网络断开时提交 | 显示友好错误提示 | NOT RUN |
 | **ERR-02** | Error | API 返回 500 | 显示"服务暂时不可用" | NOT RUN |
 | **ERR-03** | Error | Token 过期 | 自动刷新或提示重新登录 | NOT RUN |
@@ -85,9 +85,9 @@
 | **AUTH-06** | Auth | 设备数量超限 | 返回 403 + `DEVICE_LIMIT_REACHED` | NOT RUN |
 | **AUTH-07** | Auth | 设备已绑定其他账号 | 返回 403 + `DEVICE_BOUND_TO_OTHER` | NOT RUN |
 | **SOLVE-06** | Solve | SSE 流式响应完整 | 事件流包含 token + done，done 含 next_step + emotion_detected | NOT RUN |
-| **SUB-04** | Subscription | 查看使用量 | `/subscriptions/usage` 返回 tier/limit/used | NOT RUN |
-| **WEBHOOK-01** | Webhook | Stripe 端点可达 | 400/401/422 皆视为可达 | NOT RUN |
-| **WEBHOOK-02** | Webhook | RevenueCat 端点可达 | 400/401/422 皆视为可达 | NOT RUN |
+| **SUB-04** | Subscription | 查看使用量 | `/subscriptions/usage` 返回 tier/limit/used | DEFERRED |
+| **WEBHOOK-01** | Webhook | Stripe 端点可达 | 400/401/422 皆视为可达 | DEFERRED |
+| **WEBHOOK-02** | Webhook | RevenueCat 端点可达 | 400/401/422 皆视为可达 | DEFERRED |
 | **SAFETY-01** | Safety | 触发危机关键词 | 返回 crisis 响应并阻断流程 | NOT RUN |
 
 ---
@@ -124,7 +124,7 @@
 |--------------|--------|------------|
 | Apple Developer 账号未开通 | iOS 测试无法进行 | 等待账号开通，优先测试 Android |
 | 域名未配置 | 无法测试生产环境 | 使用本地环境验证核心流程 |
-| Stripe/RevenueCat 未激活 | 支付流程无法测试 | 标记为 BLOCKED，优先测试其他功能 |
+| Stripe/RevenueCat 未激活 | 支付流程无法测试（免费内测不需要） | 标记为 DEFERRED，优先测试核心功能 |
 | Preview Build 指向 staging API | 预览包可能无法连通服务 | 如无 staging，改用本地或记录为 BLOCKED |
 | LLM API Key 限额 | AI 响应可能失败 | 使用 Mock 响应或低频测试 |
 
