@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
     openrouter_app_name: str = ""
     openrouter_referer: str = ""
+    openrouter_reasoning_fallback: bool = False
     llm_model: str = "gpt-4o-mini"
     llm_timeout: int = 30
     llm_max_tokens: int = 1024

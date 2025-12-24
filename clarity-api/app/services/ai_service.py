@@ -117,6 +117,10 @@ class AIService:
         if self.settings.openrouter_app_name:
             headers["X-Title"] = self.settings.openrouter_app_name
 
+        allow_reasoning_fallback = self.settings.openrouter_reasoning_fallback
+        reasoning_buffer: list[str] = []
+        yielded_content = False
+
         async with httpx.AsyncClient(timeout=self.timeout) as client:
             async with client.stream(
                 "POST",
@@ -138,7 +142,17 @@ class AIService:
                     delta = payload.get("choices", [{}])[0].get("delta", {})
                     content = delta.get("content")
                     if content:
+                        yielded_content = True
                         yield content
+                        continue
+                    if allow_reasoning_fallback:
+                        reasoning = delta.get("reasoning")
+                        if reasoning:
+                            reasoning_buffer.append(reasoning)
+
+        if allow_reasoning_fallback and (not yielded_content) and reasoning_buffer:
+            # Fallback for reasoning-only models that emit no content tokens.
+            yield "".join(reasoning_buffer)
 
     async def _stream_anthropic(
         self, system_prompt: str, user_prompt: str
