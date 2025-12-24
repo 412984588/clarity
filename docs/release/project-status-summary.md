@@ -138,6 +138,7 @@
 
 | Task | Description | Priority |
 |------|-------------|----------|
+| **Remaining work report** | See `docs/release/remaining-work.md` | High |
 | **Release docs hub** | See `docs/release/index.md` | High |
 | **Account/deploy action list** | See `docs/release/account-deploy-action-list.md` | High |
 | **Account/deploy execution template** | See `docs/release/account-deploy-execution-template.md` | High |

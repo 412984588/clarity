@@ -1,11 +1,27 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-24 03:57
+**最后更新**: 2025-12-24 04:00
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-24 04:00] - Remaining Work 报告
+
+- [x] **Remaining Work Report**: `docs/release/remaining-work.md`
+  - Executive Summary（项目状态总结）
+  - Counts（READY 17 / BLOCKED 7 / UNKNOWN 4 / TODO 479）
+  - By Epic（Epic 1-9 完成度统计）
+  - Blockers & Dependencies（2 个关键阻塞 + 7 个高优先级阻塞 + 7 个待决策）
+  - Open TODOs（代码中 0 个 TODO/FIXME + Ops Handover 15 项待办）
+  - Gaps & Unknowns（6 个基础设施未知项 + 6 个支付服务未知项 + 4 个 QA 阻塞用例）
+  - Next Actions（10 项无账号可做 + 15 项需账号或域名后做）
+  - Evidence Index（所有未完成项证据文档路径）
+
+> 完整的剩余工作统计报告，汇总所有未完成任务、阻塞项、未知项和下一步行动
+
+---
 
 ### [2025-12-24 03:57] - QA Solve/Emotion 复测（OpenRouter）
 
