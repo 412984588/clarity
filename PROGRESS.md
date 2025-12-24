@@ -1,11 +1,19 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-24 23:45
+**最后更新**: 2025-12-25 00:00
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-25 00:00] - 占位符/TBD 待填项清单
+
+- [x] **新增**: placeholders-to-fill.md（39 项 actionable placeholders）
+- [x] **扫描结果**: Top 5 files listed + priority categorization
+- [x] **文档更新**: 2 份（index / project-status-summary）
+
+> 详见 `docs/PROGRESS.md`
 
 ### [2025-12-24 23:45] - Release Docs Inventory 刷新
 
