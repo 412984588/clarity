@@ -13,6 +13,7 @@
 - **READY**: 已准备就绪，可直接使用
 - **BLOCKED**: 缺少必要资源，无法继续
 - **UNKNOWN**: 待确认状态
+- **DEFERRED**: 当前阶段不需要，延后处理（免费内测阶段）
 
 ---
 
@@ -26,12 +27,12 @@
 | **Mobile - iOS** | Apple Developer Account | Apple Developer Program | BLOCKED | | | 需 $99/年订阅 |
 | **Mobile - iOS** | App Store Connect | App Store 提交 | BLOCKED | | | 依赖 Apple Developer Account |
 | **Mobile - iOS** | Apple Sign-In Credentials | Services ID + Key | BLOCKED | | | 依赖 Apple Developer Account |
-| **Mobile - Android** | Google Play Console | Play Console 账号 | UNKNOWN | | | 需 $25 一次性注册费 |
+| **Mobile - Android** | Google Play Console | Play Console 账号 | DEFERRED | | | 商店提交在免费内测阶段延后 |
 | **Mobile - Android** | Google OAuth Client ID | Production Client ID | UNKNOWN | | | 需在 Google Cloud Console 配置 |
-| **Payments** | Stripe Live Mode | Live API Keys | UNKNOWN | | | 需激活 Stripe Live Mode |
-| **Payments** | Stripe Webhook Secret | Production Webhook | BLOCKED | | | 需 Production URL 才能配置 |
-| **Payments** | RevenueCat Production | RC Project + API Keys | UNKNOWN | | | 需配置生产环境 entitlements |
-| **Payments** | RevenueCat Webhook | Production Webhook | BLOCKED | | | 需 Production URL 才能配置 |
+| **Payments** | Stripe Live Mode | Live API Keys | DEFERRED | | | 免费内测阶段无需支付功能 |
+| **Payments** | Stripe Webhook Secret | Production Webhook | DEFERRED | | | 免费内测阶段无需支付功能 |
+| **Payments** | RevenueCat Production | RC Project + API Keys | DEFERRED | | | 免费内测阶段无需支付功能 |
+| **Payments** | RevenueCat Webhook | Production Webhook | DEFERRED | | | 免费内测阶段无需支付功能 |
 | **AI/LLM** | OpenAI API Key | Production Key | UNKNOWN | | | 需确认是否有生产用 API Key |
 | **AI/LLM** | Anthropic API Key | Production Key | UNKNOWN | | | 备用 LLM 引擎 |
 | **Monitoring** | Sentry DSN | Production Project | UNKNOWN | | | 可选，推荐用于错误追踪 |
@@ -90,6 +91,7 @@ Apple Developer → iOS Build → App Store
 | READY | 已就绪 | 无需操作 |
 | BLOCKED | 被阻塞 | 见"备注"列了解缺失项 |
 | UNKNOWN | 待确认 | 需负责人确认当前状态 |
+| DEFERRED | 延后处理 | 当前免费内测阶段不需要 |
 
 ---
 

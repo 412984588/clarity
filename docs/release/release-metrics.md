@@ -66,16 +66,18 @@
 | **Monthly Active Users (MAU)** | 月活跃用户数 | ≥ 500 (MVP) | Analytics | [ ] Tracking |
 | **Stickiness (DAU/MAU)** | 用户粘性 | ≥ 15% | Analytics | [ ] Tracking |
 
-### 4. Revenue（收入变现）
+### 4. Revenue（收入变现）**DEFERRED for Free Beta**
+
+**Note**: 免费内测阶段无支付功能，所有收入相关指标延后追踪。
 
 | Metric | Definition | Target | Data Source | Status |
 |--------|------------|--------|-------------|--------|
-| **Free Trial Starts** | 开始免费试用的用户数 | 观察 | RevenueCat | [ ] Tracking |
-| **Trial to Paid Conversion** | 试用 → 付费转化率 | ≥ 5% | RevenueCat | [ ] Tracking |
-| **Monthly Recurring Revenue (MRR)** | 月度经常性收入 | 观察 | Stripe / RevenueCat | [ ] Tracking |
-| **Average Revenue Per User (ARPU)** | 每用户平均收入 | 观察 | Stripe / RevenueCat | [ ] Tracking |
-| **Churn Rate** | 月度订阅流失率 | < 10% | RevenueCat | [ ] Tracking |
-| **Refund Rate** | 退款率 | < 5% | Stripe | [ ] Tracking |
+| **Free Trial Starts** | 开始免费试用的用户数 | 观察 | RevenueCat | **DEFERRED** |
+| **Trial to Paid Conversion** | 试用 → 付费转化率 | ≥ 5% | RevenueCat | **DEFERRED** |
+| **Monthly Recurring Revenue (MRR)** | 月度经常性收入 | 观察 | Stripe / RevenueCat | **DEFERRED** |
+| **Average Revenue Per User (ARPU)** | 每用户平均收入 | 观察 | Stripe / RevenueCat | **DEFERRED** |
+| **Churn Rate** | 月度订阅流失率 | < 10% | RevenueCat | **DEFERRED** |
+| **Refund Rate** | 退款率 | < 5% | Stripe | **DEFERRED** |
 
 ### 5. Reliability（系统可靠性）
 

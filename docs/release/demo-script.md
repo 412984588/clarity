@@ -97,7 +97,7 @@
 
 ### Q3: 支付功能能用吗？
 
-> "支付集成代码已完成，包括 Stripe（网页端）和 RevenueCat（移动端）。目前是测试模式，正式上线需要激活 Stripe Live Mode 和配置 RevenueCat 生产环境。"
+> "当前为**免费内测阶段**，支付功能已关闭。Stripe 和 RevenueCat 的集成代码已完成，但延后激活。内测用户无需付费即可使用所有功能。"
 
 ### Q4: Google/Apple 登录能用吗？
 
@@ -117,7 +117,13 @@
 
 ### Q8: 上线还需要做什么？
 
-> "后端需要：域名、托管服务（Vercel/Railway/Fly.io）、PostgreSQL（Neon/Supabase/RDS）、LLM API Key（OpenAI 或 Anthropic）、Stripe Live Mode、RevenueCat 生产配置。移动端需要：Apple Developer 账号（$99/年）、Google Play Console（$25 一次性）。代码和文档都已准备就绪。"
+> "**当前阶段为免费内测**，仅需基础设施即可开始测试。
+>
+> **内测必需**：域名、托管服务（Vercel/Railway/Fly.io）、PostgreSQL（Neon/Supabase/RDS）、LLM API Key（OpenAI 或 Anthropic）。
+>
+> **延后项目**：Stripe Live Mode、RevenueCat 生产配置（支付功能）、Apple Developer 账号（App Store 提交）、Google Play Console（Play Store 提交）。
+>
+> 内测用户通过 Android 预览版 APK + 本地部署验证核心功能，无需支付和商店提交。"
 
 ---
 
