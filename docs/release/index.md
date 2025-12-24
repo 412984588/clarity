@@ -57,6 +57,8 @@
 | [Beta Exit Criteria](beta-exit-criteria.md) | Beta 退出标准（Go/No-Go） | READY |
 | [Beta to Production Plan](beta-to-production-plan.md) | Beta → Production 过渡计划（Phases/Workstreams/Timeline） | READY |
 | [Beta Weekly Status Template](beta-weekly-status-template.md) | 周报模板（KPIs/Progress/Decisions） | READY |
+| [Beta Feedback Summary Template](beta-feedback-summary-template.md) | 反馈汇总模板（Data Sources/Top Issues/Sentiment/Action Plan） | READY |
+| [Beta Retrospective Template](beta-retrospective-template.md) | 复盘模板（Goals vs Outcomes/Learnings/Production Gap） | READY |
 
 ---
 

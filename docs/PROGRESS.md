@@ -7,6 +7,40 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2025-12-24 22:00] - Free Beta 复盘与反馈汇总模板
+
+- [x] **新增文档 A**: `docs/release/beta-feedback-summary-template.md`
+  - Purpose（反馈汇总报告，用于每周聚合）
+  - Data Sources（表单/Bug/支持/指标）
+  - Summary Snapshot（反馈分类统计）
+  - Top 5 Issues / Top 5 Requests
+  - Sentiment & Satisfaction Summary（情绪与满意度）
+  - Quality Signals（崩溃率/阻塞问题/修复率）
+  - Action Plan (Next 7 Days)
+  - Risks & Escalations
+  - Related Documents
+
+- [x] **新增文档 B**: `docs/release/beta-retrospective-template.md`
+  - Purpose & Scope（Beta 结束时的全面复盘）
+  - Goals vs Outcomes（目标达成情况）
+  - What Went Well / What Didn't（成功与失败）
+  - Key Learnings（产品/技术/运营洞察）
+  - Metrics Review（引用 release-metrics.md）
+  - Product Decisions (Keep / Change / Drop)
+  - Engineering Decisions（技术债/架构变更/性能优化）
+  - Ops & Support Review（流程有效性/资源评估）
+  - User Feedback Highlights（最赞/最批评区域）
+  - Production Readiness Gap（关键阻塞/优先级项）
+  - Action Items & Owners
+  - Related Documents
+
+- [x] **文档引用更新**: 3 份文档
+  - `docs/release/free-beta-ops-playbook.md` - Reporting Template 新增2个模板引用
+  - `docs/release/index.md` - Free Beta Testing 分区新增2个文档
+  - `docs/release/project-status-summary.md` - Next Steps 新增2个文档引用
+
+> **模板用途**: Feedback Summary（每周用） / Retrospective（Beta 结束时用）
+
 ### [2025-12-24 21:30] - Release 文档盘点 + APK 链接一致性检查
 
 - [x] **新增文档**: `docs/release/release-docs-inventory.md`

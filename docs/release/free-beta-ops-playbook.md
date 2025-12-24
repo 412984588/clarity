@@ -422,6 +422,28 @@ Thanks again for your help! 🙏
 
 ---
 
+### Beta Feedback Summary (Weekly)
+
+For comprehensive weekly feedback aggregation, use:
+- [Beta Feedback Summary Template](beta-feedback-summary-template.md)
+- **Purpose**: Aggregate feedback from all channels, identify top issues/requests, track sentiment
+- **Frequency**: Weekly during active beta
+- **Owner**: PM
+- **Audience**: Team + stakeholders
+
+---
+
+### Beta Retrospective (End of Beta)
+
+For final beta wrap-up and production readiness assessment, use:
+- [Beta Retrospective Template](beta-retrospective-template.md)
+- **Purpose**: Comprehensive beta review, learnings extraction, production gap analysis
+- **Frequency**: Once at end of beta (before production decision)
+- **Owner**: PM / Project Lead
+- **Audience**: Full team + stakeholders
+
+---
+
 ## Incident Response (Beta Context)
 
 If a **critical issue (P0)** occurs during beta:
