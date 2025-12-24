@@ -1,11 +1,18 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-24 16:00
+**最后更新**: 2025-12-24 23:00
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-24 23:00] - Beta Issue Intake + GitHub Issue 模板
+
+- [x] **新增**: 4 个 Issue 模板（.github/ISSUE_TEMPLATE/*.yml）+ 1 个文档（beta-issue-intake.md）
+- [x] **引用更新**: 3 份文档（index / project-status-summary / beta-share-pack）
+
+> 详见 `docs/PROGRESS.md`
 
 ### [2025-12-24 22:00] - Free Beta 复盘与反馈汇总模板
 

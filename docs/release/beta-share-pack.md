@@ -33,6 +33,8 @@ These documents are tester-facing and can be shared publicly or with anyone test
 | ✅ [Beta Feedback Form](beta-feedback-form.md) | Structured feedback collection | **Always** - Include in invite or follow-up |
 | ✅ [Bug Report Template](bug-report-template.md) | How to report bugs | **Always** - Include in invite |
 | ✅ [Beta Known Issues](beta-known-issues.md) | Current bug status, workarounds | **Proactively** - Share link when onboarding or when testers ask "Is this a known issue?" |
+| ✅ [Beta Issue Intake Guide](beta-issue-intake.md) | Where to report issues, severity guide, response times | **Always** - Include in invite or when testers ask how to report bugs |
+| ✅ **GitHub Issue Forms** | Structured bug reports and feedback via GitHub | **Always** - Link: [https://github.com/412984588/clarity/issues/new/choose](https://github.com/412984588/clarity/issues/new/choose) |
 | ✅ [Privacy Policy](privacy.md) | Data handling, user rights | **Always** - Legal requirement, link in app + tester guide |
 | ✅ [Free Beta - Start Here](free-beta-start-here.md) | Quick overview (optional for testers) | **Optional** - For testers who want to understand the bigger picture |
 

@@ -1,11 +1,36 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-24 16:00
+**最后更新**: 2025-12-24 23:00
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-24 23:00] - Beta Issue Intake + GitHub Issue 模板
+
+- [x] **新增 GitHub Issue 模板**: `.github/ISSUE_TEMPLATE/`
+  - `beta-bug-report.yml` - Bug 报告表单（标题/步骤/期望/实际/环境/严重性/频率）
+  - `beta-feedback.yml` - Beta 反馈表单（满意度/喜欢/困惑/改进/推荐/继续测试）
+  - `beta-feature-request.yml` - 功能请求表单（描述/用户场景/优先级/替代方案）
+  - `config.yml` - Issue 配置（contact_links 指向 Tester Guide/Feedback Form/Bug Template/Issue Intake）
+
+- [x] **新增文档**: `docs/release/beta-issue-intake.md`
+  - Purpose（Beta 测试者 Issue 接收指南）
+  - Where to Report（GitHub Issue Forms / Feedback Form / Direct Message / Bug Template）
+  - What to Include（Bug 必填字段/Feedback 推荐字段/Feature Request 必填字段）
+  - Severity Guide（P0-P3 定义 + 示例 + SLA + 建议报告方式，引用 feedback-triage.md）
+  - Response Expectations（Initial Response/Status Update/Resolution Target 表格）
+  - Privacy Notes（收集内容/使用方式/可见性/禁止包含内容）
+  - Related Documents（分为 For Beta Testers 和 For Team (Internal) 两组）
+  - Quick Reference（快速查找不同场景的操作指南）
+
+- [x] **文档引用更新**: 3 份文档
+  - `docs/release/index.md` - Free Beta Testing 分区新增 beta-issue-intake.md
+  - `docs/release/project-status-summary.md` - Next Steps 新增 beta-issue-intake.md
+  - `docs/release/beta-share-pack.md` - What to Share 新增 beta-issue-intake.md + GitHub Issue Forms 链接
+
+> **目的**: 提供统一的 Beta 反馈入口（GitHub Issue Forms）+ 完整的报告指南（Severity/SLA/Privacy）
 
 ### [2025-12-24 22:00] - Free Beta 复盘与反馈汇总模板
 

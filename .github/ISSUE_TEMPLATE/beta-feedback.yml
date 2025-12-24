@@ -1,0 +1,114 @@
+name: 💬 Beta Feedback
+description: Share your experience and feedback from Beta testing
+title: "[Beta Feedback] "
+labels: ["beta", "feedback"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for testing Clarity Beta! Your feedback helps us improve the product. Please share your honest thoughts below.
+
+  - type: dropdown
+    id: satisfaction
+    attributes:
+      label: Overall Satisfaction
+      description: How satisfied are you with the app so far?
+      options:
+        - 😊 Very Satisfied (5/5)
+        - 🙂 Satisfied (4/5)
+        - 😐 Neutral (3/5)
+        - 😟 Dissatisfied (2/5)
+        - 😡 Very Dissatisfied (1/5)
+    validations:
+      required: true
+
+  - type: textarea
+    id: liked
+    attributes:
+      label: What Did You Like?
+      description: What features or aspects of the app did you enjoy?
+      placeholder: |
+        Examples:
+        - The 5-step Solve flow is very clear
+        - I love the emotion detection feature
+        - The UI is clean and easy to navigate
+    validations:
+      required: false
+
+  - type: textarea
+    id: confused
+    attributes:
+      label: What Was Confusing or Frustrating?
+      description: What parts of the app were unclear, difficult, or frustrating to use?
+      placeholder: |
+        Examples:
+        - I didn't understand what "Reframe" meant
+        - The onboarding took too long
+        - I couldn't find how to delete a session
+    validations:
+      required: false
+
+  - type: textarea
+    id: improvements
+    attributes:
+      label: Suggestions for Improvement
+      description: How could we make the app better?
+      placeholder: |
+        Examples:
+        - Add a dark mode
+        - Allow exporting session history
+        - Make the text bigger for readability
+    validations:
+      required: false
+
+  - type: dropdown
+    id: recommend
+    attributes:
+      label: Would You Recommend This App?
+      description: Would you recommend Clarity to a friend facing a difficult decision?
+      options:
+        - Yes, definitely
+        - Probably yes
+        - Not sure
+        - Probably not
+        - No, definitely not
+    validations:
+      required: false
+
+  - type: dropdown
+    id: continue_testing
+    attributes:
+      label: Are You Willing to Continue Testing?
+      description: Would you like to keep testing future updates?
+      options:
+        - Yes, I want to keep testing
+        - Maybe, depends on the update
+        - No, I'm done testing
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Comments
+      description: Anything else you'd like to share?
+      placeholder: Any other thoughts, ideas, or questions?
+    validations:
+      required: false
+
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Info (Optional)
+      description: Email or preferred contact method if we can follow up
+      placeholder: "e.g., your-email@example.com or WeChat ID"
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        **Privacy Note**: This feedback will be visible to the Clarity team. Please do not include sensitive personal information.
+
+        **Need Help?** Check our [Beta Tester Guide](https://github.com/412984588/clarity/blob/main/docs/release/free-beta-tester-guide.md) or [Issue Intake Guide](https://github.com/412984588/clarity/blob/main/docs/release/beta-issue-intake.md).

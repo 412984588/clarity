@@ -1,0 +1,17 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 Beta Tester Guide
+    url: https://github.com/412984588/clarity/blob/main/docs/release/free-beta-tester-guide.md
+    about: Complete guide for beta testers - how to install, test, and provide feedback
+
+  - name: 📝 Beta Feedback Form Template
+    url: https://github.com/412984588/clarity/blob/main/docs/release/beta-feedback-form.md
+    about: Structured feedback form template for detailed responses
+
+  - name: 🐛 Bug Report Template
+    url: https://github.com/412984588/clarity/blob/main/docs/release/bug-report-template.md
+    about: Detailed bug report template with examples
+
+  - name: 📬 Issue Intake Guide
+    url: https://github.com/412984588/clarity/blob/main/docs/release/beta-issue-intake.md
+    about: Learn where and how to report issues, severity guidelines, and response times

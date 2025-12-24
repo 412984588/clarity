@@ -1,0 +1,142 @@
+name: 🐛 Beta Bug Report
+description: Report a bug found during Free Beta testing
+title: "[Beta Bug] "
+labels: ["beta", "bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug during our Beta testing! Please fill out the form below with as much detail as possible.
+
+  - type: input
+    id: title
+    attributes:
+      label: Bug Title
+      description: A short, clear summary of the bug
+      placeholder: "e.g., App crashes when clicking Submit on Solve step 3"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened? Please provide a detailed description of the bug
+      placeholder: Describe the bug in detail
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce this bug? Please provide step-by-step instructions
+      placeholder: |
+        1. Open the app
+        2. Navigate to...
+        3. Click on...
+        4. Bug occurs
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: Describe what should have happened
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: Describe what actually happened
+    validations:
+      required: true
+
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device Type
+      description: What device are you using?
+      options:
+        - Android Phone
+        - Android Tablet
+        - iOS (if available)
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating System Version
+      description: What OS version are you running?
+      placeholder: "e.g., Android 13, iOS 16.5"
+    validations:
+      required: true
+
+  - type: input
+    id: app_version
+    attributes:
+      label: App Version / Build ID
+      description: Which version/build are you testing? (Check Settings or APK filename)
+      placeholder: "e.g., 1.0.0 or Build ID: 5d5e7b57"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How serious is this bug?
+      options:
+        - P0 - Blocker (App unusable, data loss, security issue)
+        - P1 - Critical (Major feature broken, workaround exists)
+        - P2 - High (Feature impaired, inconvenient)
+        - P3 - Low (Minor issue, cosmetic)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: How Often Does This Happen?
+      description: How frequently can you reproduce this bug?
+      options:
+        - Always (100%)
+        - Often (>50%)
+        - Sometimes (10-50%)
+        - Rarely (<10%)
+        - Only Once
+    validations:
+      required: true
+
+  - type: textarea
+    id: attachments
+    attributes:
+      label: Screenshots / Video
+      description: If applicable, attach screenshots or video links (drag and drop images here)
+      placeholder: Upload files or paste image URLs
+    validations:
+      required: false
+
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Info (Optional)
+      description: Email or preferred contact method if we need to follow up
+      placeholder: "e.g., your-email@example.com or WeChat ID"
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        **Privacy Note**: This report will be visible to the Clarity team. Please do not include sensitive personal information.
+
+        **Need Help?** Check our [Beta Tester Guide](https://github.com/412984588/clarity/blob/main/docs/release/free-beta-tester-guide.md) or [Issue Intake Guide](https://github.com/412984588/clarity/blob/main/docs/release/beta-issue-intake.md).
