@@ -100,6 +100,8 @@ It's in Free Beta right now (no payments, just testing core features).
 
 **Important Links:**
 - Installation Guide: [free-beta-tester-guide.md](free-beta-tester-guide.md)
+- Release Notes: [beta-release-notes-2025-12-24.md](beta-release-notes-2025-12-24.md)
+- Invite Templates: [beta-launch-message.md](beta-launch-message.md)
 - Feedback Form: [beta-feedback-form.md](beta-feedback-form.md)
 - Bug Report: [bug-report-template.md](bug-report-template.md)
 - Known Issues: [beta-known-issues.md](beta-known-issues.md)

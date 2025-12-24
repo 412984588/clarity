@@ -1,11 +1,20 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-25 00:15
+**最后更新**: 2025-12-25 00:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-25 00:30] - Beta 邀请消息包 + Release Notes
+
+- [x] **新增**: 2 个文档（beta-launch-message.md / beta-release-notes-2025-12-24.md）
+- [x] **消息模板**: 6 个可直接发送的邀请模板（DM/Email/Reminder/Thank You）
+- [x] **Release Notes**: v1.0.0-beta（Build: 5d5e7b57 / Commit: f11f3f7）
+- [x] **文档更新**: 3 份（beta-share-pack / index / project-status-summary）
+
+> 详见 `docs/PROGRESS.md`
 
 ### [2025-12-25 00:15] - 待填信息表单（可直接填写）
 
