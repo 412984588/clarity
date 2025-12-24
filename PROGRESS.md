@@ -1,11 +1,20 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-25 00:30
+**最后更新**: 2025-12-25 01:00
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-25 01:00] - Release Docs Inventory 刷新 + 链接检查
+
+- [x] **更新清单**: release-docs-inventory.md (v1.1 → v1.2, 55 → 59 文档)
+- [x] **新增 4 个文档**: placeholders-to-fill / placeholders-intake-form / beta-launch-message / beta-release-notes-2025-12-24
+- [x] **链接检查**: ✅ 全部通过（0 个需修正，0 个需 REVIEW）
+- [x] **文档更新**: index.md（日期 + Quick Links 数量）
+
+> 详见 `docs/PROGRESS.md`
 
 ### [2025-12-25 00:30] - Beta 邀请消息包 + Release Notes
 

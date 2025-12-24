@@ -1,11 +1,40 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-25 00:30
+**最后更新**: 2025-12-25 01:00
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-25 01:00] - Release Docs Inventory 刷新 + 链接一致性检查
+
+- [x] **更新文档清单**: `docs/release/release-docs-inventory.md` (v1.1 → v1.2)
+  - 新增 4 个文档到 Inventory 表格:
+    1. `placeholders-to-fill.md` (Status & Planning / Internal / Checklist)
+    2. `placeholders-intake-form.md` (Status & Planning / Internal / Template)
+    3. `beta-launch-message.md` (Free Beta Testing / External / Template)
+    4. `beta-release-notes-2025-12-24.md` (Free Beta Testing / External / Report)
+  - Summary Counts 更新（55 → 59 文档）:
+    - By Audience: Internal 42→44, External 13→15
+    - By Stage: Free Beta 21→23, Both 19→21
+    - By Status: Checklist 14→15, Template 12→14, Report 8→9
+    - By Shareability: Yes 13→15, No 42→44
+
+- [x] **更新文档索引**: `docs/release/index.md`
+  - Last Updated: 2025-12-24 → 2025-12-25
+  - Quick Links: 文档数量 55 → 59
+
+- [x] **内部链接一致性检查**: ✅ 全部通过
+  - 验证父目录链接（`../` 和 `../../`）: 6 个文件全部存在
+  - 验证 release 目录内链接: 所有链接指向的文件均存在
+  - 无需修正的链接: 0 个
+  - 无需 REVIEW 的链接: 0 个
+
+- [x] **验证 project-status-summary.md**: ✅ 无需更新
+  - 所有 4 个新文档已在 Next Steps 中
+
+> **目的**: 确保 Release Docs Inventory 反映所有最新文档（含 #110/#111/#112 新增），并验证所有文档内部链接一致性
 
 ### [2025-12-25 00:30] - Beta 邀请消息包 + Release Notes
 

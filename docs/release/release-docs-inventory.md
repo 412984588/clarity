@@ -1,7 +1,7 @@
 # Release Documentation Inventory
 
-**Version**: 1.1
-**Last Updated**: 2025-12-24
+**Version**: 1.2
+**Last Updated**: 2025-12-25
 **Purpose**: Complete inventory of all release documentation with categorization
 
 ---
@@ -33,6 +33,8 @@ This document provides a comprehensive inventory of all release-related document
 | [launch-communications.md](launch-communications.md) | Launch communication plan | Internal | Both | Process | No |
 | [release-approval-checklist.md](release-approval-checklist.md) | Release approval checklist | Internal | Both | Checklist | No |
 | [one-page-update.md](one-page-update.md) | Investor/partner one-page update | External | Both | Report | Yes |
+| [placeholders-to-fill.md](placeholders-to-fill.md) | TBD/placeholder inventory (39 actionable items) | Internal | Both | Checklist | No |
+| [placeholders-intake-form.md](placeholders-intake-form.md) | Fillable form to collect all TBD/placeholder values | Internal | Both | Template | No |
 | **2. Free Beta Testing** | | | | | |
 | [free-beta-start-here.md](free-beta-start-here.md) | Quick start guide (1 hour onboarding + 7 day plan) | Internal | Free Beta | Guide | No |
 | [free-beta-launch-checklist.md](free-beta-launch-checklist.md) | Free beta launch checklist (Pre-Launch/Launch Day/Week 1) | Internal | Free Beta | Checklist | No |
@@ -53,6 +55,8 @@ This document provides a comprehensive inventory of all release-related document
 | [beta-feedback-summary-template.md](beta-feedback-summary-template.md) | Feedback summary report template (weekly aggregation) | External | Free Beta | Template | Yes |
 | [beta-retrospective-template.md](beta-retrospective-template.md) | Beta retrospective template (Goals vs Outcomes/Learnings/Production Gap) | Internal | Free Beta | Template | No |
 | [beta-issue-intake.md](beta-issue-intake.md) | Beta issue intake guide (reporting channels/severity/SLA/privacy) | External | Free Beta | Guide | Yes |
+| [beta-launch-message.md](beta-launch-message.md) | Ready-to-send Beta invite message templates (6 templates: DM/Email/Reminder) | External | Free Beta | Template | Yes |
+| [beta-release-notes-2025-12-24.md](beta-release-notes-2025-12-24.md) | Current version Release Notes (v1.0.0-beta, Build: 5d5e7b57) | External | Free Beta | Report | Yes |
 | **3. Demo & Presentation** | | | | | |
 | [demo-script.md](demo-script.md) | 3-minute external demo script + checklist | External | Both | Guide | Yes |
 | [local-demo-runbook.md](local-demo-runbook.md) | Local demo runbook | Internal | Both | Process | No |
@@ -93,37 +97,37 @@ This document provides a comprehensive inventory of all release-related document
 
 | Audience | Count |
 |----------|-------|
-| Internal | 42 |
-| External | 13 |
-| **Total** | **55** |
+| Internal | 44 |
+| External | 15 |
+| **Total** | **59** |
 
 ### By Stage
 
 | Stage | Count |
 |-------|-------|
-| Free Beta | 21 |
+| Free Beta | 23 |
 | Production | 15 |
-| Both | 19 |
-| **Total** | **55** |
+| Both | 21 |
+| **Total** | **59** |
 
 ### By Status
 
 | Status | Count |
 |--------|-------|
-| Checklist | 14 |
-| Template | 12 |
+| Checklist | 15 |
+| Template | 14 |
 | Process | 8 |
 | Guide | 13 |
-| Report | 8 |
-| **Total** | **55** |
+| Report | 9 |
+| **Total** | **59** |
 
 ### By Shareability
 
 | Shareable | Count |
 |-----------|-------|
-| Yes | 13 |
-| No | 42 |
-| **Total** | **55** |
+| Yes | 15 |
+| No | 44 |
+| **Total** | **59** |
 
 ---
 
