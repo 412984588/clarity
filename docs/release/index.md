@@ -32,6 +32,7 @@
 | [Launch Communications](launch-communications.md) | 上线沟通计划 | READY |
 | [Release Approval Checklist](release-approval-checklist.md) | 发布审批清单 | READY |
 | [One-Page Update](one-page-update.md) | 投资人/合作方一页版简报 | READY |
+| [Placeholders to Fill](placeholders-to-fill.md) | 占位符/TBD 待填项清单（上线前必填） | READY |
 
 ---
 

@@ -1,11 +1,47 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-24 23:45
+**最后更新**: 2025-12-25 00:00
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-25 00:00] - 占位符/TBD 待填项清单
+
+- [x] **全量扫描占位符**: 扫描 docs/ 目录所有文档
+  - 搜索关键词：TBD / TBA / TODO / FIXME / PLACEHOLDER / REPLACE / xxx / ??? / <...>
+  - 扫描范围：docs/release/**、docs/**、根目录 .md 文件
+  - 发现占位符：39 个可执行项 + 10 个技术配置项 + 5 个示例数据
+
+- [x] **新增文档**: `docs/release/placeholders-to-fill.md`
+  - Purpose & How to Use
+  - Placeholder Inventory（39 项，按 Critical/High/Medium/Low 分级）
+    * Critical (15): 团队角色、联系方式、关键时间线
+    * High (5): Beta Launch 必需项
+    * Medium (12): Production Launch 必需项
+    * Low (4): 可选增强项
+  - Technical Placeholders（10 项，仅供参考，实际值填入 .env）
+  - Example Data Placeholders（5 项，保持示例数据不变）
+  - By Priority & By Category 统计表
+  - Filling Guidelines & Status Values
+  - Review Cadence（周度/Beta 前/Production 前）
+  - Related Documents
+
+- [x] **扫描结果摘要**:
+  - Total Actionable: **39 项**
+  - Top 5 Files with Most Placeholders:
+    1. privacy-compliance-checklist.md - 15 项（Legal & Compliance）
+    2. ownership-matrix.md - 8 项（Team Roles）
+    3. launch-day-runbook.md - 7 项（Team Roles + Monitoring）
+    4. free-beta-launch-checklist.md - 5 项（Beta Setup）
+    5. free-beta-tester-guide.md - 5 项（Contact & Timeline）
+
+- [x] **文档更新**: 2 份文档
+  - `docs/release/index.md` - Status & Planning 分区新增 placeholders-to-fill.md
+  - `docs/release/project-status-summary.md` - Next Steps 新增占位符清单引用（39 项）
+
+> **目的**: 提供上线前必填项清单，防止遗漏关键信息（团队角色/联系方式/时间线/合规项）
 
 ### [2025-12-24 23:45] - Release Docs Inventory 刷新
 
