@@ -1,11 +1,19 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-24 23:30
+**最后更新**: 2025-12-24 23:45
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-24 23:45] - Release Docs Inventory 刷新
+
+- [x] **新增**: 5 个文档到 inventory（PR #106/#107/#108 新增）
+- [x] **更新统计**: 50 → 55 份文档（v1.0 → v1.1）
+- [x] **文档更新**: 3 份（release-docs-inventory / index / project-status-summary）
+
+> 详见 `docs/PROGRESS.md`
 
 ### [2025-12-24 23:30] - Production 阻塞项解除指南
 

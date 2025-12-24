@@ -1,11 +1,33 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-24 23:30
+**最后更新**: 2025-12-24 23:45
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-24 23:45] - Release Docs Inventory 刷新
+
+- [x] **新增文档到 inventory**: 5 个文档（PR #106/#107/#108 新增）
+  - `beta-feedback-summary-template.md` - 反馈汇总报告模板（External/Free Beta/Template/Yes）
+  - `beta-retrospective-template.md` - Beta 复盘模板（Internal/Free Beta/Template/No）
+  - `beta-issue-intake.md` - Beta Issue 接收指南（External/Free Beta/Guide/Yes）
+  - `domain-hosting-setup-guide.md` - 域名/托管/数据库配置指南（Internal/Production/Guide/No）
+  - `apple-developer-setup-guide.md` - Apple Developer 账号配置指南（Internal/Production/Guide/No）
+
+- [x] **更新 Summary Counts**: 50 → 55 份文档
+  - Audience: Internal 42, External 13
+  - Stage: Free Beta 21, Production 15, Both 19
+  - Status: Checklist 14, Template 12, Process 8, Guide 13, Report 8
+  - Shareable: Yes 13, No 42
+
+- [x] **文档更新**: 3 份文档
+  - `docs/release/release-docs-inventory.md` - 补齐 5 个文档 + 更新统计（v1.0 → v1.1）
+  - `docs/release/index.md` - Quick Links 更新文档数量（50 → 55）
+  - `docs/release/project-status-summary.md` - Release docs inventory 描述更新（50 → 55）
+
+> **目的**: 补齐 PR #106/#107/#108 新增的 5 份文档到 inventory，确保文档清单完整性
 
 ### [2025-12-24 23:30] - Production 阻塞项解除指南
 

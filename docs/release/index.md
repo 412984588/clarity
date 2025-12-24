@@ -9,7 +9,7 @@
 
 | Document | Purpose |
 |----------|---------|
-| [Release Docs Inventory](release-docs-inventory.md) | 文档清单与分类（50 份文档总览） |
+| [Release Docs Inventory](release-docs-inventory.md) | 文档清单与分类（55 份文档总览） |
 | [One-Page Update](one-page-update.md) | 投资人/合作方快速简报 |
 | [Launch Readiness](launch-readiness.md) | Go/No-Go 评估 |
 | [Local Demo Runbook](local-demo-runbook.md) | 5 分钟本机演示 |
