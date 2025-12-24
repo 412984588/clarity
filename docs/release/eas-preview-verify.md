@@ -1,6 +1,6 @@
 # EAS Preview Build Verification
 
-**Verification Date**: 2025-12-23
+**Verification Date**: 2025-12-24
 **Epic**: 9 - Production Deployment
 
 ---
@@ -10,16 +10,17 @@
 | Field | Value |
 |-------|-------|
 | **Status** | PASS |
-| **Build ID** | `88df477f-4862-41ac-9c44-4134aa2b67e2` |
+| **Build ID** | `5d5e7b57-44f7-4729-b627-e40bc93dbb76` |
 | **Platform** | Android |
 | **Profile** | preview |
 | **App Version** | 1.0.0 |
 | **SDK Version** | 54.0.0 |
-| **Build Time** | 2025-12-22 20:36 - 20:43 (7m 11s) |
+| **Build Time** | 2025-12-24 07:57 - 08:04 (7m 8s) |
+| **Commit** | `f11f3f7` (includes PR #97 Free Beta Mode + PR #103 Support Pack) |
 
 ### Download Link
 
-**APK**: https://expo.dev/artifacts/eas/hUhRm9YvGcYz9Jqj3AVQnY.apk
+**APK**: https://expo.dev/artifacts/eas/cwHBq3tAhSrhLcQnewsmpy.apk
 
 ### Installation Steps (Android)
 
@@ -31,14 +32,14 @@
 2. **Emulator (Android Studio)**:
    ```bash
    # Download APK
-   curl -o clarity.apk https://expo.dev/artifacts/eas/hUhRm9YvGcYz9Jqj3AVQnY.apk
+   curl -o clarity.apk https://expo.dev/artifacts/eas/cwHBq3tAhSrhLcQnewsmpy.apk
 
    # Install to running emulator
    adb install clarity.apk
    ```
 
 3. **Via Expo Dashboard**:
-   - Visit: https://expo.dev/accounts/cllalala/projects/clarity-mobile/builds/88df477f-4862-41ac-9c44-4134aa2b67e2
+   - Visit: https://expo.dev/accounts/cllalala/projects/clarity-mobile/builds/5d5e7b57-44f7-4729-b627-e40bc93dbb76
    - Scan QR code with device
 
 ---
