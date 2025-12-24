@@ -44,25 +44,25 @@ Welcome to the Clarity Free Beta! This guide is designed for friends and early t
 
 ### Android Installation
 
-**Latest Build**: 2025-12-22 (Build ID: `88df477f-4862-41ac-9c44-4134aa2b67e2`)
+**Latest Build**: 2025-12-24 (Build ID: `5d5e7b57-44f7-4729-b627-e40bc93dbb76`)
 
 **Option 1: Direct APK Download (Recommended)**
 
 1. **On your Android device**:
-   - Open this link in your browser: https://expo.dev/artifacts/eas/hUhRm9YvGcYz9Jqj3AVQnY.apk
+   - Open this link in your browser: https://expo.dev/artifacts/eas/cwHBq3tAhSrhLcQnewsmpy.apk
    - Tap "Download"
    - Once downloaded, tap the APK file to install
    - If prompted, enable "Install from unknown sources" (Settings → Security)
 
 2. **Via Expo Dashboard**:
-   - Visit: https://expo.dev/accounts/cllalala/projects/clarity-mobile/builds/88df477f-4862-41ac-9c44-4134aa2b67e2
+   - Visit: https://expo.dev/accounts/cllalala/projects/clarity-mobile/builds/5d5e7b57-44f7-4729-b627-e40bc93dbb76
    - Scan the QR code with your device
 
 **Option 2: Install via ADB (for developers)**
 
 ```bash
 # Download APK
-curl -o clarity.apk https://expo.dev/artifacts/eas/hUhRm9YvGcYz9Jqj3AVQnY.apk
+curl -o clarity.apk https://expo.dev/artifacts/eas/cwHBq3tAhSrhLcQnewsmpy.apk
 
 # Install to connected device or emulator
 adb install clarity.apk

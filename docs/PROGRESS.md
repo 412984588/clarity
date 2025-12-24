@@ -7,6 +7,22 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2025-12-24 20:05] - Android Preview Build 刷新（含 Free Beta Mode）
+
+- [x] **EAS Build**: 新 Android Preview Build 已完成
+  - Build ID: `5d5e7b57-44f7-4729-b627-e40bc93dbb76`
+  - Commit: `f11f3f7`（包含 PR #97 Free Beta Mode + PR #103 Support Pack）
+  - APK URL: https://expo.dev/artifacts/eas/cwHBq3tAhSrhLcQnewsmpy.apk
+  - Build Time: 2025-12-24 07:57 - 08:04 (7m 8s)
+  - 状态: PASS
+
+- [x] **文档更新**: 3 份文档更新 APK 链接
+  - `docs/release/eas-preview-verify.md` - 更新 Build ID / APK URL / 时间
+  - `docs/release/free-beta-tester-guide.md` - 更新 APK 下载链接（3 处）
+  - `docs/release/free-beta-launch-checklist.md` - 更新 Assets & Access 信息
+
+> **重要变更**: 新 Build 包含 Free Beta 模式（设备限制放宽至 10 / 隐藏付费 UI / Beta 提示卡）
+
 ### [2025-12-24 19:30] - Free Beta 支持与对外分享包
 
 - [x] **新增文档 A**: `docs/release/beta-known-issues.md`

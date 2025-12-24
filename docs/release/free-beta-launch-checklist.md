@@ -63,10 +63,10 @@ Before launching free beta, ensure these are ready:
 ### Android APK
 
 **Latest Preview Build:**
-- **Build ID**: `88df477f-4862-41ac-9c44-4134aa2b67e2`
-- **Date**: 2025-12-22
-- **Download**: https://expo.dev/artifacts/eas/hUhRm9YvGcYz9Jqj3AVQnY.apk
-- **Dashboard**: https://expo.dev/accounts/cllalala/projects/clarity-mobile/builds/88df477f-4862-41ac-9c44-4134aa2b67e2
+- **Build ID**: `5d5e7b57-44f7-4729-b627-e40bc93dbb76`
+- **Date**: 2025-12-24
+- **Download**: https://expo.dev/artifacts/eas/cwHBq3tAhSrhLcQnewsmpy.apk
+- **Dashboard**: https://expo.dev/accounts/cllalala/projects/clarity-mobile/builds/5d5e7b57-44f7-4729-b627-e40bc93dbb76
 
 **Distribution Method:**
 - Share direct APK download link via email/Slack

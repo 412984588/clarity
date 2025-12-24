@@ -7,6 +7,14 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2025-12-24 20:05] - Android Preview Build 刷新
+
+- [x] **新 Build**: 5d5e7b57 (包含 Free Beta Mode + Support Pack)
+- [x] **APK URL**: https://expo.dev/artifacts/eas/cwHBq3tAhSrhLcQnewsmpy.apk
+- [x] **文档更新**: 3 份（eas-preview-verify / tester-guide / launch-checklist）
+
+> 详见 `docs/PROGRESS.md`
+
 ### [2025-12-24 19:30] - Free Beta 支持与对外分享包
 
 - [x] **新增**: 3 个文档（beta-known-issues.md / beta-support-macros.md / beta-share-pack.md）
