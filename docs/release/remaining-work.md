@@ -402,6 +402,178 @@ docs/**/*.md
 
 ---
 
+## Beta → Production Transition
+
+### Transition Planning Documents
+
+为支持从 Free Beta 顺利过渡到 Production，新增以下规划文档：
+
+| 文档 | 路径 | 用途 |
+|------|------|------|
+| **Beta Exit Criteria** | `docs/release/beta-exit-criteria.md` | 定义 Beta 退出标准（Go/No-Go） |
+| **Beta to Production Plan** | `docs/release/beta-to-production-plan.md` | 过渡路线图（Phases/Workstreams/Timeline） |
+| **Beta Weekly Status Template** | `docs/release/beta-weekly-status-template.md` | 周报模板（KPIs/Progress/Decisions） |
+
+---
+
+### Exit Criteria Summary
+
+**Free Beta → Production 的最低要求**：
+
+**Category 1: User Validation** (用户验证)
+- ≥ 5 active testers
+- ≥ 60% Solve completion rate
+- Average satisfaction ≥ 3.5/5
+- ≥ 60% positive feedback
+
+**Category 2: QA/UAT** (质量保证)
+- 0 P0 bugs
+- ≤ 2 P1 bugs
+- Test coverage ≥ 80%
+- All manual QA items PASS
+
+**Category 3: Risk Thresholds** (风险阈值)
+- Critical bug rate < 10%
+- App crash rate < 5%
+- 0 data loss incidents
+- 0 High/Critical security vulnerabilities
+
+**Category 4: Dependency Readiness** (依赖就绪)
+- Domain configured (BLOCKED)
+- Apple Developer Account (BLOCKED)
+- Hosting provider selected
+- PostgreSQL provider selected
+- Google OAuth production configured
+- LLM API key confirmed
+
+**Category 5: Documentation** (文档完备)
+- PROD_DEPLOY.md reviewed
+- ENV_VARIABLES.md complete
+- Incident response plan ready
+- Support playbook ready
+- Privacy policy published
+- Beta learnings documented
+
+**详见**: [Beta Exit Criteria](beta-exit-criteria.md)
+
+---
+
+### Transition Timeline
+
+**Phase 0: Free Beta Testing** (Current) - 2-4 weeks
+- Distribute Android APK to 5-10 testers
+- Collect feedback and fix bugs
+- Validate core features
+
+**Phase 1: Blocker Resolution** (BLOCKED) - 1-2 weeks
+- Purchase domain + configure DNS
+- Apple Developer Account enrollment
+- Select hosting & database providers
+- Confirm LLM API key
+
+**Phase 2: Pre-Production Setup** (PENDING) - 1 week
+- Deploy backend to production
+- Build iOS/Android production binaries
+- Configure monitoring & alerting
+- Publish privacy policy & terms
+
+**Phase 3: Production Launch** (PENDING) - 1-2 days (+ 1-7 days store review)
+- Final QA & Go/No-Go meeting
+- Store submission (Android immediate, iOS conditional)
+- Go-Live execution
+
+**Phase 4: Post-Launch Stabilization** (PENDING) - 2-4 weeks
+- Monitor metrics & fix bugs
+- User support
+- Prepare for payment enablement
+
+**Phase 5: Payment Enablement** (DEFERRED) - TBD
+- Activate Stripe/RevenueCat
+- Test payment flow
+- Update mobile app
+
+**详见**: [Beta to Production Plan](beta-to-production-plan.md)
+
+---
+
+### Critical Path
+
+```
+Phase 0 (Beta Testing)
+    ↓
+Phase 1 (Blocker Resolution) ← 🔴 Currently BLOCKED
+    ├── Domain Purchase & DNS
+    ├── Apple Developer Account
+    ├── Hosting/Database Selection
+    └── LLM API Key
+    ↓
+Phase 2 (Pre-Production Setup)
+    ├── Infrastructure
+    ├── Mobile Builds
+    ├── Monitoring
+    └── Compliance
+    ↓
+Phase 3 (Production Launch)
+    ├── Final QA
+    ├── Store Submission
+    └── Go-Live
+    ↓
+Phase 4 (Stabilization)
+    ↓
+Phase 5 (Payment Enablement)
+```
+
+**Estimated Time to Production**: 4-8 weeks from beta completion
+
+---
+
+### Workstreams
+
+**Workstream A: Infrastructure** 🏗️
+- Deploy backend to production
+- Run database migrations
+- Configure environment variables
+- Set up monitoring (Sentry, UptimeRobot)
+
+**Workstream B: Mobile** 📱
+- Build iOS/Android production binaries
+- TestFlight internal testing (iOS)
+- Production API URL configuration
+
+**Workstream C: Payments (DEFERRED)** 💳
+- Activate Stripe Live Mode
+- Configure RevenueCat Production
+- Test subscription flow
+
+**Workstream D: Monitoring & Alerting** 📊
+- Configure Sentry DSN (optional)
+- Set up UptimeRobot
+- Configure log aggregation
+- Set up alert thresholds
+
+**Workstream E: Compliance & Legal** ⚖️
+- Publish Privacy Policy
+- Publish Terms of Service
+- Link policies in app
+- Configure support email
+
+**详见**: [Beta to Production Plan](beta-to-production-plan.md) - Workstreams section
+
+---
+
+### Weekly Status Tracking
+
+**During beta testing and transition**, use the weekly status template to track:
+- KPI Snapshot (active testers, bugs, satisfaction)
+- Progress Summary (completed/in-progress/not-started)
+- Top Issues / Blockers
+- Key Decisions Needed
+- Exit Criteria Progress
+
+**模板**: [Beta Weekly Status Template](beta-weekly-status-template.md)
+
+---
+
 ## Next Actions
 
 ### Without Account/Domain (Can Do Now) - Free Beta Ready

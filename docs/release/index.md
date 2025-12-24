@@ -49,6 +49,9 @@
 | [Feedback Triage Workflow](feedback-triage.md) | 反馈分类处理流程（Severity/SLA/Owner） | READY |
 | [Beta Feedback Form](beta-feedback-form.md) | 测试反馈表单模板 | READY |
 | [Bug Report Template](bug-report-template.md) | Bug 报告模板 | READY |
+| [Beta Exit Criteria](beta-exit-criteria.md) | Beta 退出标准（Go/No-Go） | READY |
+| [Beta to Production Plan](beta-to-production-plan.md) | Beta → Production 过渡计划（Phases/Workstreams/Timeline） | READY |
+| [Beta Weekly Status Template](beta-weekly-status-template.md) | 周报模板（KPIs/Progress/Decisions） | READY |
 
 ---
 

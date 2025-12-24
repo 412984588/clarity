@@ -7,6 +7,50 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2025-12-24 17:30] - Beta → Production 过渡规划文档
+
+- [x] **新增文档 A**: `docs/release/beta-exit-criteria.md`
+  - Purpose & Scope (何时可从 Beta 过渡到 Production)
+  - Exit Criteria (5 Categories: User Validation / QA/UAT / Risk / Dependencies / Documentation)
+  - Minimum Evidence Required (每类的具体量化指标)
+  - Go/No-Go Gate (强制要求与 NO-GO 触发器)
+  - Transition Decision Matrix (6 scenarios mapping)
+  - Related Documents
+
+- [x] **新增文档 B**: `docs/release/beta-to-production-plan.md`
+  - Overview (Current: Free Beta → Target: Production with Payments Deferred)
+  - Phases (Phase 0-5: Beta → Blocker Resolution → Pre-Prod Setup → Launch → Stabilization → Payment)
+  - Critical Path Dependencies (Domain → Hosting → Database → Backend → Mobile → Store)
+  - Workstreams (5 parallel: Infrastructure / Mobile / Payments DEFERRED / Monitoring / Compliance)
+  - Timeline Assumptions (Optimistic 4 weeks / Realistic 6-8 weeks / Conservative 10-12 weeks)
+  - Decision Points & Risks & Mitigations (10 risks tracked)
+  - Related Documents
+
+- [x] **新增文档 C**: `docs/release/beta-weekly-status-template.md`
+  - Header (Week / Owner / Phase / Overall Status)
+  - KPI Snapshot (User Engagement / Quality & Bugs / Feedback & Satisfaction)
+  - Progress Summary (Completed / In Progress / Not Started)
+  - Top Issues / Blockers (Critical / High / Resolved)
+  - Key Decisions Needed (with Options/Pros/Cons/Recommendation)
+  - Feedback Highlights / Next Week Plan / Exit Criteria Progress
+  - Risk Updates / Communications
+  - Complete Example (Week 1 filled sample)
+
+- [x] **更新文档**: `docs/release/remaining-work.md`
+  - 新增 "Beta → Production Transition" 小节
+  - 添加 Exit Criteria 总结（5 categories with detailed bullets）
+  - 添加 Transition Timeline（Phase 0-5 breakdown）
+  - 添加 Critical Path diagram
+  - 链接 3 个新文档
+
+- [x] **更新文档**: `docs/release/index.md`
+  - Free Beta Testing 分区新增 3 个文档（Beta Exit Criteria / Beta to Production Plan / Beta Weekly Status Template）
+
+- [x] **更新文档**: `docs/release/project-status-summary.md`
+  - Next Steps 新增 3 个 Beta → Production 过渡文档
+
+> 详见 `PROGRESS.md`
+
 ### [2025-12-24 16:00] - Free Beta Execution Pack 文档补齐
 
 - [x] **新增文档 A**: `docs/release/free-beta-invite-templates.md`
