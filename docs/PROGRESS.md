@@ -1,11 +1,42 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-24 05:05
+**最后更新**: 2025-12-24 06:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-24 06:30] - Remaining Work 深度更新（Beta vs Production）
+
+- [x] **Remaining Work Report**: `docs/release/remaining-work.md` v1.0.0 → v2.0.0
+  - **版本升级**: 完整重写，体现 Free Beta / Production 区分
+  - **Phase 标识**: 新增 "Phase: Free Beta (No Payments)" 标注
+  - **Executive Summary**: 强调 Free Beta GO / Production NO-GO
+  - **统计增强**: Counts 新增 DEFERRED 列（10 项）
+    - READY: 17 (60.7%) - 已完成且验证
+    - BLOCKED: 2 (7.1%) - 关键阻塞（域名 + Apple 账号）
+    - DEFERRED: 10 (35.7%) - 免费内测不需要（支付/商店提交）
+    - UNKNOWN: 8 (28.6%) - 待确认项
+    - TODO: 479 (主要为 Epic 3-5 增强项 + Epic 9 生产部署)
+  - **Free Beta vs Production**: 新增专节，详细对比
+    - Free Beta Phase (Current): ✅ READY (Android APK + 本地部署)
+    - Production Phase: 🔴 BLOCKED (2 个关键阻塞 + 10 个 DEFERRED)
+  - **表格增强**: 所有统计表新增两列
+    - "Free Beta Impact": ✅ No Impact / ⚠️ Nice to Have / 🔴 Blocks Beta
+    - "Production Impact": ✅ No Impact / ⚠️ Required Later / 🔴 Blocks Launch
+  - **Epic 分析**: 按 Epic 分组，标注每个未完成项对 Beta/Prod 的影响
+  - **Blockers 重组**: 清晰区分哪些阻塞 Beta / 哪些仅阻塞 Production
+  - **Next Actions 分栏**:
+    - "Without Account/Domain (Can Do Now) - Free Beta Ready"
+    - "Requires Account or Domain (Production)"
+  - **Timeline 估算**: 分别估算 Free Beta 就绪（已就绪）和 Production 就绪（2-4 周）
+
+> **关键结论**:
+> - Free Beta: ✅ 可立即进行（0 阻塞项）
+> - Production: 🔴 需解决 2 个阻塞 + 10 个 DEFERRED（2-4 周）
+
+---
 
 ### [2025-12-24 05:05] - 免费内测阶段 / 支付延期
 
