@@ -7,6 +7,15 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2025-12-24 17:30] - Beta → Production 过渡规划文档
+
+- [x] **新增**: `docs/release/beta-exit-criteria.md` - Beta 退出标准（Go/No-Go）
+- [x] **新增**: `docs/release/beta-to-production-plan.md` - 过渡计划（Phases/Workstreams/Timeline）
+- [x] **新增**: `docs/release/beta-weekly-status-template.md` - 周报模板（KPIs/Progress/Decisions）
+- [x] **更新**: `remaining-work.md` + `index.md` + `project-status-summary.md` - 添加新文档
+
+> 详见 `docs/PROGRESS.md`
+
 ### [2025-12-24 16:00] - Free Beta Execution Pack 文档补齐
 
 - [x] **新增**: `docs/release/free-beta-invite-templates.md` - 邀请与沟通模板

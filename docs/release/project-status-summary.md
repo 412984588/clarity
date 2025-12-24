@@ -173,6 +173,9 @@ Clarity is currently in a free beta testing phase. Payment functionality (Stripe
 | **Feedback triage workflow** | See `docs/release/feedback-triage.md` | High |
 | **Beta feedback form** | See `docs/release/beta-feedback-form.md` | High |
 | **Bug report template** | See `docs/release/bug-report-template.md` | High |
+| **Beta exit criteria** | See `docs/release/beta-exit-criteria.md` | High |
+| **Beta to production plan** | See `docs/release/beta-to-production-plan.md` | High |
+| **Beta weekly status template** | See `docs/release/beta-weekly-status-template.md` | High |
 | **Remaining work report** | See `docs/release/remaining-work.md` | High |
 | **Release docs hub** | See `docs/release/index.md` | High |
 | **Account/deploy action list** | See `docs/release/account-deploy-action-list.md` | High |
