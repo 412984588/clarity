@@ -7,6 +7,14 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2025-12-24 19:30] - Free Beta 支持与对外分享包
+
+- [x] **新增**: 3 个文档（beta-known-issues.md / beta-support-macros.md / beta-share-pack.md）
+- [x] **更新**: 4 个文档（free-beta-start-here.md / free-beta-launch-checklist.md / index.md / project-status-summary.md）
+- [x] **内容**: Bug 追踪表 + 8 个支持回复模板 + 对外分享指南
+
+> 详见 `docs/PROGRESS.md`
+
 ### [2025-12-24 18:00] - Free Beta Start Here 指南 + 文档一致性修正
 
 - [x] **新增**: `docs/release/free-beta-start-here.md` - 快速入门指南（1小时上手 + 7天计划）

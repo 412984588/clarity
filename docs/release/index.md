@@ -44,12 +44,15 @@
 | [Free Beta Launch Checklist](free-beta-launch-checklist.md) | 免费内测上线清单（Pre-Launch/Launch Day/Week 1） | READY |
 | [Free Beta Tester Guide](free-beta-tester-guide.md) | 测试者完整指南（安装/测试/反馈） | READY |
 | [Free Beta Invite Templates](free-beta-invite-templates.md) | 邀请与沟通模板（Invite/Welcome/Reminder/Follow-up） | READY |
+| [Beta Share Pack](beta-share-pack.md) | 对外分享包（可分享内容 + 邮件模板 + FAQs） | READY |
 | [Beta Tester Tracker](beta-tester-tracker.md) | 测试者状态追踪表（Tester ID/Status/Feedback） | READY |
 | [Free Beta Ops Playbook](free-beta-ops-playbook.md) | 运营手册（Daily/Weekly Checklist/Quality Gates） | READY |
 | [Beta Release Notes Template](beta-release-notes-template.md) | 发布说明模板（Version/Highlights/Fixed） | READY |
 | [Feedback Triage Workflow](feedback-triage.md) | 反馈分类处理流程（Severity/SLA/Owner） | READY |
 | [Beta Feedback Form](beta-feedback-form.md) | 测试反馈表单模板 | READY |
 | [Bug Report Template](bug-report-template.md) | Bug 报告模板 | READY |
+| [Beta Known Issues](beta-known-issues.md) | 已知问题追踪表（Status/Workaround/Priority） | READY |
+| [Beta Support Macros](beta-support-macros.md) | 支持回复模板（Bug确认/修复通知/FAQ回复） | READY |
 | [Beta Exit Criteria](beta-exit-criteria.md) | Beta 退出标准（Go/No-Go） | READY |
 | [Beta to Production Plan](beta-to-production-plan.md) | Beta → Production 过渡计划（Phases/Workstreams/Timeline） | READY |
 | [Beta Weekly Status Template](beta-weekly-status-template.md) | 周报模板（KPIs/Progress/Decisions） | READY |
