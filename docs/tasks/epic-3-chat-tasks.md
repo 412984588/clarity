@@ -57,8 +57,8 @@
 - [x] Run `poetry run ruff check .`
 - [x] Run `poetry run mypy app --ignore-missing-imports`
 - [x] Run `poetry run pytest -v`
-- [x] Run `npm run lint` in clarity-mobile
-- [x] Run `npx tsc --noEmit` in clarity-mobile
+- [x] Run `npm run lint` in solacore-mobile
+- [x] Run `npx tsc --noEmit` in solacore-mobile
 
 ---
 

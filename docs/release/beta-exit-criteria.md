@@ -8,7 +8,7 @@
 
 ## Purpose & Scope
 
-This document defines the **exit criteria** for transitioning from **Free Beta** to **Production Launch**. It answers the question: "When is Clarity ready to move from beta testing with friends to a production release open to the public?"
+This document defines the **exit criteria** for transitioning from **Free Beta** to **Production Launch**. It answers the question: "When is Solacore ready to move from beta testing with friends to a production release open to the public?"
 
 **Key Questions**:
 1. How do we know beta testing is complete?
@@ -75,7 +75,7 @@ This document defines the **exit criteria** for transitioning from **Free Beta**
 
 | # | Dependency | Requirement | Evidence Required | Status |
 |---|------------|-------------|-------------------|--------|
-| 4.1 | **Domain Configuration** | `api.clarity.app` (or alternative) purchased and DNS configured | DNS lookup success | **BLOCKED** |
+| 4.1 | **Domain Configuration** | `api.solacore.app` (or alternative) purchased and DNS configured | DNS lookup success | **BLOCKED** |
 | 4.2 | **Apple Developer Account** | Apple Developer Program enrolled ($99/yr) | Apple Developer Portal access | **BLOCKED** |
 | 4.3 | **Hosting Provider** | Production hosting selected (Vercel/Railway/Fly.io) and environment created | Environment URL + health check | [ ] |
 | 4.4 | **PostgreSQL Provider** | Production database created (Neon/Supabase/RDS) | Database connection string | [ ] |
@@ -161,9 +161,9 @@ This document defines the **exit criteria** for transitioning from **Free Beta**
 
 | Item | Evidence |
 |------|----------|
-| Domain | DNS lookup: `nslookup api.clarity.app` shows correct IP |
+| Domain | DNS lookup: `nslookup api.solacore.app` shows correct IP |
 | Apple Developer | Portal screenshot showing active membership |
-| Hosting | Health endpoint: `https://api.clarity.app/health` returns 200 |
+| Hosting | Health endpoint: `https://api.solacore.app/health` returns 200 |
 | Database | Connection test success log |
 | OAuth | Google Sign-In working on production URL |
 | LLM API | Solve flow execution log with successful API calls |

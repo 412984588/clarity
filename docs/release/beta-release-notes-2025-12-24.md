@@ -1,4 +1,4 @@
-# Clarity Beta - Release Notes (2025-12-24)
+# Solacore Beta - Release Notes (2025-12-24)
 
 **Version**: 1.0.0-beta
 **Date**: 2025-12-24
@@ -37,7 +37,7 @@ This is our **first Free Beta release**! The app is fully functional for testing
 - **Beta Bug Report**: Structured form for reporting crashes, errors, or broken features
 - **Beta Feedback**: Template for sharing experience and suggestions
 - **Beta Feature Request**: Template for proposing new features or improvements
-- **Access**: https://github.com/412984588/clarity/issues/new/choose
+- **Access**: https://github.com/412984588/solacore/issues/new/choose
 
 ### Beta Documentation Suite
 New documentation created for testers and team:
@@ -153,7 +153,7 @@ We need your help testing this release! Please focus on:
 
 | Method | Best For | Link |
 |--------|----------|------|
-| **GitHub Issue Forms** | Structured bug reports & feedback | https://github.com/412984588/clarity/issues/new/choose |
+| **GitHub Issue Forms** | Structured bug reports & feedback | https://github.com/412984588/solacore/issues/new/choose |
 | **Beta Feedback Form** | Comprehensive weekly feedback | [beta-feedback-form.md](beta-feedback-form.md) |
 | **Bug Report Template** | Detailed bug reports with screenshots | [bug-report-template.md](bug-report-template.md) |
 | **Direct Message** | Quick questions or urgent issues | Reply to invite email |
@@ -177,7 +177,7 @@ We need your help testing this release! Please focus on:
 
 1. **Download APK**
    - On your Android device, visit: https://expo.dev/artifacts/eas/cwHBq3tAhSrhLcQnewsmpy.apk
-   - Or scan QR code: https://expo.dev/accounts/cllalala/projects/clarity-mobile/builds/5d5e7b57-44f7-4729-b627-e40bc93dbb76
+   - Or scan QR code: https://expo.dev/accounts/cllalala/projects/solacore-mobile/builds/5d5e7b57-44f7-4729-b627-e40bc93dbb76
 
 2. **Enable Unknown Sources** (if prompted)
    - Settings → Security → Install from unknown sources
@@ -189,7 +189,7 @@ We need your help testing this release! Please focus on:
    - Wait for installation to complete (~30 seconds)
 
 4. **Open & Sign Up**
-   - Tap "Open" or find "Clarity" in your app drawer
+   - Tap "Open" or find "Solacore" in your app drawer
    - Sign up with email/password or Google OAuth
    - No verification required for beta
 
@@ -207,7 +207,7 @@ When a new APK is released:
 
 ## 🙏 Thank You
 
-Thank you for being one of our first beta testers! Your feedback will directly shape the future of Clarity.
+Thank you for being one of our first beta testers! Your feedback will directly shape the future of Solacore.
 
 **What Happens Next:**
 1. **This week**: We'll monitor GitHub Issues and respond within 24 hours
@@ -216,7 +216,7 @@ Thank you for being one of our first beta testers! Your feedback will directly s
 4. **After beta** (~4-6 weeks): We'll transition to production with your input
 
 **Stay in Touch:**
-- **Bug reports**: https://github.com/412984588/clarity/issues/new/choose
+- **Bug reports**: https://github.com/412984588/solacore/issues/new/choose
 - **Feedback**: [beta-feedback-form.md](beta-feedback-form.md)
 - **Questions**: Reply to your invite email
 - **Urgent issues**: Direct message via Slack/WeChat/Email (check your invite for contact info)
@@ -228,9 +228,9 @@ Thank you for being one of our first beta testers! Your feedback will directly s
 | Resource | Link |
 |----------|------|
 | **APK Download** | https://expo.dev/artifacts/eas/cwHBq3tAhSrhLcQnewsmpy.apk |
-| **Expo Build Page** | https://expo.dev/accounts/cllalala/projects/clarity-mobile/builds/5d5e7b57-44f7-4729-b627-e40bc93dbb76 |
+| **Expo Build Page** | https://expo.dev/accounts/cllalala/projects/solacore-mobile/builds/5d5e7b57-44f7-4729-b627-e40bc93dbb76 |
 | **Full Tester Guide** | [free-beta-tester-guide.md](free-beta-tester-guide.md) |
-| **Report Bugs (GitHub)** | https://github.com/412984588/clarity/issues/new/choose |
+| **Report Bugs (GitHub)** | https://github.com/412984588/solacore/issues/new/choose |
 | **Feedback Form** | [beta-feedback-form.md](beta-feedback-form.md) |
 | **Known Issues** | [beta-known-issues.md](beta-known-issues.md) |
 | **Issue Intake Guide** | [beta-issue-intake.md](beta-issue-intake.md) |
@@ -249,7 +249,7 @@ Thank you for being one of our first beta testers! Your feedback will directly s
 - Additional emotion categories
 - Session export/backup functionality
 
-**Your Input Shapes the Roadmap**: If you have feature requests or suggestions, please share them via the [Beta Feature Request](https://github.com/412984588/clarity/issues/new/choose) form.
+**Your Input Shapes the Roadmap**: If you have feature requests or suggestions, please share them via the [Beta Feature Request](https://github.com/412984588/solacore/issues/new/choose) form.
 
 ---
 

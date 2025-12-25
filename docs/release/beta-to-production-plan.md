@@ -8,7 +8,7 @@
 
 ## Overview
 
-This document outlines the **roadmap for transitioning Clarity from Free Beta to Production Launch**. It defines the phases, workstreams, critical dependencies, decision points, and risk mitigations required for a successful production deployment.
+This document outlines the **roadmap for transitioning Solacore from Free Beta to Production Launch**. It defines the phases, workstreams, critical dependencies, decision points, and risk mitigations required for a successful production deployment.
 
 **Key Objectives**:
 1. Complete beta testing with friends/early testers
@@ -65,7 +65,7 @@ This document outlines the **roadmap for transitioning Clarity from Free Beta to
 
 **Key Activities**:
 1. **Domain Purchase & Configuration**
-   - Purchase `api.clarity.app` or alternative domain
+   - Purchase `api.solacore.app` or alternative domain
    - Configure DNS to point to hosting provider
    - Verify SSL certificate auto-provisioning (Let's Encrypt)
 
@@ -136,7 +136,7 @@ This document outlines the **roadmap for transitioning Clarity from Free Beta to
 
 | Task | Description | Duration | Dependencies |
 |------|-------------|----------|--------------|
-| 2.6 | Configure production API URL | Update `clarity-mobile/src/config.ts` with production URL | Backend deployed |
+| 2.6 | Configure production API URL | Update `solacore-mobile/src/config.ts` with production URL | Backend deployed |
 | 2.7 | Build iOS production binary | `eas build --platform ios --profile production` | Apple Developer account |
 | 2.8 | Build Android production binary | `eas build --platform android --profile production` | None |
 | 2.9 | Test iOS build with TestFlight | Internal testing with team | iOS build complete |
@@ -158,9 +158,9 @@ This document outlines the **roadmap for transitioning Clarity from Free Beta to
 | Task | Description | Status |
 |------|-------------|--------|
 | 2.11 | Activate Stripe Live Mode | Complete KYC, get Live API keys | **DEFERRED** |
-| 2.12 | Configure Stripe Webhook | Point to `https://api.clarity.app/webhooks/stripe` | **DEFERRED** |
+| 2.12 | Configure Stripe Webhook | Point to `https://api.solacore.app/webhooks/stripe` | **DEFERRED** |
 | 2.13 | Set up RevenueCat Production | Create production app, configure entitlements | **DEFERRED** |
-| 2.14 | Configure RevenueCat Webhook | Point to `https://api.clarity.app/webhooks/revenuecat` | **DEFERRED** |
+| 2.14 | Configure RevenueCat Webhook | Point to `https://api.solacore.app/webhooks/revenuecat` | **DEFERRED** |
 | 2.15 | Test subscription flow end-to-end | Complete purchase flow on iOS/Android | **DEFERRED** |
 
 **Note**: Production will initially launch with `BETA_MODE=true` and `PAYMENTS_ENABLED=false`. Payment features will be enabled in a follow-up release after validating the free user experience.
@@ -190,10 +190,10 @@ This document outlines the **roadmap for transitioning Clarity from Free Beta to
 
 | Task | Description | Duration | Dependencies |
 |------|-------------|----------|--------------|
-| 2.20 | Publish Privacy Policy | Host at `https://clarity.app/privacy` | Domain ready |
-| 2.21 | Publish Terms of Service | Host at `https://clarity.app/terms` | Domain ready |
+| 2.20 | Publish Privacy Policy | Host at `https://solacore.app/privacy` | Domain ready |
+| 2.21 | Publish Terms of Service | Host at `https://solacore.app/terms` | Domain ready |
 | 2.22 | Link policies in app | Add links to Settings screen | Mobile build |
-| 2.23 | Configure support email | Set up `support@clarity.app` | Domain ready |
+| 2.23 | Configure support email | Set up `support@solacore.app` | Domain ready |
 | 2.24 | Prepare GDPR/CCPA disclosures | See [Privacy Compliance Checklist](privacy-compliance-checklist.md) | - |
 
 **Exit Criteria**:
@@ -246,7 +246,7 @@ This document outlines the **roadmap for transitioning Clarity from Free Beta to
 - [ ] Execute [Launch Day Runbook](launch-day-runbook.md)
 - [ ] Monitor metrics (see [Release Metrics](release-metrics.md))
 - [ ] Execute [Launch Communications](launch-communications.md) plan
-- [ ] Monitor support channels (`support@clarity.app`)
+- [ ] Monitor support channels (`support@solacore.app`)
 
 **Exit Criteria**:
 - Backend deployed and healthy

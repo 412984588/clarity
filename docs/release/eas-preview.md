@@ -16,7 +16,7 @@
 
 ### Links
 
-- **Build Logs**: https://expo.dev/accounts/cllalala/projects/clarity-mobile/builds/5d5e7b57-44f7-4729-b627-e40bc93dbb76
+- **Build Logs**: https://expo.dev/accounts/cllalala/projects/solacore-mobile/builds/5d5e7b57-44f7-4729-b627-e40bc93dbb76
 - **APK Download**: https://expo.dev/artifacts/eas/cwHBq3tAhSrhLcQnewsmpy.apk
 
 ### Install Instructions

@@ -7,7 +7,7 @@
 
 ## Purpose & Scope
 
-This runbook provides the **shortest path** to run Clarity locally for demonstration and verification purposes.
+This runbook provides the **shortest path** to run Solacore locally for demonstration and verification purposes.
 
 **Use Cases**:
 - Demo to stakeholders
@@ -40,7 +40,7 @@ This runbook provides the **shortest path** to run Clarity locally for demonstra
 
 ```bash
 # Terminal 1: Backend
-cd clarity-api
+cd solacore-api
 cp .env.example .env          # First time only
 docker compose up -d db       # Start PostgreSQL
 poetry install --no-root      # First time only
@@ -52,7 +52,7 @@ poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000
 
 ```bash
 # Terminal 2: Mobile
-cd clarity-mobile
+cd solacore-mobile
 npm install                   # First time only
 npx expo start
 ```
@@ -98,7 +98,7 @@ curl -X POST http://localhost:8000/auth/register \
 
 ### Path 4: Mobile App (3 min)
 
-1. Run `npx expo start` in `clarity-mobile/`
+1. Run `npx expo start` in `solacore-mobile/`
 2. Press `i` for iOS simulator or `a` for Android emulator
 3. Navigate through login/register screens
 
@@ -155,7 +155,7 @@ ANTHROPIC_API_KEY=sk-ant-your-key-here
 # Press Ctrl+C in Terminal 1
 
 # Stop database
-cd clarity-api
+cd solacore-api
 docker compose down
 ```
 
@@ -163,11 +163,11 @@ docker compose down
 
 ```bash
 # Remove database data
-cd clarity-api
+cd solacore-api
 docker compose down -v        # -v removes volumes
 
 # Remove node_modules (if needed)
-cd clarity-mobile
+cd solacore-mobile
 rm -rf node_modules
 
 # Remove Python venv (if needed)

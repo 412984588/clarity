@@ -21,8 +21,8 @@
 | Environment | API URL | Notes |
 |-------------|---------|-------|
 | Local | `http://localhost:8000` | Use `docs/release/local-demo-runbook.md` |
-| Preview | `https://staging-api.clarity.app` | Only if staging exists |
-| Production | `https://api.clarity.app` | BLOCKED until domain + deploy |
+| Preview | `https://staging-api.solacore.app` | Only if staging exists |
+| Production | `https://api.solacore.app` | BLOCKED until domain + deploy |
 
 ---
 
@@ -63,7 +63,7 @@
 
 ### C. Emotion Detection & UI Feedback
 
-- [ ] **C1 Emotion detected**: Use example phrases from `clarity-api/tests/test_emotion_detector.py` and confirm background changes.
+- [ ] **C1 Emotion detected**: Use example phrases from `solacore-api/tests/test_emotion_detector.py` and confirm background changes.
 - [ ] **C2 Toggle off**: Settings -> Emotion Background off; background stops changing.
 - [ ] **C3 Toggle on**: Enable again; background responds to emotion.
 
@@ -98,7 +98,7 @@
 
 ## Notes
 
-- For crisis flow QA, use test phrases from `clarity-api/tests/test_crisis_detector.py` and confirm the crisis overlay appears.
+- For crisis flow QA, use test phrases from `solacore-api/tests/test_crisis_detector.py` and confirm the crisis overlay appears.
 - If the app shows blank screens or crashes, capture device logs and attach to the QA log.
 
 ---

@@ -1,4 +1,4 @@
-# Clarity Demo Script + Checklist
+# Solacore Demo Script + Checklist
 
 **Version**: 1.0
 **Duration**: 3 minutes
@@ -7,7 +7,7 @@
 
 ## Demo 目标
 
-展示 Clarity 作为一款 AI 驱动的问题解决助手的核心价值：通过 5 步引导式流程（Receive → Clarify → Reframe → Options → Commit），帮助用户将模糊的困扰转化为清晰的行动计划，并通过情绪检测提供个性化的视觉反馈。
+展示 Solacore 作为一款 AI 驱动的问题解决助手的核心价值：通过 5 步引导式流程（Receive → Clarify → Reframe → Options → Commit），帮助用户将模糊的困扰转化为清晰的行动计划，并通过情绪检测提供个性化的视觉反馈。
 
 ---
 
@@ -15,13 +15,13 @@
 
 ### 开场（30 秒）
 
-> "大家好，今天我要展示的是 Clarity——一款帮助人们理清思绪、解决问题的 AI 助手。
+> "大家好，今天我要展示的是 Solacore——一款帮助人们理清思绪、解决问题的 AI 助手。
 >
-> 它的核心理念是：很多时候我们不是缺少解决方案，而是没有把问题想清楚。Clarity 通过一个 5 步引导流程，帮你把模糊的困扰变成清晰的行动。"
+> 它的核心理念是：很多时候我们不是缺少解决方案，而是没有把问题想清楚。Solacore 通过一个 5 步引导流程，帮你把模糊的困扰变成清晰的行动。"
 
 ### 技术架构（30 秒）
 
-> "技术上，Clarity 采用 React Native + Expo 构建移动端，FastAPI + PostgreSQL 作为后端，支持 OpenAI 和 Claude 双引擎。
+> "技术上，Solacore 采用 React Native + Expo 构建移动端，FastAPI + PostgreSQL 作为后端，支持 OpenAI 和 Claude 双引擎。
 >
 > 所有 AI 响应都是实时流式返回的，用户体验非常流畅。我们还内置了情绪检测，会根据对话内容自动调整界面配色。"
 
@@ -91,7 +91,7 @@
 
 > "iOS 版本需要 Apple Developer Program 账号（$99/年）才能构建和测试。代码已经写好，账号开通后一天内就能发布 TestFlight 版本。"
 
-### Q2: 域名 `api.clarity.app` 配好了吗？
+### Q2: 域名 `api.solacore.app` 配好了吗？
 
 > "域名还未配置。目前演示的是本机部署版本。正式上线需要购买域名并配置 DNS 指向托管服务商（如 Vercel、Railway 或 Fly.io）。"
 

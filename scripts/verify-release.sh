@@ -10,7 +10,7 @@ cd "$ROOT_DIR"
 
 echo ""
 echo "=== [1/5] Backend Lint ==="
-cd clarity-api
+cd solacore-api
 poetry run ruff check .
 echo "✅ Ruff passed"
 
@@ -26,7 +26,7 @@ echo "✅ Pytest passed"
 
 echo ""
 echo "=== [4/5] Mobile Lint ==="
-cd ../clarity-mobile
+cd ../solacore-mobile
 npm run lint
 echo "✅ ESLint passed"
 

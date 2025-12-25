@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# Clarity 一键部署脚本
+# Solacore 一键部署脚本
 # =============================================================================
 # 适用系统: Ubuntu / Debian
 # 功能: 安装依赖 -> 获取代码 -> 检查环境 -> Docker Compose 部署 -> 健康检查
@@ -130,13 +130,13 @@ else
 fi
 
 # --- 4. 获取/更新代码 ---
-log_step "获取 Clarity 代码"
+log_step "获取 Solacore 代码"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-if [ -d "${SCRIPT_DIR}/.git" ] && [ -d "${SCRIPT_DIR}/clarity-api" ]; then
+if [ -d "${SCRIPT_DIR}/.git" ] && [ -d "${SCRIPT_DIR}/solacore-api" ]; then
   REPO_DIR="${SCRIPT_DIR}"
 else
-  REPO_DIR="${CLARITY_REPO_DIR:-$HOME/clarity}"
+  REPO_DIR="${SOLACORE_REPO_DIR:-$HOME/solacore}"
 fi
 
 if [ -d "${REPO_DIR}/.git" ]; then
@@ -150,12 +150,12 @@ else
   if [ -d "${REPO_DIR}" ] && [ "$(ls -A "${REPO_DIR}" 2>/dev/null)" ]; then
     log_fail "目标目录已存在且不是 Git 仓库：${REPO_DIR}"
   fi
-  REPO_URL="${CLARITY_REPO_URL:-}"
+  REPO_URL="${SOLACORE_REPO_URL:-}"
   if [ -z "$REPO_URL" ] && [ -d "${SCRIPT_DIR}/.git" ]; then
     REPO_URL="$(git -C "${SCRIPT_DIR}" config --get remote.origin.url || true)"
   fi
   if [ -z "$REPO_URL" ]; then
-    read -rp "请输入 Clarity 仓库地址 (git URL): " REPO_URL
+    read -rp "请输入 Solacore 仓库地址 (git URL): " REPO_URL
   fi
   git clone "$REPO_URL" "$REPO_DIR"
   log_ok "代码已拉取到：${REPO_DIR}"
@@ -163,11 +163,11 @@ fi
 
 # --- 5. 环境变量检查 ---
 log_step "检查环境变量"
-ENV_FILE="${REPO_DIR}/clarity-api/.env"
-ENV_TEMPLATE="${REPO_DIR}/clarity-api/.env.prod.example"
+ENV_FILE="${REPO_DIR}/solacore-api/.env"
+ENV_TEMPLATE="${REPO_DIR}/solacore-api/.env.prod.example"
 
 if [ ! -f "$ENV_TEMPLATE" ]; then
-  ENV_TEMPLATE="${REPO_DIR}/clarity-api/.env.example"
+  ENV_TEMPLATE="${REPO_DIR}/solacore-api/.env.example"
 fi
 
 if [ ! -f "$ENV_FILE" ]; then
@@ -180,8 +180,8 @@ fi
 
 # --- 6. 构建并启动 ---
 log_step "构建并启动服务（Docker Compose）"
-COMPOSE_FILE="${REPO_DIR}/clarity-api/docker-compose.prod.yml"
-COMPOSE_DIR="${REPO_DIR}/clarity-api"
+COMPOSE_FILE="${REPO_DIR}/solacore-api/docker-compose.prod.yml"
+COMPOSE_DIR="${REPO_DIR}/solacore-api"
 
 if [ ! -f "$COMPOSE_FILE" ]; then
   log_fail "找不到部署配置文件：${COMPOSE_FILE}"
@@ -232,5 +232,5 @@ log_ok "访问地址：${BASE_URL}"
 echo ""
 echo "下一步建议："
 echo "1) 配置域名与 SSL：./scripts/setup-ssl.sh"
-echo "2) 查看日志：docker compose -f clarity-api/docker-compose.prod.yml logs -f"
-echo "3) 如需重启：docker compose -f clarity-api/docker-compose.prod.yml restart"
+echo "2) 查看日志：docker compose -f solacore-api/docker-compose.prod.yml logs -f"
+echo "3) 如需重启：docker compose -f solacore-api/docker-compose.prod.yml restart"

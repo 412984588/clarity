@@ -14,10 +14,10 @@
 
 | ID | 任务 | 文件 | 状态 |
 |----|------|------|------|
-| **S1** | 安装 expo-sqlite 依赖 | `clarity-mobile/package.json` | Pending |
-| **S2** | 创建数据库服务 | `clarity-mobile/services/database.ts` | Pending |
-| **S3** | 定义表结构 | `clarity-mobile/services/database.ts` | Pending |
-| **S4** | 初始化数据库 | `clarity-mobile/app/_layout.tsx` | Pending |
+| **S1** | 安装 expo-sqlite 依赖 | `solacore-mobile/package.json` | Pending |
+| **S2** | 创建数据库服务 | `solacore-mobile/services/database.ts` | Pending |
+| **S3** | 定义表结构 | `solacore-mobile/services/database.ts` | Pending |
+| **S4** | 初始化数据库 | `solacore-mobile/app/_layout.tsx` | Pending |
 
 ### Phase 2.2: 集成到 Session 详情页
 

@@ -1,10 +1,10 @@
-# Clarity
+# Solacore
 
 Universal problem-solving assistant - 跨平台智能问题解决助手
 
 ## 项目概述
 
-Clarity 是一款移动优先的 AI 助手应用，帮助用户通过对话解决各种问题。
+Solacore 是一款移动优先的 AI 助手应用，帮助用户通过对话解决各种问题。
 
 ## 技术栈
 
@@ -20,10 +20,10 @@ Clarity 是一款移动优先的 AI 助手应用，帮助用户通过对话解�
 ## 项目结构
 
 ```
-clarity/
-├── clarity-web/        # Next.js Web 应用 (NEW!)
-├── clarity-mobile/     # React Native 移动应用
-├── clarity-api/        # FastAPI 后端服务
+solacore/
+├── solacore-web/        # Next.js Web 应用 (NEW!)
+├── solacore-mobile/     # React Native 移动应用
+├── solacore-api/        # FastAPI 后端服务
 ├── docs/               # 项目文档
 └── .github/workflows/  # CI/CD 配置
 ```
@@ -35,7 +35,7 @@ clarity/
 ### 后端
 
 ```bash
-cd clarity-api
+cd solacore-api
 poetry install --no-root
 cp .env.example .env
 docker-compose up -d db
@@ -46,7 +46,7 @@ poetry run uvicorn app.main:app --reload
 ### 移动端
 
 ```bash
-cd clarity-mobile
+cd solacore-mobile
 npm install
 npx expo start
 ```
@@ -54,7 +54,7 @@ npx expo start
 ### Web 版
 
 ```bash
-cd clarity-web
+cd solacore-web
 npm install
 npm run dev
 # 访问 http://localhost:3000

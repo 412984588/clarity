@@ -173,8 +173,8 @@ STRIPE_SECRET_KEY=sk_test_xxx
 STRIPE_WEBHOOK_SECRET=whsec_xxx
 STRIPE_PRICE_STANDARD=price_xxx
 STRIPE_PRICE_PRO=price_xxx
-STRIPE_SUCCESS_URL=https://api.clarity.app/subscriptions/success?session_id={CHECKOUT_SESSION_ID}
-STRIPE_CANCEL_URL=https://api.clarity.app/subscriptions/cancel
+STRIPE_SUCCESS_URL=https://api.solacore.app/subscriptions/success?session_id={CHECKOUT_SESSION_ID}
+STRIPE_CANCEL_URL=https://api.solacore.app/subscriptions/cancel
 ```
 
 ### Stripe Products (Dashboard Setup)

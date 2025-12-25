@@ -12,7 +12,7 @@
 |------|-----------|--------|------|
 | 托管平台 |  |  | Vercel / Railway / Fly |
 | 数据库平台 |  |  | Neon / Supabase / RDS |
-| 生产域名 |  |  | 例：api.clarity.app |
+| 生产域名 |  |  | 例：api.solacore.app |
 | 预算范围 |  |  | 月度预算区间 |
 
 ---
@@ -35,7 +35,7 @@
 
 | 项目 | 值 | 备注 |
 |------|----|------|
-| 生产 API Base URL |  | 例：https://api.clarity.app |
+| 生产 API Base URL |  | 例：https://api.solacore.app |
 | 数据库连接串 |  | 仅记录“掩码版本” |
 | Stripe Webhook |  | `/webhooks/stripe` |
 | RevenueCat Webhook |  | `/webhooks/revenuecat` |

@@ -6,7 +6,7 @@
 
 ## Overview
 
-Clarity is an AI-powered problem-solving assistant. This privacy policy describes how we collect, use, and share information when you use the app.
+Solacore is an AI-powered problem-solving assistant. This privacy policy describes how we collect, use, and share information when you use the app.
 
 ---
 
@@ -64,7 +64,7 @@ We use reasonable safeguards to protect data, but no system is 100% secure.
 
 ## Children’s Privacy
 
-Clarity is not intended for children under 13 (or the minimum age required by law).
+Solacore is not intended for children under 13 (or the minimum age required by law).
 
 ---
 
@@ -76,5 +76,5 @@ We may update this policy and will publish the latest version on our website.
 
 ## Contact
 
-- Privacy: privacy@clarity.app
-- Support: support@clarity.app
+- Privacy: privacy@solacore.app
+- Support: support@solacore.app

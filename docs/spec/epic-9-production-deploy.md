@@ -8,7 +8,7 @@
 
 ## Overview
 
-Epic 9 covers the complete production deployment of Clarity, including:
+Epic 9 covers the complete production deployment of Solacore, including:
 - Backend API deployment
 - Database provisioning and migration
 - Mobile app store submission preparation
@@ -25,7 +25,7 @@ Epic 9 covers the complete production deployment of Clarity, including:
 | Component | Provider | Specification |
 |-----------|----------|---------------|
 | Compute | Vercel / Railway / Fly.io | Auto-scaling, min 1 instance |
-| Domain | Custom | `api.clarity.app` |
+| Domain | Custom | `api.solacore.app` |
 | SSL | Provider-managed | Auto-renewed TLS 1.3 |
 | Region | US-East / EU-West | Low latency to target users |
 
@@ -55,12 +55,12 @@ Epic 9 covers the complete production deployment of Clarity, including:
 ```bash
 # Core
 DEBUG=false
-DATABASE_URL=postgresql+asyncpg://user:pass@host:5432/clarity_prod
+DATABASE_URL=postgresql+asyncpg://user:pass@host:5432/solacore_prod
 JWT_SECRET=<256-bit-random-hex>
 
 # OAuth
 GOOGLE_CLIENT_ID=<production-google-client-id>
-APPLE_CLIENT_ID=com.clarity.app
+APPLE_CLIENT_ID=com.solacore.app
 
 # LLM
 LLM_PROVIDER=openai
@@ -74,8 +74,8 @@ STRIPE_SECRET_KEY=sk_live_xxx
 STRIPE_WEBHOOK_SECRET=whsec_xxx
 STRIPE_PRICE_STANDARD=price_xxx
 STRIPE_PRICE_PRO=price_xxx
-STRIPE_SUCCESS_URL=https://api.clarity.app/subscriptions/success?session_id={CHECKOUT_SESSION_ID}
-STRIPE_CANCEL_URL=https://api.clarity.app/subscriptions/cancel
+STRIPE_SUCCESS_URL=https://api.solacore.app/subscriptions/success?session_id={CHECKOUT_SESSION_ID}
+STRIPE_CANCEL_URL=https://api.solacore.app/subscriptions/cancel
 
 # RevenueCat
 REVENUECAT_WEBHOOK_SECRET=whsec_xxx
@@ -96,7 +96,7 @@ APP_VERSION=1.0.0
 - [ ] All CI checks green on main
 - [ ] Database backup created
 - [ ] Environment variables configured
-- [ ] DNS records ready (api.clarity.app → provider)
+- [ ] DNS records ready (api.solacore.app → provider)
 - [ ] SSL certificate provisioned
 - [ ] Stripe webhook endpoint registered
 - [ ] RevenueCat webhook endpoint registered
@@ -125,7 +125,7 @@ APP_VERSION=1.0.0
 
 ### Stripe Webhook
 
-**Endpoint**: `https://api.clarity.app/webhooks/stripe`
+**Endpoint**: `https://api.solacore.app/webhooks/stripe`
 
 **Events to subscribe**:
 - `checkout.session.completed`
@@ -137,7 +137,7 @@ APP_VERSION=1.0.0
 
 **Verification**:
 ```bash
-curl -X POST https://api.clarity.app/webhooks/stripe \
+curl -X POST https://api.solacore.app/webhooks/stripe \
   -H "Content-Type: application/json" \
   -H "Stripe-Signature: test" \
   -d '{"type":"test"}'
@@ -146,7 +146,7 @@ curl -X POST https://api.clarity.app/webhooks/stripe \
 
 ### RevenueCat Webhook
 
-**Endpoint**: `https://api.clarity.app/webhooks/revenuecat`
+**Endpoint**: `https://api.solacore.app/webhooks/revenuecat`
 
 **Events**:
 - `INITIAL_PURCHASE`
@@ -156,7 +156,7 @@ curl -X POST https://api.clarity.app/webhooks/stripe \
 
 **Verification**:
 ```bash
-curl -X POST https://api.clarity.app/webhooks/revenuecat \
+curl -X POST https://api.solacore.app/webhooks/revenuecat \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $REVENUECAT_WEBHOOK_SECRET" \
   -d '{"event":{"type":"TEST"}}'
@@ -176,10 +176,10 @@ curl -X POST https://api.clarity.app/webhooks/revenuecat \
 # Fly: fly releases rollback
 
 # 2. Verify health
-curl https://api.clarity.app/health
+curl https://api.solacore.app/health
 
 # 3. If database migration issue
-cd clarity-api
+cd solacore-api
 poetry run alembic downgrade -1
 ```
 
@@ -215,9 +215,9 @@ poetry run alembic downgrade -1
 
 | Item | Verification Command | Expected Output |
 |------|---------------------|-----------------|
-| Health | `curl https://api.clarity.app/health` | `{"status":"healthy","version":"1.0.0","database":"connected"}` |
-| Ready | `curl https://api.clarity.app/health/ready` | `{"ready":true}` |
-| Live | `curl https://api.clarity.app/health/live` | `{"live":true}` |
+| Health | `curl https://api.solacore.app/health` | `{"status":"healthy","version":"1.0.0","database":"connected"}` |
+| Ready | `curl https://api.solacore.app/health/ready` | `{"ready":true}` |
+| Live | `curl https://api.solacore.app/health/live` | `{"live":true}` |
 | Stripe WH | Stripe Dashboard → Send test event | 200 OK |
 | RevenueCat WH | RevenueCat Dashboard → Send test event | 200 OK |
 | Auth | POST /auth/google with valid token | 200 + JWT |

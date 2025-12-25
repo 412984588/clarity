@@ -7,7 +7,7 @@
 
 ## Purpose & Audience
 
-本文档定义 Clarity 产品上线前后的沟通策略、渠道、时间线和消息模板。确保所有利益相关者在正确的时间收到正确的信息。
+本文档定义 Solacore 产品上线前后的沟通策略、渠道、时间线和消息模板。确保所有利益相关者在正确的时间收到正确的信息。
 
 ### Audiences
 
@@ -27,8 +27,8 @@
 
 | Channel | Purpose | Audience | Frequency |
 |---------|---------|----------|-----------|
-| **Slack #clarity-launch** | 实时状态更新、问题讨论 | 全技术团队 | 实时 |
-| **Slack #clarity-announce** | 重要里程碑通知 | 全公司 | 按需 |
+| **Slack #solacore-launch** | 实时状态更新、问题讨论 | 全技术团队 | 实时 |
+| **Slack #solacore-announce** | 重要里程碑通知 | 全公司 | 按需 |
 | **Email (Team)** | 正式通知、总结报告 | 全团队 | 每日/里程碑 |
 | **Video Call** | Go/No-Go 会议、复盘会议 | 核心团队 | 按计划 |
 | **Phone/SMS** | 紧急情况升级 | On-call 人员 | 仅紧急 |
@@ -66,10 +66,10 @@
 | Time | Activity | Channel | Owner | Audience |
 |------|----------|---------|-------|----------|
 | **T-0 开始** | 团队集合确认 | Slack + Call | Launch Commander | 核心团队 |
-| **部署中** | 实时状态更新 | Slack #clarity-launch | DevOps | 技术团队 |
+| **部署中** | 实时状态更新 | Slack #solacore-launch | DevOps | 技术团队 |
 | **冒烟测试后** | 内部确认"GO" | Slack | QA Lead | 核心团队 |
 | **流量开启后** | 外部发布公告 | App/Email/Social | Marketing | 用户/公众 |
-| **上线成功** | 全员庆祝通知 | Slack #clarity-announce | Launch Commander | 全公司 |
+| **上线成功** | 全员庆祝通知 | Slack #solacore-announce | Launch Commander | 全公司 |
 | **上线成功** | 投资人正式通知 | Email | CEO | 投资人 |
 
 ### Post-Launch（上线后）
@@ -89,16 +89,16 @@
 ### Template 1: Internal Launch Notification（内部上线通知）
 
 ```
-📢 [Clarity] 上线通知
+📢 [Solacore] 上线通知
 
 各位同事，
 
-Clarity v1.0 将于 [日期] [时间] 正式上线。
+Solacore v1.0 将于 [日期] [时间] 正式上线。
 
 📋 关键信息：
 - 部署窗口：[开始时间] - [预计结束时间]
 - Launch Commander：[姓名]
-- 沟通渠道：Slack #clarity-launch
+- 沟通渠道：Slack #solacore-launch
 
 🎯 今日计划：
 1. [时间] - 数据库迁移
@@ -109,10 +109,10 @@ Clarity v1.0 将于 [日期] [时间] 正式上线。
 
 ⚠️ 注意事项：
 - 部署期间请保持在线
-- 发现问题立即在 #clarity-launch 报告
+- 发现问题立即在 #solacore-launch 报告
 - 非紧急事项请延后处理
 
-让我们一起把 Clarity 带给用户！💪
+让我们一起把 Solacore 带给用户！💪
 
 [Launch Commander 姓名]
 ```
@@ -120,11 +120,11 @@ Clarity v1.0 将于 [日期] [时间] 正式上线。
 ### Template 2: External Launch Announcement（外部发布公告）
 
 ```
-🎉 Clarity 正式上线！
+🎉 Solacore 正式上线！
 
-我们很高兴地宣布，Clarity 现已正式上线。
+我们很高兴地宣布，Solacore 现已正式上线。
 
-Clarity 是一款 AI 驱动的心理支持助手，帮助你：
+Solacore 是一款 AI 驱动的心理支持助手，帮助你：
 ✨ 理清思绪
 ✨ 探索情绪
 ✨ 找到前进的方向
@@ -135,13 +135,13 @@ Clarity 是一款 AI 驱动的心理支持助手，帮助你：
 
 我们期待听到你的反馈！
 
-—— Clarity 团队
+—— Solacore 团队
 ```
 
 ### Template 3: Status Update（状态更新）
 
 ```
-📋 [Clarity] 状态更新 - [时间]
+📋 [Solacore] 状态更新 - [时间]
 
 当前状态：🟢 正常 / 🟡 部分受影响 / 🔴 服务中断
 
@@ -154,7 +154,7 @@ Clarity 是一款 AI 驱动的心理支持助手，帮助你：
 - 预计时间：[ETA]
 
 📞 如有问题：
-- Slack: #clarity-launch
+- Slack: #solacore-launch
 - On-call: [姓名]
 ```
 
@@ -185,11 +185,11 @@ Clarity 是一款 AI 驱动的心理支持助手，帮助你：
 ### Template 5: Investor Update（投资人通报）
 
 ```
-主题：Clarity 上线更新
+主题：Solacore 上线更新
 
 尊敬的投资人，
 
-我们很高兴地通知您，Clarity v1.0 已于 [日期] 正式上线。
+我们很高兴地通知您，Solacore v1.0 已于 [日期] 正式上线。
 
 📊 上线概况：
 - 部署状态：成功 ✅
@@ -209,7 +209,7 @@ Clarity 是一款 AI 驱动的心理支持助手，帮助你：
 
 此致，
 [CEO 姓名]
-Clarity 团队
+Solacore 团队
 ```
 
 ---

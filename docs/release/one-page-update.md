@@ -1,4 +1,4 @@
-# Clarity - One Page Status Update
+# Solacore - One Page Status Update
 
 **Date**: 2025-12-23
 **Version**: 1.0.0
@@ -8,7 +8,7 @@
 
 ## Project Overview
 
-Clarity 是一款 AI 驱动的问题解决助手，通过 5 步引导式流程帮助用户将模糊困扰转化为清晰行动。技术栈：React Native + Expo (移动端)、FastAPI + PostgreSQL (后端)、OpenAI/Claude (AI 引擎)。已完成 8 个 Epic 的全部开发，代码质量达到生产标准。
+Solacore 是一款 AI 驱动的问题解决助手，通过 5 步引导式流程帮助用户将模糊困扰转化为清晰行动。技术栈：React Native + Expo (移动端)、FastAPI + PostgreSQL (后端)、OpenAI/Claude (AI 引擎)。已完成 8 个 Epic 的全部开发，代码质量达到生产标准。
 
 ---
 
@@ -28,7 +28,7 @@ Clarity 是一款 AI 驱动的问题解决助手，通过 5 步引导式流程�
 
 | Blocker | Impact | Resolution |
 |---------|--------|------------|
-| **域名未配置** | 无法部署后端到生产 | 购买 `clarity.app` 或替代域名，配置 DNS |
+| **域名未配置** | 无法部署后端到生产 | 购买 `solacore.app` 或替代域名，配置 DNS |
 | **Apple Developer 账号** | iOS 无法构建和上架 | 注册 Apple Developer Program ($99/年) |
 | Hosting/DB 决策待定 | 延迟部署启动 | 选择 Vercel/Railway/Fly + Neon/Supabase |
 | Stripe/RevenueCat 生产配置 | 支付功能未激活 | 需 Production URL 后配置 Webhook |
@@ -51,7 +51,7 @@ Clarity 是一款 AI 驱动的问题解决助手，通过 5 步引导式流程�
 
 | Request | Details |
 |---------|---------|
-| **域名采购授权** | 需购买 `clarity.app` 或备选域名，预计 ~$12/年 |
+| **域名采购授权** | 需购买 `solacore.app` 或备选域名，预计 ~$12/年 |
 | **Apple Developer 账号注册** | 需支付 $99/年，审批周期 24-48 小时 |
 | **Hosting 预算确认** | Vercel/Railway/Fly 月费 ~$5-20 起，需确认预算 |
 

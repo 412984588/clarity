@@ -12,7 +12,7 @@
 
 ---
 
-## A. Mobile 端 (clarity-mobile)
+## A. Mobile 端 (solacore-mobile)
 
 ### A1. RevenueCat SDK 集成
 
@@ -76,7 +76,7 @@ await Purchases.logOut();
 
 ---
 
-## B. Backend 端 (clarity-api)
+## B. Backend 端 (solacore-api)
 
 ### B1. RevenueCat Webhook Endpoint
 

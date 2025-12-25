@@ -7,7 +7,7 @@
 
 ## Purpose
 
-本文档提供 Clarity 状态页（Status Page）的标准消息模板，用于在计划维护或故障时向用户透明沟通。确保：
+本文档提供 Solacore 状态页（Status Page）的标准消息模板，用于在计划维护或故障时向用户透明沟通。确保：
 
 1. 用户及时了解系统状态
 2. 消息格式统一、清晰、易懂
@@ -21,7 +21,7 @@
 - 故障解决（Resolved）
 
 **发布渠道**：
-- 官网状态页：https://status.clarity.app（未来）
+- 官网状态页：https://status.solacore.app（未来）
 - Twitter/Social Media
 - In-App Banner（未来）
 - Email（仅影响付费用户时）
@@ -64,7 +64,7 @@ We will be performing scheduled maintenance to [brief reason, e.g., "upgrade our
 
 We appreciate your patience and understanding.
 
-— Clarity Team
+— Solacore Team
 ```
 
 ### 示例
@@ -91,11 +91,11 @@ We will be performing scheduled maintenance to upgrade our database infrastructu
 
 - **Start**: 2025-12-25 02:00 UTC (9pm ET / 6pm PT)
 - **Expected End**: 2025-12-25 03:00 UTC (10pm ET / 7pm PT)
-- **Status Updates**: Every 30 minutes on [@clarityapp](https://twitter.com/clarityapp)
+- **Status Updates**: Every 30 minutes on [@solacoreapp](https://twitter.com/solacoreapp)
 
 We appreciate your patience and understanding.
 
-— Clarity Team
+— Solacore Team
 ```
 
 ---
@@ -130,7 +130,7 @@ We will provide an update within [30 / 60] minutes or sooner if we have more inf
 
 We apologize for the inconvenience.
 
-— Clarity Team
+— Solacore Team
 ```
 
 ### 示例
@@ -159,7 +159,7 @@ We will provide an update within 30 minutes or sooner if we have more informatio
 
 We apologize for the inconvenience.
 
-— Clarity Team
+— Solacore Team
 ```
 
 ---
@@ -201,7 +201,7 @@ We apologize for the inconvenience.
 
 [Time, e.g., "Within 30 minutes or when resolved"]
 
-— Clarity Team
+— Solacore Team
 ```
 
 ### 示例（进展中）
@@ -237,7 +237,7 @@ We are continuing to monitor Google's service recovery and will provide a perman
 
 Within 30 minutes or when fully resolved.
 
-— Clarity Team
+— Solacore Team
 ```
 
 ---
@@ -281,7 +281,7 @@ The issue affecting [brief description] has been fully resolved. All systems are
 
 We sincerely apologize for the disruption and appreciate your patience.
 
-— Clarity Team
+— Solacore Team
 ```
 
 ### 示例
@@ -320,7 +320,7 @@ We are adding monitoring alerts for third-party authentication failures to detec
 
 We sincerely apologize for the disruption and appreciate your patience.
 
-— Clarity Team
+— Solacore Team
 ```
 
 ---

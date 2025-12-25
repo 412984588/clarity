@@ -218,7 +218,7 @@
 
 - 重置 token 使用 secrets.token_urlsafe(32)
 - 邮件使用 SendGrid/Mailgun/Resend
-- Deep Link 格式：clarity://reset-password?token=xxx
+- Deep Link 格式：solacore://reset-password?token=xxx
 
 ---
 

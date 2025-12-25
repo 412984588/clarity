@@ -10,7 +10,7 @@
 
 ## Purpose & Scope
 
-Welcome to the Clarity Free Beta! This guide is designed for friends and early testers who are helping us validate the core features of Clarity before the official launch.
+Welcome to the Solacore Free Beta! This guide is designed for friends and early testers who are helping us validate the core features of Solacore before the official launch.
 
 **What this beta includes:**
 - ✅ Full 5-step problem-solving flow (Receive → Clarify → Reframe → Options → Commit)
@@ -60,17 +60,17 @@ Welcome to the Clarity Free Beta! This guide is designed for friends and early t
    - If prompted, enable "Install from unknown sources" (Settings → Security)
 
 2. **Via Expo Dashboard**:
-   - Visit: https://expo.dev/accounts/cllalala/projects/clarity-mobile/builds/5d5e7b57-44f7-4729-b627-e40bc93dbb76
+   - Visit: https://expo.dev/accounts/cllalala/projects/solacore-mobile/builds/5d5e7b57-44f7-4729-b627-e40bc93dbb76
    - Scan the QR code with your device
 
 **Option 2: Install via ADB (for developers)**
 
 ```bash
 # Download APK
-curl -o clarity.apk https://expo.dev/artifacts/eas/cwHBq3tAhSrhLcQnewsmpy.apk
+curl -o solacore.apk https://expo.dev/artifacts/eas/cwHBq3tAhSrhLcQnewsmpy.apk
 
 # Install to connected device or emulator
-adb install clarity.apk
+adb install solacore.apk
 ```
 
 ### iOS Installation
@@ -244,11 +244,11 @@ We **highly value** your feedback! Please use one of the following methods:
 
 **Use our structured GitHub issue templates**:
 
-1. **For Bugs**: https://github.com/412984588/clarity/issues/new/choose
+1. **For Bugs**: https://github.com/412984588/solacore/issues/new/choose
    - Select "Beta Bug Report"
    - Fill in reproduction steps, device info, screenshots
 
-2. **For Feedback**: https://github.com/412984588/clarity/issues/new/choose
+2. **For Feedback**: https://github.com/412984588/solacore/issues/new/choose
    - Select "Beta Feedback"
    - Share your experience, suggestions, and ratings
 
@@ -337,7 +337,7 @@ A: Estimated duration: 2-4 weeks, depending on feedback and issue resolution.
 
 ## Thank You!
 
-Thank you for being an early tester and helping us build a better product. Your feedback is invaluable and will directly shape the final version of Clarity.
+Thank you for being an early tester and helping us build a better product. Your feedback is invaluable and will directly shape the final version of Solacore.
 
 **Questions or concerns?** Don't hesitate to reach out. We're here to help!
 

@@ -30,7 +30,7 @@
   - Update StreamDoneEvent with confidence field
 
 - [ ] **M2**: Create `hooks/useEmotionBackground.ts`
-  - AsyncStorage key: `@clarity/emotion_background_enabled`
+  - AsyncStorage key: `@solacore/emotion_background_enabled`
   - State: currentEmotion, isEnabled
   - Animated value for background
   - 300ms timing animation

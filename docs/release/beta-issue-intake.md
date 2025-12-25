@@ -27,7 +27,7 @@ We offer multiple ways to report issues and provide feedback. Choose the method 
 **Best For:** Structured bug reports, feedback, and feature requests
 
 **How to Access:**
-- Visit the [Clarity GitHub Issues](https://github.com/412984588/clarity/issues/new/choose) page
+- Visit the [Solacore GitHub Issues](https://github.com/412984588/solacore/issues/new/choose) page
 - Select the appropriate issue template:
   - 🐛 **Beta Bug Report** - Report crashes, errors, or broken features
   - 💬 **Beta Feedback** - Share your experience and suggestions
@@ -38,7 +38,7 @@ We offer multiple ways to report issues and provide feedback. Choose the method 
 - Automatic tracking and status updates
 - Transparent - you can see responses and resolution progress
 
-**Privacy:** Issue submissions are visible to the Clarity team and public GitHub users. Do not include sensitive personal information.
+**Privacy:** Issue submissions are visible to the Solacore team and public GitHub users. Do not include sensitive personal information.
 
 ---
 
@@ -262,8 +262,8 @@ When you submit an issue via GitHub, Beta Feedback Form, or direct message, we c
 
 ### Who Can See It
 
-- **GitHub Issues:** Visible to the Clarity team and public GitHub users
-- **Direct Messages / Feedback Forms:** Visible only to the Clarity team
+- **GitHub Issues:** Visible to the Solacore team and public GitHub users
+- **Direct Messages / Feedback Forms:** Visible only to the Solacore team
 - **Aggregated Data:** Used in weekly reports (anonymized, no personal info)
 
 ### What You Should NOT Include
@@ -323,6 +323,6 @@ When you submit an issue via GitHub, Beta Feedback Form, or direct message, we c
 
 ---
 
-**Thank you for helping us improve Clarity!** 🙏
+**Thank you for helping us improve Solacore!** 🙏
 
-Your feedback is invaluable in making Clarity the best decision-making tool possible.
+Your feedback is invaluable in making Solacore the best decision-making tool possible.

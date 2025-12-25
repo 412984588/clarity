@@ -13,7 +13,7 @@
 
 | Item | Value |
 |------|-------|
-| **Command** | `cd clarity-api && poetry add passlib[bcrypt] python-jose[cryptography] httpx` |
+| **Command** | `cd solacore-api && poetry add passlib[bcrypt] python-jose[cryptography] httpx` |
 | **Files** | `pyproject.toml`, `poetry.lock` |
 | **Verify** | `poetry show passlib` 显示版本 |
 | **Depends** | None |
@@ -25,8 +25,8 @@
 | Item | Value |
 |------|-------|
 | **Command** | 创建文件 |
-| **Files** | `clarity-api/app/schemas/auth.py` (new) |
-| **Verify** | `cd clarity-api && python -c "from app.schemas.auth import RegisterRequest; print('OK')"` |
+| **Files** | `solacore-api/app/schemas/auth.py` (new) |
+| **Verify** | `cd solacore-api && python -c "from app.schemas.auth import RegisterRequest; print('OK')"` |
 | **Depends** | None |
 
 ---
@@ -36,8 +36,8 @@
 | Item | Value |
 |------|-------|
 | **Command** | 更新文件 |
-| **Files** | `clarity-api/app/models/user.py` (update) |
-| **Verify** | `cd clarity-api && python -c "from app.models.user import User; print('OK')"` |
+| **Files** | `solacore-api/app/models/user.py` (update) |
+| **Verify** | `cd solacore-api && python -c "from app.models.user import User; print('OK')"` |
 | **Depends** | None |
 
 ---
@@ -47,8 +47,8 @@
 | Item | Value |
 |------|-------|
 | **Command** | 创建目录和文件 |
-| **Files** | `clarity-api/app/utils/__init__.py`, `clarity-api/app/utils/security.py` (new) |
-| **Verify** | `cd clarity-api && python -c "from app.utils.security import hash_password; print('OK')"` |
+| **Files** | `solacore-api/app/utils/__init__.py`, `solacore-api/app/utils/security.py` (new) |
+| **Verify** | `cd solacore-api && python -c "from app.utils.security import hash_password; print('OK')"` |
 | **Depends** | T-2.1.1 (passlib), T-2.1.11 (config) |
 
 ---
@@ -58,8 +58,8 @@
 | Item | Value |
 |------|-------|
 | **Command** | 创建文件 |
-| **Files** | `clarity-api/app/models/device.py` (new) |
-| **Verify** | `cd clarity-api && python -c "from app.models.device import Device; print('OK')"` |
+| **Files** | `solacore-api/app/models/device.py` (new) |
+| **Verify** | `cd solacore-api && python -c "from app.models.device import Device; print('OK')"` |
 | **Depends** | T-2.1.3 (User model) |
 
 ---
@@ -69,8 +69,8 @@
 | Item | Value |
 |------|-------|
 | **Command** | 创建文件 |
-| **Files** | `clarity-api/app/models/session.py` (new) |
-| **Verify** | `cd clarity-api && python -c "from app.models.session import ActiveSession; print('OK')"` |
+| **Files** | `solacore-api/app/models/session.py` (new) |
+| **Verify** | `cd solacore-api && python -c "from app.models.session import ActiveSession; print('OK')"` |
 | **Depends** | T-2.1.3, T-2.1.5 |
 
 ---
@@ -80,8 +80,8 @@
 | Item | Value |
 |------|-------|
 | **Command** | 创建文件 |
-| **Files** | `clarity-api/app/models/subscription.py` (new) |
-| **Verify** | `cd clarity-api && python -c "from app.models.subscription import Subscription, Usage; print('OK')"` |
+| **Files** | `solacore-api/app/models/subscription.py` (new) |
+| **Verify** | `cd solacore-api && python -c "from app.models.subscription import Subscription, Usage; print('OK')"` |
 | **Depends** | T-2.1.3 |
 
 ---
@@ -91,8 +91,8 @@
 | Item | Value |
 |------|-------|
 | **Command** | 更新文件 |
-| **Files** | `clarity-api/app/models/__init__.py` (update) |
-| **Verify** | `cd clarity-api && python -c "from app.models import User, Device, ActiveSession; print('OK')"` |
+| **Files** | `solacore-api/app/models/__init__.py` (update) |
+| **Verify** | `cd solacore-api && python -c "from app.models import User, Device, ActiveSession; print('OK')"` |
 | **Depends** | T-2.1.3, T-2.1.5, T-2.1.6, T-2.1.7 |
 
 ---
@@ -102,8 +102,8 @@
 | Item | Value |
 |------|-------|
 | **Command** | 创建目录和文件 |
-| **Files** | `clarity-api/app/services/__init__.py`, `clarity-api/app/services/auth_service.py` (new) |
-| **Verify** | `cd clarity-api && python -c "from app.services.auth_service import AuthService; print('OK')"` |
+| **Files** | `solacore-api/app/services/__init__.py`, `solacore-api/app/services/auth_service.py` (new) |
+| **Verify** | `cd solacore-api && python -c "from app.services.auth_service import AuthService; print('OK')"` |
 | **Depends** | T-2.1.2, T-2.1.4, T-2.1.8 |
 
 ---
@@ -113,8 +113,8 @@
 | Item | Value |
 |------|-------|
 | **Command** | 创建目录和文件 |
-| **Files** | `clarity-api/app/routers/__init__.py`, `clarity-api/app/routers/auth.py` (new) |
-| **Verify** | `cd clarity-api && python -c "from app.routers.auth import router; print('OK')"` |
+| **Files** | `solacore-api/app/routers/__init__.py`, `solacore-api/app/routers/auth.py` (new) |
+| **Verify** | `cd solacore-api && python -c "from app.routers.auth import router; print('OK')"` |
 | **Depends** | T-2.1.9 |
 
 ---
@@ -124,8 +124,8 @@
 | Item | Value |
 |------|-------|
 | **Command** | 更新文件 |
-| **Files** | `clarity-api/app/config.py` (update) |
-| **Verify** | `cd clarity-api && python -c "from app.config import get_settings; s=get_settings(); print(s.jwt_algorithm)"` |
+| **Files** | `solacore-api/app/config.py` (update) |
+| **Verify** | `cd solacore-api && python -c "from app.config import get_settings; s=get_settings(); print(s.jwt_algorithm)"` |
 | **Depends** | None |
 
 ---
@@ -135,7 +135,7 @@
 | Item | Value |
 |------|-------|
 | **Command** | 更新文件 |
-| **Files** | `clarity-api/app/main.py` (update) |
+| **Files** | `solacore-api/app/main.py` (update) |
 | **Verify** | `curl http://localhost:8000/docs` 显示 auth 相关端点 |
 | **Depends** | T-2.1.10 |
 
@@ -145,7 +145,7 @@
 
 | Item | Value |
 |------|-------|
-| **Command** | `cd clarity-api && poetry run alembic revision --autogenerate -m "add auth tables" && poetry run alembic upgrade head` |
+| **Command** | `cd solacore-api && poetry run alembic revision --autogenerate -m "add auth tables" && poetry run alembic upgrade head` |
 | **Files** | `alembic/versions/*.py` (auto-generated) |
 | **Verify** | `psql -c "\dt"` 显示 users, devices, active_sessions, subscriptions, usage |
 | **Depends** | T-2.1.8 |
@@ -157,8 +157,8 @@
 | Item | Value |
 |------|-------|
 | **Command** | 创建文件 |
-| **Files** | `clarity-api/tests/test_auth.py` (new) |
-| **Verify** | `cd clarity-api && poetry run pytest tests/test_auth.py -v` 全绿 |
+| **Files** | `solacore-api/tests/test_auth.py` (new) |
+| **Verify** | `cd solacore-api && poetry run pytest tests/test_auth.py -v` 全绿 |
 | **Depends** | T-2.1.12, T-2.1.13 |
 
 ---
@@ -169,7 +169,7 @@
 
 | Item | Value |
 |------|-------|
-| **Command** | `cd clarity-api && poetry add google-auth` |
+| **Command** | `cd solacore-api && poetry add google-auth` |
 | **Files** | `pyproject.toml`, `poetry.lock` |
 | **Verify** | `poetry show google-auth` 显示版本 |
 | **Depends** | T-2.1.14 |
@@ -181,8 +181,8 @@
 | Item | Value |
 |------|-------|
 | **Command** | 创建文件 |
-| **Files** | `clarity-api/app/services/oauth_service.py` (new) |
-| **Verify** | `cd clarity-api && python -c "from app.services.oauth_service import OAuthService; print('OK')"` |
+| **Files** | `solacore-api/app/services/oauth_service.py` (new) |
+| **Verify** | `cd solacore-api && python -c "from app.services.oauth_service import OAuthService; print('OK')"` |
 | **Depends** | T-2.3.1, T-2.1.9 |
 
 ---
@@ -192,7 +192,7 @@
 | Item | Value |
 |------|-------|
 | **Command** | 更新文件 |
-| **Files** | `clarity-api/app/routers/auth.py` (append) |
+| **Files** | `solacore-api/app/routers/auth.py` (append) |
 | **Verify** | `curl http://localhost:8000/docs` 显示 /auth/oauth/google, /auth/oauth/apple |
 | **Depends** | T-2.3.2 |
 
@@ -205,8 +205,8 @@
 | Item | Value |
 |------|-------|
 | **Command** | 创建目录和文件 |
-| **Files** | `clarity-api/app/middleware/__init__.py`, `clarity-api/app/middleware/auth.py` (new) |
-| **Verify** | `cd clarity-api && python -c "from app.middleware.auth import get_current_user; print('OK')"` |
+| **Files** | `solacore-api/app/middleware/__init__.py`, `solacore-api/app/middleware/auth.py` (new) |
+| **Verify** | `cd solacore-api && python -c "from app.middleware.auth import get_current_user; print('OK')"` |
 | **Depends** | T-2.1.4 |
 
 ---
@@ -216,7 +216,7 @@
 | Item | Value |
 |------|-------|
 | **Command** | 更新文件 |
-| **Files** | `clarity-api/app/routers/auth.py` (append) |
+| **Files** | `solacore-api/app/routers/auth.py` (append) |
 | **Verify** | `curl http://localhost:8000/docs` 显示 /auth/devices, /auth/me |
 | **Depends** | T-2.5.1 |
 
@@ -228,7 +228,7 @@
 
 | Item | Value |
 |------|-------|
-| **Command** | `cd clarity-mobile && npm install expo-secure-store expo-auth-session expo-apple-authentication expo-crypto zustand react-hook-form @hookform/resolvers zod` |
+| **Command** | `cd solacore-mobile && npm install expo-secure-store expo-auth-session expo-apple-authentication expo-crypto zustand react-hook-form @hookform/resolvers zod` |
 | **Files** | `package.json`, `package-lock.json` |
 | **Verify** | `npm ls expo-secure-store` 显示版本 |
 | **Depends** | None |
@@ -240,7 +240,7 @@
 | Item | Value |
 |------|-------|
 | **Command** | 创建目录和文件 |
-| **Files** | `clarity-mobile/stores/authStore.ts` (new) |
+| **Files** | `solacore-mobile/stores/authStore.ts` (new) |
 | **Verify** | `npx tsc --noEmit` 无错误 |
 | **Depends** | T-2.6.1 |
 
@@ -251,7 +251,7 @@
 | Item | Value |
 |------|-------|
 | **Command** | 创建目录和文件 |
-| **Files** | `clarity-mobile/services/api.ts` (new) |
+| **Files** | `solacore-mobile/services/api.ts` (new) |
 | **Verify** | `npx tsc --noEmit` 无错误 |
 | **Depends** | T-2.6.2 |
 
@@ -262,7 +262,7 @@
 | Item | Value |
 |------|-------|
 | **Command** | 创建文件 |
-| **Files** | `clarity-mobile/services/auth.ts` (new) |
+| **Files** | `solacore-mobile/services/auth.ts` (new) |
 | **Verify** | `npx tsc --noEmit` 无错误 |
 | **Depends** | T-2.6.3 |
 
@@ -273,7 +273,7 @@
 | Item | Value |
 |------|-------|
 | **Command** | 创建目录和文件 |
-| **Files** | `clarity-mobile/app/(auth)/login.tsx` (new) |
+| **Files** | `solacore-mobile/app/(auth)/login.tsx` (new) |
 | **Verify** | `npx tsc --noEmit` 无错误 |
 | **Depends** | T-2.6.4 |
 
@@ -284,7 +284,7 @@
 | Item | Value |
 |------|-------|
 | **Command** | 创建文件 |
-| **Files** | `clarity-mobile/app/(auth)/register.tsx` (new) |
+| **Files** | `solacore-mobile/app/(auth)/register.tsx` (new) |
 | **Verify** | `npx tsc --noEmit` 无错误 |
 | **Depends** | T-2.6.4 |
 
@@ -295,7 +295,7 @@
 | Item | Value |
 |------|-------|
 | **Command** | 创建文件 |
-| **Files** | `clarity-mobile/app/(auth)/_layout.tsx` (new) |
+| **Files** | `solacore-mobile/app/(auth)/_layout.tsx` (new) |
 | **Verify** | `npx expo start` 无报错 |
 | **Depends** | T-2.6.5, T-2.6.6 |
 
@@ -308,8 +308,8 @@
 | Item | Value |
 |------|-------|
 | **Command** | 创建文件 |
-| **Files** | `clarity-api/app/models/password_reset.py` (new) |
-| **Verify** | `cd clarity-api && python -c "from app.models.password_reset import PasswordReset; print('OK')"` |
+| **Files** | `solacore-api/app/models/password_reset.py` (new) |
+| **Verify** | `cd solacore-api && python -c "from app.models.password_reset import PasswordReset; print('OK')"` |
 | **Depends** | T-2.1.3 |
 
 ---
@@ -319,8 +319,8 @@
 | Item | Value |
 |------|-------|
 | **Command** | 更新文件 |
-| **Files** | `clarity-api/app/services/auth_service.py` (append) |
-| **Verify** | `cd clarity-api && python -c "from app.services.auth_service import AuthService; print('OK')"` |
+| **Files** | `solacore-api/app/services/auth_service.py` (append) |
+| **Verify** | `cd solacore-api && python -c "from app.services.auth_service import AuthService; print('OK')"` |
 | **Depends** | T-2.7.1 |
 
 ---
@@ -330,7 +330,7 @@
 | Item | Value |
 |------|-------|
 | **Command** | 更新文件 |
-| **Files** | `clarity-api/app/routers/auth.py` (append) |
+| **Files** | `solacore-api/app/routers/auth.py` (append) |
 | **Verify** | `curl http://localhost:8000/docs` 显示 /auth/forgot-password, /auth/reset-password |
 | **Depends** | T-2.7.2 |
 
@@ -409,7 +409,7 @@ Wave 10 (Sequential):
 ### Backend
 
 ```bash
-cd clarity-api
+cd solacore-api
 
 # Lint
 poetry run ruff check .
@@ -431,7 +431,7 @@ curl -X POST http://localhost:8000/auth/login \
 ### Mobile
 
 ```bash
-cd clarity-mobile
+cd solacore-mobile
 
 # Lint & Type check
 npm run lint

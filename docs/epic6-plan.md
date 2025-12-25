@@ -61,16 +61,16 @@
 ## File Changes Summary
 
 ### New Files
-- `clarity-api/app/services/emotion_detector.py`
-- `clarity-api/tests/test_emotion_detector.py`
-- `clarity-mobile/hooks/useEmotionBackground.ts`
-- `clarity-mobile/components/AnimatedGradientBackground.tsx`
+- `solacore-api/app/services/emotion_detector.py`
+- `solacore-api/tests/test_emotion_detector.py`
+- `solacore-mobile/hooks/useEmotionBackground.ts`
+- `solacore-mobile/components/AnimatedGradientBackground.tsx`
 
 ### Modified Files
-- `clarity-api/app/routers/sessions.py`
-- `clarity-mobile/app/session/[id].tsx`
-- `clarity-mobile/app/(tabs)/settings.tsx`
-- `clarity-mobile/types/solve.ts`
-- `clarity-mobile/i18n/en.json`
-- `clarity-mobile/i18n/es.json`
-- `clarity-mobile/i18n/zh.json`
+- `solacore-api/app/routers/sessions.py`
+- `solacore-mobile/app/session/[id].tsx`
+- `solacore-mobile/app/(tabs)/settings.tsx`
+- `solacore-mobile/types/solve.ts`
+- `solacore-mobile/i18n/en.json`
+- `solacore-mobile/i18n/es.json`
+- `solacore-mobile/i18n/zh.json`

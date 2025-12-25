@@ -13,7 +13,7 @@
   - 添加所有生产必需变量
   - 标注 `# REQUIRED: change in production`
   - 添加详细注释说明每个变量用途
-  - 文件: `clarity-api/.env.example`
+  - 文件: `solacore-api/.env.example`
 
 - [x] **Task 1.1.2**: 创建环境变量文档
   - 列出所有变量、是否必填、示例值
@@ -23,10 +23,10 @@
 - [x] **Task 1.2.1**: 实现 /health 端点
   - 返回 JSON: `{ "status": "healthy", "version": "x.x.x", "database": "connected" }`
   - 检查数据库连接
-  - 文件: `clarity-api/app/main.py`
+  - 文件: `solacore-api/app/main.py`
 
 - [x] **Task 1.2.2**: 添加健康检查测试
-  - 文件: `clarity-api/tests/test_health.py`
+  - 文件: `solacore-api/tests/test_health.py`
 
 ### 1.3 部署脚本
 - [x] **Task 1.3.1**: 创建部署脚本
@@ -35,7 +35,7 @@
 
 - [x] **Task 1.3.2**: 更新 Dockerfile (如需要)
   - 确保包含 alembic 迁移步骤
-  - 文件: `clarity-api/Dockerfile`
+  - 文件: `solacore-api/Dockerfile`
 
 ### 1.4 验证与提交
 - [x] **Task 1.4.1**: 运行 Backend CI
@@ -81,13 +81,13 @@
 
 ### 3.1 EAS 配置
 - [x] **Task 3.1.1**: 创建 eas.json
-  - 文件: `clarity-mobile/eas.json`
+  - 文件: `solacore-mobile/eas.json`
   - Profiles: development, preview, production
 
 - [x] **Task 3.1.2**: 更新 app.config.js
   - 引用环境变量
   - 配置版本号
-  - 文件: `clarity-mobile/app.config.js` 或 `app.json`
+  - 文件: `solacore-mobile/app.config.js` 或 `app.json`
 
 ### 3.2 环境变量
 - [x] **Task 3.2.1**: 文档化 EAS Secrets
@@ -112,7 +112,7 @@
   - `poetry add sentry-sdk[fastapi]`
 
 - [ ] **Task 4.1.2**: 配置 Sentry **[DEFERRED]**
-  - 文件: `clarity-api/app/main.py`
+  - 文件: `solacore-api/app/main.py`
   - 添加 DSN 环境变量
 
 ### 4.2 移动端 Sentry (可选 - 后续实现)

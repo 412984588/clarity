@@ -50,7 +50,7 @@ T-2.1.1 (Add deps) ──┬── T-2.1.2 (Schemas) ──┬── T-2.1.3 (Us
 
 **Command:**
 ```bash
-cd clarity-api
+cd solacore-api
 poetry add passlib[bcrypt] python-jose[cryptography] httpx
 ```
 
@@ -62,7 +62,7 @@ poetry add passlib[bcrypt] python-jose[cryptography] httpx
 
 ### T-2.1.2: Create Auth Schemas
 
-**File:** `clarity-api/app/schemas/auth.py`
+**File:** `solacore-api/app/schemas/auth.py`
 
 ```python
 from pydantic import BaseModel, EmailStr, field_validator
@@ -146,7 +146,7 @@ class ErrorResponse(BaseModel):
 
 ### T-2.1.3: Extend User Model
 
-**File:** `clarity-api/app/models/user.py` (update)
+**File:** `solacore-api/app/models/user.py` (update)
 
 ```python
 import uuid
@@ -184,7 +184,7 @@ class User(Base):
 
 ### T-2.1.4: Create Security Utilities
 
-**File:** `clarity-api/app/utils/security.py`
+**File:** `solacore-api/app/utils/security.py`
 
 ```python
 from datetime import datetime, timedelta
@@ -251,7 +251,7 @@ def hash_token(token: str) -> str:
 
 ### T-2.1.5: Create Device Model
 
-**File:** `clarity-api/app/models/device.py`
+**File:** `solacore-api/app/models/device.py`
 
 ```python
 import uuid
@@ -293,7 +293,7 @@ class Device(Base):
 
 ### T-2.1.6: Create ActiveSession Model
 
-**File:** `clarity-api/app/models/session.py`
+**File:** `solacore-api/app/models/session.py`
 
 ```python
 import uuid
@@ -327,7 +327,7 @@ class ActiveSession(Base):
 
 ### T-2.1.7: Create Subscription Model
 
-**File:** `clarity-api/app/models/subscription.py`
+**File:** `solacore-api/app/models/subscription.py`
 
 ```python
 import uuid
@@ -381,7 +381,7 @@ class Usage(Base):
 
 ### T-2.1.8: Update Models __init__.py
 
-**File:** `clarity-api/app/models/__init__.py`
+**File:** `solacore-api/app/models/__init__.py`
 
 ```python
 from app.models.user import User
@@ -396,7 +396,7 @@ __all__ = ["User", "Device", "ActiveSession", "Subscription", "Usage"]
 
 ### T-2.1.9: Create Auth Service
 
-**File:** `clarity-api/app/services/auth_service.py`
+**File:** `solacore-api/app/services/auth_service.py`
 
 ```python
 from datetime import datetime, timedelta
@@ -621,7 +621,7 @@ class AuthService:
 
 ### T-2.1.10: Create Auth Router
 
-**File:** `clarity-api/app/routers/auth.py`
+**File:** `solacore-api/app/routers/auth.py`
 
 ```python
 from fastapi import APIRouter, Depends, HTTPException, Header
@@ -713,7 +713,7 @@ async def logout():
 
 ### T-2.1.11: Update Config with JWT Settings
 
-**File:** `clarity-api/app/config.py` (update)
+**File:** `solacore-api/app/config.py` (update)
 
 ```python
 from pydantic_settings import BaseSettings
@@ -722,9 +722,9 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
     """应用配置，从环境变量加载"""
-    app_name: str = "Clarity API"
+    app_name: str = "Solacore API"
     debug: bool = False
-    database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/clarity"
+    database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/solacore"
 
     # JWT 配置
     jwt_secret: str = "your-secret-key-change-in-production"
@@ -753,7 +753,7 @@ def get_settings() -> Settings:
 
 ### T-2.1.12: Register Auth Router in Main
 
-**File:** `clarity-api/app/main.py` (update)
+**File:** `solacore-api/app/main.py` (update)
 
 ```python
 from fastapi import FastAPI, Depends
@@ -806,7 +806,7 @@ async def health_check(db: AsyncSession = Depends(get_db)):
 @app.get("/")
 async def root():
     """根端点"""
-    return {"message": "Welcome to Clarity API", "docs": "/docs"}
+    return {"message": "Welcome to Solacore API", "docs": "/docs"}
 ```
 
 ---
@@ -815,7 +815,7 @@ async def root():
 
 **Command:**
 ```bash
-cd clarity-api
+cd solacore-api
 poetry run alembic revision --autogenerate -m "add auth tables"
 poetry run alembic upgrade head
 ```
@@ -826,7 +826,7 @@ poetry run alembic upgrade head
 
 ### T-2.1.14: Create Auth Tests
 
-**File:** `clarity-api/tests/test_auth.py`
+**File:** `solacore-api/tests/test_auth.py`
 
 ```python
 import pytest
@@ -910,7 +910,7 @@ async def test_login_invalid_credentials(client: AsyncClient):
 
 **Command:**
 ```bash
-cd clarity-api
+cd solacore-api
 poetry add google-auth
 ```
 
@@ -918,7 +918,7 @@ poetry add google-auth
 
 ### T-2.3.2: Create OAuth Service
 
-**File:** `clarity-api/app/services/oauth_service.py`
+**File:** `solacore-api/app/services/oauth_service.py`
 
 ```python
 from typing import Optional, Tuple
@@ -1046,7 +1046,7 @@ class OAuthService:
 
 ### T-2.3.3: Add OAuth Routes
 
-**File:** `clarity-api/app/routers/auth.py` (append)
+**File:** `solacore-api/app/routers/auth.py` (append)
 
 ```python
 # Add to existing auth.py
@@ -1107,7 +1107,7 @@ async def apple_oauth(
 
 ### T-2.5.1: Create Auth Middleware
 
-**File:** `clarity-api/app/middleware/auth.py`
+**File:** `solacore-api/app/middleware/auth.py`
 
 ```python
 from fastapi import Request, HTTPException, Depends
@@ -1162,7 +1162,7 @@ async def get_device_fingerprint_header(request: Request) -> str:
 
 ### T-2.5.2: Add Device Management Routes
 
-**File:** `clarity-api/app/routers/auth.py` (append)
+**File:** `solacore-api/app/routers/auth.py` (append)
 
 ```python
 # Add to existing auth.py
@@ -1255,7 +1255,7 @@ async def get_current_user_info(
 
 **Command (user runs in Terminal):**
 ```bash
-cd clarity-mobile
+cd solacore-mobile
 npm install expo-secure-store expo-auth-session expo-apple-authentication expo-crypto
 npm install zustand react-hook-form @hookform/resolvers zod
 ```
@@ -1264,7 +1264,7 @@ npm install zustand react-hook-form @hookform/resolvers zod
 
 ### T-2.6.2: Create Auth Store
 
-**File:** `clarity-mobile/stores/authStore.ts`
+**File:** `solacore-mobile/stores/authStore.ts`
 
 ```typescript
 import { create } from 'zustand';
@@ -1334,7 +1334,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
 ### T-2.6.3: Create API Service
 
-**File:** `clarity-mobile/services/api.ts`
+**File:** `solacore-mobile/services/api.ts`
 
 ```typescript
 import * as SecureStore from 'expo-secure-store';
@@ -1397,7 +1397,7 @@ export async function apiRequest<T>(
 
 ### T-2.6.4: Create Auth Service
 
-**File:** `clarity-mobile/services/auth.ts`
+**File:** `solacore-mobile/services/auth.ts`
 
 ```typescript
 import { apiRequest } from './api';
@@ -1469,7 +1469,7 @@ export async function logout(): Promise<void> {
 
 ### T-2.6.5: Create Login Screen
 
-**File:** `clarity-mobile/app/(auth)/login.tsx`
+**File:** `solacore-mobile/app/(auth)/login.tsx`
 
 ```typescript
 import { useState } from 'react';
@@ -1607,7 +1607,7 @@ const styles = StyleSheet.create({
 
 ### T-2.6.6: Create Register Screen
 
-**File:** `clarity-mobile/app/(auth)/register.tsx`
+**File:** `solacore-mobile/app/(auth)/register.tsx`
 
 ```typescript
 import { useState } from 'react';
@@ -1761,7 +1761,7 @@ const styles = StyleSheet.create({
 
 ### T-2.6.7: Create Auth Layout
 
-**File:** `clarity-mobile/app/(auth)/_layout.tsx`
+**File:** `solacore-mobile/app/(auth)/_layout.tsx`
 
 ```typescript
 import { Stack } from 'expo-router';
@@ -1783,7 +1783,7 @@ export default function AuthLayout() {
 
 ### T-2.7.1: Create Password Reset Model
 
-**File:** `clarity-api/app/models/password_reset.py`
+**File:** `solacore-api/app/models/password_reset.py`
 
 ```python
 import uuid
@@ -1809,7 +1809,7 @@ class PasswordReset(Base):
 
 ### T-2.7.2: Add Password Reset to Auth Service
 
-**File:** `clarity-api/app/services/auth_service.py` (append)
+**File:** `solacore-api/app/services/auth_service.py` (append)
 
 ```python
 # Add to AuthService class
@@ -1891,7 +1891,7 @@ async def reset_password(self, token: str, new_password: str) -> bool:
 
 ### T-2.7.3: Add Password Reset Routes
 
-**File:** `clarity-api/app/routers/auth.py` (append)
+**File:** `solacore-api/app/routers/auth.py` (append)
 
 ```python
 # Add these schemas and routes
@@ -1927,7 +1927,7 @@ async def forgot_password(
 
     if token:
         # TODO: Send email with reset link
-        # reset_link = f"clarity://reset-password?token={token}"
+        # reset_link = f"solacore://reset-password?token={token}"
         pass
 
     # 始终返回成功（不泄露用户是否存在）
@@ -1956,7 +1956,7 @@ async def reset_password(
 ### Backend Verification
 
 ```bash
-cd clarity-api
+cd solacore-api
 
 # 1. Run migrations
 poetry run alembic upgrade head
@@ -1983,7 +1983,7 @@ poetry run pytest tests/test_auth.py -v
 ### Mobile Verification
 
 ```bash
-cd clarity-mobile
+cd solacore-mobile
 
 # 1. Install dependencies
 npm install

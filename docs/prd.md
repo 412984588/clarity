@@ -1,4 +1,4 @@
-# Clarity - Product Requirements Document (PRD)
+# Solacore - Product Requirements Document (PRD)
 
 > **Version**: 1.0
 > **Last Updated**: 2025-12-21
@@ -28,12 +28,12 @@
 
 In an era of information overload and decision fatigue, people struggle to find clarity when facing life's challenges—whether career crossroads, relationship conflicts, or major life decisions. Traditional solutions (therapy, coaching, advice columns) are often expensive, inaccessible, or lack actionable guidance.
 
-**Clarity** is an AI-powered problem-solving and decision assistant that helps users:
+**Solacore** is an AI-powered problem-solving and decision assistant that helps users:
 - Identify the **root cause** of their problems
 - Gain new **perspectives** through cognitive reframing
 - Receive **actionable, step-by-step solutions**
 
-Unlike generic chatbots, Clarity follows a structured 5-step methodology (Solve) that guides users from emotional acknowledgment to committed action.
+Unlike generic chatbots, Solacore follows a structured 5-step methodology (Solve) that guides users from emotional acknowledgment to committed action.
 
 ### 1.2 Product Goals
 
@@ -96,7 +96,7 @@ Unlike generic chatbots, Clarity follows a structured 5-step methodology (Solve)
 | Scenario | Example | User Emotion | Expected Outcome |
 |----------|---------|--------------|------------------|
 | **Workplace** | "My boss takes credit for my work" | Frustrated | Concrete strategy to address the situation |
-| **Relationship** | "Should I break up with my partner?" | Confused | Clarity on values, pros/cons analysis |
+| **Relationship** | "Should I break up with my partner?" | Confused | clarity on values, pros/cons analysis |
 | **Major Decision** | "Should I accept a job in another city?" | Anxious | Decision framework, first action step |
 | **Daily Dilemma** | "I can't decide between two job offers" | Overwhelmed | Side-by-side comparison, recommendation |
 
@@ -621,4 +621,4 @@ When detected, surface appropriate hotline:
 
 ---
 
-*This document is maintained by the Product Team. For questions or suggestions, contact product@clarity.app*
+*This document is maintained by the Product Team. For questions or suggestions, contact product@solacore.app*

@@ -1,6 +1,6 @@
 # Epic 4.5: RevenueCat IAP 任务清单
 
-## Backend (clarity-api)
+## Backend (solacore-api)
 
 ### 配置
 - [x] 更新 `app/config.py` 添加 RevenueCat 配置项
@@ -34,7 +34,7 @@
 
 ---
 
-## Mobile (clarity-mobile)
+## Mobile (solacore-mobile)
 
 ### SDK 集成
 - [x] 安装 react-native-purchases

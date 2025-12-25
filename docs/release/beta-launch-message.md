@@ -8,7 +8,7 @@
 
 ## Purpose
 
-Ready-to-send message templates for inviting friends and early testers to the Clarity Free Beta. These templates are pre-filled with all necessary links and instructions, allowing you to personalize and send immediately.
+Ready-to-send message templates for inviting friends and early testers to the Solacore Free Beta. These templates are pre-filled with all necessary links and instructions, allowing you to personalize and send immediately.
 
 **Use These Templates When:**
 - Inviting new testers to join the beta
@@ -25,13 +25,13 @@ All templates below reference the following resources. Update these placeholders
 | Resource | Link | Purpose |
 |----------|------|---------|
 | **APK Download** | https://expo.dev/artifacts/eas/cwHBq3tAhSrhLcQnewsmpy.apk | Android app installation |
-| **Expo Build Page** | https://expo.dev/accounts/cllalala/projects/clarity-mobile/builds/5d5e7b57-44f7-4729-b627-e40bc93dbb76 | QR code for APK download |
+| **Expo Build Page** | https://expo.dev/accounts/cllalala/projects/solacore-mobile/builds/5d5e7b57-44f7-4729-b627-e40bc93dbb76 | QR code for APK download |
 | **Tester Guide** | [free-beta-tester-guide.md](free-beta-tester-guide.md) | Full installation & testing instructions |
 | **Feedback Form** | [beta-feedback-form.md](beta-feedback-form.md) | Structured feedback template |
 | **Bug Template** | [bug-report-template.md](bug-report-template.md) | Bug report format |
 | **Issue Intake** | [beta-issue-intake.md](beta-issue-intake.md) | Where & how to report issues |
 | **Known Issues** | [beta-known-issues.md](beta-known-issues.md) | Current bug list & workarounds |
-| **GitHub Issues** | https://github.com/412984588/clarity/issues/new/choose | Bug/feedback submission forms |
+| **GitHub Issues** | https://github.com/412984588/solacore/issues/new/choose | Bug/feedback submission forms |
 | **Web Feedback Page** | TBD (not built yet) | Web-based feedback form (not deployed) |
 
 **Note**: This beta is **Android APK-only**. Web and iOS versions are not available. Use GitHub Issues (recommended) or email for feedback.
@@ -51,7 +51,7 @@ All templates below reference the following resources. Update these placeholders
 ```
 Hey [Name]! 👋
 
-I'm testing a new AI-powered problem-solving app called Clarity and would love your feedback! It helps you think through decisions with a 5-step framework (Clarify → Reframe → Options → Commit).
+I'm testing a new AI-powered problem-solving app called Solacore and would love your feedback! It helps you think through decisions with a 5-step framework (Clarify → Reframe → Options → Commit).
 
 Want to try it? It's Android-only for now (iOS coming soon). Here's the APK link:
 https://expo.dev/artifacts/eas/cwHBq3tAhSrhLcQnewsmpy.apk
@@ -70,16 +70,16 @@ Full guide here (if needed): [Attach tester guide]
 
 **Use When:** Inviting testers who prefer concise emails (1-2 screens max)
 
-**Subject:** `Clarity Beta Invite - Help Me Test This AI App 🤖`
+**Subject:** `Solacore Beta Invite - Help Me Test This AI App 🤖`
 
 **Message:**
 
 ```
 Hi [Name],
 
-I'm building an AI-powered problem-solving app called **Clarity** and I'd love your help testing it before launch.
+I'm building an AI-powered problem-solving app called **Solacore** and I'd love your help testing it before launch.
 
-**What is Clarity?**
+**What is Solacore?**
 A smart coach that helps you think through tough decisions using a 5-step framework:
 1. Clarify your problem
 2. Reframe the challenge
@@ -106,7 +106,7 @@ A smart coach that helps you think through tough decisions using a 5-step framew
 
 **Links:**
 - Full tester guide: [Attach free-beta-tester-guide.md]
-- Report bugs: https://github.com/412984588/clarity/issues/new/choose
+- Report bugs: https://github.com/412984588/solacore/issues/new/choose
 - Feedback form: [Attach beta-feedback-form.md]
 
 Questions? Just reply to this email. Thanks for helping make this better! 🙏
@@ -125,22 +125,22 @@ Best,
 
 **Use When:** Inviting testers who want comprehensive context (e.g., colleagues, professional connections)
 
-**Subject:** `Free Beta Invite: Clarity - AI-Powered Problem-Solving App`
+**Subject:** `Free Beta Invite: Solacore - AI-Powered Problem-Solving App`
 
 **Message:**
 
 ```
-Subject: Free Beta Invite: Clarity - AI-Powered Problem-Solving App
+Subject: Free Beta Invite: Solacore - AI-Powered Problem-Solving App
 
 Hi [Name],
 
-I'm reaching out because I'd love your help testing **Clarity**, a new AI-powered problem-solving app I've been working on.
+I'm reaching out because I'd love your help testing **Solacore**, a new AI-powered problem-solving app I've been working on.
 
 ---
 
-## What is Clarity?
+## What is Solacore?
 
-Clarity is a mobile app that acts as your thinking partner when you're stuck on a decision or facing a challenge. It guides you through a structured 5-step framework:
+Solacore is a mobile app that acts as your thinking partner when you're stuck on a decision or facing a challenge. It guides you through a structured 5-step framework:
 
 1. **Receive**: Describe your problem or challenge
 2. **Clarify**: Unpack the situation with AI-powered questions
@@ -199,7 +199,7 @@ Your honest, critical feedback is **much more valuable** than politeness. If som
 
 **Step 4: Share Feedback**
 - Use this feedback form: [Attach beta-feedback-form.md]
-- Or report bugs directly: https://github.com/412984588/clarity/issues/new/choose
+- Or report bugs directly: https://github.com/412984588/solacore/issues/new/choose
 - Or just reply to this email with your thoughts
 
 ---
@@ -247,7 +247,7 @@ If you have any questions before trying the app, feel free to reply to this emai
 
 **Useful Links:**
 - Full Tester Guide: [Attach free-beta-tester-guide.md]
-- Report Bugs: https://github.com/412984588/clarity/issues/new/choose
+- Report Bugs: https://github.com/412984588/solacore/issues/new/choose
 - Feedback Form: [Attach beta-feedback-form.md]
 - Known Issues: [Attach beta-known-issues.md]
 
@@ -270,14 +270,14 @@ P.S. If this doesn't work on your device or you run into issues, please let me k
 
 **Use When:** Tester hasn't responded after 3 days of initial invite
 
-**Subject:** `Quick reminder: Clarity Beta Invite 👀`
+**Subject:** `Quick reminder: Solacore Beta Invite 👀`
 
 **Message:**
 
 ```
 Hi [Name],
 
-Just a quick follow-up on the Clarity beta invite I sent a few days ago!
+Just a quick follow-up on the Solacore beta invite I sent a few days ago!
 
 No pressure at all - I know you're busy. But if you're still interested, the app is ready to test:
 
@@ -302,14 +302,14 @@ Thanks!
 
 **Use When:** Tester installed the app but hasn't provided feedback after 7 days
 
-**Subject:** `How's your experience with Clarity so far? 🤔`
+**Subject:** `How's your experience with Solacore so far? 🤔`
 
 **Message:**
 
 ```
 Hi [Name],
 
-Thanks for installing Clarity! 🎉
+Thanks for installing Solacore! 🎉
 
 I noticed you haven't submitted feedback yet - no rush, but I'm curious to hear your thoughts when you get a chance.
 
@@ -322,7 +322,7 @@ I noticed you haven't submitted feedback yet - no rush, but I'm curious to hear 
 **Easy ways to share feedback:**
 - Quick reply: Just hit reply with your thoughts (no need to be formal!)
 - Structured form: [Attach beta-feedback-form.md]
-- GitHub issue: https://github.com/412984588/clarity/issues/new/choose
+- GitHub issue: https://github.com/412984588/solacore/issues/new/choose
 
 Even a 2-sentence reply like "It's cool but X was annoying" is super helpful. 🙏
 
@@ -349,13 +349,13 @@ Thanks for being a tester!
 ```
 Hi [Name],
 
-I wanted to say **thank you** for testing Clarity and reporting [bug/issue] last week! Your feedback has already helped improve the app for everyone.
+I wanted to say **thank you** for testing Solacore and reporting [bug/issue] last week! Your feedback has already helped improve the app for everyone.
 
 Since you've been using the app, I'd love to dig a bit deeper into your experience:
 
 **A few questions (feel free to answer any/all):**
 
-1. **Value**: Did using Clarity actually help you think through your problem? Or did it feel like just another chatbot?
+1. **Value**: Did using Solacore actually help you think through your problem? Or did it feel like just another chatbot?
 
 2. **Friction points**: What almost made you give up or close the app?
 

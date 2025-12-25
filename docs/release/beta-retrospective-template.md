@@ -9,7 +9,7 @@
 
 ## Purpose & Scope
 
-This document provides a **comprehensive retrospective** of the Free Beta phase for Clarity. It serves to:
+This document provides a **comprehensive retrospective** of the Free Beta phase for Solacore. It serves to:
 
 - Evaluate whether beta goals were achieved
 - Identify what worked well and what didn't

@@ -50,10 +50,10 @@ Fill in the **Value** column for each field below. Leave blank or write "TBD" if
 
 | Field | Description | Example | Value |
 |-------|-------------|---------|-------|
-| **Company Name** | Official registered company name | Clarity Technologies Inc. | |
+| **Company Name** | Official registered company name | Solacore Technologies Inc. | |
 | **Company Address** | Business registration address | 123 Main St, San Francisco, CA 94102 | |
-| **Support Email** | Public support contact email | support@clarity.app | |
-| **Legal Contact** | Legal/compliance point of contact | legal@clarity.app | |
+| **Support Email** | Public support contact email | support@solacore.app | |
+| **Legal Contact** | Legal/compliance point of contact | legal@solacore.app | |
 
 ---
 
@@ -61,7 +61,7 @@ Fill in the **Value** column for each field below. Leave blank or write "TBD" if
 
 | Field | Description | Example | Value |
 |-------|-------------|---------|-------|
-| **Domain Name** | Primary domain for production | api.clarity.app | |
+| **Domain Name** | Primary domain for production | api.solacore.app | |
 | **Hosting Provider** | Choose: Vercel / Railway / Fly.io | Railway | |
 | **Database Provider** | Choose: Neon / Supabase / Railway | Neon | |
 | **Database Region** | Geographic location for DB | us-east-1 | |
@@ -74,8 +74,8 @@ Fill in the **Value** column for each field below. Leave blank or write "TBD" if
 | Field | Description | Example | Value |
 |-------|-------------|---------|-------|
 | **Apple Developer Account Type** | Individual or Organization | Individual | |
-| **Apple Developer Email** | Email used for Apple Developer account | dev@clarity.app | |
-| **App Bundle ID** | iOS app bundle identifier | com.clarity.app | |
+| **Apple Developer Email** | Email used for Apple Developer account | dev@solacore.app | |
+| **App Bundle ID** | iOS app bundle identifier | com.solacore.app | |
 | **Team ID** | Apple Developer Team ID (10 characters) | ABCD123456 | |
 | **D-U-N-S Number** | (Organization only) Dun & Bradstreet number | 08-xxx-xxxx | |
 
@@ -85,8 +85,8 @@ Fill in the **Value** column for each field below. Leave blank or write "TBD" if
 
 | Field | Description | Example | Value |
 |-------|-------------|---------|-------|
-| **Test Google Account** | Gmail address for testing OAuth | test-clarity@gmail.com | |
-| **Test Apple ID** | Apple ID for testing Sign-In | test-clarity@icloud.com | |
+| **Test Google Account** | Gmail address for testing OAuth | test-solacore@gmail.com | |
+| **Test Apple ID** | Apple ID for testing Sign-In | test-solacore@icloud.com | |
 | **OpenAI API Key** | Production OpenAI API key | sk-prod-xxxxxx (see .env) | See .env |
 | **Anthropic API Key** | Production Claude API key | sk-ant-xxxxxx (see .env) | See .env |
 | **Sentry DSN** | (Optional) Error tracking endpoint | https://xxx@sentry.io/xxx | |
@@ -99,8 +99,8 @@ Fill in the **Value** column for each field below. Leave blank or write "TBD" if
 |-------|-------------|---------|-------|
 | **Support Hours** | When support is available | Mon-Fri 9am-6pm PST | Best effort (no fixed hours) |
 | **Response Time SLA** | Target time to first response | 1 business day | Best effort (no SLA) |
-| **Status Page URL** | Public uptime status page | https://status.clarity.app | Not available |
-| **On-Call Contact** | Emergency contact for incidents | oncall@clarity.app | |
+| **Status Page URL** | Public uptime status page | https://status.solacore.app | Not available |
+| **On-Call Contact** | Emergency contact for incidents | oncall@solacore.app | |
 | **Monitoring Tool** | Choose: Sentry / Datadog / LogRocket | Sentry | |
 
 ---
@@ -110,10 +110,10 @@ Fill in the **Value** column for each field below. Leave blank or write "TBD" if
 | Field | Description | Example | Value |
 |-------|-------------|---------|-------|
 | **Beta Coordinator Name** | Person managing beta testers | Jane Doe | Owner (self) |
-| **Beta Coordinator Email** | Contact email for beta questions | beta@clarity.app | Provided in invite (TBD) |
+| **Beta Coordinator Email** | Contact email for beta questions | beta@solacore.app | Provided in invite (TBD) |
 | **Beta End Date** | When beta testing will conclude | 2025-02-28 | Open-ended / TBD |
 | **Beta Pricing** | Special offers for beta testers | 50% off for 6 months | None |
-| **Feedback Form URL** | Web form link for beta feedback | https://forms.gle/xxxxx | https://github.com/412984588/clarity/issues/new/choose |
+| **Feedback Form URL** | Web form link for beta feedback | https://forms.gle/xxxxx | https://github.com/412984588/solacore/issues/new/choose |
 | **Bug Report Channel** | Where testers report bugs | GitHub Issues / Email / Discord | GitHub Issue Forms + invite email |
 
 ---

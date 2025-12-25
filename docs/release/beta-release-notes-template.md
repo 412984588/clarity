@@ -22,7 +22,7 @@ This template provides a standard format for creating **beta release notes** whe
 
 **Distribution Channels**:
 - Email to testers
-- Slack #clarity-beta
+- Slack #solacore-beta
 - Include in [Tester Tracker](beta-tester-tracker.md) notes
 - Attach to APK download link
 
@@ -34,7 +34,7 @@ Copy the template below and fill in the bracketed placeholders `[...]`.
 
 ---
 
-# Clarity Beta - Release Notes
+# Solacore Beta - Release Notes
 
 **Version**: [e.g., 1.0.1-beta]
 **Date**: [e.g., 2025-12-24]
@@ -119,7 +119,7 @@ We need your help testing this release! Please focus on:
 **How to Report Issues**:
 - Use [Bug Report Template](bug-report-template.md) for critical bugs
 - Use [Feedback Form](beta-feedback-form.md) for general feedback
-- Email: [support@clarity.app] or reply to this email
+- Email: [support@solacore.app] or reply to this email
 
 ---
 
@@ -142,7 +142,7 @@ We need your help testing this release! Please focus on:
 
 ## 🙏 Thank You
 
-Thank you for testing Clarity and providing valuable feedback! Your reports directly shaped this release.
+Thank you for testing Solacore and providing valuable feedback! Your reports directly shaped this release.
 
 **Special Thanks To**:
 - [Tester Name] for reporting [Bug X]
@@ -162,7 +162,7 @@ Below is a **complete example** of how the template looks when filled out:
 
 ---
 
-# Clarity Beta - Release Notes
+# Solacore Beta - Release Notes
 
 **Version**: 1.0.1-beta
 **Date**: 2025-12-26
@@ -230,7 +230,7 @@ We need your help testing this release! Please focus on:
 **How to Report Issues**:
 - **Critical bugs** (app crash, data loss): Use [Bug Report Template](bug-report-template.md)
 - **General feedback**: Use [Feedback Form](beta-feedback-form.md)
-- **Quick questions**: Reply to this email or contact [support@clarity.app]
+- **Quick questions**: Reply to this email or contact [support@solacore.app]
 
 ---
 
@@ -255,16 +255,16 @@ We need your help testing this release! Please focus on:
 
 ## 🙏 Thank You
 
-Thank you for testing Clarity and providing valuable feedback! Your reports directly shaped this release.
+Thank you for testing Solacore and providing valuable feedback! Your reports directly shaped this release.
 
 **Special Thanks To**:
 - **John D.** for reporting the Option 3 crash (QA-001) with detailed reproduction steps
 - **Maria L.** for suggesting dark mode and providing mockups
 - **Alex T.** for identifying the Spanish emotion detection bug (QA-005)
 
-Your contributions are making Clarity better for everyone. 🙏
+Your contributions are making Solacore better for everyone. 🙏
 
-Questions? Reach out anytime: support@clarity.app
+Questions? Reach out anytime: support@solacore.app
 
 ---
 

@@ -27,7 +27,7 @@
 **风险**: 容易被 DDoS 攻击或恶意刷接口
 **方案**:
 ```python
-# clarity-api/app/middleware/rate_limit.py
+# solacore-api/app/middleware/rate_limit.py
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 
@@ -49,7 +49,7 @@ async def create_session(...):
 **现状**: ⚠️ 可能过于宽松
 **检查**:
 ```bash
-grep -n "allow_origins" clarity-api/app/main.py
+grep -n "allow_origins" solacore-api/app/main.py
 ```
 
 **建议配置**:
@@ -135,7 +135,7 @@ async def health_check(db: AsyncSession = Depends(get_db)):
 
 **方案**:
 ```python
-# clarity-api/app/config.py
+# solacore-api/app/config.py
 from pydantic import field_validator
 
 class Settings(BaseSettings):
@@ -169,7 +169,7 @@ npm install --save-dev @testing-library/react-native jest
 
 **测试示例**:
 ```typescript
-// clarity-mobile/__tests__/auth.test.ts
+// solacore-mobile/__tests__/auth.test.ts
 import { login } from '../services/auth';
 
 test('login with valid credentials', async () => {
@@ -189,7 +189,7 @@ npm install --save-dev @testing-library/react @testing-library/jest-dom vitest
 
 **测试示例**:
 ```typescript
-// clarity-web/__tests__/ChatInterface.test.tsx
+// solacore-web/__tests__/ChatInterface.test.tsx
 import { render, screen } from '@testing-library/react';
 import { ChatInterface } from '@/components/solve/ChatInterface';
 
@@ -211,7 +211,7 @@ test('renders chat interface', () => {
 
 **检查**:
 ```bash
-cd clarity-web && npm run build
+cd solacore-web && npm run build
 # 查看 .next/build-manifest.json
 ```
 
@@ -461,7 +461,7 @@ jobs:
 
 ```bash
 pip install radon
-radon cc clarity-api/app -a  # 圈复杂度检查
+radon cc solacore-api/app -a  # 圈复杂度检查
 ```
 
 **目标**: 所有函数 CC < 10
@@ -474,7 +474,7 @@ radon cc clarity-api/app -a  # 圈复杂度检查
 **工具**: jscpd (JavaScript) / pylint (Python)
 
 ```bash
-npx jscpd clarity-web
+npx jscpd solacore-web
 ```
 
 **目标**: 重复率 < 5%

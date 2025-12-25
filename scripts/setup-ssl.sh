@@ -99,10 +99,10 @@ fi
 log_step "定位配置文件"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
-NGINX_CONF="${REPO_DIR}/clarity-api/nginx/nginx.conf"
-SSL_DIR="${REPO_DIR}/clarity-api/nginx/ssl"
-COMPOSE_FILE="${REPO_DIR}/clarity-api/docker-compose.prod.yml"
-COMPOSE_DIR="${REPO_DIR}/clarity-api"
+NGINX_CONF="${REPO_DIR}/solacore-api/nginx/nginx.conf"
+SSL_DIR="${REPO_DIR}/solacore-api/nginx/ssl"
+COMPOSE_FILE="${REPO_DIR}/solacore-api/docker-compose.prod.yml"
+COMPOSE_DIR="${REPO_DIR}/solacore-api"
 
 if [ ! -f "$NGINX_CONF" ]; then
   log_fail "找不到 Nginx 配置文件：${NGINX_CONF}"
@@ -199,7 +199,7 @@ ${COMPOSE_CMD[@]} --project-directory "${COMPOSE_DIR}" -f "${COMPOSE_FILE}" up -
 log_step "设置证书自动续期"
 ${SUDO} systemctl enable --now certbot.timer || true
 
-HOOK_PATH="/etc/letsencrypt/renewal-hooks/deploy/clarity-nginx.sh"
+HOOK_PATH="/etc/letsencrypt/renewal-hooks/deploy/solacore-nginx.sh"
 ${SUDO} mkdir -p "$(dirname "${HOOK_PATH}")"
 cat <<EOF | ${SUDO} tee "${HOOK_PATH}" >/dev/null
 #!/usr/bin/env bash
@@ -231,4 +231,4 @@ ${SUDO} chmod +x "${HOOK_PATH}"
 log_step "SSL 配置完成"
 log_ok "HTTPS 已启用：https://${DOMAIN}"
 log_info "证书自动续期已开启（certbot.timer + renew hook）"
-log_info "如需查看 Nginx 日志：docker compose -f clarity-api/docker-compose.prod.yml logs -f nginx"
+log_info "如需查看 Nginx 日志：docker compose -f solacore-api/docker-compose.prod.yml logs -f nginx"

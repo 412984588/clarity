@@ -20,7 +20,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Change to API directory
-cd "$(dirname "$0")/../clarity-api"
+cd "$(dirname "$0")/../solacore-api"
 
 # Functions
 log_info() {
@@ -121,7 +121,7 @@ check_heads() {
 create_backup() {
     TIMESTAMP=$(date +%Y%m%d_%H%M%S)
     BACKUP_DIR="../backups"
-    BACKUP_FILE="$BACKUP_DIR/clarity_backup_$TIMESTAMP.sql"
+    BACKUP_FILE="$BACKUP_DIR/solacore_backup_$TIMESTAMP.sql"
 
     mkdir -p "$BACKUP_DIR"
 

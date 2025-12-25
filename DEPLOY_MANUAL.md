@@ -1,4 +1,4 @@
-# Clarity 傻瓜式部署手册
+# Solacore 傻瓜式部署手册
 
 > **最后更新**: 2025-12-25
 > **适用人群**: 完全不懂编程的老板
@@ -27,7 +27,7 @@
 | 项目 | 说明 | 预计费用 |
 |------|------|----------|
 | **云服务器** | 推荐 2核4G 以上 | ¥50-100/月 |
-| **域名** | 如 `api.clarity.app` | ¥50-100/年 |
+| **域名** | 如 `api.solacore.app` | ¥50-100/年 |
 | **信用卡/支付宝** | 用于购买上述服务 | - |
 
 ### 可选（已有可跳过）
@@ -77,7 +77,7 @@
 
 ### 推荐：阿里云 / Cloudflare / Namecheap
 
-1. 搜索你想要的域名（如 `clarity.app`、`myapp.com`）
+1. 搜索你想要的域名（如 `solacore.app`、`myapp.com`）
 2. 付款购买
 3. **先别配置 DNS**，等服务器部署好再配
 
@@ -103,8 +103,8 @@ ssh root@你的服务器IP
 
 ```bash
 # 1. 下载代码
-git clone https://github.com/你的用户名/clarity.git
-cd clarity
+git clone https://github.com/你的用户名/solacore.git
+cd solacore
 
 # 2. 运行一键部署脚本
 chmod +x deploy.sh
@@ -117,7 +117,7 @@ chmod +x deploy.sh
 
 **编辑配置文件**：
 ```bash
-nano clarity-api/.env
+nano solacore-api/.env
 ```
 
 **必须修改的配置**（找到对应行，改成你的值）：
@@ -136,7 +136,7 @@ OPENAI_API_KEY=sk-你的key
 JWT_SECRET=生成的随机字符串
 
 # 数据库密码（改成一个复杂的密码）
-DATABASE_URL=postgresql+asyncpg://clarity_prod:你的复杂密码@db:5432/clarity
+DATABASE_URL=postgresql+asyncpg://solacore_prod:你的复杂密码@db:5432/solacore
 ```
 
 **保存并退出**：
@@ -163,10 +163,10 @@ DATABASE_URL=postgresql+asyncpg://clarity_prod:你的复杂密码@db:5432/clarit
 | A | api | 你的服务器IP |
 
 **例如**：
-- 如果你的域名是 `clarity.app`
+- 如果你的域名是 `solacore.app`
 - 服务器 IP 是 `1.2.3.4`
 - 添加 A 记录：`api` → `1.2.3.4`
-- 最终访问地址就是 `api.clarity.app`
+- 最终访问地址就是 `api.solacore.app`
 
 **等待 5-10 分钟** 让 DNS 生效。
 
@@ -187,7 +187,7 @@ DNS 生效后，运行 SSL 配置脚本：
 ```
 
 按提示输入：
-- 你的域名（如 `api.clarity.app`）
+- 你的域名（如 `api.solacore.app`）
 - 你的邮箱（用于证书到期提醒）
 
 完成后，你的 API 就有了安全的 HTTPS 加密！
@@ -223,7 +223,7 @@ https://api.你的域名.com/health
 ### 查看服务状态
 
 ```bash
-cd ~/clarity/clarity-api
+cd ~/solacore/solacore-api
 docker compose -f docker-compose.prod.yml ps
 ```
 
@@ -246,7 +246,7 @@ docker compose -f docker-compose.prod.yml restart
 ### 更新代码
 
 ```bash
-cd ~/clarity
+cd ~/solacore
 git pull
 ./deploy.sh
 ```
@@ -307,10 +307,10 @@ curl http://api.你的域名.com/health
 
 ```bash
 # 备份数据库
-docker compose -f docker-compose.prod.yml exec db pg_dump -U postgres clarity > backup.sql
+docker compose -f docker-compose.prod.yml exec db pg_dump -U postgres solacore > backup.sql
 
 # 恢复数据库
-cat backup.sql | docker compose -f docker-compose.prod.yml exec -T db psql -U postgres clarity
+cat backup.sql | docker compose -f docker-compose.prod.yml exec -T db psql -U postgres solacore
 ```
 
 ---
@@ -320,8 +320,8 @@ cat backup.sql | docker compose -f docker-compose.prod.yml exec -T db psql -U po
 | 变量 | 必填 | 说明 | 示例 |
 |------|------|------|------|
 | `DEBUG` | ✅ | 生产必须为 false | `false` |
-| `API_BASE_URL` | ✅ | 你的 API 地址 | `https://api.clarity.app` |
-| `DATABASE_URL` | ✅ | 数据库连接 | `postgresql+asyncpg://user:pass@db:5432/clarity` |
+| `API_BASE_URL` | ✅ | 你的 API 地址 | `https://api.solacore.app` |
+| `DATABASE_URL` | ✅ | 数据库连接 | `postgresql+asyncpg://user:pass@db:5432/solacore` |
 | `JWT_SECRET` | ✅ | JWT 签名密钥 | 用 `openssl rand -hex 32` 生成 |
 | `GOOGLE_CLIENT_ID` | ✅ | Google 登录 | 从 Google Cloud Console 获取 |
 | `APPLE_CLIENT_ID` | ⭕ | Apple 登录 | 你的 Bundle ID |
@@ -338,10 +338,10 @@ cat backup.sql | docker compose -f docker-compose.prod.yml exec -T db psql -U po
 ## 文件结构说明
 
 ```
-clarity/
+solacore/
 ├── deploy.sh                    # 一键部署脚本
 ├── DEPLOY_MANUAL.md             # 本手册
-├── clarity-api/
+├── solacore-api/
 │   ├── .env                     # 环境变量（你需要配置）
 │   ├── .env.prod.example        # 环境变量模板
 │   ├── docker-compose.prod.yml  # 生产 Docker 配置
@@ -365,4 +365,4 @@ clarity/
 
 ---
 
-**恭喜你！现在你的 Clarity API 已经上线运行了！** 🎉
+**恭喜你！现在你的 Solacore API 已经上线运行了！** 🎉

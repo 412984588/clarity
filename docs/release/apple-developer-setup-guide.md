@@ -8,7 +8,7 @@
 
 ## Purpose & Scope
 
-本指南帮助完成 Clarity iOS 应用的 **Apple Developer Program 注册** 和 **App Store Connect 配置**，是 iOS 构建和 App Store 提交的必要前置步骤。
+本指南帮助完成 Solacore iOS 应用的 **Apple Developer Program 注册** 和 **App Store Connect 配置**，是 iOS 构建和 App Store 提交的必要前置步骤。
 
 **解除的阻塞项**:
 - ✅ Apple Developer Account 注册（$99/年）
@@ -41,8 +41,8 @@
 **Decision**: [ ] 选择账号类型：`Individual` / `Organization`
 
 **建议**:
-- **如果 Clarity 是个人项目或希望快速上线**: 选择 **Individual**
-- **如果 Clarity 有注册公司且需要团队协作**: 选择 **Organization**
+- **如果 Solacore 是个人项目或希望快速上线**: 选择 **Individual**
+- **如果 Solacore 有注册公司且需要团队协作**: 选择 **Organization**
 - **可以从 Individual 转为 Organization**（后续升级，需重新审核）
 
 ---
@@ -55,7 +55,7 @@
 
 | 项目 | 说明 | 示例 |
 |------|------|------|
-| **Apple ID** | 已激活的 Apple ID（建议独立创建，不用个人主账号） | developer@clarity.app |
+| **Apple ID** | 已激活的 Apple ID（建议独立创建，不用个人主账号） | developer@solacore.app |
 | **信用卡** | Visa / Mastercard / American Express | 需支持国际支付 |
 | **电话号码** | 用于接收验证码（可用中国号码） | +1-555-123-4567 / +86-138-xxxx-xxxx |
 | **身份证明** | Apple 可能要求提供身份证或驾照照片 | 准备扫描件或照片 |
@@ -69,7 +69,7 @@
 | **Apple ID** | 公司主账号（法人或授权代表的 Apple ID） | 创建新 Apple ID |
 | **Legal Entity Name** | 公司法定名称（与营业执照完全一致） | 营业执照 |
 | **D-U-N-S Number** | 邓白氏编码（全球企业唯一标识符） | https://www.dnb.com/duns-number.html |
-| **公司网站** | 公司官方网站（域名需与公司名称相关） | www.clarity-company.com |
+| **公司网站** | 公司官方网站（域名需与公司名称相关） | www.solacore-company.com |
 | **法人联系信息** | 法人姓名、职位、邮箱、电话 | CEO / CTO |
 | **公司地址** | 注册地址（与营业执照一致） | 完整邮寄地址 |
 | **信用卡** | 公司信用卡或法人信用卡 | Visa / Mastercard |
@@ -94,7 +94,7 @@
 1. 访问 https://appleid.apple.com/
 2. 点击 "Create Your Apple ID"
 3. 填写信息:
-   - Email: `developer@clarity.app`（推荐使用公司域名邮箱）
+   - Email: `developer@solacore.app`（推荐使用公司域名邮箱）
    - Password: 强密码（至少 8 位，包含大小写字母和数字）
    - Phone: 用于接收验证码
    - Security Questions: 选择并记住答案
@@ -156,9 +156,9 @@
 #### Step 2.3b: Organization Enrollment (组织账号)
 
 1. **Provide Organization Information**
-   - Legal Entity Name: `Clarity Inc.` (与营业执照完全一致)
+   - Legal Entity Name: `Solacore Inc.` (与营业执照完全一致)
    - D-U-N-S Number: `08-xxx-xxxx` (提前申请)
-   - Company Website: `https://www.clarity.app`
+   - Company Website: `https://www.solacore.app`
    - Phone Number: 公司座机或法人手机
    - Address: 注册地址
 
@@ -234,13 +234,13 @@
 
 **预计时间**: 不需要手动操作（EAS Build 自动处理）
 
-Clarity 使用 **Expo EAS Build**，证书和 Provisioning Profile 会自动管理。但了解以下概念有助于排查问题：
+Solacore 使用 **Expo EAS Build**，证书和 Provisioning Profile 会自动管理。但了解以下概念有助于排查问题：
 
 #### 4.1: App ID (Identifier)
 
 **What**: App 的唯一标识符
 
-**Example**: `com.clarity.app`
+**Example**: `com.solacore.app`
 
 **Created by**: EAS Build 自动创建（或手动在 developer.apple.com → Certificates, Identifiers & Profiles → Identifiers）
 
@@ -277,8 +277,8 @@ Clarity 使用 **Expo EAS Build**，证书和 Provisioning Profile 会自动管�
 
 1. 访问 https://developer.apple.com/account/resources/identifiers/list
 2. 点击 "+" 创建 App ID:
-   - Description: `Clarity`
-   - Bundle ID: `com.clarity.app` (Explicit)
+   - Description: `Solacore`
+   - Bundle ID: `com.solacore.app` (Explicit)
    - Capabilities: 勾选需要的能力（Push Notifications, Sign in with Apple, In-App Purchase）
 3. 访问 https://developer.apple.com/account/resources/certificates/list
 4. 点击 "+" 创建 Distribution Certificate:
@@ -294,21 +294,21 @@ Clarity 使用 **Expo EAS Build**，证书和 Provisioning Profile 会自动管�
 
 **预计时间**: 10-15 分钟
 
-Clarity 使用 **Sign in with Apple** 作为登录方式之一，需要配置生产环境凭据。
+Solacore 使用 **Sign in with Apple** 作为登录方式之一，需要配置生产环境凭据。
 
 #### Step 5.1: 创建 Services ID
 
 1. 访问 https://developer.apple.com/account/resources/identifiers/list/serviceId
 2. 点击 "+" 创建 Services ID
 3. 填写信息:
-   - Description: `Clarity Sign in with Apple`
-   - Identifier: `com.clarity.app.signin` (推荐格式)
+   - Description: `Solacore Sign in with Apple`
+   - Identifier: `com.solacore.app.signin` (推荐格式)
 4. 勾选 "Sign in with Apple"
 5. 点击 "Configure"
 6. 配置 Web Authentication:
-   - Primary App ID: 选择 `com.clarity.app`
-   - Domains and Subdomains: `clarity.app`, `api.clarity.app`
-   - Return URLs: `https://api.clarity.app/auth/apple/callback`
+   - Primary App ID: 选择 `com.solacore.app`
+   - Domains and Subdomains: `solacore.app`, `api.solacore.app`
+   - Return URLs: `https://api.solacore.app/auth/apple/callback`
 7. 保存并继续
 
 ---
@@ -318,9 +318,9 @@ Clarity 使用 **Sign in with Apple** 作为登录方式之一，需要配置生
 1. 访问 https://developer.apple.com/account/resources/authkeys/list
 2. 点击 "+" 创建 Key
 3. 填写信息:
-   - Key Name: `Clarity Apple Sign-In Key`
+   - Key Name: `Solacore Apple Sign-In Key`
    - 勾选 "Sign in with Apple"
-   - 点击 "Configure" 并选择 Primary App ID: `com.clarity.app`
+   - 点击 "Configure" 并选择 Primary App ID: `com.solacore.app`
 4. 点击 "Continue" 并 "Register"
 5. **下载 Private Key** (`.p8` 文件)
    - ⚠️ **只能下载一次**，请妥善保存
@@ -333,7 +333,7 @@ Clarity 使用 **Sign in with Apple** 作为登录方式之一，需要配置生
 将以下信息添加到生产环境变量（见 `docs/ENV_VARIABLES.md`）:
 
 ```bash
-APPLE_CLIENT_ID=com.clarity.app.signin       # Services ID
+APPLE_CLIENT_ID=com.solacore.app.signin       # Services ID
 APPLE_TEAM_ID=XXXXXXXXXX                     # Team ID (在 developer.apple.com 右上角)
 APPLE_KEY_ID=ABC123DEFG                      # Private Key ID
 APPLE_PRIVATE_KEY=<.p8 文件内容>             # Private Key 内容（完整复制）
@@ -444,7 +444,7 @@ APPLE_PRIVATE_KEY=<.p8 文件内容>             # Private Key 内容（完整�
 
 ### Certificates & Identifiers Checklist (EAS Build 自动处理)
 
-- [ ] **10. App ID 已创建**（com.clarity.app）或由 EAS 自动创建
+- [ ] **10. App ID 已创建**（com.solacore.app）或由 EAS 自动创建
 - [ ] **11. Distribution Certificate 已生成**（或由 EAS 自动生成）
 - [ ] **12. Provisioning Profile 已创建**（或由 EAS 自动生成）
 
@@ -452,10 +452,10 @@ APPLE_PRIVATE_KEY=<.p8 文件内容>             # Private Key 内容（完整�
 
 ### Apple Sign-In Checklist
 
-- [ ] **13. Services ID 已创建**（com.clarity.app.signin）
+- [ ] **13. Services ID 已创建**（com.solacore.app.signin）
 - [ ] **14. Private Key 已下载**（.p8 文件已保存）
 - [ ] **15. 环境变量已配置**（APPLE_CLIENT_ID, APPLE_TEAM_ID, APPLE_KEY_ID, APPLE_PRIVATE_KEY）
-- [ ] **16. Return URL 已配置**（https://api.clarity.app/auth/apple/callback）
+- [ ] **16. Return URL 已配置**（https://api.solacore.app/auth/apple/callback）
 
 ---
 

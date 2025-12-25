@@ -98,14 +98,14 @@ You **MUST** consider the user input before proceeding (if not empty).
    **CORE PRINCIPLE - Test the Requirements, Not the Implementation**:
    Every checklist item MUST evaluate the REQUIREMENTS THEMSELVES for:
    - **Completeness**: Are all necessary requirements present?
-   - **Clarity**: Are requirements unambiguous and specific?
+   - **Solacore**: Are requirements unambiguous and specific?
    - **Consistency**: Do requirements align with each other?
    - **Measurability**: Can requirements be objectively verified?
    - **Coverage**: Are all scenarios/edge cases addressed?
 
    **Category Structure** - Group items by requirement quality dimensions:
    - **Requirement Completeness** (Are all necessary requirements documented?)
-   - **Requirement Clarity** (Are requirements specific and unambiguous?)
+   - **Requirement Solacore** (Are requirements specific and unambiguous?)
    - **Requirement Consistency** (Do requirements align without conflicts?)
    - **Acceptance Criteria Quality** (Are success criteria measurable?)
    - **Scenario Coverage** (Are all flows/cases addressed?)
@@ -123,18 +123,18 @@ You **MUST** consider the user input before proceeding (if not empty).
 
    ✅ **CORRECT** (Testing requirements quality):
    - "Are the exact number and layout of featured episodes specified?" [Completeness]
-   - "Is 'prominent display' quantified with specific sizing/positioning?" [Clarity]
+   - "Is 'prominent display' quantified with specific sizing/positioning?" [Solacore]
    - "Are hover state requirements consistent across all interactive elements?" [Consistency]
    - "Are keyboard navigation requirements defined for all interactive UI?" [Coverage]
    - "Is the fallback behavior specified when logo image fails to load?" [Edge Cases]
    - "Are loading states defined for asynchronous episode data?" [Completeness]
-   - "Does the spec define visual hierarchy for competing UI elements?" [Clarity]
+   - "Does the spec define visual hierarchy for competing UI elements?" [Solacore]
 
    **ITEM STRUCTURE**:
    Each item should follow this pattern:
    - Question format asking about requirement quality
    - Focus on what's WRITTEN (or not written) in the spec/plan
-   - Include quality dimension in brackets [Completeness/Clarity/Consistency/etc.]
+   - Include quality dimension in brackets [Completeness/Solacore/Consistency/etc.]
    - Reference spec section `[Spec §X.Y]` when checking existing requirements
    - Use `[Gap]` marker when checking for missing requirements
 
@@ -145,9 +145,9 @@ You **MUST** consider the user input before proceeding (if not empty).
    - "Are accessibility requirements specified for all interactive elements? [Completeness]"
    - "Are mobile breakpoint requirements defined for responsive layouts? [Gap]"
 
-   Clarity:
-   - "Is 'fast loading' quantified with specific timing thresholds? [Clarity, Spec §NFR-2]"
-   - "Are 'related episodes' selection criteria explicitly defined? [Clarity, Spec §FR-5]"
+   Solacore:
+   - "Is 'fast loading' quantified with specific timing thresholds? [Solacore, Spec §NFR-2]"
+   - "Are 'related episodes' selection criteria explicitly defined? [Solacore, Spec §FR-5]"
    - "Is 'prominent' defined with measurable visual properties? [Ambiguity, Spec §FR-4]"
 
    Consistency:
@@ -225,7 +225,7 @@ To avoid clutter, use descriptive types and clean up obsolete checklists when do
 
 Sample items (testing the requirements, NOT the implementation):
 
-- "Are visual hierarchy requirements defined with measurable criteria? [Clarity, Spec §FR-1]"
+- "Are visual hierarchy requirements defined with measurable criteria? [Solacore, Spec §FR-1]"
 - "Is the number and positioning of UI elements explicitly specified? [Completeness, Spec §FR-1]"
 - "Are interaction state requirements (hover, focus, active) consistently defined? [Consistency]"
 - "Are accessibility requirements specified for all interactive elements? [Coverage, Gap]"
@@ -237,7 +237,7 @@ Sample items (testing the requirements, NOT the implementation):
 Sample items:
 
 - "Are error response formats specified for all failure scenarios? [Completeness]"
-- "Are rate limiting requirements quantified with specific thresholds? [Clarity]"
+- "Are rate limiting requirements quantified with specific thresholds? [Solacore]"
 - "Are authentication requirements consistent across all endpoints? [Consistency]"
 - "Are retry/timeout requirements defined for external dependencies? [Coverage, Gap]"
 - "Is versioning strategy documented in requirements? [Gap]"
@@ -246,7 +246,7 @@ Sample items:
 
 Sample items:
 
-- "Are performance requirements quantified with specific metrics? [Clarity]"
+- "Are performance requirements quantified with specific metrics? [Solacore]"
 - "Are performance targets defined for all critical user journeys? [Coverage]"
 - "Are performance requirements under different load conditions specified? [Completeness]"
 - "Can performance requirements be objectively measured? [Measurability]"
@@ -278,7 +278,7 @@ Sample items:
 ```markdown
 - [ ] CHK001 - Are the number and layout of featured episodes explicitly specified? [Completeness, Spec §FR-001]
 - [ ] CHK002 - Are hover state requirements consistently defined for all interactive elements? [Consistency, Spec §FR-003]
-- [ ] CHK003 - Are navigation requirements clear for all clickable brand elements? [Clarity, Spec §FR-010]
+- [ ] CHK003 - Are navigation requirements clear for all clickable brand elements? [Solacore, Spec §FR-010]
 - [ ] CHK004 - Is the selection criteria for related episodes documented? [Gap, Spec §FR-005]
 - [ ] CHK005 - Are loading state requirements defined for asynchronous episode data? [Gap]
 - [ ] CHK006 - Can "visual hierarchy" requirements be objectively measured? [Measurability, Spec §FR-001]

@@ -116,6 +116,6 @@
 | 项目 | 费用 | 说明 |
 |------|------|------|
 | 云服务器 | ¥50-100/月 | 阿里云/Railway/Vercel |
-| 域名 | ¥50-100/年 | 如 `clarity.app` |
+| 域名 | ¥50-100/年 | 如 `solacore.app` |
 | Apple Developer | $99/年 | iOS 上架（可选）|
 | Sentry DSN | 免费 | 需在 sentry.io 创建项目 |

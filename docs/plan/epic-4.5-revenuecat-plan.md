@@ -21,7 +21,7 @@
 
 ### 2.1 安装依赖
 ```bash
-cd clarity-mobile
+cd solacore-mobile
 npx expo install react-native-purchases
 ```
 
@@ -58,7 +58,7 @@ npx expo install react-native-purchases
 
 ### Backend
 ```bash
-cd clarity-api
+cd solacore-api
 poetry run ruff check app tests
 poetry run mypy app --ignore-missing-imports
 poetry run pytest -v
@@ -66,7 +66,7 @@ poetry run pytest -v
 
 ### Mobile
 ```bash
-cd clarity-mobile
+cd solacore-mobile
 npm run lint
 npx tsc --noEmit
 ```

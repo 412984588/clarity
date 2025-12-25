@@ -10,7 +10,7 @@
 
 ### Scope
 
-本测试计划覆盖 Clarity 应用的核心功能验证，包括：
+本测试计划覆盖 Solacore 应用的核心功能验证，包括：
 - 用户认证（邮箱、Google、Apple）
 - 账号数据导出与删除
 - Solve 问题解决流程（5 步）
@@ -36,7 +36,7 @@
 | **Local Demo** | Web/Mobile | `http://localhost:8000` | 开发验证 |
 | **Preview Build** | Android APK | https://expo.dev/artifacts/eas/cwHBq3tAhSrhLcQnewsmpy.apk (Build ID: 5d5e7b57-44f7-4729-b627-e40bc93dbb76) | 集成测试 |
 | **Preview Build** | iOS TestFlight | BLOCKED | 需 Apple Developer |
-| **Production** | All | `https://api.clarity.app` | 生产验收 |
+| **Production** | All | `https://api.solacore.app` | 生产验收 |
 
 ---
 

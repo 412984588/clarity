@@ -3,7 +3,7 @@
 **Version**: 1.0
 **Last Updated**: 2025-12-22
 
-This guide covers database migration procedures for the Clarity API using Alembic.
+This guide covers database migration procedures for the Solacore API using Alembic.
 
 ---
 
@@ -33,7 +33,7 @@ alembic revision --autogenerate -m "description"
 ### 1. Before Making Changes
 
 ```bash
-cd clarity-api
+cd solacore-api
 
 # Ensure you're on latest
 git pull origin main
@@ -106,7 +106,7 @@ git push
 ./scripts/migrate.sh upgrade
 
 # 3. Verify application health
-curl https://api.clarity.app/health
+curl https://api.solacore.app/health
 
 # 4. If issues, rollback
 ./scripts/migrate.sh rollback
@@ -227,14 +227,14 @@ If a migration causes production issues:
 
 ```bash
 # 1. Immediately rollback
-cd clarity-api
+cd solacore-api
 poetry run alembic downgrade -1
 
 # 2. Restart application
 # (depends on your deployment method)
 
 # 3. Verify health
-curl https://api.clarity.app/health
+curl https://api.solacore.app/health
 
 # 4. Investigate and fix before re-applying
 ```

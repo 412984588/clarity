@@ -7,7 +7,7 @@
 
 ## Overview
 
-本文档定义 Clarity 生产上线各项任务的责任分工，使用 RACI 模型明确每项任务的负责人（Responsible）、决策者（Accountable）、咨询对象（Consulted）和知会对象（Informed）。用于确保上线过程中职责清晰、沟通顺畅。
+本文档定义 Solacore 生产上线各项任务的责任分工，使用 RACI 模型明确每项任务的负责人（Responsible）、决策者（Accountable）、咨询对象（Consulted）和知会对象（Informed）。用于确保上线过程中职责清晰、沟通顺畅。
 
 ---
 

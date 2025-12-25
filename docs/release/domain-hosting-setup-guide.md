@@ -8,10 +8,10 @@
 
 ## Purpose & Scope
 
-本指南帮助完成 Clarity 生产环境的 **域名注册** 和 **托管服务配置**，是生产部署的关键前置步骤。
+本指南帮助完成 Solacore 生产环境的 **域名注册** 和 **托管服务配置**，是生产部署的关键前置步骤。
 
 **解除的阻塞项**:
-- ✅ Domain 配置（api.clarity.app）
+- ✅ Domain 配置（api.solacore.app）
 - ✅ Hosting Provider 选择与配置
 - ✅ PostgreSQL 托管数据库配置
 - ✅ SSL/TLS 证书自动化
@@ -32,10 +32,10 @@
 
 | 选项 | 优点 | 缺点 | 推荐 |
 |------|------|------|------|
-| **clarity.app** | 简短、品牌一致 | 可能已被注册或价格高 | ⭐ 优先 |
-| **clarity.io** | 技术感强 | 稍长 | ✅ 备选 |
-| **clarity.co** | 简洁、专业 | 可能价格高 | ✅ 备选 |
-| **useclarity.com** | .com 域名、易记 | 稍长 | ✅ 备选 |
+| **solacore.app** | 简短、品牌一致 | 可能已被注册或价格高 | ⭐ 优先 |
+| **solacore.io** | 技术感强 | 稍长 | ✅ 备选 |
+| **solacore.co** | 简洁、专业 | 可能价格高 | ✅ 备选 |
+| **usesolacore.com** | .com 域名、易记 | 稍长 | ✅ 备选 |
 
 **Decision**: [ ] 选择域名：`__________`
 
@@ -88,7 +88,7 @@
 
 | 信息项 | 说明 | 示例 |
 |--------|------|------|
-| **注册人姓名** | 个人或公司法人姓名 | John Doe / Clarity Inc. |
+| **注册人姓名** | 个人或公司法人姓名 | John Doe / Solacore Inc. |
 | **注册邮箱** | 用于接收域名通知 | admin@example.com |
 | **联系地址** | 完整邮寄地址 | 123 Main St, San Francisco, CA 94103, USA |
 | **联系电话** | 带国际区号 | +1-555-123-4567 |
@@ -104,7 +104,7 @@
 |--------|------|------|
 | **支付方式** | 信用卡（大多数平台必需） | Visa / Mastercard |
 | **GitHub 账号** | 用于 OAuth 登录和仓库授权 | github.com/your-username |
-| **项目仓库** | Clarity 代码仓库 URL | github.com/your-org/clarity |
+| **项目仓库** | Solacore 代码仓库 URL | github.com/your-org/solacore |
 | **环境变量** | 见 ENV_VARIABLES.md | DATABASE_URL, JWT_SECRET, etc. |
 
 ---
@@ -113,7 +113,7 @@
 
 | 信息项 | 说明 | 示例 |
 |--------|------|------|
-| **数据库名称** | 生产数据库名 | clarity_production |
+| **数据库名称** | 生产数据库名 | solacore_production |
 | **区域选择** | 就近用户位置 | US West (Oregon) / Asia Pacific (Singapore) |
 | **备份策略** | 自动备份频率 | 每日备份，保留 7 天 |
 
@@ -128,8 +128,8 @@
 #### Step 1.1: 选择并购买域名
 
 1. 访问所选注册商网站（Namecheap / Cloudflare / GoDaddy）
-2. 搜索域名可用性（如 `clarity.app`）
-3. 如域名不可用，尝试备选方案（clarity.io / useclarity.com）
+2. 搜索域名可用性（如 `solacore.app`）
+3. 如域名不可用，尝试备选方案（solacore.io / usesolacore.com）
 4. 添加到购物车，选择注册年限（推荐 1 年起）
 5. 启用 **WHOIS Privacy Protection**（隐私保护）
 6. 完成支付
@@ -161,7 +161,7 @@
 
 1. 访问所选托管商网站（Vercel / Railway / Fly.io）
 2. 使用 GitHub 账号 OAuth 登录
-3. 连接 GitHub 仓库（`clarity` 后端仓库）
+3. 连接 GitHub 仓库（`solacore` 后端仓库）
 4. 授权读取代码和 Webhooks 权限
 
 ---
@@ -170,7 +170,7 @@
 
 **For Vercel**:
 1. 点击 "New Project"
-2. 选择 `clarity-backend` 仓库
+2. 选择 `solacore-backend` 仓库
 3. Framework Preset: **Other** (FastAPI 不在预设中)
 4. Build Command: 留空（Docker 部署）或 `pip install -r requirements.txt`
 5. Output Directory: 留空
@@ -179,7 +179,7 @@
 **For Railway**:
 1. 点击 "New Project"
 2. 选择 "Deploy from GitHub repo"
-3. 选择 `clarity-backend` 仓库
+3. 选择 `solacore-backend` 仓库
 4. Railway 会自动检测 Python 项目
 5. 添加 PostgreSQL Database（点击 "+ New" → "Database" → "PostgreSQL"）
 6. 点击 "Deploy"
@@ -201,7 +201,7 @@
 ```
 DATABASE_URL=postgresql://...         # PostgreSQL 连接串
 JWT_SECRET=<生成随机字符串>           # 至少 32 字符
-CORS_ORIGINS=https://clarity.app      # 允许的前端域名
+CORS_ORIGINS=https://solacore.app      # 允许的前端域名
 APP_ENV=production                    # 环境标识
 OPENAI_API_KEY=sk-...                 # OpenAI API 密钥（生产用）
 ```
@@ -233,7 +233,7 @@ openssl rand -base64 32
 **For Neon**:
 1. 访问 neon.tech，注册账号
 2. 点击 "Create Project"
-3. 项目名称: `clarity-production`
+3. 项目名称: `solacore-production`
 4. 区域: 选择就近用户（US West / EU / Asia Pacific）
 5. PostgreSQL 版本: 默认（最新稳定版）
 6. 点击 "Create"
@@ -242,7 +242,7 @@ openssl rand -base64 32
 **For Supabase**:
 1. 访问 supabase.com，注册账号
 2. 点击 "New Project"
-3. 项目名称: `clarity-production`
+3. 项目名称: `solacore-production`
 4. Database Password: 生成强密码并保存
 5. 区域: 选择就近用户
 6. 点击 "Create new project"
@@ -279,24 +279,24 @@ openssl rand -base64 32
 
 **如果使用 Cloudflare**:
 1. 登录 Cloudflare Dashboard
-2. 选择域名（clarity.app）
+2. 选择域名（solacore.app）
 3. 进入 "DNS" 标签
 4. 添加以下记录：
 
-**Backend API (api.clarity.app)**:
+**Backend API (api.solacore.app)**:
 | Type | Name | Content | Proxy | TTL |
 |------|------|---------|-------|-----|
 | **CNAME** | `api` | `<Vercel/Railway/Fly.io 提供的域名>` | ☑️ Proxied | Auto |
 
-**Frontend (clarity.app)**:
+**Frontend (solacore.app)**:
 | Type | Name | Content | Proxy | TTL |
 |------|------|---------|-------|-----|
 | **CNAME** | `@` 或 留空 | `<Vercel 提供的域名>` | ☑️ Proxied | Auto |
 
 **示例**:
 ```
-CNAME  api    clarity-backend.vercel.app    Proxied  Auto
-CNAME  @      clarity-frontend.vercel.app   Proxied  Auto
+CNAME  api    solacore-backend.vercel.app    Proxied  Auto
+CNAME  @      solacore-frontend.vercel.app   Proxied  Auto
 ```
 
 ---
@@ -331,10 +331,10 @@ CNAME  @      clarity-frontend.vercel.app   Proxied  Auto
 **检查 DNS 是否生效**:
 ```bash
 # macOS / Linux
-dig api.clarity.app
+dig api.solacore.app
 
 # Windows
-nslookup api.clarity.app
+nslookup api.solacore.app
 
 # 或使用在线工具
 https://dnschecker.org
@@ -348,13 +348,13 @@ https://dnschecker.org
 
 ### Phase 5: Environment Targets
 
-Clarity 项目支持以下环境：
+Solacore 项目支持以下环境：
 
 | 环境 | 域名 | 用途 | 数据库 |
 |------|------|------|--------|
 | **Development** | `localhost:8000` | 本地开发 | SQLite / Local PostgreSQL |
-| **Staging** (可选) | `api-staging.clarity.app` | 预生产测试 | Staging PostgreSQL |
-| **Production** | `api.clarity.app` | 生产环境 | Production PostgreSQL |
+| **Staging** (可选) | `api-staging.solacore.app` | 预生产测试 | Staging PostgreSQL |
+| **Production** | `api.solacore.app` | 生产环境 | Production PostgreSQL |
 
 **Staging 环境配置** (可选):
 - 重复上述步骤，但使用 `api-staging` 子域名
@@ -369,10 +369,10 @@ Clarity 项目支持以下环境：
 
 ### Domain Checklist
 
-- [ ] **1. 域名已购买**（clarity.app 或备选）
+- [ ] **1. 域名已购买**（solacore.app 或备选）
 - [ ] **2. WHOIS Privacy 已启用**
 - [ ] **3. Nameservers 已配置**（Cloudflare 或注册商 DNS）
-- [ ] **4. DNS 记录已添加**（api.clarity.app → 托管商域名）
+- [ ] **4. DNS 记录已添加**（api.solacore.app → 托管商域名）
 - [ ] **5. DNS 传播已验证**（dig/nslookup 检查通过）
 
 ---
@@ -382,7 +382,7 @@ Clarity 项目支持以下环境：
 - [ ] **6. 托管账号已创建**（Vercel / Railway / Fly.io）
 - [ ] **7. 项目已部署**（后端应用）
 - [ ] **8. 环境变量已配置**（DATABASE_URL, JWT_SECRET, etc.）
-- [ ] **9. Health endpoint 可访问**（`https://api.clarity.app/health` 返回 200）
+- [ ] **9. Health endpoint 可访问**（`https://api.solacore.app/health` 返回 200）
 
 ---
 
@@ -399,7 +399,7 @@ Clarity 项目支持以下环境：
 ### SSL/TLS Checklist
 
 - [ ] **15. SSL 证书已生成**（Cloudflare / Vercel / Railway 自动）
-- [ ] **16. HTTPS 可访问**（`https://api.clarity.app/health`）
+- [ ] **16. HTTPS 可访问**（`https://api.solacore.app/health`）
 - [ ] **17. HTTP → HTTPS 重定向已启用**
 - [ ] **18. SSL Labs 测试通过**（https://www.ssllabs.com/ssltest/ 评级 A）
 
@@ -408,7 +408,7 @@ Clarity 项目支持以下环境：
 ### Final Validation
 
 - [ ] **19. Backend API 可通过自定义域名访问**
-  - 测试: `curl https://api.clarity.app/health`
+  - 测试: `curl https://api.solacore.app/health`
   - 预期: `{"status":"healthy","version":"1.0.0","database":"connected"}`
 
 - [ ] **20. CORS 配置正确**
@@ -416,7 +416,7 @@ Clarity 项目支持以下环境：
   - 无 CORS 错误
 
 - [ ] **21. 所有环境变量已验证**
-  - 检查: `https://api.clarity.app/health` 返回正确版本号
+  - 检查: `https://api.solacore.app/health` 返回正确版本号
   - 检查: 数据库连接正常（"database": "connected"）
 
 ---

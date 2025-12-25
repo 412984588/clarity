@@ -3,7 +3,7 @@
 # Production Smoke Test Script
 # =============================================================================
 # Usage: ./scripts/deploy_prod_smoke.sh <base_url>
-# Example: ./scripts/deploy_prod_smoke.sh https://api.clarity.app
+# Example: ./scripts/deploy_prod_smoke.sh https://api.solacore.app
 # =============================================================================
 
 set -e
@@ -13,7 +13,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-BASE_URL="${1:-https://api.clarity.app}"
+BASE_URL="${1:-https://api.solacore.app}"
 BASE_URL="${BASE_URL%/}"
 
 log_pass() { echo -e "${GREEN}✅ $1${NC}"; }

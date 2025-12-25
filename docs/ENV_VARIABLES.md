@@ -3,7 +3,7 @@
 **Version**: 1.0
 **Last Updated**: 2025-12-24
 
-This document lists all environment variables used by the Clarity API.
+This document lists all environment variables used by the Solacore API.
 
 ---
 
@@ -49,7 +49,7 @@ DEBUG=false
 - **Description**: PostgreSQL connection string using asyncpg driver
 
 ```bash
-DATABASE_URL=postgresql+asyncpg://postgres:password@localhost:5432/clarity
+DATABASE_URL=postgresql+asyncpg://postgres:password@localhost:5432/solacore
 ```
 
 #### `JWT_SECRET`
@@ -120,7 +120,7 @@ GOOGLE_CLIENT_ID=123456789.apps.googleusercontent.com
 - **Description**: Bundle ID for Apple Sign In
 
 ```bash
-APPLE_CLIENT_ID=com.yourcompany.clarity
+APPLE_CLIENT_ID=com.yourcompany.solacore
 ```
 
 ---
@@ -266,7 +266,7 @@ cp .env.example .env
 
 ### Docker
 ```bash
-docker run -e DEBUG=false -e DATABASE_URL=... clarity-api
+docker run -e DEBUG=false -e DATABASE_URL=... solacore-api
 ```
 
 ### Railway / Render / Fly.io
@@ -277,7 +277,7 @@ Use the platform's environment variable settings in the dashboard.
 apiVersion: v1
 kind: Secret
 metadata:
-  name: clarity-api-secrets
+  name: solacore-api-secrets
 type: Opaque
 stringData:
   DATABASE_URL: postgresql+asyncpg://...
@@ -290,7 +290,7 @@ stringData:
 
 ### Neon (PostgreSQL)
 ```bash
-DATABASE_URL=postgresql+asyncpg://user:pass@ep-xxx.us-east-1.aws.neon.tech/clarity?sslmode=require
+DATABASE_URL=postgresql+asyncpg://user:pass@ep-xxx.us-east-1.aws.neon.tech/solacore?sslmode=require
 ```
 
 ### Vercel
@@ -317,14 +317,14 @@ fly secrets set JWT_SECRET="..."
 
 ```bash
 # Health check
-curl https://api.clarity.app/health
+curl https://api.solacore.app/health
 # Expected: {"status":"healthy","version":"1.0.0","database":"connected"}
 
 # Readiness
-curl https://api.clarity.app/health/ready
+curl https://api.solacore.app/health/ready
 # Expected: {"ready":true}
 
 # Liveness
-curl https://api.clarity.app/health/live
+curl https://api.solacore.app/health/live
 # Expected: {"live":true}
 ```

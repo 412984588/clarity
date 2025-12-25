@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-Clarity 项目的核心代码开发已全部完成（Epic 1-7），包括用户认证、AI 对话、Solve 流程、订阅支付、情绪检测等所有功能模块。106 个后端测试全部通过，移动端 lint 和类型检查全部通过，本地部署验收成功，Android 预览版 APK 可下载测试。
+Solacore 项目的核心代码开发已全部完成（Epic 1-7），包括用户认证、AI 对话、Solve 流程、订阅支付、情绪检测等所有功能模块。106 个后端测试全部通过，移动端 lint 和类型检查全部通过，本地部署验收成功，Android 预览版 APK 可下载测试。
 
 **当前阶段**：项目进入 **免费内测（Free Beta）**阶段，支付功能（Stripe/RevenueCat）和商店提交（App Store/Play Store）已延后。
 
@@ -21,7 +21,7 @@ Clarity 项目的核心代码开发已全部完成（Epic 1-7），包括用户�
 - 🚫 无需支付功能、商店提交、iOS 构建
 
 **Production 状态**：**NO-GO** - 被 2 个关键依赖阻塞
-1. **域名配置**（api.clarity.app）- 需要购买并配置 DNS
+1. **域名配置**（api.solacore.app）- 需要购买并配置 DNS
 2. **Apple Developer Account** - 需要注册（$99/年）以支持 iOS 构建和 App Store 提交
 
 一旦这两项解除，预计 **3-6 天内即可完成生产部署并上线**（包括商店审核时间）。
@@ -98,7 +98,7 @@ Clarity 项目的核心代码开发已全部完成（Epic 1-7），包括用户�
 **目标**：正式上线，面向公众，启用支付和商店发布。
 
 **🔴 关键阻塞项（2 个）**：
-1. **域名配置** (api.clarity.app)
+1. **域名配置** (api.solacore.app)
    - 影响：无法部署生产后端
    - 解决：购买域名 + 配置 DNS
    - 预计时间：1-2 天
@@ -282,7 +282,7 @@ Domain Purchase → Hosting Setup → Backend Deploy → Mobile Build → Store 
 
 | 编号 | 阻塞项 | 影响 | Free Beta | Production | 解决方案 | 预计时间 |
 |------|--------|------|-----------|------------|----------|----------|
-| **B1** | 域名未配置 (api.clarity.app) | 无法部署生产后端 | ✅ 不阻塞 | 🔴 阻塞 | 购买域名 + 配置 DNS → [Domain & Hosting Setup Guide](domain-hosting-setup-guide.md) | 1-2 天 |
+| **B1** | 域名未配置 (api.solacore.app) | 无法部署生产后端 | ✅ 不阻塞 | 🔴 阻塞 | 购买域名 + 配置 DNS → [Domain & Hosting Setup Guide](domain-hosting-setup-guide.md) | 1-2 天 |
 | **B2** | Apple Developer Account | iOS 无法构建和提交 | ✅ 不阻塞 | 🔴 阻塞 | 注册 Apple Developer Program ($99/年) → [Apple Developer Setup Guide](apple-developer-setup-guide.md) | 1-2 天 |
 
 ---
@@ -327,9 +327,9 @@ Domain Purchase → Hosting Setup → Backend Deploy → Mobile Build → Store 
 
 **扫描范围**（仅代码）：
 ```bash
-clarity-backend/app/**/*.py
-clarity-mobile/src/**/*.{ts,tsx}
-clarity-backend/tests/**/*.py
+solacore-backend/app/**/*.py
+solacore-mobile/src/**/*.{ts,tsx}
+solacore-backend/tests/**/*.py
 ```
 
 **说明**：代码质量极高，所有已知问题已修复，无遗留技术债。
@@ -362,7 +362,7 @@ clarity-backend/tests/**/*.py
 
 | 项目 | 问题 | Free Beta | Production | 建议 |
 |------|------|-----------|------------|------|
-| 域名所有权 | 谁拥有 clarity.app？是否可用？ | ✅ 不重要 | 🔴 必须确认 | 立即购买或选择替代域名 |
+| 域名所有权 | 谁拥有 solacore.app？是否可用？ | ✅ 不重要 | 🔴 必须确认 | 立即购买或选择替代域名 |
 | Hosting 预算 | 每月成本约束？ | ✅ 可免费层 | 🟡 需确认 | 根据预算选择 Vercel/Railway/Fly.io |
 | 数据库预算 | 每月成本约束？ | ✅ 可免费层 | 🟡 需确认 | 根据预算选择 Neon/Supabase/RDS |
 | SSL 证书 | 自动签发还是购买？ | ✅ 不需要 | 🟡 建议自动 | Let's Encrypt（免费） |
@@ -615,7 +615,7 @@ Phase 5 (Payment Enablement)
 
 | 优先级 | 任务 | 依赖 | 描述 | 预计时间 |
 |--------|------|------|------|----------|
-| **P0** | 购买域名 | - | api.clarity.app 或替代域名 | 1 天 |
+| **P0** | 购买域名 | - | api.solacore.app 或替代域名 | 1 天 |
 | **P0** | 注册 Apple Developer | - | $99/年，等待审批 | 1-2 天 |
 | **P1** | 配置 DNS | 域名 | 指向托管服务商 | 2 小时 |
 | **P1** | 创建生产 PostgreSQL | Provider 选择 | Neon/Supabase/RDS | 2 小时 |
@@ -624,9 +624,9 @@ Phase 5 (Payment Enablement)
 | **P2** | iOS Preview Build | Apple Developer | EAS Build + credentials | 2 小时 |
 | **P2** | TestFlight 内部测试 | iOS Build | 邀请测试用户 | 1 天 |
 | **DEFERRED** | 激活 Stripe Live Mode | - | 完成 KYC，获取 Live Keys | 1-3 天 |
-| **DEFERRED** | 配置 Stripe Webhook | Production URL | `https://api.clarity.app/webhooks/stripe` | 1 小时 |
+| **DEFERRED** | 配置 Stripe Webhook | Production URL | `https://api.solacore.app/webhooks/stripe` | 1 小时 |
 | **DEFERRED** | 配置 RevenueCat Production | - | 创建 App，配置 entitlements | 2 小时 |
-| **DEFERRED** | 配置 RevenueCat Webhook | Production URL | `https://api.clarity.app/webhooks/revenuecat` | 1 小时 |
+| **DEFERRED** | 配置 RevenueCat Webhook | Production URL | `https://api.solacore.app/webhooks/revenuecat` | 1 小时 |
 | **DEFERRED** | iOS Production Build | Stripe/RevenueCat | EAS Build production profile | 2 小时 |
 | **DEFERRED** | 注册 Google Play Console | - | $25 一次性费用 | 1 天 |
 | **DEFERRED** | 提交 App Store & Play Store | Production Builds | 等待审核 1-7 天 | 1-7 天 |
@@ -757,7 +757,7 @@ Day 14: Production Go-Live (DEFERRED)
 **Production 决策**：**🔴 NO-GO** - 需解除 2 个关键阻塞项
 
 **关键阻塞**：
-1. 域名配置（api.clarity.app）
+1. 域名配置（api.solacore.app）
 2. Apple Developer Account
 
 **DEFERRED 项**：10 个（支付和商店提交相关，免费 Beta 不需要）

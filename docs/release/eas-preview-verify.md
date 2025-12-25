@@ -32,14 +32,14 @@
 2. **Emulator (Android Studio)**:
    ```bash
    # Download APK
-   curl -o clarity.apk https://expo.dev/artifacts/eas/cwHBq3tAhSrhLcQnewsmpy.apk
+   curl -o solacore.apk https://expo.dev/artifacts/eas/cwHBq3tAhSrhLcQnewsmpy.apk
 
    # Install to running emulator
-   adb install clarity.apk
+   adb install solacore.apk
    ```
 
 3. **Via Expo Dashboard**:
-   - Visit: https://expo.dev/accounts/cllalala/projects/clarity-mobile/builds/5d5e7b57-44f7-4729-b627-e40bc93dbb76
+   - Visit: https://expo.dev/accounts/cllalala/projects/solacore-mobile/builds/5d5e7b57-44f7-4729-b627-e40bc93dbb76
    - Scan QR code with device
 
 ---

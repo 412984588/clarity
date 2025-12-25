@@ -7,7 +7,7 @@
 
 ## Purpose & Scope
 
-本文档定义 Clarity 的用户支持流程、分级标准、响应 SLA 和常见问题处理方案。确保：
+本文档定义 Solacore 的用户支持流程、分级标准、响应 SLA 和常见问题处理方案。确保：
 
 1. 用户问题得到及时响应和处理
 2. 支持团队有明确的分级和升级路径
@@ -37,7 +37,7 @@
 
 | 渠道 | 用途 | 响应 SLA | 负责人 |
 |------|------|----------|--------|
-| **Email (support@clarity.app)** | 用户邮件支持 | P1: 4h, P2: 24h | Support Lead |
+| **Email (support@solacore.app)** | 用户邮件支持 | P1: 4h, P2: 24h | Support Lead |
 | **In-App Chat** | 应用内聊天支持（未来） | P1: 2h, P2: 12h | TBD |
 | **App Store Reviews** | iOS/Android 商店评论 | 7 天内回复 | Community Manager |
 | **Twitter/Social** | 社交媒体公开问题 | 12 小时内回复 | Community Manager |
@@ -132,7 +132,7 @@
 ```
 Hi [Name],
 
-感谢联系 Clarity！
+感谢联系 Solacore！
 
 如果您忘记了密码，可以通过以下步骤重置：
 1. 打开应用，点击"Forgot Password"
@@ -142,7 +142,7 @@ Hi [Name],
 如果您是用 Google 或 Apple 登录的，请确保使用相同的第三方账号登录。
 
 Best,
-Clarity Support
+Solacore Support
 ```
 
 ---
@@ -157,7 +157,7 @@ Clarity Support
 ```
 Hi [Name],
 
-感谢您订阅 Clarity Premium！
+感谢您订阅 Solacore Premium！
 
 我看到您的支付已成功，但可能同步有延迟。请尝试：
 1. 退出并重新登录应用
@@ -166,7 +166,7 @@ Hi [Name],
 如果仍未解锁，请回复此邮件，我会立即为您手动激活。
 
 Best,
-Clarity Support
+Solacore Support
 ```
 
 **Handoff**：如果 Restore 失败，创建 P1 Ticket 给工程
@@ -193,7 +193,7 @@ Hi [Name],
 如果仍然无法解决，请告诉我具体的错误信息或截图，我会立即协助处理。
 
 Best,
-Clarity Support
+Solacore Support
 ```
 
 **Handoff**：如果是后端问题（LLM API 错误），创建 P1 Ticket
@@ -216,12 +216,12 @@ Hi [Name],
 1. 您是否使用了相同的登录账号？
 2. 是否在不同设备上登录？
 
-Clarity 的对话记录存储在云端，只要使用相同账号登录，就能看到历史记录。
+Solacore 的对话记录存储在云端，只要使用相同账号登录，就能看到历史记录。
 
 如果确认账号无误但仍看不到，请回复此邮件，我会立即调查。
 
 Best,
-Clarity Support
+Solacore Support
 ```
 
 **Handoff**：如果确认数据丢失，立即创建 P0 Ticket
@@ -243,7 +243,7 @@ Hi [Name],
 请尝试以下步骤：
 1. 完全关闭应用（从后台滑掉）
 2. 重启手机
-3. 重新打开 Clarity
+3. 重新打开 Solacore
 
 如果仍然闪退，请告诉我：
 - 您的手机型号和系统版本
@@ -252,7 +252,7 @@ Hi [Name],
 我会立即反馈给工程团队修复。
 
 Best,
-Clarity Support
+Solacore Support
 ```
 
 **Handoff**：创建 P1 Ticket，附上设备信息和崩溃日志
@@ -269,7 +269,7 @@ Clarity Support
 ```
 Hi [Name],
 
-感谢您的反馈，很抱歉 Clarity 未能满足您的期望。
+感谢您的反馈，很抱歉 Solacore 未能满足您的期望。
 
 关于退款：
 - iOS 用户：请通过 App Store 申请退款（Settings → Apple ID → Subscriptions）
@@ -278,7 +278,7 @@ Hi [Name],
 如果您愿意告诉我们退款原因，我们会非常感谢，这将帮助我们改进产品。
 
 Best,
-Clarity Support
+Solacore Support
 ```
 
 **Handoff**：创建 JIRA Ticket 记录退款原因，供 Product 分析
@@ -293,18 +293,18 @@ Hi [Name],
 
 感谢您对隐私的关注。
 
-Clarity 的数据使用政策：
+Solacore 的数据使用政策：
 - 您的对话内容仅用于提供 AI 服务
 - 我们使用 OpenAI/Anthropic API，详见其隐私政策
 - 我们不会出售您的数据
 - 您可以随时删除账号和所有数据
 
-详细隐私政策：https://clarity.app/privacy
+详细隐私政策：https://solacore.app/privacy
 
 如有更多问题，请随时联系我们。
 
 Best,
-Clarity Support
+Solacore Support
 ```
 
 **Handoff**：如果涉及 GDPR/CCPA 请求，转发给 Legal
@@ -322,11 +322,11 @@ Hi [Name],
 我已将您的功能请求记录下来，并转发给产品团队。虽然我无法承诺具体时间，但您的反馈对我们非常重要。
 
 如果您想了解产品更新，可以关注我们的：
-- Twitter: @clarityapp
-- Newsletter: https://clarity.app/newsletter
+- Twitter: @solacoreapp
+- Newsletter: https://solacore.app/newsletter
 
 Best,
-Clarity Support
+Solacore Support
 ```
 
 **Handoff**：创建 JIRA Feature Request Ticket

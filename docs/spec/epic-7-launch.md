@@ -23,8 +23,8 @@
 | 环境 | EXPO_PUBLIC_API_URL | 用途 |
 |------|---------------------|------|
 | dev | `http://localhost:8000` | 本地开发 |
-| staging | `https://staging-api.clarity.app` | 测试环境 |
-| prod | `https://api.clarity.app` | 生产环境 |
+| staging | `https://staging-api.solacore.app` | 测试环境 |
+| prod | `https://api.solacore.app` | 生产环境 |
 
 **实现方式**:
 - 创建 `.env.development`, `.env.staging`, `.env.production`
@@ -137,13 +137,13 @@
 
 # 或分步执行:
 # Backend
-cd clarity-api && poetry run ruff check . && poetry run mypy app --ignore-missing-imports && poetry run pytest -v
+cd solacore-api && poetry run ruff check . && poetry run mypy app --ignore-missing-imports && poetry run pytest -v
 
 # Mobile
-cd clarity-mobile && npm run lint && npx tsc --noEmit
+cd solacore-mobile && npm run lint && npx tsc --noEmit
 
 # Database
-cd clarity-api && poetry run alembic upgrade head
+cd solacore-api && poetry run alembic upgrade head
 
 # Health Check
 curl http://localhost:8000/health

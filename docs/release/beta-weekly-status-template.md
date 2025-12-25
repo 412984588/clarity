@@ -403,7 +403,7 @@ Week 1 of Free Beta was successful. We onboarded 6 testers and received positive
    - **Impact**: Emotion feature now works for all 3 languages
    - **Evidence**: PR #102
 
-3. **Support Setup**: Configured support@clarity.app email
+3. **Support Setup**: Configured support@solacore.app email
    - **Owner**: Alex
    - **Impact**: Testers have official support channel
    - **Evidence**: Email inbox active

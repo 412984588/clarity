@@ -1,4 +1,4 @@
-# Clarity - Epic & User Story Breakdown
+# Solacore - Epic & User Story Breakdown
 
 > **Version**: 1.0
 > **Last Updated**: 2025-12-21
@@ -285,7 +285,7 @@
 
 > As a **user**,
 > I want to **a familiar chat interface like ChatGPT**,
-> so that **I can easily interact with Clarity**.
+> so that **I can easily interact with Solacore**.
 
 **Acceptance Criteria:**
 1. Message list with user/AI bubbles
@@ -466,7 +466,7 @@
 2. Products and prices created in Stripe dashboard
 3. `POST /subscriptions/checkout` creates Stripe Checkout session
 4. Checkout session configured for subscription mode
-5. Success/cancel URLs use deep links (clarity://...)
+5. Success/cancel URLs use deep links (solacore://...)
 6. Customer portal link generation for managing subscription
 
 ---
@@ -857,7 +857,7 @@
 1. Server provisioned (Ubuntu 22.04)
 2. Docker Compose deployment working
 3. SSL certificate configured (Let's Encrypt)
-4. Domain configured (api.clarity.app)
+4. Domain configured (api.solacore.app)
 5. Database backups scheduled
 6. Monitoring alerts configured
 
@@ -920,4 +920,4 @@
 
 ---
 
-*This document is maintained by the Product Team. For questions or suggestions, contact product@clarity.app*
+*This document is maintained by the Product Team. For questions or suggestions, contact product@solacore.app*

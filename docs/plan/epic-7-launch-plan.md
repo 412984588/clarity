@@ -10,22 +10,22 @@
 
 ### 1.1 环境变量文件
 
-**文件**: `clarity-mobile/.env.development`, `.env.staging`, `.env.production`
+**文件**: `solacore-mobile/.env.development`, `.env.staging`, `.env.production`
 
 ```bash
 # .env.development
 EXPO_PUBLIC_API_URL=http://localhost:8000
 
 # .env.staging
-EXPO_PUBLIC_API_URL=https://staging-api.clarity.app
+EXPO_PUBLIC_API_URL=https://staging-api.solacore.app
 
 # .env.production
-EXPO_PUBLIC_API_URL=https://api.clarity.app
+EXPO_PUBLIC_API_URL=https://api.solacore.app
 ```
 
 ### 1.2 动态配置
 
-**文件**: `clarity-mobile/app.config.ts`
+**文件**: `solacore-mobile/app.config.ts`
 
 - 替换静态 `app.json` 为动态 `app.config.ts`
 - 根据 `process.env.EXPO_PUBLIC_API_URL` 设置 extra 配置
@@ -67,10 +67,10 @@ EXPO_PUBLIC_API_URL=https://api.clarity.app
     },
     "preview": {
       "distribution": "internal",
-      "env": { "EXPO_PUBLIC_API_URL": "https://staging-api.clarity.app" }
+      "env": { "EXPO_PUBLIC_API_URL": "https://staging-api.solacore.app" }
     },
     "production": {
-      "env": { "EXPO_PUBLIC_API_URL": "https://api.clarity.app" }
+      "env": { "EXPO_PUBLIC_API_URL": "https://api.solacore.app" }
     }
   },
   "submit": {
@@ -91,7 +91,7 @@ EXPO_PUBLIC_API_URL=https://api.clarity.app
 
 ### 3.1 后端 Health 端点增强
 
-**文件**: `clarity-api/app/main.py`
+**文件**: `solacore-api/app/main.py`
 
 新增端点:
 - `GET /health/ready`: Readiness probe (数据库连接正常)
@@ -112,7 +112,7 @@ async def liveness_check():
 
 ### 3.2 移动端 Error Boundary
 
-**文件**: `clarity-mobile/components/ErrorBoundary.tsx`
+**文件**: `solacore-mobile/components/ErrorBoundary.tsx`
 
 最小化实现:
 - 捕获未处理的 React 渲染错误
@@ -142,18 +142,18 @@ async def liveness_check():
 set -e
 
 echo "=== Backend Verification ==="
-cd clarity-api
+cd solacore-api
 poetry run ruff check .
 poetry run mypy app --ignore-missing-imports
 poetry run pytest -v
 
 echo "=== Mobile Verification ==="
-cd ../clarity-mobile
+cd ../solacore-mobile
 npm run lint
 npx tsc --noEmit
 
 echo "=== Database Migration ==="
-cd ../clarity-api
+cd ../solacore-api
 poetry run alembic upgrade head
 
 echo "=== Health Check ==="
@@ -170,11 +170,11 @@ echo "=== ALL CHECKS PASSED ==="
 
 | 文件 | 用途 |
 |------|------|
-| `clarity-mobile/.env.development` | 开发环境变量 |
-| `clarity-mobile/.env.staging` | 测试环境变量 |
-| `clarity-mobile/.env.production` | 生产环境变量 |
-| `clarity-mobile/app.config.ts` | 动态 Expo 配置 |
-| `clarity-mobile/components/ErrorBoundary.tsx` | 错误边界组件 |
+| `solacore-mobile/.env.development` | 开发环境变量 |
+| `solacore-mobile/.env.staging` | 测试环境变量 |
+| `solacore-mobile/.env.production` | 生产环境变量 |
+| `solacore-mobile/app.config.ts` | 动态 Expo 配置 |
+| `solacore-mobile/components/ErrorBoundary.tsx` | 错误边界组件 |
 | `docs/release/release-checklist.md` | 上架清单 |
 | `docs/release/privacy.md` | 隐私政策 |
 | `docs/release/support.md` | 支持页面 |
@@ -184,9 +184,9 @@ echo "=== ALL CHECKS PASSED ==="
 
 | 文件 | 变更 |
 |------|------|
-| `clarity-mobile/eas.json` | 添加环境变量配置 |
-| `clarity-mobile/.gitignore` | 添加 `.env.*` (保留 .env.example) |
-| `clarity-api/app/main.py` | 添加 /health/ready, /health/live |
+| `solacore-mobile/eas.json` | 添加环境变量配置 |
+| `solacore-mobile/.gitignore` | 添加 `.env.*` (保留 .env.example) |
+| `solacore-api/app/main.py` | 添加 /health/ready, /health/live |
 | `docs/setup.md` | 添加 iOS/Android 调试说明 |
 | `docs/PROGRESS.md` | 更新进度 |
 
@@ -198,10 +198,10 @@ echo "=== ALL CHECKS PASSED ==="
 
 ```bash
 # Backend
-cd clarity-api && poetry run ruff check . && poetry run mypy app --ignore-missing-imports && poetry run pytest -v
+cd solacore-api && poetry run ruff check . && poetry run mypy app --ignore-missing-imports && poetry run pytest -v
 
 # Mobile
-cd clarity-mobile && npm run lint && npx tsc --noEmit
+cd solacore-mobile && npm run lint && npx tsc --noEmit
 ```
 
 全部完成后执行:

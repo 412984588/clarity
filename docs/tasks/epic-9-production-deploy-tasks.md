@@ -46,7 +46,7 @@
 ### 1.2 Compute Deployment [HUMAN]
 - [ ] **Task 1.2.1 [HUMAN]**: Create project on Vercel/Railway/Fly
   - Link GitHub repository
-  - Set root directory: `clarity-api`
+  - Set root directory: `solacore-api`
   - **Verification**: Project visible in dashboard
 
 - [ ] **Task 1.2.2 [HUMAN]**: Configure build settings
@@ -55,11 +55,11 @@
   - **Verification**: Successful build log
 
 ### 1.3 Domain & SSL [HUMAN]
-- [ ] **Task 1.3.1 [HUMAN]**: Add custom domain `api.clarity.app`
-  - **Verification**: `dig api.clarity.app`
+- [ ] **Task 1.3.1 [HUMAN]**: Add custom domain `api.solacore.app`
+  - **Verification**: `dig api.solacore.app`
 
 - [ ] **Task 1.3.2 [HUMAN]**: Verify SSL certificate
-  - **Verification**: `curl -I https://api.clarity.app`
+  - **Verification**: `curl -I https://api.solacore.app`
   - **Expected**: HTTP/2 200, valid cert
 
 ---
@@ -94,7 +94,7 @@
 
 ### 4.1 Stripe Webhook [HUMAN]
 - [ ] **Task 4.1.1 [HUMAN]**: Create Stripe webhook endpoint
-  - URL: `https://api.clarity.app/webhooks/stripe`
+  - URL: `https://api.solacore.app/webhooks/stripe`
 
 - [ ] **Task 4.1.2 [HUMAN]**: Copy webhook secret to env
   - Variable: `STRIPE_WEBHOOK_SECRET`
@@ -105,7 +105,7 @@
 
 ### 4.2 RevenueCat Webhook [HUMAN]
 - [ ] **Task 4.2.1 [HUMAN]**: Create RevenueCat webhook endpoint
-  - URL: `https://api.clarity.app/webhooks/revenuecat`
+  - URL: `https://api.solacore.app/webhooks/revenuecat`
 
 - [ ] **Task 4.2.2 [HUMAN]**: Copy webhook secret to env
 
@@ -117,7 +117,7 @@
 ## Phase 5: Smoke Testing [HUMAN]
 
 - [ ] **Task 5.1.1 [HUMAN]**: Verify /health endpoint
-  - Command: `curl https://api.clarity.app/health`
+  - Command: `curl https://api.solacore.app/health`
   - **Expected**: `{"status":"healthy","version":"1.0.0","database":"connected"}`
 
 - [ ] **Task 5.1.2 [HUMAN]**: Verify /health/ready endpoint
@@ -127,7 +127,7 @@
   - **Expected**: `{"live":true}`
 
 - [ ] **Task 5.2.1 [HUMAN]**: Run smoke script
-  - Command: `./scripts/deploy_prod_smoke.sh https://api.clarity.app`
+  - Command: `./scripts/deploy_prod_smoke.sh https://api.solacore.app`
 
 ---
 

@@ -1,7 +1,7 @@
 # 全局深度审查报告 (Global Deep Audit Report)
 
 **执行时间**: 2025-12-25
-**审查范围**: Clarity 全栈项目（移动端 + Web端 + 后端）
+**审查范围**: Solacore 全栈项目（移动端 + Web端 + 后端）
 **审查级别**: 显微镜级别 - 零容忍缺陷
 **审查维度**: 10大类，100+检查项
 
@@ -106,14 +106,14 @@
 
 | 配置项 | 状态 | 文件路径 |
 |--------|------|----------|
-| **后端环境变量** | ✅ | clarity-api/.env.example |
-| **移动端配置** | ✅ | clarity-mobile/app.config.ts |
-| **Web端环境变量** | ✅ | clarity-web/.env.example |
-| **Docker（API）** | ✅ | clarity-api/Dockerfile |
-| **Docker（Web）** | ✅ | clarity-web/Dockerfile |
-| **Docker Compose** | ✅ | clarity-api/docker-compose.prod.yml |
-| **Nginx 配置** | ✅ | clarity-api/nginx/nginx.conf |
-| **Vercel 配置** | ✅ | clarity-web/vercel.json |
+| **后端环境变量** | ✅ | solacore-api/.env.example |
+| **移动端配置** | ✅ | solacore-mobile/app.config.ts |
+| **Web端环境变量** | ✅ | solacore-web/.env.example |
+| **Docker（API）** | ✅ | solacore-api/Dockerfile |
+| **Docker（Web）** | ✅ | solacore-web/Dockerfile |
+| **Docker Compose** | ✅ | solacore-api/docker-compose.prod.yml |
+| **Nginx 配置** | ✅ | solacore-api/nginx/nginx.conf |
+| **Vercel 配置** | ✅ | solacore-web/vercel.json |
 | **CI/CD（后端）** | ✅ | .github/workflows/backend.yml |
 | **CI/CD（移动端）** | ✅ | .github/workflows/mobile.yml |
 
@@ -285,7 +285,7 @@ Type 错误：       0个
 
 ## ✅ 审查结论
 
-**Clarity 项目已达到生产级质量标准**
+**Solacore 项目已达到生产级质量标准**
 
 - ✅ 代码质量优秀，无任何 Lint 或 Type 错误
 - ✅ 安全性完美，符合行业标准

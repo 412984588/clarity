@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **Clarity Web 版** (Phase Web) 🎉
+- **Solacore Web 版** (Phase Web) 🎉
   - Next.js 16 + TypeScript + Tailwind CSS + shadcn/ui
   - Google OAuth 认证
   - 完整 5 步 Solve 流程（SSE 流式响应）

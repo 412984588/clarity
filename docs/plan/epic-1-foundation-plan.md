@@ -25,20 +25,20 @@
 **步骤**:
 ```bash
 # 进入项目根目录
-cd /Users/zhimingdeng/Documents/claude/clarity
+cd /Users/zhimingdeng/Documents/claude/solacore
 
 # 创建 Expo 项目（TypeScript 模板）
-npx create-expo-app@latest clarity-mobile --template blank-typescript
+npx create-expo-app@latest solacore-mobile --template blank-typescript
 
 # 进入移动端目录
-cd clarity-mobile
+cd solacore-mobile
 ```
 
-**产出**: `clarity-mobile/` 目录
+**产出**: `solacore-mobile/` 目录
 
 **验收**:
 ```bash
-cd clarity-mobile && npx expo --version
+cd solacore-mobile && npx expo --version
 # 预期：输出 Expo CLI 版本号
 ```
 
@@ -46,7 +46,7 @@ cd clarity-mobile && npx expo --version
 
 **步骤**:
 ```bash
-cd clarity-mobile
+cd solacore-mobile
 
 # 创建标准目录结构
 mkdir -p app/{(tabs),auth,chat}
@@ -62,7 +62,7 @@ mkdir -p types
 
 **产出目录结构**:
 ```
-clarity-mobile/
+solacore-mobile/
 ├── app/                    # Expo Router 页面
 │   ├── (tabs)/            # Tab 导航组
 │   ├── auth/              # 认证相关页面
@@ -90,7 +90,7 @@ ls -la app components services stores i18n hooks utils constants types
 
 **步骤**:
 ```bash
-cd clarity-mobile
+cd solacore-mobile
 
 # 安装 ESLint + Prettier
 npm install -D eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin
@@ -98,7 +98,7 @@ npm install -D prettier eslint-config-prettier eslint-plugin-prettier
 npm install -D eslint-plugin-react eslint-plugin-react-hooks
 ```
 
-**创建文件**: `clarity-mobile/.eslintrc.js`
+**创建文件**: `solacore-mobile/.eslintrc.js`
 ```javascript
 module.exports = {
   root: true,
@@ -126,7 +126,7 @@ module.exports = {
 };
 ```
 
-**创建文件**: `clarity-mobile/.prettierrc`
+**创建文件**: `solacore-mobile/.prettierrc`
 ```json
 {
   "semi": true,
@@ -137,7 +137,7 @@ module.exports = {
 }
 ```
 
-**更新**: `clarity-mobile/package.json` scripts
+**更新**: `solacore-mobile/package.json` scripts
 ```json
 {
   "scripts": {
@@ -158,13 +158,13 @@ npm run lint
 
 **步骤**:
 ```bash
-cd clarity-mobile
+cd solacore-mobile
 
 # 安装 Expo Router
 npx expo install expo-router expo-linking expo-constants expo-status-bar
 ```
 
-**创建文件**: `clarity-mobile/app/_layout.tsx`
+**创建文件**: `solacore-mobile/app/_layout.tsx`
 ```typescript
 import { Stack } from 'expo-router';
 
@@ -178,7 +178,7 @@ export default function RootLayout() {
 }
 ```
 
-**创建文件**: `clarity-mobile/app/(tabs)/_layout.tsx`
+**创建文件**: `solacore-mobile/app/(tabs)/_layout.tsx`
 ```typescript
 import { Tabs } from 'expo-router';
 
@@ -192,14 +192,14 @@ export default function TabLayout() {
 }
 ```
 
-**创建文件**: `clarity-mobile/app/(tabs)/index.tsx`
+**创建文件**: `solacore-mobile/app/(tabs)/index.tsx`
 ```typescript
 import { View, Text, StyleSheet } from 'react-native';
 
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Clarity</Text>
+      <Text style={styles.title}>Solacore</Text>
       <Text style={styles.subtitle}>Your universal problem-solving assistant</Text>
     </View>
   );
@@ -240,9 +240,9 @@ npx expo start --go
 
 ### Task 1.1.6: Create Mobile README
 
-**创建文件**: `clarity-mobile/README.md`
+**创建文件**: `solacore-mobile/README.md`
 ```markdown
-# Clarity Mobile
+# Solacore Mobile
 
 React Native + Expo 移动端应用
 
@@ -298,13 +298,13 @@ npm run format    # Prettier 格式化
 
 **步骤**:
 ```bash
-cd /Users/zhimingdeng/Documents/claude/clarity
+cd /Users/zhimingdeng/Documents/claude/solacore
 
 # 创建后端目录
-mkdir clarity-api && cd clarity-api
+mkdir solacore-api && cd solacore-api
 
 # 初始化 Poetry 项目
-poetry init --name clarity-api --python "^3.11" --no-interaction
+poetry init --name solacore-api --python "^3.11" --no-interaction
 
 # 添加核心依赖
 poetry add fastapi uvicorn[standard] pydantic pydantic-settings python-dotenv
@@ -323,7 +323,7 @@ poetry install
 
 **步骤**:
 ```bash
-cd clarity-api
+cd solacore-api
 
 # 创建标准目录结构
 mkdir -p app/{routers,services,models,middleware,schemas}
@@ -337,7 +337,7 @@ touch app/schemas/__init__.py
 
 **产出目录结构**:
 ```
-clarity-api/
+solacore-api/
 ├── app/
 │   ├── __init__.py
 │   ├── main.py           # FastAPI 入口
@@ -361,7 +361,7 @@ ls -la app app/routers app/services app/models app/middleware app/schemas
 
 ### Task 1.2.3: Configure Pydantic Settings
 
-**创建文件**: `clarity-api/app/config.py`
+**创建文件**: `solacore-api/app/config.py`
 ```python
 from pydantic_settings import BaseSettings
 from functools import lru_cache
@@ -371,11 +371,11 @@ class Settings(BaseSettings):
     """应用配置，从环境变量加载"""
 
     # 应用
-    app_name: str = "Clarity API"
+    app_name: str = "Solacore API"
     debug: bool = False
 
     # 数据库
-    database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/clarity"
+    database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/solacore"
 
     # JWT
     jwt_secret: str = "your-secret-key-change-in-production"
@@ -396,15 +396,15 @@ def get_settings() -> Settings:
     return Settings()
 ```
 
-**创建文件**: `clarity-api/.env.example`
+**创建文件**: `solacore-api/.env.example`
 ```bash
-# Clarity API 环境变量
+# Solacore API 环境变量
 
 # 应用
 DEBUG=true
 
 # 数据库
-DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/clarity
+DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/solacore
 
 # JWT
 JWT_SECRET=your-secret-key-change-in-production
@@ -418,12 +418,12 @@ PORT=8000
 ```bash
 cp .env.example .env
 poetry run python -c "from app.config import get_settings; print(get_settings().app_name)"
-# 预期：输出 "Clarity API"
+# 预期：输出 "Solacore API"
 ```
 
 ### Task 1.2.4: Create Main Application with Health Check
 
-**创建文件**: `clarity-api/app/main.py`
+**创建文件**: `solacore-api/app/main.py`
 ```python
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -459,7 +459,7 @@ async def health_check():
 @app.get("/")
 async def root():
     """根端点"""
-    return {"message": "Welcome to Clarity API", "docs": "/docs"}
+    return {"message": "Welcome to Solacore API", "docs": "/docs"}
 ```
 
 **验收**:
@@ -472,7 +472,7 @@ curl http://localhost:8000/health
 
 ### Task 1.2.5: Create Dockerfile
 
-**创建文件**: `clarity-api/Dockerfile`
+**创建文件**: `solacore-api/Dockerfile`
 ```dockerfile
 FROM python:3.11-slim
 
@@ -499,13 +499,13 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 **验收**:
 ```bash
-docker build -t clarity-api .
+docker build -t solacore-api .
 # 预期：镜像构建成功
 ```
 
 ### Task 1.2.6: Create docker-compose.yml
 
-**创建文件**: `clarity-api/docker-compose.yml`
+**创建文件**: `solacore-api/docker-compose.yml`
 ```yaml
 version: '3.8'
 
@@ -516,7 +516,7 @@ services:
       - "8000:8000"
     environment:
       - DEBUG=true
-      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/clarity
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/solacore
     depends_on:
       - db
     volumes:
@@ -529,7 +529,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=clarity
+      - POSTGRES_DB=solacore
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -547,9 +547,9 @@ docker-compose down
 
 ### Task 1.2.7: Create Backend README
 
-**创建文件**: `clarity-api/README.md`
+**创建文件**: `solacore-api/README.md`
 ```markdown
-# Clarity API
+# Solacore API
 
 FastAPI 后端服务
 
@@ -623,7 +623,7 @@ poetry run pytest           # Test
 
 **步骤**:
 ```bash
-cd clarity-api
+cd solacore-api
 
 # 添加数据库相关依赖
 poetry add sqlalchemy[asyncio] asyncpg alembic greenlet
@@ -637,7 +637,7 @@ poetry show sqlalchemy
 
 ### Task 1.3.2: Configure Async SQLAlchemy Engine
 
-**创建文件**: `clarity-api/app/database.py`
+**创建文件**: `solacore-api/app/database.py`
 ```python
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import declarative_base
@@ -684,13 +684,13 @@ poetry run python -c "from app.database import engine; print(engine)"
 
 **步骤**:
 ```bash
-cd clarity-api
+cd solacore-api
 
 # 初始化 Alembic
 poetry run alembic init alembic
 ```
 
-**修改文件**: `clarity-api/alembic/env.py`
+**修改文件**: `solacore-api/alembic/env.py`
 ```python
 import asyncio
 from logging.config import fileConfig
@@ -767,7 +767,7 @@ ls alembic/
 
 ### Task 1.3.4: Create User Model and Initial Migration
 
-**创建文件**: `clarity-api/app/models/user.py`
+**创建文件**: `solacore-api/app/models/user.py`
 ```python
 import uuid
 from datetime import datetime
@@ -791,7 +791,7 @@ class User(Base):
         return f"<User {self.email}>"
 ```
 
-**更新文件**: `clarity-api/app/models/__init__.py`
+**更新文件**: `solacore-api/app/models/__init__.py`
 ```python
 from app.models.user import User
 
@@ -824,13 +824,13 @@ poetry run alembic upgrade head
 **验收**:
 ```bash
 # 连接数据库检查
-docker exec -it clarity-api-db-1 psql -U postgres -d clarity -c "\dt"
+docker exec -it solacore-api-db-1 psql -U postgres -d solacore -c "\dt"
 # 预期：显示 users 表和 alembic_version 表
 ```
 
 ### Task 1.3.6: Update Health Check with Database Status
 
-**更新文件**: `clarity-api/app/main.py`
+**更新文件**: `solacore-api/app/main.py`
 ```python
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
@@ -879,7 +879,7 @@ async def health_check(db: AsyncSession = Depends(get_db)):
 
 @app.get("/")
 async def root():
-    return {"message": "Welcome to Clarity API", "docs": "/docs"}
+    return {"message": "Welcome to Solacore API", "docs": "/docs"}
 ```
 
 **验收**:
@@ -916,17 +916,17 @@ on:
   push:
     branches: [main]
     paths:
-      - 'clarity-api/**'
+      - 'solacore-api/**'
       - '.github/workflows/backend.yml'
   pull_request:
     branches: [main]
     paths:
-      - 'clarity-api/**'
+      - 'solacore-api/**'
       - '.github/workflows/backend.yml'
 
 defaults:
   run:
-    working-directory: clarity-api
+    working-directory: solacore-api
 
 jobs:
   lint:
@@ -959,7 +959,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: clarity_test
+          POSTGRES_DB: solacore_test
         ports:
           - 5432:5432
         options: >-
@@ -984,12 +984,12 @@ jobs:
 
       - name: Run migrations
         env:
-          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/clarity_test
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/solacore_test
         run: poetry run alembic upgrade head
 
       - name: Run tests
         env:
-          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/clarity_test
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/solacore_test
         run: poetry run pytest -v
 ```
 
@@ -1005,17 +1005,17 @@ on:
   push:
     branches: [main]
     paths:
-      - 'clarity-mobile/**'
+      - 'solacore-mobile/**'
       - '.github/workflows/mobile.yml'
   pull_request:
     branches: [main]
     paths:
-      - 'clarity-mobile/**'
+      - 'solacore-mobile/**'
       - '.github/workflows/mobile.yml'
 
 defaults:
   run:
-    working-directory: clarity-mobile
+    working-directory: solacore-mobile
 
 jobs:
   lint:
@@ -1028,7 +1028,7 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-          cache-dependency-path: clarity-mobile/package-lock.json
+          cache-dependency-path: solacore-mobile/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -1082,7 +1082,7 @@ jobs:
 
 **步骤**:
 ```bash
-cd clarity-mobile
+cd solacore-mobile
 
 # 登录 Expo
 npx eas login
@@ -1091,7 +1091,7 @@ npx eas login
 npx eas build:configure
 ```
 
-**创建/更新文件**: `clarity-mobile/eas.json`
+**创建/更新文件**: `solacore-mobile/eas.json`
 ```json
 {
   "cli": {
@@ -1129,7 +1129,7 @@ npx eas build --platform all --non-interactive --dry-run
 
 **创建文件**: `README.md`
 ```markdown
-# Clarity
+# Solacore
 
 Universal problem-solving and decision-making assistant.
 
@@ -1147,10 +1147,10 @@ Universal problem-solving and decision-making assistant.
 ```bash
 # Clone repository
 git clone <repo-url>
-cd clarity
+cd solacore
 
 # Start backend
-cd clarity-api
+cd solacore-api
 poetry install
 cp .env.example .env
 docker-compose up -d db
@@ -1158,7 +1158,7 @@ poetry run alembic upgrade head
 poetry run uvicorn app.main:app --reload
 
 # Start mobile (in another terminal)
-cd clarity-mobile
+cd solacore-mobile
 npm install
 npx expo start
 ```
@@ -1166,9 +1166,9 @@ npx expo start
 ## Project Structure
 
 ```
-clarity/
-├── clarity-mobile/    # React Native + Expo 移动端
-├── clarity-api/       # FastAPI 后端
+solacore/
+├── solacore-mobile/    # React Native + Expo 移动端
+├── solacore-api/       # FastAPI 后端
 ├── docs/              # 文档
 │   ├── prd.md        # 产品需求文档
 │   ├── architecture.md
@@ -1216,13 +1216,13 @@ clarity/
 
 ```bash
 git clone <repo-url>
-cd clarity
+cd solacore
 ```
 
 ## Step 2: Backend Setup
 
 ```bash
-cd clarity-api
+cd solacore-api
 
 # Install dependencies
 poetry install
@@ -1248,7 +1248,7 @@ Verify: http://localhost:8000/health should return `{"status":"healthy","version
 ## Step 3: Mobile Setup
 
 ```bash
-cd clarity-mobile
+cd solacore-mobile
 
 # Install dependencies
 npm install
@@ -1264,7 +1264,7 @@ Options:
 
 ## Environment Variables
 
-### Backend (`clarity-api/.env`)
+### Backend (`solacore-api/.env`)
 
 | Variable | Description | Default |
 |----------|-------------|---------|

@@ -14,7 +14,7 @@
 
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  clarity-mobile │────▶│   clarity-api   │────▶│   PostgreSQL    │
+│  solacore-mobile │────▶│   solacore-api   │────▶│   PostgreSQL    │
 │  (React Native) │     │    (FastAPI)    │     │    (Docker)     │
 └─────────────────┘     └─────────────────┘     └─────────────────┘
         │                       │
@@ -23,12 +23,12 @@
    Tab Navigation           /docs (Swagger)
 ```
 
-## 后端配置 (clarity-api)
+## 后端配置 (solacore-api)
 
 ### 1. 安装依赖
 
 ```bash
-cd clarity-api
+cd solacore-api
 poetry install --no-root
 ```
 
@@ -59,12 +59,12 @@ poetry run uvicorn app.main:app --reload
 
 访问 http://localhost:8000/docs 查看 API 文档
 
-## 移动端配置 (clarity-mobile)
+## 移动端配置 (solacore-mobile)
 
 ### 1. 安装依赖
 
 ```bash
-cd clarity-mobile
+cd solacore-mobile
 npm install
 ```
 
@@ -73,8 +73,8 @@ npm install
 | 环境 | 文件 | API URL |
 |------|------|---------|
 | dev | `.env.development` | `http://localhost:8000` |
-| staging | `.env.staging` | `https://staging-api.clarity.app` |
-| prod | `.env.production` | `https://api.clarity.app` |
+| staging | `.env.staging` | `https://staging-api.solacore.app` |
+| prod | `.env.production` | `https://api.solacore.app` |
 
 ```bash
 # 开发环境（默认）
@@ -106,7 +106,7 @@ npx expo start
 
 ### 模拟器调试
 ```bash
-cd clarity-mobile
+cd solacore-mobile
 npx expo start --ios
 ```
 
@@ -124,7 +124,7 @@ npx expo start --ios
 
 ### 模拟器调试
 ```bash
-cd clarity-mobile
+cd solacore-mobile
 npx expo start --android
 ```
 
@@ -145,12 +145,12 @@ curl http://localhost:8000/health
 
 ```bash
 # 后端
-cd clarity-api
+cd solacore-api
 poetry run ruff check .
 poetry run mypy app --ignore-missing-imports
 
 # 移动端
-cd clarity-mobile
+cd solacore-mobile
 npm run lint
 npx tsc --noEmit
 ```

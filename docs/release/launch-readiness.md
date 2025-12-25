@@ -9,9 +9,9 @@
 
 ## Executive Summary
 
-**Current Phase**: Clarity is entering **Free Beta** phase with payment functionality deferred.
+**Current Phase**: Solacore is entering **Free Beta** phase with payment functionality deferred.
 
-Clarity 代码库已完成全部 8 个 Epic 的开发，通过 106 个后端测试，本地部署验证全部通过，Android 预览版 APK 可下载测试。**当前阶段为免费内测（朋友测试）**，Stripe/RevenueCat 支付功能已延后，移动端不进行商店提交。生产上线仍被 **2 个关键阻塞项** 所阻挡：域名未配置、Apple Developer 账号未开通。对于免费 Beta 测试，可以仅使用 Android 预览版和本地部署环境进行验证。
+Solacore 代码库已完成全部 8 个 Epic 的开发，通过 106 个后端测试，本地部署验证全部通过，Android 预览版 APK 可下载测试。**当前阶段为免费内测（朋友测试）**，Stripe/RevenueCat 支付功能已延后，移动端不进行商店提交。生产上线仍被 **2 个关键阻塞项** 所阻挡：域名未配置、Apple Developer 账号未开通。对于免费 Beta 测试，可以仅使用 Android 预览版和本地部署环境进行验证。
 
 ---
 
@@ -51,7 +51,7 @@ Clarity 代码库已完成全部 8 个 Epic 的开发，通过 106 个后端测�
 
 | Category | Requirement | Status | Evidence | Blocker |
 |----------|-------------|--------|----------|---------|
-| Domain | api.clarity.app | **BLOCKED** | - | Domain not purchased/configured |
+| Domain | api.solacore.app | **BLOCKED** | - | Domain not purchased/configured |
 | Hosting Provider | Vercel/Railway/Fly | **UNKNOWN** | Decision pending | - |
 | PostgreSQL Provider | Neon/Supabase/RDS | **UNKNOWN** | Decision pending | - |
 | SSL Certificate | Valid HTTPS | **BLOCKED** | - | Depends on domain |
@@ -146,7 +146,7 @@ Clarity 代码库已完成全部 8 个 Epic 的开发，通过 106 个后端测�
 
 | Action | Dependency | Priority | Owner | Notes |
 |--------|------------|----------|-------|-------|
-| Purchase/configure domain | - | **Critical** | | api.clarity.app or alternative |
+| Purchase/configure domain | - | **Critical** | | api.solacore.app or alternative |
 | Enroll Apple Developer Program | $99/year | **Critical** | | 24-48hr approval wait |
 | Register Google Play Console | $25 one-time | High | | For Android store submission |
 | Configure Stripe webhook | Production URL | High | | After domain setup |

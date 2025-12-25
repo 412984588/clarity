@@ -8,7 +8,7 @@
 
 ## Purpose
 
-This document defines the **triage workflow** for handling feedback, bug reports, and feature requests during the **Free Beta** phase of Clarity. It ensures consistent prioritization, clear ownership, and timely resolution of issues.
+This document defines the **triage workflow** for handling feedback, bug reports, and feature requests during the **Free Beta** phase of Solacore. It ensures consistent prioritization, clear ownership, and timely resolution of issues.
 
 **Scope:**
 - Bug reports from beta testers

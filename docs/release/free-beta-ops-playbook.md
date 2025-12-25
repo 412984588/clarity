@@ -8,7 +8,7 @@
 
 ## Purpose & Scope
 
-This playbook defines the **day-to-day operations** for managing the Clarity Free Beta. It serves as a quick reference for the team to:
+This playbook defines the **day-to-day operations** for managing the Solacore Free Beta. It serves as a quick reference for the team to:
 - Execute daily and weekly operational tasks
 - Triage and route feedback efficiently
 - Monitor quality gates and health metrics
@@ -296,7 +296,7 @@ Based on [Launch Communications](launch-communications.md):
 
 | Touchpoint | Frequency | Channel | Owner | Template |
 |------------|-----------|---------|-------|----------|
-| **Daily Update (Internal)** | Daily 6pm | Slack #clarity-beta | PM | [Daily](#reporting-template-daily-update) |
+| **Daily Update (Internal)** | Daily 6pm | Slack #solacore-beta | PM | [Daily](#reporting-template-daily-update) |
 | **Tester Reminder** | Day 3, Day 7 | Email | Support | [Reminder](free-beta-invite-templates.md#template-3-reminder-day-3) |
 | **Weekly Update (Internal)** | Every Monday | Slack + Email | PM | [Weekly](#reporting-template-weekly-update) |
 | **Weekly Update (Testers)** | Every Friday (optional) | Email | PM | [Tester Update](#reporting-template-tester-weekly-update) |
@@ -309,10 +309,10 @@ Based on [Launch Communications](launch-communications.md):
 
 ### Daily Update (Internal)
 
-Post to Slack #clarity-beta every day at **6:00 PM**:
+Post to Slack #solacore-beta every day at **6:00 PM**:
 
 ```
-📊 Clarity Beta - Daily Update [Date]
+📊 Solacore Beta - Daily Update [Date]
 
 **Today's Activity**:
 - Active testers: [X] (↑/↓ from yesterday)
@@ -339,11 +339,11 @@ Post to Slack #clarity-beta every day at **6:00 PM**:
 Send email to team every **Monday at 11:00 AM**:
 
 ```
-Subject: Clarity Beta - Week [N] Summary
+Subject: Solacore Beta - Week [N] Summary
 
 Hi team,
 
-Here's the weekly summary for Clarity Free Beta:
+Here's the weekly summary for Solacore Free Beta:
 
 **Metrics (Week [N])**:
 - Total testers invited: [X]
@@ -390,11 +390,11 @@ Cheers,
 Send to active testers every **Friday at 5:00 PM**:
 
 ```
-Subject: Clarity Beta - This Week's Updates 🎉
+Subject: Solacore Beta - This Week's Updates 🎉
 
 Hi [Name],
 
-Thanks for testing Clarity this week! Here's what we've been up to:
+Thanks for testing Solacore this week! Here's what we've been up to:
 
 **What We Fixed**:
 - ✅ [Bug X]: [Description]
@@ -451,7 +451,7 @@ If a **critical issue (P0)** occurs during beta:
 ### 1. Detect (Tester reports or team discovers)
 
 - **Who**: Any team member
-- **Action**: Immediately post in Slack #clarity-beta with "P0 ALERT"
+- **Action**: Immediately post in Slack #solacore-beta with "P0 ALERT"
 
 ### 2. Assess (Within 1 hour)
 
@@ -466,7 +466,7 @@ If a **critical issue (P0)** occurs during beta:
 - **Who**: PM
 - **Action**:
   - Email affected testers: "We found a critical bug, working on it"
-  - Post update in Slack #clarity-beta every 2 hours
+  - Post update in Slack #solacore-beta every 2 hours
 
 ### 4. Fix (Within 24 hours)
 
@@ -502,7 +502,7 @@ If a **critical issue (P0)** occurs during beta:
 | Tool | Purpose | Access |
 |------|---------|--------|
 | **Google Sheets** | [Beta Tester Tracker](beta-tester-tracker.md) | Team editors |
-| **Slack #clarity-beta** | Daily updates, team communication | Team members |
+| **Slack #solacore-beta** | Daily updates, team communication | Team members |
 | **Email** | Tester communication | PM/Support |
 | **GitHub Issues** (or equivalent) | [QA Execution Log](qa-execution-log.md) | Team contributors |
 | **APK Download Link** | Distribute builds | Public (but unlisted) |

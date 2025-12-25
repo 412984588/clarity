@@ -9,7 +9,7 @@
 ## 🔴 HIGH-1: CORS 配置错误 - Web端无法访问API
 
 ### 问题描述
-**文件**: `clarity-api/app/main.py:48`
+**文件**: `solacore-api/app/main.py:48`
 **代码**:
 ```python
 app.add_middleware(
@@ -22,7 +22,7 @@ app.add_middleware(
 ```
 
 **后果**:
-- 🚨 Web端（clarity-web）所有API请求被浏览器拒绝
+- 🚨 Web端（solacore-web）所有API请求被浏览器拒绝
 - 🚨 前端无法登录、无法使用任何功能
 - 🚨 等同于Web版完全不可用
 
@@ -30,12 +30,12 @@ app.add_middleware(
 
 #### 方案A: 使用 frontend_url（推荐）
 ```python
-# clarity-api/app/config.py
+# solacore-api/app/config.py
 class Settings(BaseSettings):
     frontend_url: str = "http://localhost:3000"  # ✅ 改成Web前端地址
-    frontend_url_prod: str = ""  # 生产环境域名，如 "https://clarity.app"
+    frontend_url_prod: str = ""  # 生产环境域名，如 "https://solacore.app"
 
-# clarity-api/app/main.py
+# solacore-api/app/main.py
 origins = ["*"] if settings.debug else [
     settings.frontend_url,
     settings.frontend_url_prod,
@@ -87,11 +87,11 @@ app.add_middleware(
 ### 验证步骤
 ```bash
 # 1. 启动后端（生产模式）
-cd clarity-api
+cd solacore-api
 DEBUG=false uvicorn app.main:app
 
 # 2. 启动 Web 前端
-cd clarity-web
+cd solacore-web
 npm run dev
 
 # 3. 浏览器访问 http://localhost:3000
@@ -101,14 +101,14 @@ npm run dev
 ```
 
 ### 老板需要确认
-❓ **Web 前端生产域名是什么？**（如 `https://clarity.app`）
+❓ **Web 前端生产域名是什么？**（如 `https://solacore.app`）
 
 ---
 
 ## 🔴 HIGH-2: 忘记密码功能不可用 - 生产环境无邮件发送
 
 ### 问题描述
-**文件**: `clarity-api/app/routers/auth.py:107-112`
+**文件**: `solacore-api/app/routers/auth.py:107-112`
 **代码**:
 ```python
 if user:
@@ -136,13 +136,13 @@ if user:
 
 **2. 安装依赖**:
 ```bash
-cd clarity-api
+cd solacore-api
 poetry add aiosmtplib email-validator
 ```
 
 **3. 配置环境变量**:
 ```python
-# clarity-api/app/config.py
+# solacore-api/app/config.py
 class Settings(BaseSettings):
     # 邮件配置
     smtp_host: str = "smtp.sendgrid.net"
@@ -150,12 +150,12 @@ class Settings(BaseSettings):
     smtp_user: str = ""  # SendGrid API Key 或用户名
     smtp_password: str = ""  # SendGrid API Secret 或密码
     smtp_from: str = "noreply@yourdomain.com"
-    smtp_from_name: str = "Clarity Support"
+    smtp_from_name: str = "Solacore Support"
 ```
 
 **4. 创建邮件服务**:
 ```python
-# clarity-api/app/services/email_service.py
+# solacore-api/app/services/email_service.py
 import aiosmtplib
 from email.message import EmailMessage
 from app.config import get_settings
@@ -169,11 +169,11 @@ async def send_password_reset_email(to_email: str, reset_token: str):
     message = EmailMessage()
     message["From"] = f"{settings.smtp_from_name} <{settings.smtp_from}>"
     message["To"] = to_email
-    message["Subject"] = "密码重置 - Clarity"
+    message["Subject"] = "密码重置 - Solacore"
     message.set_content(f"""
 您好，
 
-您请求重置 Clarity 账户的密码。请点击以下链接重置密码：
+您请求重置 Solacore 账户的密码。请点击以下链接重置密码：
 
 {reset_link}
 
@@ -181,18 +181,18 @@ async def send_password_reset_email(to_email: str, reset_token: str):
 
 如果您没有请求重置密码，请忽略此邮件。
 
-Clarity 团队
+Solacore 团队
     """)
 
     message.add_alternative(f"""
 <html>
   <body>
     <p>您好，</p>
-    <p>您请求重置 Clarity 账户的密码。</p>
+    <p>您请求重置 Solacore 账户的密码。</p>
     <p><a href="{reset_link}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">重置密码</a></p>
     <p>此链接将在30分钟后过期。</p>
     <p>如果您没有请求重置密码，请忽略此邮件。</p>
-    <p>Clarity 团队</p>
+    <p>Solacore 团队</p>
   </body>
 </html>
     """, subtype="html")
@@ -209,7 +209,7 @@ Clarity 团队
 
 **5. 更新路由**:
 ```python
-# clarity-api/app/routers/auth.py
+# solacore-api/app/routers/auth.py
 from app.services.email_service import send_password_reset_email
 
 @router.post("/forgot-password")
@@ -295,8 +295,8 @@ curl -X POST http://localhost:8000/auth/forgot-password \
 ## 🟡 MEDIUM-1: 支付开关前后端不一致
 
 ### 问题描述
-**后端**: `clarity-api/app/config.py:37` → `payments_enabled: bool`
-**移动端**: `clarity-mobile/services/config.ts:16` → `EXPO_PUBLIC_BILLING_ENABLED` (默认 `true`)
+**后端**: `solacore-api/app/config.py:37` → `payments_enabled: bool`
+**移动端**: `solacore-mobile/services/config.ts:16` → `EXPO_PUBLIC_BILLING_ENABLED` (默认 `true`)
 
 **后果**:
 - 🟡 Beta 期间关闭后端支付功能，移动端仍显示订阅入口
@@ -306,7 +306,7 @@ curl -X POST http://localhost:8000/auth/forgot-password \
 
 #### 方案A: 统一使用 `PAYMENTS_ENABLED`
 ```python
-# clarity-api/app/config.py
+# solacore-api/app/config.py
 class Settings(BaseSettings):
     payments_enabled: bool = True  # 保持不变
 
@@ -322,7 +322,7 @@ async def get_features():
 ```
 
 ```typescript
-// clarity-mobile/services/config.ts
+// solacore-mobile/services/config.ts
 export const getFeatureFlags = async () => {
   try {
     const response = await api.get('/config/features');
@@ -336,7 +336,7 @@ export const getFeatureFlags = async () => {
   }
 };
 
-// clarity-mobile/app/(tabs)/paywall.tsx
+// solacore-mobile/app/(tabs)/paywall.tsx
 useEffect(() => {
   const checkPayments = async () => {
     const flags = await getFeatureFlags();
@@ -350,7 +350,7 @@ useEffect(() => {
 
 #### 方案B: 前端改成 `PAYMENTS_ENABLED`（简单粗暴）
 ```typescript
-// clarity-mobile/services/config.ts
+// solacore-mobile/services/config.ts
 export const Config = {
   // ❌ 删除
   // BILLING_ENABLED: process.env.EXPO_PUBLIC_BILLING_ENABLED === 'true',
@@ -387,7 +387,7 @@ export EXPO_PUBLIC_PAYMENTS_ENABLED=false
 ## 🟡 MEDIUM-2: 生产配置校验不全
 
 ### 问题描述
-**文件**: `clarity-api/app/config.py:71-77`
+**文件**: `solacore-api/app/config.py:71-77`
 **代码**:
 ```python
 def validate_production_config(settings: Settings | None = None) -> None:
@@ -408,7 +408,7 @@ def validate_production_config(settings: Settings | None = None) -> None:
 ### 修复方案
 
 ```python
-# clarity-api/app/config.py
+# solacore-api/app/config.py
 def validate_production_config(settings: Settings | None = None) -> None:
     """生产环境配置校验"""
     active_settings = settings or get_settings()
@@ -479,19 +479,19 @@ uvicorn app.main:app
 ## 🔵 LOW-1: OpenRouter Reasoning 泄露风险
 
 ### 问题描述
-**文件**: `clarity-api/app/services/ai_service.py:120`
+**文件**: `solacore-api/app/services/ai_service.py:120`
 **风险**: OpenRouter 的 reasoning 兜底会向用户输出"AI 思考过程"，可能泄露 Prompt 设计细节
 
 ### 修复方案
 
 #### 方案A: 添加产品开关（推荐）
 ```python
-# clarity-api/app/config.py
+# solacore-api/app/config.py
 class Settings(BaseSettings):
     # ...
     enable_reasoning_output: bool = False  # 默认禁用
 
-# clarity-api/app/services/ai_service.py
+# solacore-api/app/services/ai_service.py
 async def stream_response(self, ...):
     # ...
     if part.type == "reasoning" and not settings.enable_reasoning_output:
@@ -517,16 +517,16 @@ async def stream_response(self, ...):
 ## 🔵 LOW-2: 版本号不一致
 
 ### 问题描述
-**OpenAPI 版本**: `clarity-api/app/main.py:40` → `version="0.1.0"`
-**健康检查版本**: `clarity-api/app/config.py:14` → `app_version: str = "1.0.0"`
+**OpenAPI 版本**: `solacore-api/app/main.py:40` → `version="0.1.0"`
+**健康检查版本**: `solacore-api/app/config.py:14` → `app_version: str = "1.0.0"`
 
 ### 修复方案
 ```python
-# clarity-api/app/config.py
+# solacore-api/app/config.py
 class Settings(BaseSettings):
     app_version: str = "0.1.0"  # ✅ 统一为 0.1.0
 
-# clarity-api/app/main.py
+# solacore-api/app/main.py
 app = FastAPI(
     title=settings.app_name,
     description="Universal problem-solving assistant API",

@@ -10,7 +10,7 @@
 
 - [ ] 选择托管平台：Vercel / Railway / Fly
 - [ ] 选择数据库平台：Neon / Supabase / RDS
-- [ ] 选定生产域名：`api.clarity.app`（或替代）
+- [ ] 选定生产域名：`api.solacore.app`（或替代）
 
 ---
 
@@ -30,9 +30,9 @@
 
 1. 购买域名并配置 DNS → 指向托管平台
 2. 创建生产 PostgreSQL 实例
-3. 部署后端到生产（获得 `https://api.clarity.app`）
-4. 配置 Stripe Webhook：`https://api.clarity.app/webhooks/stripe`
-5. 配置 RevenueCat Webhook：`https://api.clarity.app/webhooks/revenuecat`
+3. 部署后端到生产（获得 `https://api.solacore.app`）
+4. 配置 Stripe Webhook：`https://api.solacore.app/webhooks/stripe`
+5. 配置 RevenueCat Webhook：`https://api.solacore.app/webhooks/revenuecat`
 6. 配置 OAuth 生产凭证（Google / Apple）
 7. 生成 EAS 生产包（iOS 需 Apple Developer）
 8. 提交 App Store / Play Store

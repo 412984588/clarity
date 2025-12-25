@@ -1,7 +1,7 @@
 # 全局深度审查计划 (Global Deep Audit)
 
 **执行时间**: 2025-12-25
-**审查范围**: Clarity 全栈项目（移动端 + Web端 + 后端）
+**审查范围**: Solacore 全栈项目（移动端 + Web端 + 后端）
 **审查级别**: 显微镜级别 - 零容忍缺陷
 
 ---
@@ -104,20 +104,20 @@
 ### 自动化工具
 ```bash
 # 后端
-cd clarity-api
+cd solacore-api
 poetry run ruff check .
 poetry run mypy app
 poetry run pytest --cov
 poetry check
 
 # 移动端
-cd clarity-mobile
+cd solacore-mobile
 npm run lint
 npx tsc --noEmit
 npm audit
 
 # Web端
-cd clarity-web
+cd solacore-web
 npm run lint
 npx tsc --noEmit
 npm audit

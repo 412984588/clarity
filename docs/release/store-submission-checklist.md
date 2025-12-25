@@ -7,7 +7,7 @@
 
 ## Purpose
 
-本文档是 Clarity 应用提交至 Apple App Store 和 Google Play Store 的完整检查清单。确保所有必要资产、配置和合规要求在提交前已满足。
+本文档是 Solacore 应用提交至 Apple App Store 和 Google Play Store 的完整检查清单。确保所有必要资产、配置和合规要求在提交前已满足。
 
 ---
 
@@ -40,8 +40,8 @@
 
 | # | Item | Status | Notes |
 |---|------|--------|-------|
-| 6 | Bundle ID 已在 App Store Connect 注册 | [ ] | `com.clarity.app` |
-| 7 | App Name 已确认（无冲突） | [ ] | "Clarity" |
+| 6 | Bundle ID 已在 App Store Connect 注册 | [ ] | `com.solacore.app` |
+| 7 | App Name 已确认（无冲突） | [ ] | "Solacore" |
 | 8 | Primary Category 已选择 | [ ] | Health & Fitness / Lifestyle |
 | 9 | Secondary Category 已选择（可选） | [ ] | |
 | 10 | Age Rating 问卷已完成 | [ ] | |
@@ -86,8 +86,8 @@
 
 | # | Item | Status | Notes |
 |---|------|--------|-------|
-| 4 | Package Name 已确认 | [ ] | `com.clarity.app` |
-| 5 | App Name 已填写 | [ ] | "Clarity" |
+| 4 | Package Name 已确认 | [ ] | `com.solacore.app` |
+| 5 | App Name 已填写 | [ ] | "Solacore" |
 | 6 | App Category 已选择 | [ ] | Health & Fitness |
 | 7 | Content Rating 问卷已完成 | [ ] | IARC |
 | 8 | Data Safety 问卷已完成 | [ ] | See `docs/release/store-privacy-answers.md` |
@@ -205,7 +205,7 @@
 ### Demo Account
 
 ```
-Email: reviewer@clarity.app
+Email: reviewer@solacore.app
 Password: [待填写]
 ```
 

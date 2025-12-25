@@ -1,11 +1,11 @@
-# Phase Web: Clarity Web 版开发计划
+# Phase Web: Solacore Web 版开发计划
 
-**目标**: 创建 Web 版 Clarity 应用，让用户可以通过浏览器使用完整的 5 步 Solve 流程
+**目标**: 创建 Web 版 Solacore 应用，让用户可以通过浏览器使用完整的 5 步 Solve 流程
 
 **执行者**: Goose (Codex 模式)
 **级别**: T3 重度任务
 **预计时间**: 2-3 小时
-**依赖**: 现有 FastAPI 后端 (clarity-api)
+**依赖**: 现有 FastAPI 后端 (solacore-api)
 
 ---
 
@@ -23,7 +23,7 @@
    - **语言**: TypeScript
    - **UI**: Tailwind CSS + shadcn/ui
    - **状态**: React Context + localStorage
-   - **API**: fetch (复用 clarity-api 端点)
+   - **API**: fetch (复用 solacore-api 端点)
    - **认证**: JWT (复用后端 /auth 路由)
 
 3. **部署就绪**:
@@ -39,9 +39,9 @@
 
 - [x] **W1.1 创建 Next.js 项目**
   ```bash
-  cd /Users/zhimingdeng/Documents/claude/clarity
-  npx create-next-app@latest clarity-web --typescript --tailwind --app --no-src-dir --import-alias "@/*"
-  cd clarity-web
+  cd /Users/zhimingdeng/Documents/claude/solacore
+  npx create-next-app@latest solacore-web --typescript --tailwind --app --no-src-dir --import-alias "@/*"
+  cd solacore-web
   ```
   - **验证**: `npm run dev` 成功启动，访问 http://localhost:3000
 
@@ -60,7 +60,7 @@
 
 - [x] **W1.4 创建基础目录结构**
   ```
-  clarity-web/
+  solacore-web/
   ├── app/
   │   ├── (auth)/
   │   │   ├── login/
@@ -104,7 +104,7 @@
     - axios 实例配置 (baseURL, headers)
     - 自动附加 JWT Token
     - 错误拦截器 (401 自动跳转登录)
-  - **参考**: `clarity-mobile/services/api.ts`
+  - **参考**: `solacore-mobile/services/api.ts`
 
 - [x] **W2.2 实现认证服务**
   - **文件**: `lib/auth.ts`
@@ -118,7 +118,7 @@
 - [x] **W2.3 创建登录页面**
   - **文件**: `app/(auth)/login/page.tsx`
   - **UI**:
-    - Clarity Logo + Slogan
+    - Solacore Logo + Slogan
     - "使用 Google 登录" 按钮 (shadcn Button)
     - 隐私政策链接
   - **逻辑**:
@@ -178,7 +178,7 @@
       updated_at: string;
     }
     ```
-  - **参考**: `clarity-api/app/schemas/session.py`
+  - **参考**: `solacore-api/app/schemas/session.py`
 
 - [x] **W3.2 创建会话 API 服务**
   - **文件**: `lib/session-api.ts`
@@ -196,7 +196,7 @@
     - 当前步骤高亮 (Tailwind ring)
     - 已完成步骤显示勾选 ✓
     - 未完成步骤显示灰色
-  - **参考**: `clarity-mobile/components/StepProgress.tsx`
+  - **参考**: `solacore-mobile/components/StepProgress.tsx`
 
 - [x] **W3.4 创建聊天界面组件**
   - **文件**: `components/solve/ChatInterface.tsx`
@@ -334,30 +334,30 @@
     ```
 
 - [x] **W6.2 创建 Dockerfile (可选)**
-  - **文件**: `clarity-web/Dockerfile`
+  - **文件**: `solacore-web/Dockerfile`
   - **功能**: 自托管部署支持
 
 - [x] **W6.3 更新 Nginx 配置**
-  - **文件**: `clarity-api/nginx/nginx.conf`
+  - **文件**: `solacore-api/nginx/nginx.conf`
   - **添加**:
     ```nginx
     # 前端 Web 反向代理
     location / {
-        proxy_pass http://clarity-web:3000;
+        proxy_pass http://solacore-web:3000;
     }
 
     # API 路由
     location /api {
-        proxy_pass http://clarity-api:8000;
+        proxy_pass http://solacore-api:8000;
     }
     ```
 
 - [x] **W6.4 创建环境变量文档**
-  - **文件**: `clarity-web/docs/ENV_VARIABLES.md`
+  - **文件**: `solacore-web/docs/ENV_VARIABLES.md`
   - **内容**: 所有 NEXT_PUBLIC_* 变量说明
 
 - [x] **W6.5 创建部署脚本**
-  - **文件**: `clarity-web/deploy.sh`
+  - **文件**: `solacore-web/deploy.sh`
   - **功能**:
     - npm install
     - npm run build
@@ -400,7 +400,7 @@
 ### 任务清单
 
 - [x] **W8.1 创建 README.md**
-  - **文件**: `clarity-web/README.md`
+  - **文件**: `solacore-web/README.md`
   - **内容**:
     - 项目简介
     - 快速开始
@@ -409,7 +409,7 @@
     - 技术栈说明
 
 - [x] **W8.2 更新主项目文档**
-  - **文件**: `/Users/zhimingdeng/Documents/claude/clarity/README.md`
+  - **文件**: `/Users/zhimingdeng/Documents/claude/solacore/README.md`
   - **添加**: Web 版说明 + 链接
 
 - [x] **W8.3 更新 CHANGELOG.md**
@@ -418,7 +418,7 @@
     ## [Unreleased]
 
     ### Added
-    - **Clarity Web 版** (Phase Web)
+    - **Solacore Web 版** (Phase Web)
       - Next.js 15 + TypeScript + Tailwind
       - 完整 5 步 Solve 流程
       - Google OAuth 登录
@@ -432,8 +432,8 @@
 - [x] **W8.5 Git Commit**
   - **命令**:
     ```bash
-    git add clarity-web/
-    git commit -m "feat(web): 创建 Clarity Web 版应用
+    git add solacore-web/
+    git commit -m "feat(web): 创建 Solacore Web 版应用
 
     - Next.js 15 + TypeScript + Tailwind
     - 完整 5 步 Solve 流程

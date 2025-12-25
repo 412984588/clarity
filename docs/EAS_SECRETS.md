@@ -2,7 +2,7 @@
 
 **Version**: 1.0
 **Last Updated**: 2025-12-25
-**适用于**: Clarity Mobile (Expo + React Native)
+**适用于**: Solacore Mobile (Expo + React Native)
 
 本文档说明如何为 Expo Application Services (EAS) 配置构建所需的 secrets
 
@@ -101,7 +101,7 @@ eas secret:create --scope project --name EXPO_PUBLIC_SENTRY_DSN --value "https:/
   "build": {
     "preview": {
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://staging-api.clarity.app",
+        "EXPO_PUBLIC_API_URL": "https://staging-api.solacore.app",
         "EXPO_PUBLIC_BILLING_ENABLED": "false"
       }
     }
@@ -165,7 +165,7 @@ eas secret:delete --name SECRET_NAME
   "build": {
     "production": {
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://api.clarity.app"
+        "EXPO_PUBLIC_API_URL": "https://api.solacore.app"
       }
     }
   }
@@ -326,7 +326,7 @@ eas secret:create --scope project --name SECRET_NAME --value "value" --type stri
 
 ### 后端变量 (API Server)
 
-见 [`ENV_VARIABLES.md`](/Users/zhimingdeng/Documents/claude/clarity/docs/ENV_VARIABLES.md)
+见 [`ENV_VARIABLES.md`](/Users/zhimingdeng/Documents/claude/solacore/docs/ENV_VARIABLES.md)
 
 ---
 
@@ -335,7 +335,7 @@ eas secret:create --scope project --name SECRET_NAME --value "value" --type stri
 - [EAS Secrets 官方文档](https://docs.expo.dev/build-reference/variables/)
 - [RevenueCat API Keys 指南](https://www.revenuecat.com/docs/authentication)
 - [Expo 环境变量最佳实践](https://docs.expo.dev/guides/environment-variables/)
-- [Clarity 后端环境变量文档](./ENV_VARIABLES.md)
+- [Solacore 后端环境变量文档](./ENV_VARIABLES.md)
 
 ---
 

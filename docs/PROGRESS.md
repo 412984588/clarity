@@ -1,6 +1,6 @@
 # 项目进度记录本
 
-**项目名称**: Clarity
+**项目名称**: Solacore
 **最后更新**: 2025-12-25 14:45
 
 ---
@@ -73,7 +73,7 @@
 
 ---
 
-### [2025-12-25 12:45] - Phase Web 完成！🎉 Clarity Web 版上线
+### [2025-12-25 12:45] - Phase Web 完成！🎉 Solacore Web 版上线
 
 **Next.js 16 + TypeScript + Tailwind CSS + shadcn/ui**
 
@@ -272,10 +272,10 @@
 **最终交付冲刺完成** - 项目已达到"万事俱备，只欠域名"状态
 
 - [x] **生产环境容器化** (6 份文件)
-  - `clarity-api/docker-compose.prod.yml`: 完整生产配置（API/PostgreSQL/Redis/Nginx）
-  - `clarity-api/Dockerfile`: 多阶段构建 + 非 root 用户 + 健康检查
-  - `clarity-api/nginx/nginx.conf`: 反向代理 + 安全头 + Gzip + WebSocket
-  - `clarity-api/.env.prod.example`: 生产环境变量模板（中文注释）
+  - `solacore-api/docker-compose.prod.yml`: 完整生产配置（API/PostgreSQL/Redis/Nginx）
+  - `solacore-api/Dockerfile`: 多阶段构建 + 非 root 用户 + 健康检查
+  - `solacore-api/nginx/nginx.conf`: 反向代理 + 安全头 + Gzip + WebSocket
+  - `solacore-api/.env.prod.example`: 生产环境变量模板（中文注释）
   - 资源限制：PostgreSQL 1G/1CPU，Redis 512M/0.5CPU
 
 - [x] **CI/CD 自动化** (2 份文件)
@@ -300,7 +300,7 @@
 
 > **下一步（需要老板操作）**：
 > 1. 买服务器（阿里云/腾讯云 2核4G）
-> 2. 买域名（如 clarity.app）
+> 2. 买域名（如 solacore.app）
 > 3. 运行 `./deploy.sh`
 > 4. 运行 `./scripts/setup-ssl.sh`
 
@@ -373,7 +373,7 @@
     - Instructions: 推荐使用 GitHub Issue Forms
     - Questions about this form: Email provided in invite (TBD)
     - How to Submit:
-      * Option 1: GitHub Issue Forms (https://github.com/412984588/clarity/issues/new/choose)
+      * Option 1: GitHub Issue Forms (https://github.com/412984588/solacore/issues/new/choose)
       * Option 2: Email (provided in invite)
       * Option 3: Direct Message
       * 注明 Web Form 不可用
@@ -390,12 +390,12 @@
 - [x] **更新占位符清单**：`docs/release/placeholders-to-fill.md`
   - 2 个条目状态更新：
     1. beta-feedback-form.md Form URL: BLOCKED → DONE
-       - "TBD (web not built)" → "GitHub Issue Forms: https://github.com/412984588/clarity/issues/new/choose"
+       - "TBD (web not built)" → "GitHub Issue Forms: https://github.com/412984588/solacore/issues/new/choose"
     2. free-beta-invite-templates.md Future Perks: TODO → DONE
        - "TBD (2 items)" → "None (no perks)"
 
 - [x] **更新占位符表单**：`docs/release/placeholders-intake-form.md`
-  - Feedback Form URL: "TBD (web not built)" → "https://github.com/412984588/clarity/issues/new/choose"
+  - Feedback Form URL: "TBD (web not built)" → "https://github.com/412984588/solacore/issues/new/choose"
 
 > **目的**: 统一所有文档中的反馈渠道（GitHub Issue Forms）、权益说明（暂无）和响应承诺（Best-effort）
 
@@ -424,7 +424,7 @@
 
 - [x] **更新支持文档 (1 份)**：明确 Beta 支持策略
   - `docs/release/support.md`:
-    - Email: support@clarity.app → Provided in invite (TBD)
+    - Email: support@solacore.app → Provided in invite (TBD)
     - Support Hours: TBD (e.g., Mon-Fri...) → Best effort (no fixed hours)
     - Target Response Time: 1 business day (TBD) → Best effort (no SLA)
     - Status page: TBD → Not available
@@ -990,8 +990,8 @@
 ### [2025-12-24 08:30] - Free Beta 模式代码实现
 
 - [x] **后端配置**:
-  - `clarity-api/app/config.py`: 添加 `beta_mode` 和 `payments_enabled` 配置项
-  - `clarity-api/.env.example`: 添加 `BETA_MODE` 和 `PAYMENTS_ENABLED` 环境变量
+  - `solacore-api/app/config.py`: 添加 `beta_mode` 和 `payments_enabled` 配置项
+  - `solacore-api/.env.example`: 添加 `BETA_MODE` 和 `PAYMENTS_ENABLED` 环境变量
   - `docs/ENV_VARIABLES.md`: 文档化新变量，添加 Free Beta Checklist
 
 - [x] **后端逻辑**:
@@ -1309,7 +1309,7 @@
   - Known Gaps / TBD（High 4 + Medium 4 + Low 3）
   - Related Documents
 
-> 确保 Clarity 在数据隐私和合规方面满足 GDPR/CCPA/PIPL 及 App Store 要求
+> 确保 Solacore 在数据隐私和合规方面满足 GDPR/CCPA/PIPL 及 App Store 要求
 
 ---
 
@@ -1704,8 +1704,8 @@
   - 环境变量配置表
 
 > **新增文件**:
-> - `clarity-mobile/.env.*`, `app.config.ts`
-> - `clarity-mobile/components/ErrorBoundary.tsx`
+> - `solacore-mobile/.env.*`, `app.config.ts`
+> - `solacore-mobile/components/ErrorBoundary.tsx`
 > - `docs/release/release-checklist.md`, `privacy.md`, `support.md`
 > - `docs/spec/epic-7-launch.md`, `plan/epic-7-launch-plan.md`, `tasks/epic-7-launch-tasks.md`
 > - `scripts/verify-release.sh`
@@ -1732,7 +1732,7 @@
 
 - [x] **Settings**: 情绪背景开关
   - `app/(tabs)/settings.tsx`: 添加 Preferences 卡片 + Switch 组件
-  - 存储 key: `@clarity/emotion_background_enabled`
+  - 存储 key: `@solacore/emotion_background_enabled`
   - 默认开启
 
 - [x] **i18n**: 新增翻译 keys
@@ -1740,10 +1740,10 @@
   - 支持 en/es/zh 三语言
 
 > **新增文件**:
-> - `clarity-api/app/services/emotion_detector.py`
-> - `clarity-api/tests/test_emotion_detector.py`
-> - `clarity-mobile/components/AnimatedGradientBackground.tsx`
-> - `clarity-mobile/hooks/useEmotionBackground.ts`
+> - `solacore-api/app/services/emotion_detector.py`
+> - `solacore-api/tests/test_emotion_detector.py`
+> - `solacore-mobile/components/AnimatedGradientBackground.tsx`
+> - `solacore-mobile/hooks/useEmotionBackground.ts`
 > - `docs/epic6-spec.md`, `docs/epic6-plan.md`, `docs/epic6-tasks.md`
 
 > **测试验证**:
@@ -1759,7 +1759,7 @@
 #### Backend 验证
 
 ```bash
-cd clarity-api
+cd solacore-api
 poetry install --no-root  # No dependencies to install or update
 poetry run ruff check .   # All checks passed!
 poetry run mypy app --ignore-missing-imports  # Success: no issues found in 38 source files
@@ -1775,7 +1775,7 @@ poetry run pytest -v      # 82 passed in 16.92s
 #### Database 验证
 
 ```bash
-docker compose up -d db   # Container clarity-api-db-1 Running
+docker compose up -d db   # Container solacore-api-db-1 Running
 poetry run alembic upgrade head  # Will assume transactional DDL (already up to date)
 curl http://localhost:8000/health  # {"status":"healthy","version":"1.0.0","database":"connected"}
 ```
@@ -1789,7 +1789,7 @@ curl http://localhost:8000/health  # {"status":"healthy","version":"1.0.0","data
 #### Mobile 验证
 
 ```bash
-cd clarity-mobile
+cd solacore-mobile
 npm install --legacy-peer-deps  # found 0 vulnerabilities
 npm run lint                    # (no output = success)
 npx tsc --noEmit               # (no output = success)
@@ -1831,12 +1831,12 @@ npx tsc --noEmit               # (no output = success)
   - solve: stepReceive, stepClarify, stepReframe, stepOptions, stepCommit...
 
 > **新增文件**:
-> - `clarity-mobile/app/(tabs)/home.tsx`
-> - `clarity-mobile/app/session/[id].tsx`
-> - `clarity-mobile/app/session/_layout.tsx`
-> - `clarity-mobile/services/solve.ts`
-> - `clarity-mobile/services/stepHistory.ts`
-> - `clarity-mobile/types/solve.ts`
+> - `solacore-mobile/app/(tabs)/home.tsx`
+> - `solacore-mobile/app/session/[id].tsx`
+> - `solacore-mobile/app/session/_layout.tsx`
+> - `solacore-mobile/services/solve.ts`
+> - `solacore-mobile/services/stepHistory.ts`
+> - `solacore-mobile/types/solve.ts`
 
 > **PR**: #24 已合并
 

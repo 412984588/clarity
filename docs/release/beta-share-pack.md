@@ -34,7 +34,7 @@ These documents are tester-facing and can be shared publicly or with anyone test
 | ✅ [Bug Report Template](bug-report-template.md) | How to report bugs | **Always** - Include in invite |
 | ✅ [Beta Known Issues](beta-known-issues.md) | Current bug status, workarounds | **Proactively** - Share link when onboarding or when testers ask "Is this a known issue?" |
 | ✅ [Beta Issue Intake Guide](beta-issue-intake.md) | Where to report issues, severity guide, response times | **Always** - Include in invite or when testers ask how to report bugs |
-| ✅ **GitHub Issue Forms** | Structured bug reports and feedback via GitHub | **Always** - Link: [https://github.com/412984588/clarity/issues/new/choose](https://github.com/412984588/clarity/issues/new/choose) |
+| ✅ **GitHub Issue Forms** | Structured bug reports and feedback via GitHub | **Always** - Link: [https://github.com/412984588/solacore/issues/new/choose](https://github.com/412984588/solacore/issues/new/choose) |
 | ❌ **Web Feedback Page** | Web-based feedback form | **TBD (not built yet)** - Not deployed; use GitHub Issues or markdown form instead |
 | ✅ [Privacy Policy](privacy.md) | Data handling, user rights | **Always** - Legal requirement, link in app + tester guide |
 | ✅ [Free Beta - Start Here](free-beta-start-here.md) | Quick overview (optional for testers) | **Optional** - For testers who want to understand the bigger picture |
@@ -82,13 +82,13 @@ These documents contain internal processes, team workflows, or sensitive informa
 **Recommended bundle to send when inviting a new tester:**
 
 ### Email Subject
-`Invitation: Help Test Clarity (Free Beta)`
+`Invitation: Help Test Solacore (Free Beta)`
 
 ### Email Body (Short Version)
 ```
 Hi [TESTER_NAME],
 
-I'd love your help testing Clarity, a coaching app that helps you think through decisions.
+I'd love your help testing Solacore, a coaching app that helps you think through decisions.
 It's in Free Beta right now (no payments, just testing core features).
 
 **What you'll need:**
@@ -143,7 +143,7 @@ For a more comprehensive onboarding (e.g., tech-savvy testers or those who want 
 
 **Scenario 1: Sharing a new build with existing testers**
 
-**Email Subject**: `New Clarity Build Available - [BUILD_DATE]`
+**Email Subject**: `New Solacore Build Available - [BUILD_DATE]`
 
 **Message**:
 ```
@@ -196,7 +196,7 @@ Quick version:
 1. Enable "Unknown Sources" (Settings → Security)
 2. Download APK: [LATEST_APK_LINK]
 3. Tap downloaded file to install
-4. Open Clarity app
+4. Open Solacore app
 
 Stuck? Reply with your error message and I'll help!
 

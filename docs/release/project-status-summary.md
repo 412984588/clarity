@@ -1,4 +1,4 @@
-# Clarity - Project Status Summary
+# Solacore - Project Status Summary
 
 **Generated**: 2025-12-23
 **Version**: 1.0.0
@@ -9,7 +9,7 @@
 
 **Status**: **Free Beta (No Payments)**
 
-Clarity is currently in a free beta testing phase. Payment functionality (Stripe/RevenueCat) has been deferred and is not required for this phase. The focus is on validating core features with friends and early testers before implementing monetization.
+Solacore is currently in a free beta testing phase. Payment functionality (Stripe/RevenueCat) has been deferred and is not required for this phase. The focus is on validating core features with friends and early testers before implementing monetization.
 
 ---
 
@@ -99,7 +99,7 @@ Clarity is currently in a free beta testing phase. Payment functionality (Stripe
 
 | Blocker | Impact | Resolution |
 |---------|--------|------------|
-| **Domain not configured** | Cannot deploy to `api.clarity.app` | Purchase/configure DNS for custom domain |
+| **Domain not configured** | Cannot deploy to `api.solacore.app` | Purchase/configure DNS for custom domain |
 | **Apple Developer Account** | iOS build & App Store submission blocked | Enroll in Apple Developer Program ($99/year) |
 
 ### Deferred for Beta
@@ -224,7 +224,7 @@ Clarity is currently in a free beta testing phase. Payment functionality (Stripe
 
 | Task | Dependency | Description |
 |------|------------|-------------|
-| Configure `api.clarity.app` DNS | Domain purchase | Point to hosting provider |
+| Configure `api.solacore.app` DNS | Domain purchase | Point to hosting provider |
 | Create production PostgreSQL | Provider account | Neon/Supabase/RDS |
 | Deploy backend to production | Domain + DB | Run migrations, verify health |
 | iOS preview build | Apple Developer ($99) | EAS Build + credentials (for beta testing) |
@@ -238,14 +238,14 @@ Clarity is currently in a free beta testing phase. Payment functionality (Stripe
 | Assumption | Basis |
 |------------|-------|
 | Stripe live mode will work same as test mode | Stripe documentation |
-| RevenueCat SDK already integrated in mobile | Existing code in `clarity-mobile` |
+| RevenueCat SDK already integrated in mobile | Existing code in `solacore-mobile` |
 | EAS Build production profile is correctly configured | `eas.json` exists |
 
 ### Unknowns (Pending Confirmation)
 
 | Item | Question |
 |------|----------|
-| Domain ownership | Who owns `clarity.app`? Is it available? |
+| Domain ownership | Who owns `solacore.app`? Is it available? |
 | Hosting budget | Monthly cost constraints for compute/DB? |
 | Launch timeline | Target date for production go-live? |
 | Beta testers | Who will test iOS TestFlight builds? |

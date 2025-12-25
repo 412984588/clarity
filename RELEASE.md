@@ -1,6 +1,6 @@
 # Release Guide
 
-This document outlines the release process for Clarity.
+This document outlines the release process for Solacore.
 
 ---
 
@@ -34,13 +34,13 @@ This document outlines the release process for Clarity.
 ### 1. Version Bump
 
 Update version in:
-- `clarity-api/pyproject.toml`
-- `clarity-mobile/app.json` (version + buildNumber/versionCode)
+- `solacore-api/pyproject.toml`
+- `solacore-mobile/app.json` (version + buildNumber/versionCode)
 
 ```bash
 # Example: Bump to 1.2.0
 # Edit files manually or use:
-npm version minor  # in clarity-mobile
+npm version minor  # in solacore-mobile
 ```
 
 ### 2. Update CHANGELOG
@@ -57,7 +57,7 @@ git checkout -b release/1.2.0
 ### 4. Backend Deployment
 
 ```bash
-cd clarity-api
+cd solacore-api
 
 # Run final checks
 poetry run ruff check .
@@ -76,14 +76,14 @@ poetry run pytest -v
 ./scripts/migrate.sh upgrade
 
 # Manual
-cd clarity-api
+cd solacore-api
 poetry run alembic upgrade head
 ```
 
 ### 6. Mobile Build
 
 ```bash
-cd clarity-mobile
+cd solacore-mobile
 
 # Preview build (internal testing)
 eas build --profile preview --platform all
@@ -126,7 +126,7 @@ git push
 ./scripts/migrate.sh rollback
 
 # 3. Verify health
-curl https://api.clarity.app/health
+curl https://api.solacore.app/health
 ```
 
 ### Mobile Rollback

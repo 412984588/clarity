@@ -7,7 +7,7 @@
 
 ## Overview
 
-本文档追踪 Clarity 上线所需的所有外部账号、域名、API 密钥等依赖项。
+本文档追踪 Solacore 上线所需的所有外部账号、域名、API 密钥等依赖项。
 
 **状态说明**：
 - **READY**: 已准备就绪，可直接使用
@@ -21,7 +21,7 @@
 
 | Category | Dependency | 账号/资源 | Status | 负责人 | 预计时间 | 备注 |
 |----------|------------|-----------|--------|--------|----------|------|
-| **Infrastructure** | Domain | `api.clarity.app` | BLOCKED | | | 需购买域名并配置 DNS → [Domain & Hosting Setup Guide](domain-hosting-setup-guide.md) |
+| **Infrastructure** | Domain | `api.solacore.app` | BLOCKED | | | 需购买域名并配置 DNS → [Domain & Hosting Setup Guide](domain-hosting-setup-guide.md) |
 | **Infrastructure** | Hosting Provider | Vercel / Railway / Fly.io | UNKNOWN | | | 需决定托管服务商 → [Domain & Hosting Setup Guide](domain-hosting-setup-guide.md) |
 | **Infrastructure** | PostgreSQL | Neon / Supabase / RDS | UNKNOWN | | | 需决定数据库托管商 → [Domain & Hosting Setup Guide](domain-hosting-setup-guide.md) |
 | **Mobile - iOS** | Apple Developer Account | Apple Developer Program | BLOCKED | | | 需 $99/年订阅 → [Apple Developer Setup Guide](apple-developer-setup-guide.md) |
@@ -69,7 +69,7 @@ Apple Developer → iOS Build → App Store
 
 | Dependency | Cost | Action |
 |------------|------|--------|
-| Domain | ~$12/年 | 购买 clarity.app 或替代域名 |
+| Domain | ~$12/年 | 购买 solacore.app 或替代域名 |
 | Apple Developer | $99/年 | 注册 Apple Developer Program |
 | Google Play Console | $25 一次性 | 注册 Google Play 开发者账号 |
 
@@ -77,8 +77,8 @@ Apple Developer → iOS Build → App Store
 
 | Dependency | Prerequisite |
 |------------|--------------|
-| Stripe Webhook | 需 `https://api.clarity.app/webhooks/stripe` |
-| RevenueCat Webhook | 需 `https://api.clarity.app/webhooks/revenuecat` |
+| Stripe Webhook | 需 `https://api.solacore.app/webhooks/stripe` |
+| RevenueCat Webhook | 需 `https://api.solacore.app/webhooks/revenuecat` |
 | Apple Sign-In | 需 Apple Developer + Return URL |
 | Google OAuth | 需 Production Redirect URI |
 

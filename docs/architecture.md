@@ -1,4 +1,4 @@
-# Clarity - Architecture Document
+# Solacore - Architecture Document
 
 > **Version**: 1.0
 > **Last Updated**: 2025-12-21
@@ -158,7 +158,7 @@ sequenceDiagram
 ### 2.1 Mobile App (React Native + Expo)
 
 ```
-clarity-mobile/
+solacore-mobile/
 ├── app/                      # Expo Router (file-based routing)
 │   ├── (auth)/               # Auth screens (login, signup)
 │   ├── (main)/               # Main app screens
@@ -206,7 +206,7 @@ clarity-mobile/
 ### 2.2 Backend API (FastAPI)
 
 ```
-clarity-api/
+solacore-api/
 ├── app/
 │   ├── main.py               # FastAPI app entry
 │   ├── config.py             # Settings (env vars)
@@ -590,8 +590,8 @@ Response (200):
 Request:
 {
     "plan_id": "pro_monthly",
-    "success_url": "clarity://subscription/success",
-    "cancel_url": "clarity://subscription/cancel"
+    "success_url": "solacore://subscription/success",
+    "cancel_url": "solacore://subscription/cancel"
 }
 
 Response (200):
@@ -1069,7 +1069,7 @@ backup:
   encryption: AES-256-GCM
   storage:
     primary: /backups/local
-    offsite: s3://clarity-backups (optional)
+    offsite: s3://solacore-backups (optional)
 ```
 
 **Backup Script:**
@@ -1079,10 +1079,10 @@ backup:
 # backup.sh - Run daily via cron
 
 DATE=$(date +%Y%m%d)
-BACKUP_FILE="/backups/clarity_${DATE}.sql.gz"
+BACKUP_FILE="/backups/solacore_${DATE}.sql.gz"
 
 # Dump PostgreSQL (exclude message content - there is none on server)
-pg_dump -h localhost -U clarity_app clarity_db \
+pg_dump -h localhost -U solacore_app solacore_db \
   --exclude-table-data=rate_limits \
   | gzip > $BACKUP_FILE
 
@@ -1093,7 +1093,7 @@ gpg --symmetric --cipher-algo AES256 $BACKUP_FILE
 find /backups -name "*.sql.gz.gpg" -mtime +30 -delete
 
 # Optional: Upload to offsite storage
-# aws s3 cp ${BACKUP_FILE}.gpg s3://clarity-backups/
+# aws s3 cp ${BACKUP_FILE}.gpg s3://solacore-backups/
 ```
 
 ### 7.4 GDPR/CCPA Compliance
@@ -1196,12 +1196,12 @@ version: '3.8'
 
 services:
   api:
-    build: ./clarity-api
+    build: ./solacore-api
     restart: always
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://clarity:${DB_PASSWORD}@db:5432/clarity
+      - DATABASE_URL=postgresql://solacore:${DB_PASSWORD}@db:5432/solacore
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
       - JWT_SECRET=${JWT_SECRET}
@@ -1214,9 +1214,9 @@ services:
     image: postgres:15
     restart: always
     environment:
-      - POSTGRES_USER=clarity
+      - POSTGRES_USER=solacore
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=clarity
+      - POSTGRES_DB=solacore
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./backups:/backups
@@ -1246,10 +1246,10 @@ upstream api {
 
 server {
     listen 443 ssl http2;
-    server_name api.clarity.app;
+    server_name api.solacore.app;
 
-    ssl_certificate /etc/ssl/certs/clarity.crt;
-    ssl_certificate_key /etc/ssl/certs/clarity.key;
+    ssl_certificate /etc/ssl/certs/solacore.crt;
+    ssl_certificate_key /etc/ssl/certs/solacore.key;
 
     # Rate limiting
     limit_req_zone $binary_remote_addr zone=api_limit:10m rate=60r/m;
@@ -1332,4 +1332,4 @@ Phase 4: Full Cloud (if needed)
 
 ---
 
-*This document is maintained by the Engineering Team. For questions or suggestions, contact engineering@clarity.app*
+*This document is maintained by the Engineering Team. For questions or suggestions, contact engineering@solacore.app*

@@ -10,7 +10,7 @@
 
 This document provides email and message templates for recruiting and communicating with Free Beta testers. Use these templates to maintain consistent, professional, and friendly communication throughout the beta testing cycle.
 
-**Target Audience**: Friends, early adopters, and internal team members willing to test Clarity before public launch.
+**Target Audience**: Friends, early adopters, and internal team members willing to test Solacore before public launch.
 
 **使用场景**:
 - 招募测试者 (Recruiting testers)
@@ -51,7 +51,7 @@ This document provides email and message templates for recruiting and communicat
 ```
 嗨 [Name]，
 
-我最近做了一个 App 叫 Clarity，是一个 AI 助手，帮人理清思路、解决问题的。现在快做好了，想找几个朋友先试试看，能帮我测一下吗？
+我最近做了一个 App 叫 Solacore，是一个 AI 助手，帮人理清思路、解决问题的。现在快做好了，想找几个朋友先试试看，能帮我测一下吗？
 
 **你需要做的**：
 - 花 20-30 分钟体验一下（随便什么时候都行）
@@ -84,13 +84,13 @@ P.S. 不用担心隐私问题，你的数据只有你自己能看到，我这边
 
 #### For Tech Friends (技术版)
 
-**Subject**: Clarity Free Beta 测试邀请 - Android APK
+**Subject**: Solacore Free Beta 测试邀请 - Android APK
 
 **Message**:
 ```
 Hi [Name],
 
-I'm launching a Free Beta for Clarity, an AI-powered problem-solving assistant built with React Native + FastAPI. Looking for early testers to validate core features before production.
+I'm launching a Free Beta for Solacore, an AI-powered problem-solving assistant built with React Native + FastAPI. Looking for early testers to validate core features before production.
 
 **Tech Stack**:
 - Mobile: React Native + Expo
@@ -130,7 +130,7 @@ Thanks!
 
 ### Template 2: Acceptance / Welcome
 
-#### Subject: Welcome to Clarity Beta! 🎉
+#### Subject: Welcome to Solacore Beta! 🎉
 
 **Message**:
 ```
@@ -186,13 +186,13 @@ Best,
 
 ### Template 3: Reminder (Day 3)
 
-#### Subject: Clarity Beta - 有空试试看吗？😊
+#### Subject: Solacore Beta - 有空试试看吗？😊
 
 **Message**:
 ```
 Hi [Name],
 
-三天前给你发了 Clarity Beta 测试邀请，不知道你有没有空看一下？
+三天前给你发了 Solacore Beta 测试邀请，不知道你有没有空看一下？
 
 **如果已经试过了**:
 - 太好了！有什么反馈吗？好的坏的都想听听
@@ -222,13 +222,13 @@ Hi [Name],
 
 ### Template 4: Reminder (Day 7)
 
-#### Subject: Clarity Beta - 最后提醒一次 🙏
+#### Subject: Solacore Beta - 最后提醒一次 🙏
 
 **Message**:
 ```
 Hi [Name],
 
-一周前邀请你测试 Clarity，想最后确认一下你还有没有兴趣？
+一周前邀请你测试 Solacore，想最后确认一下你还有没有兴趣？
 
 **如果还想测**:
 - APK 链接在这里：[APK Link]
@@ -258,13 +258,13 @@ Hi [Name],
 
 ### Template 5: Thank You + Feedback Request
 
-#### Subject: 谢谢你测试 Clarity！需要你的反馈 📝
+#### Subject: 谢谢你测试 Solacore！需要你的反馈 📝
 
 **Message**:
 ```
 Hi [Name],
 
-看到你已经试过 Clarity 了，太感谢了！
+看到你已经试过 Solacore 了，太感谢了！
 
 **现在需要你帮个小忙**:
 请花 5-10 分钟填一下这个[反馈表单](beta-feedback-form.md)，告诉我：
@@ -283,7 +283,7 @@ Hi [Name],
 - 后面有新版本我会再通知你
 
 **额外奖励（可选）**:
-- 如果你愿意，可以写一段话推荐 Clarity
+- 如果你愿意，可以写一段话推荐 Solacore
 - 我可能会用在网站或宣传材料上（会署名或匿名，你选）
 
 再次感谢你的帮助！🙏
@@ -345,13 +345,13 @@ Hi [Name],
 
 ### Template 7: Wrap-up / Exit Survey
 
-#### Subject: Clarity Beta 结束 - 谢谢你的参与！🎉
+#### Subject: Solacore Beta 结束 - 谢谢你的参与！🎉
 
 **Message**:
 ```
 Hi [Name],
 
-Clarity 的 Free Beta 测试已经结束了，非常感谢你这段时间的帮助！
+Solacore 的 Free Beta 测试已经结束了，非常感谢你这段时间的帮助！
 
 **成果总结**:
 - 总共 [X] 位测试者参与
@@ -374,7 +374,7 @@ Clarity 的 Free Beta 测试已经结束了，非常感谢你这段时间的帮�
 - 正式上线后，暂无优惠/特权
 - 如果你愿意，可以把你列为"Early Tester"（会在 About 页面展示）
 
-再次感谢你的支持！希望 Clarity 能帮到更多人。
+再次感谢你的支持！希望 Solacore 能帮到更多人。
 
 Stay in touch,
 [Your Name]

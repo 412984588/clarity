@@ -1,4 +1,4 @@
-# Clarity Constitution
+# Solacore Constitution
 
 ## Core Principles
 
@@ -67,7 +67,7 @@ React Native + Expo 是首要平台，所有功能必须优先在移动端实现
 - **安全分流**：检测到危机内容时，立即展示当地心理援助热线：
   - US: 988 (Suicide & Crisis Lifeline)
   - ES: 717 003 717 (Teléfono de la Esperanza)
-- **免责声明**：应用内明确声明"Clarity 不是医疗、心理或法律专业服务，不能替代专业帮助"
+- **免责声明**：应用内明确声明"Solacore 不是医疗、心理或法律专业服务，不能替代专业帮助"
 - **不得劝阻求助**：AI 不得试图阻止用户寻求专业帮助
 - **日志脱敏**：即使是危机事件，也不得记录用户原文
 

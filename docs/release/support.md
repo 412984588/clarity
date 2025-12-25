@@ -1,6 +1,6 @@
 # Support
 
-This is the public support page for Clarity. It can be published as-is or customized.
+This is the public support page for Solacore. It can be published as-is or customized.
 
 **Status**: Draft. Requires legal review before publishing.
 

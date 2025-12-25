@@ -3,7 +3,7 @@
 **Version**: 1.0
 **Last Updated**: 2025-12-23
 
-Step-by-step guide for deploying Clarity to production.
+Step-by-step guide for deploying Solacore to production.
 
 ---
 
@@ -16,7 +16,7 @@ Step-by-step guide for deploying Clarity to production.
 - [ ] RevenueCat account
 - [ ] Apple Developer account ($99/yr)
 - [ ] Google Play Console account ($25)
-- [ ] Domain: `api.clarity.app` DNS access
+- [ ] Domain: `api.solacore.app` DNS access
 
 ---
 
@@ -27,14 +27,14 @@ Step-by-step guide for deploying Clarity to production.
 **Neon (recommended)**:
 ```bash
 # Via Neon Console: https://console.neon.tech
-# 1. Create new project: "clarity-prod"
+# 1. Create new project: "solacore-prod"
 # 2. Region: us-east-1 or eu-central-1
 # 3. Copy connection string
 ```
 
 **Verification**:
 ```bash
-export DATABASE_URL="postgresql+asyncpg://user:pass@ep-xxx.us-east-1.aws.neon.tech/clarity"
+export DATABASE_URL="postgresql+asyncpg://user:pass@ep-xxx.us-east-1.aws.neon.tech/solacore"
 psql $DATABASE_URL -c "SELECT 1"
 ```
 **Expected**: `1`
@@ -81,7 +81,7 @@ openssl rand -hex 32
 ```bash
 npm i -g vercel
 vercel login
-cd clarity-api
+cd solacore-api
 vercel --prod
 
 # Set environment variables
@@ -95,7 +95,7 @@ vercel env add JWT_SECRET production
 ```bash
 npm i -g @railway/cli
 railway login
-cd clarity-api
+cd solacore-api
 railway init
 railway up
 ```
@@ -105,7 +105,7 @@ railway up
 ```bash
 brew install flyctl
 fly auth login
-cd clarity-api
+cd solacore-api
 fly launch
 fly deploy
 fly secrets set DATABASE_URL="..." JWT_SECRET="..."
@@ -113,7 +113,7 @@ fly secrets set DATABASE_URL="..." JWT_SECRET="..."
 
 **Verification**:
 ```bash
-curl https://api.clarity.app/health
+curl https://api.solacore.app/health
 ```
 **Expected**: `{"status":"healthy","version":"1.0.0","database":"connected"}`
 
@@ -122,7 +122,7 @@ curl https://api.clarity.app/health
 ## Step 4: Run Database Migration
 
 ```bash
-cd clarity-api
+cd solacore-api
 export DATABASE_URL="postgresql+asyncpg://..."
 poetry run alembic upgrade head
 ```
@@ -139,7 +139,7 @@ poetry run alembic current
 ### 5.1 Stripe Webhook
 
 1. Go to https://dashboard.stripe.com/webhooks
-2. Add endpoint: `https://api.clarity.app/webhooks/stripe`
+2. Add endpoint: `https://api.solacore.app/webhooks/stripe`
 3. Select events: checkout.session.completed, customer.subscription.*
 4. Copy "Signing secret" → `STRIPE_WEBHOOK_SECRET`
 
@@ -149,7 +149,7 @@ poetry run alembic current
 ### 5.2 RevenueCat Webhook
 
 1. Go to https://app.revenuecat.com → Settings → Webhooks
-2. Add endpoint: `https://api.clarity.app/webhooks/revenuecat`
+2. Add endpoint: `https://api.solacore.app/webhooks/revenuecat`
 3. Copy secret → `REVENUECAT_WEBHOOK_SECRET`
 
 **Verification**: Test webhook from dashboard
@@ -160,7 +160,7 @@ poetry run alembic current
 ## Step 6: Smoke Test
 
 ```bash
-./scripts/deploy_prod_smoke.sh https://api.clarity.app
+./scripts/deploy_prod_smoke.sh https://api.solacore.app
 ```
 
 **Expected Output**:
@@ -176,7 +176,7 @@ poetry run alembic current
 ## Step 7: Mobile Production Build
 
 ```bash
-cd clarity-mobile
+cd solacore-mobile
 eas build --profile production --platform all
 eas submit --platform ios
 eas submit --platform android

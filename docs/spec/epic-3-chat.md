@@ -9,7 +9,7 @@
 
 ## Overview
 
-Epic 3 builds the core chat infrastructure for Clarity's Solve problem-solving sessions. M1 focuses on backend session management and SSE streaming scaffold (without real LLM integration).
+Epic 3 builds the core chat infrastructure for Solacore's Solve problem-solving sessions. M1 focuses on backend session management and SSE streaming scaffold (without real LLM integration).
 
 ---
 

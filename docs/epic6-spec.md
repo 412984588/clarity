@@ -54,7 +54,7 @@ As a user going through a Solve session, I want to see the app's background subt
    - Add "Emotion Gradient Background" toggle in Settings
    - Default: ON
    - Store preference in AsyncStorage
-   - Key: `@clarity/emotion_background_enabled`
+   - Key: `@solacore/emotion_background_enabled`
 
 3. **i18n**
    - All new strings must be localized (en, es, zh)

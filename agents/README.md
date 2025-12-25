@@ -1,4 +1,4 @@
-# 🤖 Clarity Agents Rules
+# 🤖 Solacore Agents Rules
 
 > **⚠️ MANDATORY WORKFLOW**
 

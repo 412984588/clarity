@@ -29,9 +29,9 @@
 |-------|-------|
 | **ID** | T-1.1.1 |
 | **Dependencies** | None (Entry Point) |
-| **Commands** | `npx create-expo-app@latest clarity-mobile --template blank-typescript` |
-| **Files Created** | `clarity-mobile/` (entire directory) |
-| **Verification** | `cd clarity-mobile && npx expo --version` → outputs version |
+| **Commands** | `npx create-expo-app@latest solacore-mobile --template blank-typescript` |
+| **Files Created** | `solacore-mobile/` (entire directory) |
+| **Verification** | `cd solacore-mobile && npx expo --version` → outputs version |
 
 ---
 
@@ -42,12 +42,12 @@
 | **ID** | T-1.1.2 |
 | **Dependencies** | T-1.1.1 |
 | **Commands** | ```bash
-mkdir -p clarity-mobile/app/{(tabs),auth,chat}
-mkdir -p clarity-mobile/components/{ui,chat,common}
-mkdir -p clarity-mobile/{services,stores,i18n,hooks,utils,constants,types}
+mkdir -p solacore-mobile/app/{(tabs),auth,chat}
+mkdir -p solacore-mobile/components/{ui,chat,common}
+mkdir -p solacore-mobile/{services,stores,i18n,hooks,utils,constants,types}
 ``` |
-| **Files Created** | 12 directories under `clarity-mobile/` |
-| **Verification** | `ls clarity-mobile/app clarity-mobile/components clarity-mobile/services clarity-mobile/stores clarity-mobile/i18n` → all exist |
+| **Files Created** | 12 directories under `solacore-mobile/` |
+| **Verification** | `ls solacore-mobile/app solacore-mobile/components solacore-mobile/services solacore-mobile/stores solacore-mobile/i18n` → all exist |
 
 ---
 
@@ -58,14 +58,14 @@ mkdir -p clarity-mobile/{services,stores,i18n,hooks,utils,constants,types}
 | **ID** | T-1.1.3 |
 | **Dependencies** | T-1.1.1 |
 | **Commands** | ```bash
-cd clarity-mobile
+cd solacore-mobile
 npm install -D eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin
 npm install -D prettier eslint-config-prettier eslint-plugin-prettier
 npm install -D eslint-plugin-react eslint-plugin-react-hooks
 ``` |
-| **Files Created** | `clarity-mobile/.eslintrc.js`, `clarity-mobile/.prettierrc` |
-| **Files Modified** | `clarity-mobile/package.json` (add lint/format scripts) |
-| **Verification** | `cd clarity-mobile && npm run lint` → exits 0 |
+| **Files Created** | `solacore-mobile/.eslintrc.js`, `solacore-mobile/.prettierrc` |
+| **Files Modified** | `solacore-mobile/package.json` (add lint/format scripts) |
+| **Verification** | `cd solacore-mobile && npm run lint` → exits 0 |
 
 **File: `.eslintrc.js`**
 ```javascript
@@ -125,9 +125,9 @@ module.exports = {
 |-------|-------|
 | **ID** | T-1.1.4 |
 | **Dependencies** | T-1.1.2 |
-| **Commands** | `cd clarity-mobile && npx expo install expo-router expo-linking expo-constants expo-status-bar` |
-| **Files Created** | `clarity-mobile/app/_layout.tsx`, `clarity-mobile/app/(tabs)/_layout.tsx`, `clarity-mobile/app/(tabs)/index.tsx`, `clarity-mobile/app/(tabs)/settings.tsx` |
-| **Verification** | `cd clarity-mobile && npx expo start` → Expo Dev Server starts |
+| **Commands** | `cd solacore-mobile && npx expo install expo-router expo-linking expo-constants expo-status-bar` |
+| **Files Created** | `solacore-mobile/app/_layout.tsx`, `solacore-mobile/app/(tabs)/_layout.tsx`, `solacore-mobile/app/(tabs)/index.tsx`, `solacore-mobile/app/(tabs)/settings.tsx` |
+| **Verification** | `cd solacore-mobile && npx expo start` → Expo Dev Server starts |
 
 **File: `app/_layout.tsx`**
 ```typescript
@@ -164,7 +164,7 @@ import { View, Text, StyleSheet } from 'react-native';
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Clarity</Text>
+      <Text style={styles.title}>Solacore</Text>
       <Text style={styles.subtitle}>Your universal problem-solving assistant</Text>
     </View>
   );
@@ -216,13 +216,13 @@ const styles = StyleSheet.create({
 | **ID** | T-1.1.6 |
 | **Dependencies** | T-1.1.5 |
 | **Commands** | None (file creation only) |
-| **Files Created** | `clarity-mobile/README.md` |
+| **Files Created** | `solacore-mobile/README.md` |
 | **Verification** | File exists with setup instructions |
-| **Story Completion Check** | `cd clarity-mobile && npm run lint && npx tsc --noEmit` → exits 0 |
+| **Story Completion Check** | `cd solacore-mobile && npm run lint && npx tsc --noEmit` → exits 0 |
 
-**File: `clarity-mobile/README.md`**
+**File: `solacore-mobile/README.md`**
 ```markdown
-# Clarity Mobile
+# Solacore Mobile
 
 React Native + Expo 移动端应用
 
@@ -275,13 +275,13 @@ npm run format    # Prettier 格式化
 | **ID** | T-1.2.1 |
 | **Dependencies** | None (Entry Point) |
 | **Commands** | ```bash
-mkdir clarity-api && cd clarity-api
-poetry init --name clarity-api --python "^3.11" --no-interaction
+mkdir solacore-api && cd solacore-api
+poetry init --name solacore-api --python "^3.11" --no-interaction
 poetry add fastapi uvicorn[standard] pydantic pydantic-settings python-dotenv
 poetry add -D pytest pytest-asyncio httpx ruff mypy
 ``` |
-| **Files Created** | `clarity-api/pyproject.toml`, `clarity-api/poetry.lock` |
-| **Verification** | `cd clarity-api && poetry install` → succeeds |
+| **Files Created** | `solacore-api/pyproject.toml`, `solacore-api/poetry.lock` |
+| **Verification** | `cd solacore-api && poetry install` → succeeds |
 
 ---
 
@@ -292,14 +292,14 @@ poetry add -D pytest pytest-asyncio httpx ruff mypy
 | **ID** | T-1.2.2 |
 | **Dependencies** | T-1.2.1 |
 | **Commands** | ```bash
-cd clarity-api
+cd solacore-api
 mkdir -p app/{routers,services,models,middleware,schemas}
 mkdir -p tests
 touch app/__init__.py app/routers/__init__.py app/services/__init__.py
 touch app/models/__init__.py app/middleware/__init__.py app/schemas/__init__.py
 ``` |
 | **Files Created** | 6 directories, 6 `__init__.py` files |
-| **Verification** | `ls clarity-api/app/routers clarity-api/app/models` → directories exist |
+| **Verification** | `ls solacore-api/app/routers solacore-api/app/models` → directories exist |
 
 ---
 
@@ -310,8 +310,8 @@ touch app/models/__init__.py app/middleware/__init__.py app/schemas/__init__.py
 | **ID** | T-1.2.3 |
 | **Dependencies** | T-1.2.2 |
 | **Commands** | None (file creation) |
-| **Files Created** | `clarity-api/app/config.py`, `clarity-api/.env.example` |
-| **Verification** | `cd clarity-api && cp .env.example .env && poetry run python -c "from app.config import get_settings; print(get_settings().app_name)"` → outputs "Clarity API" |
+| **Files Created** | `solacore-api/app/config.py`, `solacore-api/.env.example` |
+| **Verification** | `cd solacore-api && cp .env.example .env && poetry run python -c "from app.config import get_settings; print(get_settings().app_name)"` → outputs "Solacore API" |
 
 **File: `app/config.py`**
 ```python
@@ -321,9 +321,9 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
     """应用配置，从环境变量加载"""
-    app_name: str = "Clarity API"
+    app_name: str = "Solacore API"
     debug: bool = False
-    database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/clarity"
+    database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/solacore"
     jwt_secret: str = "your-secret-key-change-in-production"
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 60
@@ -343,7 +343,7 @@ def get_settings() -> Settings:
 **File: `.env.example`**
 ```bash
 DEBUG=true
-DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/clarity
+DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/solacore
 JWT_SECRET=your-secret-key-change-in-production
 HOST=0.0.0.0
 PORT=8000
@@ -358,9 +358,9 @@ PORT=8000
 | **ID** | T-1.2.4 |
 | **Dependencies** | T-1.2.3 |
 | **Commands** | None (file creation) |
-| **Files Created** | `clarity-api/app/main.py` |
+| **Files Created** | `solacore-api/app/main.py` |
 | **Verification** | ```bash
-cd clarity-api
+cd solacore-api
 poetry run uvicorn app.main:app --reload &
 sleep 3 && curl http://localhost:8000/health
 ``` → returns `{"status":"healthy"}`（当前实现还包含 version 和 database 字段） |
@@ -399,7 +399,7 @@ async def health_check():
 @app.get("/")
 async def root():
     """根端点"""
-    return {"message": "Welcome to Clarity API", "docs": "/docs"}
+    return {"message": "Welcome to Solacore API", "docs": "/docs"}
 ```
 
 ---
@@ -411,8 +411,8 @@ async def root():
 | **ID** | T-1.2.5 |
 | **Dependencies** | T-1.2.4 |
 | **Commands** | None (file creation) |
-| **Files Created** | `clarity-api/Dockerfile` |
-| **Verification** | `cd clarity-api && docker build -t clarity-api .` → builds successfully |
+| **Files Created** | `solacore-api/Dockerfile` |
+| **Verification** | `cd solacore-api && docker build -t solacore-api .` → builds successfully |
 
 **File: `Dockerfile`**
 ```dockerfile
@@ -442,8 +442,8 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 | **ID** | T-1.2.6 |
 | **Dependencies** | T-1.2.5 |
 | **Commands** | None (file creation) |
-| **Files Created** | `clarity-api/docker-compose.yml` |
-| **Verification** | `cd clarity-api && docker-compose up -d && curl http://localhost:8000/health && docker-compose down` → returns healthy |
+| **Files Created** | `solacore-api/docker-compose.yml` |
+| **Verification** | `cd solacore-api && docker-compose up -d && curl http://localhost:8000/health && docker-compose down` → returns healthy |
 
 **File: `docker-compose.yml`**
 ```yaml
@@ -456,7 +456,7 @@ services:
       - "8000:8000"
     environment:
       - DEBUG=true
-      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/clarity
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/solacore
     depends_on:
       - db
     volumes:
@@ -469,7 +469,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=clarity
+      - POSTGRES_DB=solacore
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -486,9 +486,9 @@ volumes:
 | **ID** | T-1.2.7 |
 | **Dependencies** | T-1.2.6 |
 | **Commands** | None (file creation) |
-| **Files Created** | `clarity-api/README.md` |
+| **Files Created** | `solacore-api/README.md` |
 | **Verification** | File exists with complete instructions |
-| **Story Completion Check** | `cd clarity-api && poetry run ruff check . && poetry run mypy app --ignore-missing-imports` → exits 0 |
+| **Story Completion Check** | `cd solacore-api && poetry run ruff check . && poetry run mypy app --ignore-missing-imports` → exits 0 |
 
 ---
 
@@ -502,8 +502,8 @@ volumes:
 |-------|-------|
 | **ID** | T-1.3.1 |
 | **Dependencies** | T-1.2.6 (docker-compose with db) |
-| **Commands** | `cd clarity-api && poetry add sqlalchemy[asyncio] asyncpg alembic greenlet` |
-| **Files Modified** | `clarity-api/pyproject.toml`, `clarity-api/poetry.lock` |
+| **Commands** | `cd solacore-api && poetry add sqlalchemy[asyncio] asyncpg alembic greenlet` |
+| **Files Modified** | `solacore-api/pyproject.toml`, `solacore-api/poetry.lock` |
 | **Verification** | `poetry show sqlalchemy` → shows version |
 
 ---
@@ -515,7 +515,7 @@ volumes:
 | **ID** | T-1.3.2 |
 | **Dependencies** | T-1.3.1 |
 | **Commands** | None (file creation) |
-| **Files Created** | `clarity-api/app/database.py` |
+| **Files Created** | `solacore-api/app/database.py` |
 | **Verification** | `poetry run python -c "from app.database import engine; print(engine)"` → outputs Engine |
 
 **File: `app/database.py`**
@@ -559,10 +559,10 @@ async def get_db():
 |-------|-------|
 | **ID** | T-1.3.3 |
 | **Dependencies** | T-1.3.2 |
-| **Commands** | `cd clarity-api && poetry run alembic init alembic` |
-| **Files Created** | `clarity-api/alembic/`, `clarity-api/alembic.ini` |
-| **Files Modified** | `clarity-api/alembic/env.py` (async config) |
-| **Verification** | `ls clarity-api/alembic/` → env.py, versions/, script.py.mako exist |
+| **Commands** | `cd solacore-api && poetry run alembic init alembic` |
+| **Files Created** | `solacore-api/alembic/`, `solacore-api/alembic.ini` |
+| **Files Modified** | `solacore-api/alembic/env.py` (async config) |
+| **Verification** | `ls solacore-api/alembic/` → env.py, versions/, script.py.mako exist |
 
 **File: `alembic/env.py` (replace content)**
 ```python
@@ -634,13 +634,13 @@ else:
 | **ID** | T-1.3.4 |
 | **Dependencies** | T-1.3.3 |
 | **Commands** | ```bash
-cd clarity-api
+cd solacore-api
 docker-compose up -d db
 poetry run alembic revision --autogenerate -m "create users table"
 ``` |
-| **Files Created** | `clarity-api/app/models/user.py`, `clarity-api/alembic/versions/*_create_users_table.py` |
-| **Files Modified** | `clarity-api/app/models/__init__.py` |
-| **Verification** | `ls clarity-api/alembic/versions/` → migration file exists |
+| **Files Created** | `solacore-api/app/models/user.py`, `solacore-api/alembic/versions/*_create_users_table.py` |
+| **Files Modified** | `solacore-api/app/models/__init__.py` |
+| **Verification** | `ls solacore-api/alembic/versions/` → migration file exists |
 
 **File: `app/models/user.py`**
 ```python
@@ -678,9 +678,9 @@ __all__ = ["User"]
 |-------|-------|
 | **ID** | T-1.3.5 |
 | **Dependencies** | T-1.3.4 |
-| **Commands** | `cd clarity-api && poetry run alembic upgrade head` |
+| **Commands** | `cd solacore-api && poetry run alembic upgrade head` |
 | **Files Modified** | Database (creates tables) |
-| **Verification** | `docker exec -it clarity-api-db-1 psql -U postgres -d clarity -c "\dt"` → shows users, alembic_version |
+| **Verification** | `docker exec -it solacore-api-db-1 psql -U postgres -d solacore -c "\dt"` → shows users, alembic_version |
 
 ---
 
@@ -691,7 +691,7 @@ __all__ = ["User"]
 | **ID** | T-1.3.6 |
 | **Dependencies** | T-1.3.5 |
 | **Commands** | None (file modification) |
-| **Files Modified** | `clarity-api/app/main.py` |
+| **Files Modified** | `solacore-api/app/main.py` |
 | **Verification** | `curl http://localhost:8000/health` → `{"status":"healthy","version":"1.0.0","database":"connected"}` |
 | **Story Completion Check** | `poetry run alembic upgrade head` exits 0 + `/health` returns `{"database":"connected"}` |
 
@@ -742,7 +742,7 @@ async def health_check(db: AsyncSession = Depends(get_db)):
 
 @app.get("/")
 async def root():
-    return {"message": "Welcome to Clarity API", "docs": "/docs"}
+    return {"message": "Welcome to Solacore API", "docs": "/docs"}
 ```
 
 ---
@@ -768,14 +768,14 @@ name: Backend CI
 on:
   push:
     branches: [main]
-    paths: ['clarity-api/**', '.github/workflows/backend.yml']
+    paths: ['solacore-api/**', '.github/workflows/backend.yml']
   pull_request:
     branches: [main]
-    paths: ['clarity-api/**', '.github/workflows/backend.yml']
+    paths: ['solacore-api/**', '.github/workflows/backend.yml']
 
 defaults:
   run:
-    working-directory: clarity-api
+    working-directory: solacore-api
 
 jobs:
   lint:
@@ -798,7 +798,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: clarity_test
+          POSTGRES_DB: solacore_test
         ports: ['5432:5432']
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
@@ -810,10 +810,10 @@ jobs:
       - run: poetry install
       - run: poetry run alembic upgrade head
         env:
-          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/clarity_test
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/solacore_test
       - run: poetry run pytest -v
         env:
-          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/clarity_test
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/solacore_test
 ```
 
 ---
@@ -835,14 +835,14 @@ name: Mobile CI
 on:
   push:
     branches: [main]
-    paths: ['clarity-mobile/**', '.github/workflows/mobile.yml']
+    paths: ['solacore-mobile/**', '.github/workflows/mobile.yml']
   pull_request:
     branches: [main]
-    paths: ['clarity-mobile/**', '.github/workflows/mobile.yml']
+    paths: ['solacore-mobile/**', '.github/workflows/mobile.yml']
 
 defaults:
   run:
-    working-directory: clarity-mobile
+    working-directory: solacore-mobile
 
 jobs:
   lint:
@@ -853,7 +853,7 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-          cache-dependency-path: clarity-mobile/package-lock.json
+          cache-dependency-path: solacore-mobile/package-lock.json
       - run: npm ci
       - run: npm run lint
       - run: npx tsc --noEmit
@@ -895,11 +895,11 @@ jobs:
 | **ID** | T-1.4.4 |
 | **Dependencies** | T-1.1.6 |
 | **Commands** | ```bash
-cd clarity-mobile
+cd solacore-mobile
 npx eas login
 npx eas build:configure
 ``` |
-| **Files Created** | `clarity-mobile/eas.json` |
+| **Files Created** | `solacore-mobile/eas.json` |
 | **Verification** | `npx eas build --platform all --non-interactive --dry-run` → shows config |
 | **Story Completion Check** | All CI workflows exist in `.github/workflows/` + Branch protection configured |
 
@@ -976,7 +976,7 @@ npx eas build:configure
 
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  clarity-mobile │────▶│   clarity-api   │────▶│   PostgreSQL    │
+│  solacore-mobile │────▶│   solacore-api   │────▶│   PostgreSQL    │
 │  (React Native) │     │    (FastAPI)    │     │    (Docker)     │
 └─────────────────┘     └─────────────────┘     └─────────────────┘
         │                       │

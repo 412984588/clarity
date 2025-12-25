@@ -30,7 +30,7 @@ git pull --ff-only
 git status
 
 # 2. Setup environment
-cd clarity-api
+cd solacore-api
 cp .env.example .env
 
 # 3. Start database

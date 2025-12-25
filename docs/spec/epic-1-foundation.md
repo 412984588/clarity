@@ -12,7 +12,7 @@
 
 ### Goal
 
-Establish project structure, development environment, CI/CD pipeline, and core backend skeleton that enables the team to develop the Clarity application following the Constitution principles.
+Establish project structure, development environment, CI/CD pipeline, and core backend skeleton that enables the team to develop the Solacore application following the Constitution principles.
 
 ### Success Criteria
 
@@ -60,7 +60,7 @@ This is a blocking prerequisite. No mobile development can begin without the pro
 | AC-1.1.4 | Expo Router navigation shell working | App renders with tab/stack navigation |
 | AC-1.1.5 | App builds on iOS simulator | `npx expo run:ios` succeeds |
 | AC-1.1.6 | App builds on Android emulator | `npx expo run:android` succeeds |
-| AC-1.1.7 | README with setup instructions | `clarity-mobile/README.md` exists with install steps |
+| AC-1.1.7 | README with setup instructions | `solacore-mobile/README.md` exists with install steps |
 
 ### Acceptance Scenarios
 
@@ -112,7 +112,7 @@ Backend is a blocking prerequisite for all API-dependent features (auth, session
 | AC-1.2.5 | OpenAPI docs accessible | `GET /docs` renders Swagger UI |
 | AC-1.2.6 | Dockerfile present | `docker build .` succeeds |
 | AC-1.2.7 | docker-compose.yml for local dev | `docker-compose up` starts API server |
-| AC-1.2.8 | README with setup instructions | `clarity-api/README.md` exists |
+| AC-1.2.8 | README with setup instructions | `solacore-api/README.md` exists |
 
 ### Acceptance Scenarios
 
@@ -294,9 +294,9 @@ Documentation is critical for team scale but doesn't block solo development. Sho
 │   ├── setup.md             # Detailed setup guide
 │   ├── architecture.md      # (already exists)
 │   └── troubleshooting.md   # Common issues
-├── clarity-mobile/
+├── solacore-mobile/
 │   └── README.md            # Mobile-specific setup
-└── clarity-api/
+└── solacore-api/
     └── README.md            # Backend-specific setup
 ```
 

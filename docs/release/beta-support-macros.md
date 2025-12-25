@@ -65,11 +65,11 @@ Thank you for reporting this issue! We've received your bug report and assigned 
 **In the meantime:**
 [WORKAROUND_IF_AVAILABLE, or "Unfortunately, no workaround at this time"]
 
-Thanks again for your help in making Clarity better!
+Thanks again for your help in making Solacore better!
 
 Best,
 [YOUR_NAME]
-Clarity Team
+Solacore Team
 ```
 
 **Placeholders:**
@@ -112,7 +112,7 @@ Reply when you have a chance – no rush! Appreciate your patience.
 
 Best,
 [YOUR_NAME]
-Clarity Team
+Solacore Team
 ```
 
 **Placeholders:**
@@ -151,7 +151,7 @@ Thanks for your patience!
 
 Best,
 [YOUR_NAME]
-Clarity Team
+Solacore Team
 ```
 
 **Placeholders:**
@@ -181,7 +181,7 @@ Great news! The issue you reported ([BUG_ID]: [BUG_DESCRIPTION]) has been fixed 
 **How to get the fix:**
 1. Download the latest APK: [APK_DOWNLOAD_LINK]
 2. Build version: [BUILD_VERSION] (dated [BUILD_DATE])
-3. Uninstall the old version first (Settings → Apps → Clarity → Uninstall)
+3. Uninstall the old version first (Settings → Apps → Solacore → Uninstall)
 4. Install the new APK
 
 **Can you verify?**
@@ -197,7 +197,7 @@ Thanks again for reporting this – your feedback directly improved the app!
 
 Best,
 [YOUR_NAME]
-Clarity Team
+Solacore Team
 ```
 
 **Placeholders:**
@@ -239,7 +239,7 @@ Appreciate you taking the time to report this!
 
 Best,
 [YOUR_NAME]
-Clarity Team
+Solacore Team
 ```
 
 **Placeholders:**
@@ -278,7 +278,7 @@ Keep the ideas coming! Your feedback is shaping the product.
 
 Best,
 [YOUR_NAME]
-Clarity Team
+Solacore Team
 ```
 
 **Placeholders:**
@@ -315,7 +315,7 @@ Appreciate your understanding – and keep the feedback coming!
 
 Best,
 [YOUR_NAME]
-Clarity Team
+Solacore Team
 ```
 
 **Placeholders:**
@@ -354,7 +354,7 @@ Thanks for being part of the beta!
 
 Best,
 [YOUR_NAME]
-Clarity Team
+Solacore Team
 ```
 
 **Placeholders:**

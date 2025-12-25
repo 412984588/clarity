@@ -1,6 +1,6 @@
 # 项目进度记录本
 
-**项目名称**: Clarity
+**项目名称**: Solacore
 **最后更新**: 2025-12-25 15:30
 
 ---
@@ -16,9 +16,9 @@
 - [x] **测试状态**: 105 passed / 28 failed（rate limit 干扰，非本次修改引入）
 
 > **改动文件**:
-> - clarity-api/app/routers/sessions.py
-> - clarity-api/app/logging_config.py (新建)
-> - clarity-api/app/main.py
+> - solacore-api/app/routers/sessions.py
+> - solacore-api/app/logging_config.py (新建)
+> - solacore-api/app/main.py
 > - docs/ARCHITECTURE.md
 > - pyproject.toml (新增 structlog ^25.5.0)
 
@@ -62,7 +62,7 @@
 ### [2025-12-25 02:30] - 统一 Beta 反馈渠道/权益/响应承诺 + 更新占位符
 
 - [x] **更新文档**: 3 份（beta-feedback-form / free-beta-invite-templates / free-beta-start-here）
-- [x] **统一反馈渠道**: GitHub Issue Forms (https://github.com/412984588/clarity/issues/new/choose)
+- [x] **统一反馈渠道**: GitHub Issue Forms (https://github.com/412984588/solacore/issues/new/choose)
 - [x] **明确权益**: 暂无优惠/特权
 - [x] **明确响应**: Best-effort (no SLA)
 - [x] **占位符状态**: 2 个条目更新（BLOCKED/TODO → DONE）

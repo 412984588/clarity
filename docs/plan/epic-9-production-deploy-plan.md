@@ -20,11 +20,11 @@
 2. **Compute**
    - Create Vercel/Railway/Fly project
    - Link to GitHub repository
-   - Configure build command: `cd clarity-api && pip install -r requirements.txt`
+   - Configure build command: `cd solacore-api && pip install -r requirements.txt`
    - Configure start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 
 3. **Domain & SSL**
-   - Add custom domain `api.clarity.app`
+   - Add custom domain `api.solacore.app`
    - Verify SSL certificate provisioned
    - Test HTTPS access
 
@@ -65,7 +65,7 @@
 
 2. **Run Migrations**
    ```bash
-   cd clarity-api
+   cd solacore-api
    DATABASE_URL=$PROD_DATABASE_URL poetry run alembic upgrade head
    ```
 
@@ -83,13 +83,13 @@
 
 1. **Stripe Webhook**
    - Go to: https://dashboard.stripe.com/webhooks
-   - Add endpoint: `https://api.clarity.app/webhooks/stripe`
+   - Add endpoint: `https://api.solacore.app/webhooks/stripe`
    - Select events (see spec)
    - Copy webhook secret → `STRIPE_WEBHOOK_SECRET`
 
 2. **RevenueCat Webhook**
    - Go to: https://app.revenuecat.com → Settings → Webhooks
-   - Add endpoint: `https://api.clarity.app/webhooks/revenuecat`
+   - Add endpoint: `https://api.solacore.app/webhooks/revenuecat`
    - Copy secret → `REVENUECAT_WEBHOOK_SECRET`
 
 3. **Test Webhooks**
@@ -104,7 +104,7 @@
 
 1. **Run Smoke Script**
    ```bash
-   ./scripts/deploy_prod_smoke.sh https://api.clarity.app
+   ./scripts/deploy_prod_smoke.sh https://api.solacore.app
    ```
 
 2. **Manual Verification**
@@ -126,7 +126,7 @@
 
 1. **Update Version**
    ```bash
-   cd clarity-mobile
+   cd solacore-mobile
    # Update app.config.ts version
    ```
 

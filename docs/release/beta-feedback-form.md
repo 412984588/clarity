@@ -7,9 +7,9 @@
 
 ## Instructions
 
-Thank you for testing Clarity! Your feedback is incredibly valuable. Please fill out this form after using the app and submit it using one of the methods below.
+Thank you for testing Solacore! Your feedback is incredibly valuable. Please fill out this form after using the app and submit it using one of the methods below.
 
-**Recommended**: Use [GitHub Issue Forms](https://github.com/412984588/clarity/issues/new/choose) for quickest response.
+**Recommended**: Use [GitHub Issue Forms](https://github.com/412984588/solacore/issues/new/choose) for quickest response.
 
 **Alternative**: Send via email (provided in your beta invite).
 
@@ -222,9 +222,9 @@ If we need clarification on your feedback, how should we contact you?
 
 By submitting this feedback, I understand and agree that:
 
-- [x] My feedback may be used to improve Clarity
+- [x] My feedback may be used to improve Solacore
 - [x] My feedback may be anonymously quoted in marketing materials or testimonials (with my permission)
-- [x] The Clarity team may contact me for follow-up questions
+- [x] The Solacore team may contact me for follow-up questions
 - [x] I participated in this beta test voluntarily and was not compensated
 
 **Optional**: I give permission to use my feedback in public testimonials:
@@ -246,7 +246,7 @@ Thank you for taking the time to provide detailed feedback. Your input is incred
 
 ### Option 1: GitHub Issue Forms (Recommended)
 
-1. Visit: https://github.com/412984588/clarity/issues/new/choose
+1. Visit: https://github.com/412984588/solacore/issues/new/choose
 2. Select "Beta Feedback" template
 3. Fill in your feedback directly in the form
 4. Submit

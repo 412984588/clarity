@@ -8,7 +8,7 @@
 
 ## Purpose & Scope
 
-This checklist guides the **Free Beta launch** for Clarity, focusing on early tester validation with friends and internal users **before production release**. Payment features (Stripe/RevenueCat) are intentionally disabled during this phase.
+This checklist guides the **Free Beta launch** for Solacore, focusing on early tester validation with friends and internal users **before production release**. Payment features (Stripe/RevenueCat) are intentionally disabled during this phase.
 
 **What This Checklist Covers:**
 - ✅ Android APK distribution (preview build)
@@ -66,7 +66,7 @@ Before launching free beta, ensure these are ready:
 - **Build ID**: `5d5e7b57-44f7-4729-b627-e40bc93dbb76`
 - **Date**: 2025-12-24
 - **Download**: https://expo.dev/artifacts/eas/cwHBq3tAhSrhLcQnewsmpy.apk
-- **Dashboard**: https://expo.dev/accounts/cllalala/projects/clarity-mobile/builds/5d5e7b57-44f7-4729-b627-e40bc93dbb76
+- **Dashboard**: https://expo.dev/accounts/cllalala/projects/solacore-mobile/builds/5d5e7b57-44f7-4729-b627-e40bc93dbb76
 
 **Distribution Method:**
 - Share direct APK download link via email/Slack
@@ -95,9 +95,9 @@ Create 3-5 test accounts for demos and tester reference:
 
 | Email | Password | Purpose |
 |-------|----------|---------|
-| demo1@clarity.app | test123 | General demo |
-| demo2@clarity.app | test123 | Error scenarios |
-| tester@clarity.app | test123 | Tester reference |
+| demo1@solacore.app | test123 | General demo |
+| demo2@solacore.app | test123 | Error scenarios |
+| tester@solacore.app | test123 | Tester reference |
 
 ---
 

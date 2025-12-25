@@ -8,7 +8,7 @@
 
 ## Purpose
 
-This document tracks all placeholders, TBD items, and missing information across the Clarity documentation. Use this as a **pre-launch checklist** to ensure no critical information is missing before going live.
+This document tracks all placeholders, TBD items, and missing information across the Solacore documentation. Use this as a **pre-launch checklist** to ensure no critical information is missing before going live.
 
 **Why This Matters**:
 - Prevents launching with incomplete documentation
@@ -47,7 +47,7 @@ This document tracks all placeholders, TBD items, and missing information across
 | free-beta-tester-guide.md | Coordinator Email | Provided in invite (TBD) | Email provided when sending invite | PM | Before Beta | IN PROGRESS |
 | free-beta-tester-guide.md | Beta End Date | Open-ended / TBD | No fixed end date for free beta | PM | Before Beta | IN PROGRESS |
 | free-beta-tester-guide.md | Beta Pricing | None | No special pricing/perks - friend testing only | Product | Before Production | DONE |
-| beta-feedback-form.md | Form URL | GitHub Issue Forms: https://github.com/412984588/clarity/issues/new/choose | Web feedback page not deployed yet | Dev | Before Beta | DONE |
+| beta-feedback-form.md | Form URL | GitHub Issue Forms: https://github.com/412984588/solacore/issues/new/choose | Web feedback page not deployed yet | Dev | Before Beta | DONE |
 | qa-test-plan.md | Test Google Account | TBD | Google account for testing OAuth | QA | Before Testing | TODO |
 | qa-test-plan.md | Test Apple ID | TBD | Apple ID for testing Sign-In | QA | BLOCKED (needs Apple Dev Account) | BLOCKED |
 | qa-test-plan.md | RevenueCat Sandbox | TBD | RevenueCat sandbox configuration | Dev | DEFERRED (Beta doesn't need) | DEFERRED |

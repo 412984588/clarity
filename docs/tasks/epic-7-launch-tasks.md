@@ -5,19 +5,19 @@
 ### 1.1 创建环境变量文件
 
 **Files**:
-- `clarity-mobile/.env.development`
-- `clarity-mobile/.env.staging`
-- `clarity-mobile/.env.production`
-- `clarity-mobile/.env.example`
+- `solacore-mobile/.env.development`
+- `solacore-mobile/.env.staging`
+- `solacore-mobile/.env.production`
+- `solacore-mobile/.env.example`
 
 **Commands**:
 ```bash
-cd clarity-mobile
+cd solacore-mobile
 
 # 创建环境文件
 echo 'EXPO_PUBLIC_API_URL=http://localhost:8000' > .env.development
-echo 'EXPO_PUBLIC_API_URL=https://staging-api.clarity.app' > .env.staging
-echo 'EXPO_PUBLIC_API_URL=https://api.clarity.app' > .env.production
+echo 'EXPO_PUBLIC_API_URL=https://staging-api.solacore.app' > .env.staging
+echo 'EXPO_PUBLIC_API_URL=https://api.solacore.app' > .env.production
 echo 'EXPO_PUBLIC_API_URL=http://localhost:8000' > .env.example
 ```
 
@@ -29,7 +29,7 @@ cat .env.development
 
 ### 1.2 创建动态配置文件
 
-**File**: `clarity-mobile/app.config.ts`
+**File**: `solacore-mobile/app.config.ts`
 
 **Content**:
 ```typescript
@@ -37,8 +37,8 @@ import { ExpoConfig, ConfigContext } from 'expo/config';
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: 'clarity-mobile',
-  slug: 'clarity-mobile',
+  name: 'solacore-mobile',
+  slug: 'solacore-mobile',
   version: '1.0.0',
   orientation: 'portrait',
   icon: './assets/icon.png',
@@ -51,14 +51,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   ios: {
     supportsTablet: true,
-    bundleIdentifier: 'com.clarity.mobile',
+    bundleIdentifier: 'com.solacore.mobile',
   },
   android: {
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
       backgroundColor: '#ffffff',
     },
-    package: 'com.clarity.mobile',
+    package: 'com.solacore.mobile',
     edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: false,
   },
@@ -84,7 +84,7 @@ npx expo config --type public | grep apiUrl
 
 ### 1.3 更新 .gitignore
 
-**File**: `clarity-mobile/.gitignore`
+**File**: `solacore-mobile/.gitignore`
 
 **Add**:
 ```
@@ -118,7 +118,7 @@ grep ".env" .gitignore
 
 ### 模拟器调试
 \`\`\`bash
-cd clarity-mobile
+cd solacore-mobile
 npx expo start --ios
 \`\`\`
 
@@ -136,7 +136,7 @@ npx expo start --ios
 
 ### 模拟器调试
 \`\`\`bash
-cd clarity-mobile
+cd solacore-mobile
 npx expo start --android
 \`\`\`
 
@@ -149,8 +149,8 @@ npx expo start --android
 | 环境 | 文件 | API URL |
 |------|------|---------|
 | dev | `.env.development` | `http://localhost:8000` |
-| staging | `.env.staging` | `https://staging-api.clarity.app` |
-| prod | `.env.production` | `https://api.clarity.app` |
+| staging | `.env.staging` | `https://staging-api.solacore.app` |
+| prod | `.env.production` | `https://api.solacore.app` |
 ```
 
 **Verification**:
@@ -162,7 +162,7 @@ grep -c "iOS 本地调试" docs/setup.md
 
 ## Task 3: 增强 EAS Build Profiles
 
-**File**: `clarity-mobile/eas.json`
+**File**: `solacore-mobile/eas.json`
 
 **Content**:
 ```json
@@ -179,12 +179,12 @@ grep -c "iOS 本地调试" docs/setup.md
     "preview": {
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://staging-api.clarity.app"
+        "EXPO_PUBLIC_API_URL": "https://staging-api.solacore.app"
       }
     },
     "production": {
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://api.clarity.app"
+        "EXPO_PUBLIC_API_URL": "https://api.solacore.app"
       }
     }
   },
@@ -203,7 +203,7 @@ cat eas.json | jq '.build.production.env'
 
 ## Task 4: 后端 Health 端点增强
 
-**File**: `clarity-api/app/main.py`
+**File**: `solacore-api/app/main.py`
 
 **Add**:
 ```python
@@ -225,7 +225,7 @@ async def liveness_check():
 
 **Verification**:
 ```bash
-cd clarity-api
+cd solacore-api
 poetry run pytest -v
 curl http://localhost:8000/health/ready
 curl http://localhost:8000/health/live
@@ -235,7 +235,7 @@ curl http://localhost:8000/health/live
 
 ## Task 5: 移动端 Error Boundary
 
-**File**: `clarity-mobile/components/ErrorBoundary.tsx`
+**File**: `solacore-mobile/components/ErrorBoundary.tsx`
 
 **Content**:
 ```tsx
@@ -253,7 +253,7 @@ interface State {
   error: Error | null;
 }
 
-const ERROR_LOG_KEY = '@clarity/error_log';
+const ERROR_LOG_KEY = '@solacore/error_log';
 
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
@@ -389,7 +389,7 @@ ls docs/release/
 set -e
 
 echo "╔════════════════════════════════════════╗"
-echo "║     Clarity Release Verification       ║"
+echo "║     Solacore Release Verification       ║"
 echo "╚════════════════════════════════════════╝"
 
 ROOT_DIR=$(dirname "$0")/..
@@ -397,7 +397,7 @@ cd "$ROOT_DIR"
 
 echo ""
 echo "=== [1/5] Backend Lint ==="
-cd clarity-api
+cd solacore-api
 poetry run ruff check .
 echo "✅ Ruff passed"
 
@@ -413,7 +413,7 @@ echo "✅ Pytest passed"
 
 echo ""
 echo "=== [4/5] Mobile Lint ==="
-cd ../clarity-mobile
+cd ../solacore-mobile
 npm run lint
 echo "✅ ESLint passed"
 
@@ -465,8 +465,8 @@ chmod +x scripts/verify-release.sh
 - [x] **setup.md**: 添加 iOS/Android 调试说明
 
 > **新增文件**:
-> - clarity-mobile/.env.*, app.config.ts
-> - clarity-mobile/components/ErrorBoundary.tsx
+> - solacore-mobile/.env.*, app.config.ts
+> - solacore-mobile/components/ErrorBoundary.tsx
 > - docs/release/*.md
 > - scripts/verify-release.sh
 

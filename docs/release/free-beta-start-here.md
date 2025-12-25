@@ -41,7 +41,7 @@
 | Blocked | Reason | Impact |
 |---------|--------|--------|
 | 🔴 **iOS Testing** | No Apple Developer Account ($99/year) | Cannot build iOS APK or use TestFlight |
-| 🔴 **Production Deployment** | No custom domain (`api.clarity.app`) | Cannot deploy backend to production |
+| 🔴 **Production Deployment** | No custom domain (`api.solacore.app`) | Cannot deploy backend to production |
 | 🔴 **Store Submission** | No Apple/Google accounts | Cannot submit to App Store / Play Store |
 | 🟡 **Payments** | DEFERRED for Free Beta | Stripe/RevenueCat integration exists but disabled |
 
