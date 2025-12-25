@@ -15,14 +15,14 @@
 
 | Role | Team/Person | Responsibility |
 |------|-------------|----------------|
-| **Product** | TBD | 产品决策、用户体验、发布时机 |
-| **Backend** | TBD | API 开发、数据库、服务端部署 |
-| **Mobile** | TBD | iOS/Android 应用开发、App Store 提交 |
-| **DevOps** | TBD | 基础设施、CI/CD、监控告警 |
-| **QA** | TBD | 测试执行、质量把关、Bug 跟踪 |
-| **Finance** | TBD | 支付账号、订阅配置、财务合规 |
-| **Support** | TBD | 用户支持、文档维护、FAQ |
-| **Marketing** | TBD | 发布公告、用户沟通、推广 |
+| **Product** | Owner (self) | 产品决策、用户体验、发布时机 |
+| **Backend** | Owner (self) | API 开发、数据库、服务端部署 |
+| **Mobile** | Owner (self) | iOS/Android 应用开发、App Store 提交 |
+| **DevOps** | Owner (self) | 基础设施、CI/CD、监控告警 |
+| **QA** | Owner (self) | 测试执行、质量把关、Bug 跟踪 |
+| **Finance** | Owner (self) | 支付账号、订阅配置、财务合规 |
+| **Support** | Owner (self) | 用户支持、文档维护、FAQ |
+| **Marketing** | Owner (self) | 发布公告、用户沟通、推广 |
 
 ---
 

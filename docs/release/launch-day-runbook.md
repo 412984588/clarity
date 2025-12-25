@@ -30,13 +30,13 @@
 
 | Role | Owner | Responsibility on Launch Day |
 |------|-------|------------------------------|
-| **Launch Commander** | TBD | 总指挥，最终决策权 |
-| **Backend Lead** | TBD | 后端部署、数据库迁移 |
-| **Mobile Lead** | TBD | App Store / Play Store 发布 |
-| **DevOps** | TBD | 基础设施、监控告警 |
-| **QA Lead** | TBD | 冒烟测试、回归验证 |
-| **Support Lead** | TBD | 用户反馈、问题上报 |
-| **Comms Lead** | TBD | 发布公告、用户通知 |
+| **Launch Commander** | Owner (self) | 总指挥，最终决策权 |
+| **Backend Lead** | Owner (self) | 后端部署、数据库迁移 |
+| **Mobile Lead** | Owner (self) | App Store / Play Store 发布 |
+| **DevOps** | Owner (self) | 基础设施、监控告警 |
+| **QA Lead** | Owner (self) | 冒烟测试、回归验证 |
+| **Support Lead** | Owner (self) | 用户反馈、问题上报 |
+| **Comms Lead** | Owner (self) | 发布公告、用户通知 |
 
 ---
 

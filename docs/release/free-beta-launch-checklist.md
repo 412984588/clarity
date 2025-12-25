@@ -50,11 +50,11 @@ Before launching free beta, ensure these are ready:
 
 | Role | Responsibilities | Primary Owner |
 |------|------------------|---------------|
-| **Project Lead** | Overall coordination, Go/No-Go decision | TBD |
-| **Dev Lead** | APK distribution, backend deployment, bug fixes | TBD |
-| **Product Manager** | Tester recruitment, feedback collection, prioritization | TBD |
-| **QA Lead** | Issue verification, regression testing | TBD |
-| **Support Lead** | Tester onboarding, FAQ management | TBD |
+| **Project Lead** | Overall coordination, Go/No-Go decision | Owner (self) |
+| **Dev Lead** | APK distribution, backend deployment, bug fixes | Owner (self) |
+| **Product Manager** | Tester recruitment, feedback collection, prioritization | Owner (self) |
+| **QA Lead** | Issue verification, regression testing | Owner (self) |
+| **Support Lead** | Tester onboarding, FAQ management | Owner (self) |
 
 ---
 

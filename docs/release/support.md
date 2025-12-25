@@ -8,9 +8,9 @@ This is the public support page for Clarity. It can be published as-is or custom
 
 ## Contact
 
-- Email: support@clarity.app
-- Support Hours: TBD (e.g., Mon-Fri, 9am-6pm local time)
-- Target Response Time: 1 business day (TBD)
+- Email: Provided in invite (TBD)
+- Support Hours: Best effort (no fixed hours)
+- Target Response Time: Best effort (no SLA)
 
 ---
 
@@ -41,7 +41,7 @@ This is the public support page for Clarity. It can be published as-is or custom
 
 ## Status Updates
 
-- Status page: TBD
+- Status page: Not available
 
 ---
 
