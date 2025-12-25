@@ -47,29 +47,29 @@
 - [x] 实现 restorePurchases() 恢复
 
 ### Paywall 页面
-- [ ] 创建 `app/(main)/paywall.tsx`
-- [ ] 展示 Standard/Pro 两个选项
-- [ ] 展示价格和功能对比
-- [ ] 购买按钮触发 IAP
-- [ ] 恢复购买按钮
-- [ ] 购买成功后刷新状态并返回
+- [x] 创建 `app/(tabs)/paywall.tsx` (实际路径)
+- [x] 展示 Standard/Pro 两个选项
+- [x] 展示价格和功能对比
+- [x] 购买按钮触发 IAP
+- [x] 恢复购买按钮
+- [x] 购买成功后刷新状态并返回
 
 ### Settings 增强
-- [ ] 添加 "Manage Subscription" 入口
-- [ ] iOS 跳转到系统订阅页
-- [ ] Android 跳转到 Play Store 订阅页
-- [ ] 添加 "Restore Purchases" 入口
+- [x] 添加 "Manage Subscription" 入口
+- [x] iOS 跳转到系统订阅页
+- [x] Android 跳转到 Play Store 订阅页
+- [x] 添加 "Restore Purchases" 入口
 
 ### 登录态绑定
-- [ ] 登录成功后调用 RevenueCat.login()
-- [ ] 登出时调用 RevenueCat.logout()
+- [x] 登录成功后调用 RevenueCat.login()
+- [x] 登出时调用 RevenueCat.logout()
 
 ### 验收
-- [ ] npm run lint 通过
-- [ ] npx tsc --noEmit 通过
+- [x] npm run lint 通过
+- [x] npx tsc --noEmit 通过
 
 ---
 
 ## PR
-- [ ] 创建 PR
-- [ ] 设置 auto-merge (squash)
+- [x] 创建 PR (已合并到 main)
+- [x] 设置 auto-merge (squash)
