@@ -1,11 +1,53 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-25 01:00
+**最后更新**: 2025-12-25 01:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-25 01:30] - 记录当前 Beta 决策 + 更新占位符
+
+- [x] **更新 Beta 文档 (4 份)**：记录当前实际情况
+  - `docs/release/free-beta-tester-guide.md`:
+    - 添加 Beta Duration: Open-ended / TBD
+    - 添加 Beta Perks: None (friend testing only)
+    - Supported Platforms 新增 Web (❌ Not Built)
+    - 反馈渠道：优先 GitHub Issue Forms，Web 反馈页 TBD
+    - Beta Coordinator: Owner (self - manual invites only)
+    - Coordinator Email: Provided in invite (TBD)
+
+  - `docs/release/beta-launch-message.md`:
+    - Phase: Free Beta (Android APK-only)
+    - Links Used 新增 Web Feedback Page (TBD - not built yet)
+    - 注明：Android APK-only，Web/iOS 不可用
+
+  - `docs/release/beta-share-pack.md`:
+    - What to Share 新增 Web Feedback Page (❌ TBD - not built yet)
+    - 注明：Android APK-only
+
+  - `docs/release/beta-issue-intake.md`:
+    - Where to Report 新增 Section 3: Web Feedback Page (❌ Not Available Yet)
+    - 说明使用 GitHub Issues 或 email 替代
+
+- [x] **更新占位符清单**：`docs/release/placeholders-to-fill.md`
+  - 5 个条目状态更新：
+    1. Beta Coordinator: Owner (self) - Status: TODO → DONE
+    2. Coordinator Email: Provided in invite (TBD) - Status: TODO → IN PROGRESS
+    3. Beta End Date: Open-ended / TBD - Status: TODO → IN PROGRESS
+    4. Beta Pricing: None - Status: TODO → DONE
+    5. Form URL: TBD (web not built) - Status: TODO → BLOCKED
+
+- [x] **更新占位符表单**：`docs/release/placeholders-intake-form.md`
+  - Beta Operations 表格 Value 列填入：
+    - Beta Coordinator Name: Owner (self)
+    - Beta Coordinator Email: Provided in invite (TBD)
+    - Beta End Date: Open-ended / TBD
+    - Beta Pricing: None
+    - Feedback Form URL: TBD (web not built)
+
+> **目的**: 将"未部署网页 / 时间不限 / 无权益 / 你本人手动邀请"的实际情况写入文档，并更新占位符状态
 
 ### [2025-12-25 01:00] - Release Docs Inventory 刷新 + 链接一致性检查
 

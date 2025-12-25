@@ -1,11 +1,20 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-25 01:00
+**最后更新**: 2025-12-25 01:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-25 01:30] - 记录当前 Beta 决策 + 更新占位符
+
+- [x] **更新 Beta 文档**: 4 份（tester-guide / launch-message / share-pack / issue-intake）
+- [x] **记录实际情况**: Android APK-only / Web 未部署 / 时间不限 / 无权益 / 本人邀请
+- [x] **占位符状态更新**: 5 个条目（2 个 DONE / 2 个 IN PROGRESS / 1 个 BLOCKED）
+- [x] **填写表单**: placeholders-intake-form.md Beta Operations 部分
+
+> 详见 `docs/PROGRESS.md`
 
 ### [2025-12-25 01:00] - Release Docs Inventory 刷新 + 链接检查
 

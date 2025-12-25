@@ -1,8 +1,10 @@
 # Free Beta Tester Guide
 
 **Version**: 1.0
-**Last Updated**: 2025-12-24
+**Last Updated**: 2025-12-25
 **Phase**: Free Beta (No Payments)
+**Beta Duration**: Open-ended / TBD
+**Beta Perks**: None (friend testing only)
 
 ---
 
@@ -37,6 +39,9 @@ Welcome to the Clarity Free Beta! This guide is designed for friends and early t
 |----------|--------|-------|
 | **Android** | ✅ Available | APK download required |
 | **iOS** | ❌ Blocked | Requires Apple Developer Account ($99/year) - not available for beta |
+| **Web** | ❌ Not Built | Web preview not deployed (TBD) |
+
+**Note**: This beta is **Android APK-only**. Web and iOS versions are not currently available.
 
 ---
 
@@ -235,24 +240,39 @@ By participating in this beta, you understand and agree that:
 
 We **highly value** your feedback! Please use one of the following methods:
 
-### Option 1: Beta Feedback Form (Recommended)
+### Option 1: GitHub Issue Forms (Recommended)
 
-Fill out our [Beta Feedback Form](beta-feedback-form.md) with:
-- Your tester info (nickname, device, OS version)
-- Session summary (satisfaction rating)
-- Bugs encountered
-- Suggestions for improvements
+**Use our structured GitHub issue templates**:
 
-### Option 2: Bug Report Template
+1. **For Bugs**: https://github.com/412984588/clarity/issues/new/choose
+   - Select "Beta Bug Report"
+   - Fill in reproduction steps, device info, screenshots
 
-For critical bugs, use our [Bug Report Template](bug-report-template.md) to provide:
-- Detailed reproduction steps
-- Expected vs actual behavior
-- Screenshots or screen recordings
+2. **For Feedback**: https://github.com/412984588/clarity/issues/new/choose
+   - Select "Beta Feedback"
+   - Share your experience, suggestions, and ratings
 
-### Option 3: Direct Contact
+**Why GitHub?**
+- ✅ Fastest response time
+- ✅ Track issue status in real-time
+- ✅ See what others have reported
+- ✅ No account required for public issues
 
-- **Email**: support@clarity.app (or designated beta support email)
+### Option 2: Beta Feedback Form (Markdown)
+
+Fill out our [Beta Feedback Form](beta-feedback-form.md) template and send via:
+- GitHub issue (preferred)
+- Email (see Contact section below)
+
+### Option 3: Web Feedback Page
+
+**Status**: ❌ **Not Available Yet**
+- Web-based feedback form is not deployed (TBD)
+- Use GitHub Issues or email instead
+
+### Option 4: Direct Contact
+
+- **Email**: Provided in your beta invite (TBD)
 - **Response Time**: We aim to respond within 24-48 hours
 
 ### What to Include in Feedback
@@ -273,9 +293,9 @@ For critical bugs, use our [Bug Report Template](bug-report-template.md) to prov
 
 ### Beta Testing Coordinator
 
-- **Contact**: TBD (designated beta coordinator)
-- **Email**: TBD
-- **Availability**: Weekdays 9am-6pm
+- **Contact**: Owner (self - manual invites only)
+- **Email**: Provided in your beta invite (TBD)
+- **Availability**: Best-effort response (no guaranteed SLA for free beta)
 
 ### Technical Support
 

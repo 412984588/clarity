@@ -1,8 +1,8 @@
 # Beta Launch Message
 
 **Version**: 1.0
-**Last Updated**: 2025-12-24
-**Phase**: Free Beta
+**Last Updated**: 2025-12-25
+**Phase**: Free Beta (Android APK-only)
 
 ---
 
@@ -32,6 +32,9 @@ All templates below reference the following resources. Update these placeholders
 | **Issue Intake** | [beta-issue-intake.md](beta-issue-intake.md) | Where & how to report issues |
 | **Known Issues** | [beta-known-issues.md](beta-known-issues.md) | Current bug list & workarounds |
 | **GitHub Issues** | https://github.com/412984588/clarity/issues/new/choose | Bug/feedback submission forms |
+| **Web Feedback Page** | TBD (not built yet) | Web-based feedback form (not deployed) |
+
+**Note**: This beta is **Android APK-only**. Web and iOS versions are not available. Use GitHub Issues (recommended) or email for feedback.
 
 ---
 
