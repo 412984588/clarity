@@ -47,14 +47,14 @@ function LoginContent() {
           <div className="flex flex-col justify-center gap-6 text-left">
             <div className="inline-flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.3em] text-foreground/70">
               <span className="h-px w-12 bg-foreground/40" />
-              Clarity Web
+              Solacore Web
             </div>
             <h1 className="text-4xl font-semibold leading-tight text-foreground md:text-5xl">
               帮你把复杂情绪转成
               <span className="block text-foreground">清晰行动</span>
             </h1>
             <p className="max-w-md text-base leading-relaxed text-muted-foreground">
-              从澄清到承诺，Clarity 带你完成五步思考流程，留下可执行的下一步。
+              从澄清到承诺，Solacore 带你完成五步思考流程，留下可执行的下一步。
             </p>
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
               <div className="rounded-full border px-3 py-1">私密对话</div>
@@ -71,7 +71,7 @@ function LoginContent() {
                 </div>
                 <div>
                   <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-                    Clarity
+                    Solacore
                   </p>
                   <CardTitle className="text-2xl">欢迎回来</CardTitle>
                 </div>
@@ -93,7 +93,7 @@ function LoginContent() {
                 <p className="text-sm text-destructive">{error}</p>
               ) : null}
               <p className="text-xs text-muted-foreground">
-                登录即表示你同意 Clarity 的服务条款与隐私政策。
+                登录即表示你同意 Solacore 的服务条款与隐私政策。
               </p>
             </CardContent>
           </Card>

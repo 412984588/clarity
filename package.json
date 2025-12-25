@@ -1,5 +1,5 @@
 {
-  "name": "clarity",
+  "name": "solacore",
   "version": "1.0.0",
   "description": "Universal problem-solving assistant - 跨平台智能问题解决助手",
   "main": "index.js",
@@ -12,16 +12,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/412984588/clarity.git"
+    "url": "git+https://github.com/412984588/solacore.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/412984588/clarity/issues"
+    "url": "https://github.com/412984588/solacore/issues"
   },
-  "homepage": "https://github.com/412984588/clarity#readme",
+  "homepage": "https://github.com/412984588/solacore#readme",
   "devDependencies": {
     "husky": "^9.1.7"
   }

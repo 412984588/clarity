@@ -43,7 +43,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 C
               </div>
               <div>
-                <p className="text-sm font-semibold">Clarity</p>
+                <p className="text-sm font-semibold">Solacore</p>
                 <p className="text-xs text-muted-foreground">Focus workspace</p>
               </div>
             </div>
@@ -79,7 +79,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <header className="flex flex-col gap-4 rounded-3xl border bg-background/80 px-6 py-4 shadow-sm backdrop-blur md:flex-row md:items-center md:justify-between">
               <div>
                 <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-                  Clarity Workspace
+                  Solacore Workspace
                 </p>
                 <h1 className="text-lg font-semibold">
                   {user?.name || "欢迎回来"}

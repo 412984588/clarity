@@ -18,8 +18,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Clarity Web",
-  description: "Clarity Web - structured thinking and action planning.",
+  title: "Solacore Web",
+  description: "Solacore Web - structured thinking and action planning.",
 };
 
 export default function RootLayout({

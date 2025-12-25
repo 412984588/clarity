@@ -2,7 +2,7 @@
 set -e
 
 echo "╔════════════════════════════════════════╗"
-echo "║     Clarity Release Verification       ║"
+echo "║     Solacore Release Verification       ║"
 echo "╚════════════════════════════════════════╝"
 
 ROOT_DIR=$(dirname "$0")/..

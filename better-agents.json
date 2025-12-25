@@ -1,5 +1,5 @@
 {
-    "name": "clarity-agents",
+    "name": "solacore-agents",
     "language": "typescript",
     "framework": "vercel-ai-sdk",
     "provider": "anthropic",

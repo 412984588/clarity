@@ -14,7 +14,7 @@ import { createSession, getSession } from "@/lib/session-api";
 
 const optionDeck = [
   {
-    id: "clarity-map",
+    id: "solacore-map",
     title: "情绪地图",
     description: "梳理核心情绪与触发点，确认真实需求。",
   },

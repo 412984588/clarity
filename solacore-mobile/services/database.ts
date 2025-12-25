@@ -5,7 +5,7 @@
  */
 import * as SQLite from 'expo-sqlite';
 
-const DB_NAME = 'clarity.db';
+const DB_NAME = 'solacore.db';
 
 // 表结构 - 消息和选项
 const SCHEMA = `
