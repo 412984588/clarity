@@ -27,6 +27,11 @@ class Settings(BaseSettings):
     port: int = 8000
     frontend_url: str = "http://localhost:8000"  # 生产环境需要改成真实域名
 
+    # Sentry 配置
+    sentry_dsn: str = ""  # 生产环境从环境变量读取
+    sentry_environment: str = "development"
+    sentry_traces_sample_rate: float = 0.1
+
     # Free Beta 配置
     beta_mode: bool = False
     payments_enabled: bool = True

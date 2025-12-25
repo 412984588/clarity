@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react-native';
 import { Slot, useRouter, useSegments } from 'expo-router';
 import React, { useEffect } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
@@ -6,9 +7,24 @@ import { ErrorBoundary } from '../components/ErrorBoundary';
 import { initDatabase } from '../services/database';
 import { AuthProvider, useAuth } from '../stores/authStore';
 
+// 初始化 Sentry（仅在生产环境且有 DSN 时）
+const sentryDsn = process.env.EXPO_PUBLIC_SENTRY_DSN;
+if (sentryDsn) {
+  Sentry.init({
+    dsn: sentryDsn,
+    environment: __DEV__ ? 'development' : 'production',
+    tracesSampleRate: 0.1,
+    debug: __DEV__,
+  });
+}
+
 // 初始化 SQLite 数据库（app 启动时只执行一次）
 initDatabase().catch((error) => {
   console.error('Failed to initialize database:', error);
+  // 报告到 Sentry（如果已初始化）
+  if (sentryDsn) {
+    Sentry.captureException(error);
+  }
 });
 
 const AuthGate: React.FC = () => {

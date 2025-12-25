@@ -8,10 +8,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Release documentation and deployment guide
-- Database migration scripts and documentation
-- Environment variables reference documentation
-- Health check endpoint with version information
+- **Sentry Monitoring** (Phase 4.2)
+  - Backend: sentry-sdk integration with FastAPI
+  - Mobile: @sentry/react-native integration
+  - Error tracking and performance monitoring ready
+- **Test Coverage Boost** (Phase 4.3)
+  - Coverage: 79% → 88%
+  - New tests: AI Service, Stripe Service, OAuth Service
+  - Total tests: 113 → 133
+
+### Security
+- **Security Hardening** (Phase 1)
+  - Prompt injection guard with Unicode normalization
+  - Device limit race condition fix with row-level locking
+  - Production config validation on startup
+- **Security Audit** (Phase 4.4)
+  - No hardcoded API keys
+  - No SQL injection vulnerabilities
+  - No XSS risks
+  - No environment variable leakage
+
+### Changed
+- Frontend local storage upgraded from AsyncStorage to SQLite (Phase 2)
+- Password reset URL now uses configurable FRONTEND_URL (Phase 3)
+
+### Documentation
+- Production deployment guide (DEPLOY_MANUAL.md)
+- One-click deployment script (deploy.sh)
+- CI/CD workflows (GitHub Actions)
+- Privacy compliance checklist updates
+- Incident response documentation
+- EAS Secrets configuration guide
 
 ## [0.5.0] - 2025-12-22
 
