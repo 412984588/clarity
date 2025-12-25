@@ -3,7 +3,7 @@ import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 import type { AuthTokens } from "@/lib/types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
-const STORAGE_KEY = "clarity_auth_tokens";
+const STORAGE_KEY = "solacore_auth_tokens";
 
 const isBrowser = typeof window !== "undefined";
 
