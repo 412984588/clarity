@@ -1,4 +1,5 @@
 """邮件服务"""
+
 import aiosmtplib
 from email.message import EmailMessage
 from app.config import get_settings
@@ -35,7 +36,8 @@ async def send_password_reset_email(to_email: str, reset_token: str) -> bool:
 Clarity 团队
     """)
 
-    message.add_alternative(f"""
+    message.add_alternative(
+        f"""
 <html>
   <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
     <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -43,11 +45,11 @@ Clarity 团队
       <p>您好，</p>
       <p>您请求重置 Clarity 账户的密码。</p>
       <p style="margin: 30px 0;">
-        <a href="{reset_link}" 
-           style="background-color: #4CAF50; 
-                  color: white; 
-                  padding: 12px 24px; 
-                  text-decoration: none; 
+        <a href="{reset_link}"
+           style="background-color: #4CAF50;
+                  color: white;
+                  padding: 12px 24px;
+                  text-decoration: none;
                   border-radius: 5px;
                   display: inline-block;">
           重置密码
@@ -60,7 +62,9 @@ Clarity 团队
     </div>
   </body>
 </html>
-    """, subtype="html")
+    """,
+        subtype="html",
+    )
 
     try:
         await aiosmtplib.send(

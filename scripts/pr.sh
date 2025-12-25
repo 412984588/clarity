@@ -56,7 +56,7 @@ git fetch origin
 if [ -n "$(git status --porcelain)" ]; then
     echo -e "${YELLOW}⚠ 工作区有未提交的改动:${NC}"
     git status --short
-    
+
     if [ "$FORCE" == "--force" ]; then
         echo -e "${RED}--force 模式: 重置到 origin/main...${NC}"
         git reset --hard origin/main
@@ -69,11 +69,11 @@ if [ -n "$(git status --porcelain)" ]; then
         echo "  2) 退出 (手动处理后重新运行)"
         echo "  3) 强制重置 (丢弃所有改动)"
         read -p "请选择 [1/2/3]: " choice
-        
+
         case $choice in
             1) echo -e "${GREEN}继续...${NC}" ;;
             2) echo -e "${YELLOW}已退出${NC}"; exit 0 ;;
-            3) 
+            3)
                 git reset --hard origin/main
                 git clean -fd
                 echo -e "${GREEN}✓ 已重置${NC}"
@@ -160,7 +160,7 @@ MAX_WAIT=300
 WAIT_TIME=0
 while [ $WAIT_TIME -lt $MAX_WAIT ]; do
     STATE=$(gh pr view "$PR_NUM" --json state -q .state 2>/dev/null || echo "UNKNOWN")
-    
+
     if [ "$STATE" == "MERGED" ]; then
         echo -e "${GREEN}✓ PR 已合并!${NC}"
         break
@@ -168,7 +168,7 @@ while [ $WAIT_TIME -lt $MAX_WAIT ]; do
         echo -e "${RED}✗ PR 已关闭 (未合并)${NC}"
         exit 1
     fi
-    
+
     echo -ne "\r等待中... ${WAIT_TIME}s (状态: $STATE)  "
     sleep 10
     WAIT_TIME=$((WAIT_TIME + 10))

@@ -105,7 +105,10 @@ def validate_production_config(settings: Settings | None = None) -> None:
     if active_settings.llm_provider == "openai" and not active_settings.openai_api_key:
         errors.append("OPENAI_API_KEY is required when llm_provider=openai")
 
-    if active_settings.llm_provider == "anthropic" and not active_settings.anthropic_api_key:
+    if (
+        active_settings.llm_provider == "anthropic"
+        and not active_settings.anthropic_api_key
+    ):
         errors.append("ANTHROPIC_API_KEY is required when llm_provider=anthropic")
 
     # 4. 支付配置校验（如果启用支付）
@@ -114,10 +117,14 @@ def validate_production_config(settings: Settings | None = None) -> None:
             errors.append("STRIPE_SECRET_KEY is required when payments_enabled=true")
 
         if not active_settings.stripe_webhook_secret:
-            errors.append("STRIPE_WEBHOOK_SECRET is required when payments_enabled=true")
+            errors.append(
+                "STRIPE_WEBHOOK_SECRET is required when payments_enabled=true"
+            )
 
         if not active_settings.revenuecat_webhook_secret:
-            errors.append("REVENUECAT_WEBHOOK_SECRET is required when payments_enabled=true")
+            errors.append(
+                "REVENUECAT_WEBHOOK_SECRET is required when payments_enabled=true"
+            )
 
     # 5. OAuth 校验
     if not active_settings.google_client_id:
@@ -128,5 +135,7 @@ def validate_production_config(settings: Settings | None = None) -> None:
         errors.append("FRONTEND_URL must be set to production URL (not localhost)")
 
     if errors:
-        error_msg = "🚨 Production configuration errors:\n" + "\n".join(f"  - {e}" for e in errors)
+        error_msg = "🚨 Production configuration errors:\n" + "\n".join(
+            f"  - {e}" for e in errors
+        )
         raise RuntimeError(error_msg)

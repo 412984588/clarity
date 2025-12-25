@@ -1,11 +1,28 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-25 04:30
+**最后更新**: 2025-12-25 15:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-25 15:30] - API 文档优化 + 架构图 + 结构化日志
+
+- [x] **API 文档优化**: sessions.py 4 个路由添加详细 summary + description
+- [x] **架构文档增强**: ARCHITECTURE.md 顶部添加 Mermaid 可视化图表
+- [x] **结构化日志**: 添加 structlog 依赖 + logging_config.py 模块
+- [x] **代码质量**: ruff ✅ / mypy 44 files ✅ / app 导入成功 ✅
+- [x] **测试状态**: 105 passed / 28 failed（rate limit 干扰，非本次修改引入）
+
+> **改动文件**:
+> - clarity-api/app/routers/sessions.py
+> - clarity-api/app/logging_config.py (新建)
+> - clarity-api/app/main.py
+> - docs/ARCHITECTURE.md
+> - pyproject.toml (新增 structlog ^25.5.0)
+
+---
 
 ### [2025-12-25 04:30] - 安全加固三件套（全自动无人值守模式）
 

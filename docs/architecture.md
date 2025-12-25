@@ -6,6 +6,68 @@
 
 ---
 
+## 🚀 Quick Visual Overview (Mermaid)
+
+### Simplified System Architecture
+
+```mermaid
+graph TB
+    subgraph Client["客户端"]
+        Mobile["📱 移动端<br/>React Native + Expo"]
+        Web["🌐 Web端<br/>Next.js 16"]
+    end
+
+    subgraph Backend["后端服务"]
+        API["⚙️ API 服务<br/>FastAPI"]
+        DB[(🗄️ PostgreSQL)]
+        Cache["⚡ 缓存<br/>Redis (可选)"]
+    end
+
+    subgraph External["外部服务"]
+        OpenAI["🤖 OpenAI API"]
+        Anthropic["🤖 Anthropic API"]
+        OpenRouter["🤖 OpenRouter"]
+        Stripe["💳 Stripe"]
+        RevenueCat["💳 RevenueCat"]
+        Sentry["📊 Sentry"]
+    end
+
+    Mobile --> API
+    Web --> API
+    API --> DB
+    API --> Cache
+    API --> OpenAI
+    API --> Anthropic
+    API --> OpenRouter
+    API --> Stripe
+    API --> RevenueCat
+    API --> Sentry
+```
+
+### 5-Step Solve Flow
+
+```mermaid
+sequenceDiagram
+    participant U as 用户
+    participant C as 客户端
+    participant A as API
+    participant AI as LLM
+
+    U->>C: 输入问题
+    C->>A: POST /sessions (创建会话)
+    A-->>C: session_id
+
+    loop 每一步 (receive → clarify → reframe → options → commit)
+        C->>A: POST /sessions/{id}/messages
+        A->>AI: 生成回复
+        AI-->>A: SSE 流式响应
+        A-->>C: SSE 事件流
+        C-->>U: 实时显示回复
+    end
+```
+
+---
+
 ## Table of Contents
 
 1. [System Overview](#1-system-overview)

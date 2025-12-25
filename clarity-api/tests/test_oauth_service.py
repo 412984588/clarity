@@ -49,17 +49,22 @@ async def test_verify_apple_identity_token(oauth_service):
         "email_verified": "true",
     }
 
-    with patch.object(
-        oauth_service, "_get_apple_public_keys", new_callable=AsyncMock
-    ) as get_keys_mock, patch(
-        "app.services.oauth_service.jwt.get_unverified_header",
-        return_value={"kid": "apple-key-1"},
-    ), patch(
-        "app.services.oauth_service.jwt.algorithms.RSAAlgorithm.from_jwk",
-        return_value="public-key",
-    ), patch(
-        "app.services.oauth_service.jwt.decode", return_value=payload
-    ) as decode_mock:
+    with (
+        patch.object(
+            oauth_service, "_get_apple_public_keys", new_callable=AsyncMock
+        ) as get_keys_mock,
+        patch(
+            "app.services.oauth_service.jwt.get_unverified_header",
+            return_value={"kid": "apple-key-1"},
+        ),
+        patch(
+            "app.services.oauth_service.jwt.algorithms.RSAAlgorithm.from_jwk",
+            return_value="public-key",
+        ),
+        patch(
+            "app.services.oauth_service.jwt.decode", return_value=payload
+        ) as decode_mock,
+    ):
         get_keys_mock.return_value = apple_keys
         result = await oauth_service._verify_apple_token("test-token")
 
@@ -74,43 +79,58 @@ async def test_apple_auth_invalid_code(oauth_service):
     missing_keys = {"keys": [{"kid": "other-key"}]}
     valid_keys = {"keys": [{"kid": "apple-key-1"}]}
 
-    with patch.object(
-        oauth_service, "_get_apple_public_keys", new_callable=AsyncMock
-    ) as get_keys_mock, patch(
-        "app.services.oauth_service.jwt.get_unverified_header",
-        return_value={"kid": "apple-key-1"},
+    with (
+        patch.object(
+            oauth_service, "_get_apple_public_keys", new_callable=AsyncMock
+        ) as get_keys_mock,
+        patch(
+            "app.services.oauth_service.jwt.get_unverified_header",
+            return_value={"kid": "apple-key-1"},
+        ),
     ):
         get_keys_mock.return_value = missing_keys
-        with pytest.raises(ValueError, match="APPLE_TOKEN_INVALID: APPLE_KEY_NOT_FOUND"):
+        with pytest.raises(
+            ValueError, match="APPLE_TOKEN_INVALID: APPLE_KEY_NOT_FOUND"
+        ):
             await oauth_service._verify_apple_token("test-token")
 
-    with patch.object(
-        oauth_service, "_get_apple_public_keys", new_callable=AsyncMock
-    ) as get_keys_mock, patch(
-        "app.services.oauth_service.jwt.get_unverified_header",
-        return_value={"kid": "apple-key-1"},
-    ), patch(
-        "app.services.oauth_service.jwt.algorithms.RSAAlgorithm.from_jwk",
-        return_value="public-key",
-    ), patch(
-        "app.services.oauth_service.jwt.decode",
-        side_effect=jwt.ExpiredSignatureError(),
+    with (
+        patch.object(
+            oauth_service, "_get_apple_public_keys", new_callable=AsyncMock
+        ) as get_keys_mock,
+        patch(
+            "app.services.oauth_service.jwt.get_unverified_header",
+            return_value={"kid": "apple-key-1"},
+        ),
+        patch(
+            "app.services.oauth_service.jwt.algorithms.RSAAlgorithm.from_jwk",
+            return_value="public-key",
+        ),
+        patch(
+            "app.services.oauth_service.jwt.decode",
+            side_effect=jwt.ExpiredSignatureError(),
+        ),
     ):
         get_keys_mock.return_value = valid_keys
         with pytest.raises(ValueError, match="APPLE_TOKEN_EXPIRED"):
             await oauth_service._verify_apple_token("test-token")
 
-    with patch.object(
-        oauth_service, "_get_apple_public_keys", new_callable=AsyncMock
-    ) as get_keys_mock, patch(
-        "app.services.oauth_service.jwt.get_unverified_header",
-        return_value={"kid": "apple-key-1"},
-    ), patch(
-        "app.services.oauth_service.jwt.algorithms.RSAAlgorithm.from_jwk",
-        return_value="public-key",
-    ), patch(
-        "app.services.oauth_service.jwt.decode",
-        side_effect=jwt.InvalidTokenError("bad token"),
+    with (
+        patch.object(
+            oauth_service, "_get_apple_public_keys", new_callable=AsyncMock
+        ) as get_keys_mock,
+        patch(
+            "app.services.oauth_service.jwt.get_unverified_header",
+            return_value={"kid": "apple-key-1"},
+        ),
+        patch(
+            "app.services.oauth_service.jwt.algorithms.RSAAlgorithm.from_jwk",
+            return_value="public-key",
+        ),
+        patch(
+            "app.services.oauth_service.jwt.decode",
+            side_effect=jwt.InvalidTokenError("bad token"),
+        ),
     ):
         get_keys_mock.return_value = valid_keys
         with pytest.raises(ValueError, match="APPLE_TOKEN_INVALID: bad token"):
@@ -118,7 +138,10 @@ async def test_apple_auth_invalid_code(oauth_service):
 
     # Unlinked Apple account without email should be rejected early.
     with patch.object(
-        oauth_service, "_get_user_by_provider", new_callable=AsyncMock, return_value=None
+        oauth_service,
+        "_get_user_by_provider",
+        new_callable=AsyncMock,
+        return_value=None,
     ):
         with pytest.raises(ValueError, match="OAUTH_ACCOUNT_NOT_LINKED"):
             await oauth_service._process_oauth_login(

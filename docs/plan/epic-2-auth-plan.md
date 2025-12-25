@@ -76,7 +76,7 @@ class RegisterRequest(BaseModel):
     password: str
     device_fingerprint: str
     device_name: Optional[str] = None
-    
+
     @field_validator('password')
     @classmethod
     def validate_password(cls, v: str) -> str:
@@ -118,7 +118,7 @@ class UserResponse(BaseModel):
     email: str
     auth_provider: str
     locale: str
-    
+
     class Config:
         from_attributes = True
 
@@ -129,7 +129,7 @@ class DeviceResponse(BaseModel):
     platform: Optional[str]
     last_active_at: str
     is_current: bool = False
-    
+
     class Config:
         from_attributes = True
 
@@ -411,7 +411,7 @@ from app.models.device import Device
 from app.models.session import ActiveSession
 from app.models.subscription import Subscription
 from app.utils.security import (
-    hash_password, verify_password, 
+    hash_password, verify_password,
     create_access_token, create_refresh_token,
     decode_token, hash_token
 )
@@ -725,16 +725,16 @@ class Settings(BaseSettings):
     app_name: str = "Clarity API"
     debug: bool = False
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/clarity"
-    
+
     # JWT 配置
     jwt_secret: str = "your-secret-key-change-in-production"
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 60
-    
+
     # OAuth 配置
     google_client_id: str = ""
     apple_client_id: str = ""
-    
+
     # Server 配置
     host: str = "0.0.0.0"
     port: int = 8000
@@ -877,7 +877,7 @@ async def test_login_success(client: AsyncClient):
         "password": "Password123",
         "device_fingerprint": "test-device-003"
     })
-    
+
     # Then login
     response = await client.post("/auth/login", json={
         "email": "login@example.com",
@@ -1207,7 +1207,7 @@ async def remove_device(
 ):
     """解绑设备（每天限1次）"""
     from uuid import UUID
-    
+
     # 查找设备
     result = await db.execute(
         select(Device).where(
@@ -1413,7 +1413,7 @@ interface TokenResponse {
 
 export async function register(email: string, password: string): Promise<{ success: boolean; error?: string }> {
   const deviceFingerprint = await SecureStore.getItemAsync('deviceFingerprint') || '';
-  
+
   const result = await apiRequest<TokenResponse>('/auth/register', {
     method: 'POST',
     body: JSON.stringify({
@@ -1437,7 +1437,7 @@ export async function register(email: string, password: string): Promise<{ succe
 
 export async function login(email: string, password: string): Promise<{ success: boolean; error?: string }> {
   const deviceFingerprint = await SecureStore.getItemAsync('deviceFingerprint') || '';
-  
+
   const result = await apiRequest<TokenResponse>('/auth/login', {
     method: 'POST',
     body: JSON.stringify({
@@ -1488,9 +1488,9 @@ export default function LoginScreen() {
     setLoading(true);
 
     const result = await login(email, password);
-    
+
     setLoading(false);
-    
+
     if (result.success) {
       router.replace('/(main)');
     } else {
@@ -1510,7 +1510,7 @@ export default function LoginScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome Back</Text>
-      
+
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
       <TextInput
@@ -1530,8 +1530,8 @@ export default function LoginScreen() {
         secureTextEntry
       />
 
-      <TouchableOpacity 
-        style={[styles.button, loading && styles.buttonDisabled]} 
+      <TouchableOpacity
+        style={[styles.button, loading && styles.buttonDisabled]}
         onPress={handleLogin}
         disabled={loading}
       >
@@ -1638,9 +1638,9 @@ export default function RegisterScreen() {
     setLoading(true);
 
     const result = await register(email, password);
-    
+
     setLoading(false);
-    
+
     if (result.success) {
       router.replace('/(main)');
     } else {
@@ -1660,7 +1660,7 @@ export default function RegisterScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Create Account</Text>
-      
+
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
       <TextInput
@@ -1688,8 +1688,8 @@ export default function RegisterScreen() {
         secureTextEntry
       />
 
-      <TouchableOpacity 
-        style={[styles.button, loading && styles.buttonDisabled]} 
+      <TouchableOpacity
+        style={[styles.button, loading && styles.buttonDisabled]}
         onPress={handleRegister}
         disabled={loading}
       >
@@ -1846,7 +1846,7 @@ async def request_password_reset(self, email: str) -> Optional[str]:
 async def reset_password(self, token: str, new_password: str) -> bool:
     """使用 token 重置密码"""
     from app.models.password_reset import PasswordReset
-    
+
     token_hash = hash_token(token)
 
     result = await self.db.execute(
@@ -1903,7 +1903,7 @@ class ForgotPasswordRequest(BaseModel):
 class ResetPasswordRequest(BaseModel):
     token: str
     password: str
-    
+
     @field_validator('password')
     @classmethod
     def validate_password(cls, v: str) -> str:
@@ -1924,7 +1924,7 @@ async def forgot_password(
     """请求密码重置邮件"""
     service = AuthService(db)
     token = await service.request_password_reset(data.email)
-    
+
     if token:
         # TODO: Send email with reset link
         # reset_link = f"clarity://reset-password?token={token}"

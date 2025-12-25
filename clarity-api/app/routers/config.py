@@ -1,4 +1,5 @@
 """功能开关配置 API"""
+
 from fastapi import APIRouter
 from app.config import get_settings
 

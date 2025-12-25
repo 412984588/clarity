@@ -73,8 +73,8 @@ docker compose down
 
 ## deploy_prod_smoke.sh (Local Run)
 
-**Command**: `./scripts/deploy_prod_smoke.sh http://localhost:8000`  
-**Result**: PASS  
+**Command**: `./scripts/deploy_prod_smoke.sh http://localhost:8000`
+**Result**: PASS
 **Log**: `docs/release/deploy-prod-smoke-local-2025-12-23.log`
 
 ---

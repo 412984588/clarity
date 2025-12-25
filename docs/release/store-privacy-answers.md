@@ -62,8 +62,8 @@ Third-party processors:
 
 ## Decisions (based on current codebase)
 
-1) No ads SDKs, no third-party analytics beyond listed processors.  
-2) No location collection, no contacts, no photo/video/audio uploads.  
-3) No crash reporting SDK (Sentry) enabled in production.  
-4) No data used for advertising or tracking.  
+1) No ads SDKs, no third-party analytics beyond listed processors.
+2) No location collection, no contacts, no photo/video/audio uploads.
+3) No crash reporting SDK (Sentry) enabled in production.
+4) No data used for advertising or tracking.
 5) User message content is not stored server-side (only processed for response).

@@ -153,7 +153,12 @@ class AIService:
                             reasoning_buffer.append(reasoning)
 
         # 只有开启 reasoning 输出时，才使用 reasoning 作为兜底
-        if allow_reasoning_fallback and enable_reasoning_output and (not yielded_content) and reasoning_buffer:
+        if (
+            allow_reasoning_fallback
+            and enable_reasoning_output
+            and (not yielded_content)
+            and reasoning_buffer
+        ):
             # Fallback for reasoning-only models that emit no content tokens.
             yield "".join(reasoning_buffer)
 

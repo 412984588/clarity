@@ -31,6 +31,10 @@
     "react-native-purchases": "^9.6.11",
     "react-native-purchases-ui": "^9.6.11"
   },
+  "lint-staged": {
+    "*.{ts,tsx}": ["eslint --fix", "prettier --write"],
+    "*.{json,md}": ["prettier --write"]
+  },
   "devDependencies": {
     "@types/react": "~19.1.0",
     "@typescript-eslint/eslint-plugin": "^8.50.0",
@@ -40,6 +44,7 @@
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
+    "lint-staged": "^16.2.7",
     "prettier": "^3.7.4",
     "typescript": "~5.9.2"
   },

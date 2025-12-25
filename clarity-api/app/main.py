@@ -1,9 +1,8 @@
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
-from fastapi import FastAPI, Depends, HTTPException, Request, status
+from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 import sentry_sdk
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from slowapi import _rate_limit_exceeded_handler
@@ -12,6 +11,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import get_settings, validate_production_config
 from app.database import get_db
+from app.logging_config import setup_logging
 from app.middleware.rate_limit import limiter
 from app.routers import auth
 from app.routers import sessions
@@ -22,6 +22,9 @@ from app.routers import account
 from app.routers import config
 
 settings = get_settings()
+
+# 初始化结构化日志
+setup_logging(debug=settings.debug)
 
 if settings.sentry_dsn:
     sentry_sdk.init(
@@ -52,7 +55,9 @@ def get_cors_origins() -> list[str]:
 
     # 使用 cors_allowed_origins
     if settings.cors_allowed_origins:
-        origins.extend(o.strip() for o in settings.cors_allowed_origins.split(",") if o.strip())
+        origins.extend(
+            o.strip() for o in settings.cors_allowed_origins.split(",") if o.strip()
+        )
 
     # 兜底：至少允许本地开发
     if not origins:
@@ -80,7 +85,7 @@ app.add_middleware(
 
 # 注册限流器
 app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)  # type: ignore[arg-type]
 
 # 注册路由
 app.include_router(auth.router)

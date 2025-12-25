@@ -40,7 +40,9 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/register", response_model=TokenResponse, status_code=201)
 @limiter.limit(AUTH_RATE_LIMIT)
-async def register(request: Request, data: RegisterRequest, db: AsyncSession = Depends(get_db)):
+async def register(
+    request: Request, data: RegisterRequest, db: AsyncSession = Depends(get_db)
+):
     """注册新用户"""
     service = AuthService(db)
     try:
@@ -55,7 +57,9 @@ async def register(request: Request, data: RegisterRequest, db: AsyncSession = D
 
 @router.post("/login", response_model=TokenResponse)
 @limiter.limit(AUTH_RATE_LIMIT)
-async def login(request: Request, data: LoginRequest, db: AsyncSession = Depends(get_db)):
+async def login(
+    request: Request, data: LoginRequest, db: AsyncSession = Depends(get_db)
+):
     """邮箱登录"""
     service = AuthService(db)
     try:

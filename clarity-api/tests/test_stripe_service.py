@@ -40,11 +40,17 @@ async def test_create_checkout_session_creates_customer_and_session(
     user.id = uuid4()
     user.subscription = Subscription(user_id=user.id)
 
-    with patch("app.services.stripe_service.get_settings", return_value=stripe_settings):
-        with patch(
-            "app.services.stripe_service.stripe.Customer.create", customer_create
-        ), patch(
-            "app.services.stripe_service.stripe.checkout.Session.create", session_create
+    with patch(
+        "app.services.stripe_service.get_settings", return_value=stripe_settings
+    ):
+        with (
+            patch(
+                "app.services.stripe_service.stripe.Customer.create", customer_create
+            ),
+            patch(
+                "app.services.stripe_service.stripe.checkout.Session.create",
+                session_create,
+            ),
         ):
             url, session_id = await stripe_service.create_checkout_session(
                 user, "price_123"
@@ -81,11 +87,17 @@ async def test_create_checkout_session_uses_existing_customer(
     subscription.stripe_customer_id = "cus_existing"
     user.subscription = subscription
 
-    with patch("app.services.stripe_service.get_settings", return_value=stripe_settings):
-        with patch(
-            "app.services.stripe_service.stripe.Customer.create", customer_create
-        ), patch(
-            "app.services.stripe_service.stripe.checkout.Session.create", session_create
+    with patch(
+        "app.services.stripe_service.get_settings", return_value=stripe_settings
+    ):
+        with (
+            patch(
+                "app.services.stripe_service.stripe.Customer.create", customer_create
+            ),
+            patch(
+                "app.services.stripe_service.stripe.checkout.Session.create",
+                session_create,
+            ),
         ):
             url, session_id = await stripe_service.create_checkout_session(
                 user, "price_456"
@@ -101,7 +113,9 @@ async def test_create_checkout_session_requires_subscription(stripe_settings):
     user = User(email="stripe-missing@example.com")
     user.id = uuid4()
 
-    with patch("app.services.stripe_service.get_settings", return_value=stripe_settings):
+    with patch(
+        "app.services.stripe_service.get_settings", return_value=stripe_settings
+    ):
         with pytest.raises(ValueError, match="NO_SUBSCRIPTION"):
             await stripe_service.create_checkout_session(user, "price_123")
 
@@ -110,7 +124,9 @@ async def test_create_checkout_session_requires_subscription(stripe_settings):
 async def test_create_portal_session(stripe_settings, sync_to_thread):
     portal_create = MagicMock(return_value={"url": "https://portal"})
 
-    with patch("app.services.stripe_service.get_settings", return_value=stripe_settings):
+    with patch(
+        "app.services.stripe_service.get_settings", return_value=stripe_settings
+    ):
         with patch(
             "app.services.stripe_service.stripe.billing_portal.Session.create",
             portal_create,
@@ -131,7 +147,9 @@ def test_verify_webhook(stripe_settings):
 
     construct_event = MagicMock(return_value=event)
 
-    with patch("app.services.stripe_service.get_settings", return_value=stripe_settings):
+    with patch(
+        "app.services.stripe_service.get_settings", return_value=stripe_settings
+    ):
         with patch(
             "app.services.stripe_service.stripe.Webhook.construct_event",
             construct_event,

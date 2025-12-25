@@ -109,7 +109,22 @@ async def _get_or_create_usage(
     return result.scalar_one()
 
 
-@router.post("", response_model=SessionCreateResponse, status_code=201)
+@router.post(
+    "",
+    response_model=SessionCreateResponse,
+    status_code=201,
+    summary="创建 Solve 会话",
+    description="""
+    创建一个新的 5 步 Solve 会话。
+
+    **需要认证**: 是（Bearer Token）
+
+    **Headers 必须**:
+    - `X-Device-Fingerprint`: 设备指纹
+
+    **返回**: 新建会话的 ID 和初始状态
+    """,
+)
 @limiter.limit(AI_RATE_LIMIT)
 async def create_session(
     request: Request,
@@ -117,7 +132,6 @@ async def create_session(
     device_fingerprint: str = Header(..., alias="X-Device-Fingerprint"),
     db: AsyncSession = Depends(get_db),
 ):
-    """创建 Solve 会话"""
     device_result = await db.execute(
         select(Device).where(
             Device.user_id == current_user.id,
@@ -201,14 +215,18 @@ async def create_session(
     )
 
 
-@router.get("", response_model=SessionListResponse)
+@router.get(
+    "",
+    response_model=SessionListResponse,
+    summary="获取会话列表",
+    description="获取当前用户的所有会话列表，支持分页。",
+)
 async def list_sessions(
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """列出当前用户的 Solve 会话"""
     total_result = await db.execute(
         select(func.count(SolveSession.id)).where(
             SolveSession.user_id == current_user.id
@@ -233,13 +251,17 @@ async def list_sessions(
     )
 
 
-@router.get("/{session_id}", response_model=SessionResponse)
+@router.get(
+    "/{session_id}",
+    response_model=SessionResponse,
+    summary="获取单个会话详情",
+    description="获取指定会话的完整信息，包括所有消息历史。",
+)
 async def get_session(
     session_id: UUID,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """获取单个 Solve 会话"""
     result = await db.execute(
         select(SolveSession).where(
             SolveSession.id == session_id, SolveSession.user_id == current_user.id
@@ -315,7 +337,20 @@ async def update_session(
     )
 
 
-@router.post("/{session_id}/messages")
+@router.post(
+    "/{session_id}/messages",
+    summary="发送消息并获取 AI 回复",
+    description="""
+    向指定会话发送消息，获取 SSE 流式 AI 回复。
+
+    **响应格式**: Server-Sent Events (SSE)
+
+    **事件类型**:
+    - `token`: AI 生成的文本片段
+    - `done`: 生成完成，包含元数据
+    - `error`: 发生错误
+    """,
+)
 @limiter.limit(AI_RATE_LIMIT)
 async def stream_messages(
     request: Request,
@@ -324,7 +359,6 @@ async def stream_messages(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """SSE 流式返回 LLM 回复"""
     result = await db.execute(
         select(SolveSession).where(
             SolveSession.id == session_id, SolveSession.user_id == current_user.id

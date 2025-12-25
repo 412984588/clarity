@@ -247,7 +247,7 @@
 ```python
 class User(Base):
     __tablename__ = "users"
-    
+
     id: UUID
     email: str  # unique, indexed
     password_hash: Optional[str]  # NULL for OAuth users
@@ -263,7 +263,7 @@ class User(Base):
 ```python
 class Device(Base):
     __tablename__ = "devices"
-    
+
     id: UUID
     user_id: UUID  # FK -> users
     device_fingerprint: str  # unique per user
@@ -279,7 +279,7 @@ class Device(Base):
 ```python
 class ActiveSession(Base):
     __tablename__ = "active_sessions"
-    
+
     id: UUID
     user_id: UUID  # FK -> users
     device_id: UUID  # FK -> devices
@@ -293,7 +293,7 @@ class ActiveSession(Base):
 ```python
 class PasswordReset(Base):
     __tablename__ = "password_resets"
-    
+
     id: UUID
     user_id: UUID  # FK -> users
     token_hash: str  # hashed reset token
