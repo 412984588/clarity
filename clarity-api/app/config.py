@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     # Server 配置
     host: str = "0.0.0.0"
     port: int = 8000
+    frontend_url: str = "http://localhost:8000"  # 生产环境需要改成真实域名
 
     # Free Beta 配置
     beta_mode: bool = False

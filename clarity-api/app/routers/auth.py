@@ -106,7 +106,8 @@ async def forgot_password(
         await db.commit()
         if settings.debug:
             logger.info(
-                "Password reset link: http://localhost:8000/auth/reset?token=%s",
+                "Password reset link: %s/auth/reset?token=%s",
+                settings.frontend_url,
                 token,
             )
 
