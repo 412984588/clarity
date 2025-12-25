@@ -58,11 +58,11 @@ This document tracks all placeholders, TBD items, and missing information across
 
 | Document | Section | Placeholder Text | Context | Owner | Target Date | Status |
 |----------|---------|------------------|---------|-------|-------------|--------|
-| free-beta-launch-checklist.md | Backend Environment | TBD | Choose hosting (Railway/Vercel/other) | DevOps | Before Beta | TODO |
-| free-beta-launch-checklist.md | Test Accounts | TBD | Create 3+ test accounts for demo | Dev | Before Beta | TODO |
-| free-beta-launch-checklist.md | Beta Tester List | TBD | Recruit 5-10 beta testers | PM | Before Beta | TODO |
-| free-beta-launch-checklist.md | Feedback Channels | TBD | Set up email/form for feedback | PM | Before Beta | TODO |
-| free-beta-launch-checklist.md | Bug Triage Process | TBD | Confirm triage workflow | Dev | Before Beta | TODO |
+| free-beta-launch-checklist.md | Backend Environment | Not deployed / TBD | Awaiting hosting account (Railway/Vercel/other) | DevOps | Before Beta | BLOCKED |
+| free-beta-launch-checklist.md | Test Accounts | Self-register | No pre-created accounts needed (users self-register) | Dev | Before Beta | DONE |
+| free-beta-launch-checklist.md | Beta Tester List | Owner recruiting (see beta-tester-tracker.md) | 5-10 beta testers, tracked in beta-tester-tracker.md | PM | Before Beta | IN PROGRESS |
+| free-beta-launch-checklist.md | Feedback Channels | GitHub Issue Forms + invite email | GitHub Issue Forms + email contact in invite | PM | Before Beta | DONE |
+| free-beta-launch-checklist.md | Bug Triage Process | Use feedback-triage.md | Triage workflow documented in feedback-triage.md | Dev | Before Beta | DONE |
 
 ---
 
