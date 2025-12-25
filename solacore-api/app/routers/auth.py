@@ -17,6 +17,7 @@ from app.middleware.rate_limit import limiter, AUTH_RATE_LIMIT
 from app.models.device import Device
 from app.models.password_reset import PasswordResetToken
 from app.models.session import ActiveSession
+from app.models.subscription import Subscription
 from app.models.user import User
 from app.services.auth_service import AuthService
 from app.services.email_service import send_password_reset_email
@@ -24,6 +25,7 @@ from app.services.oauth_service import OAuthService
 from app.schemas.auth import (
     RegisterRequest,
     LoginRequest,
+    BetaLoginRequest,
     TokenResponse,
     RefreshRequest,
     OAuthRequest,
@@ -74,6 +76,71 @@ async def login(
         if error_code == "DEVICE_BOUND_TO_OTHER":
             raise HTTPException(status_code=403, detail={"error": error_code})
         raise HTTPException(status_code=400, detail={"error": error_code})
+
+
+@router.post("/beta-login", response_model=TokenResponse)
+@limiter.limit(AUTH_RATE_LIMIT)
+async def beta_login(
+    request: Request,
+    data: BetaLoginRequest | None = None,
+    db: AsyncSession = Depends(get_db),
+):
+    """Beta 模式自动登录"""
+    if not settings.beta_mode:
+        raise HTTPException(status_code=403, detail={"error": "BETA_MODE_DISABLED"})
+
+    beta_email = "beta-tester@solacore.app"
+    result = await db.execute(
+        select(User)
+        .options(selectinload(User.subscription))
+        .where(User.email == beta_email)
+    )
+    user = result.scalar_one_or_none()
+
+    if not user:
+        random_password = secrets.token_urlsafe(32)
+        user = User(
+            email=beta_email,
+            password_hash=hash_password(random_password),
+            auth_provider="email",
+        )
+        db.add(user)
+        await db.flush()
+
+        subscription = Subscription(user_id=user.id, tier="free")
+        db.add(subscription)
+        await db.flush()
+        await db.refresh(user, ["subscription"])
+    elif not user.subscription:
+        subscription = Subscription(user_id=user.id, tier="free")
+        db.add(subscription)
+        await db.flush()
+        await db.refresh(user, ["subscription"])
+
+    device_fingerprint = (
+        data.device_fingerprint
+        if data and data.device_fingerprint
+        else f"beta:{user.id}"
+    )
+    device_name = data.device_name if data and data.device_name else "Beta Device"
+    tier = user.subscription.tier if user.subscription else "free"
+
+    service = AuthService(db)
+    try:
+        device = await service._get_or_create_device(
+            user, device_fingerprint, device_name, tier=tier
+        )
+        tokens = await service._create_session(user, device)
+    except ValueError as e:
+        error_code = str(e)
+        if error_code == "DEVICE_LIMIT_REACHED":
+            raise HTTPException(status_code=403, detail={"error": error_code})
+        if error_code == "DEVICE_BOUND_TO_OTHER":
+            raise HTTPException(status_code=403, detail={"error": error_code})
+        raise HTTPException(status_code=400, detail={"error": error_code})
+
+    await db.commit()
+    return tokens
 
 
 @router.post("/refresh", response_model=TokenResponse)

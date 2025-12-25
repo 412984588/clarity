@@ -1,20 +1,57 @@
 "use client";
 
-import { Suspense, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Chrome } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { api, betaLogin } from "@/lib/api";
 
 function LoginContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
+  const [checkingBeta, setCheckingBeta] = useState(true);
 
   const redirectPath = useMemo(() => {
     return searchParams.get("redirect") || "/dashboard";
   }, [searchParams]);
+
+  useEffect(() => {
+    let isActive = true;
+
+    const checkBetaMode = async () => {
+      try {
+        const response = await api.get<{ beta_mode: boolean }>(
+          "/auth/config/features",
+        );
+
+        if (response.data.beta_mode) {
+          try {
+            await betaLogin();
+            router.replace("/dashboard");
+            return;
+          } catch (loginError) {
+            console.error("Failed to beta login:", loginError);
+          }
+        }
+      } catch (checkError) {
+        console.error("Failed to check beta mode:", checkError);
+      }
+
+      if (isActive) {
+        setCheckingBeta(false);
+      }
+    };
+
+    void checkBetaMode();
+
+    return () => {
+      isActive = false;
+    };
+  }, [router]);
 
   const startGoogleLogin = () => {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
@@ -36,6 +73,14 @@ function LoginContent() {
 
     window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
   };
+
+  if (checkingBeta) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <LoadingSpinner label="加载中..." />
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#fef3c7,transparent_45%),radial-gradient(circle_at_bottom,#c7f9e8,transparent_45%)]">

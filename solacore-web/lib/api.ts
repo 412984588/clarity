@@ -86,6 +86,20 @@ const refreshTokens = async (): Promise<AuthTokens> => {
   return refreshPromise;
 };
 
+const betaLogin = async (): Promise<void> => {
+  const response = await api.post<{
+    access_token: string;
+    refresh_token: string;
+    token_type?: string;
+  }>("/auth/beta-login");
+
+  writeTokens({
+    access_token: response.data.access_token,
+    refresh_token: response.data.refresh_token,
+    token_type: response.data.token_type ?? "Bearer",
+  });
+};
+
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
@@ -136,4 +150,5 @@ export {
   writeTokens as setStoredTokens,
   clearTokens as clearStoredTokens,
   refreshTokens,
+  betaLogin,
 };

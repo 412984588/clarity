@@ -24,6 +24,7 @@ type AuthContextValue = {
   isLoading: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
+  betaLogin: () => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshToken: () => Promise<void>;
@@ -62,35 +63,6 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const initialize = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const tokens = await getTokens();
-      if (tokens.refreshToken) {
-        await refreshTokens();
-        const [email, userId] = await Promise.all([getUserEmail(), getStoredUserId()]);
-        if (email || userId) {
-          setUser({ email: email ?? undefined, id: userId ?? undefined });
-        }
-        setIsAuthenticated(true);
-      } else {
-        setIsAuthenticated(false);
-      }
-    } catch {
-      await clearTokens();
-      await clearUserEmail();
-      await clearUserId();
-      setIsAuthenticated(false);
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    void initialize();
-  }, [initialize]);
-
   const login = useCallback(async (email: string, password: string) => {
     setIsLoading(true);
     setError(null);
@@ -120,6 +92,81 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
       setIsLoading(false);
     }
   }, []);
+
+  const betaLogin = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await apiRequest<{
+        access_token: string;
+        refresh_token: string;
+        user?: { id?: string | null; email?: string | null };
+      }>('/auth/beta-login', {
+        method: 'POST',
+        auth: false,
+      });
+
+      const userId = response.user?.id ?? undefined;
+      const userEmail = response.user?.email ?? undefined;
+
+      await saveTokens(response.access_token, response.refresh_token);
+      if (userEmail) {
+        await saveUserEmail(userEmail);
+      }
+      if (userId) {
+        await saveUserId(userId);
+      }
+
+      setUser(userEmail || userId ? { email: userEmail, id: userId } : null);
+      setIsAuthenticated(true);
+    } catch (err) {
+      setError(getErrorMessage(err));
+      setIsAuthenticated(false);
+      setUser(null);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const initialize = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const tokens = await getTokens();
+      if (tokens.refreshToken) {
+        await refreshTokens();
+        const [email, userId] = await Promise.all([getUserEmail(), getStoredUserId()]);
+        if (email || userId) {
+          setUser({ email: email ?? undefined, id: userId ?? undefined });
+        }
+        setIsAuthenticated(true);
+        return;
+      }
+
+      const features = await apiRequest<{ beta_mode?: boolean }>('/auth/config/features', {
+        auth: false,
+      });
+      if (features?.beta_mode) {
+        await betaLogin();
+        return;
+      }
+
+      setIsAuthenticated(false);
+    } catch {
+      await clearTokens();
+      await clearUserEmail();
+      await clearUserId();
+      setIsAuthenticated(false);
+      setUser(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [betaLogin]);
+
+  useEffect(() => {
+    void initialize();
+  }, [initialize]);
 
   const register = useCallback(async (email: string, password: string) => {
     setIsLoading(true);
@@ -220,6 +267,7 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
       isLoading,
       error,
       login,
+      betaLogin,
       register,
       logout,
       refreshToken,
@@ -232,6 +280,7 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
       isLoading,
       error,
       login,
+      betaLogin,
       register,
       logout,
       refreshToken,

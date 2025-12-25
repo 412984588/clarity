@@ -34,6 +34,11 @@ class LoginRequest(BaseModel):
     device_name: Optional[str] = None
 
 
+class BetaLoginRequest(BaseModel):
+    device_fingerprint: Optional[str] = None
+    device_name: Optional[str] = None
+
+
 class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str
