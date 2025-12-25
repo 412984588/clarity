@@ -156,7 +156,7 @@
 
 4. **Expectations**
    - Time commitment: 2-3 sessions (30 min each) over 7 days
-   - Response time: You'll reply within 24 hours to feedback
+   - Response time: Best-effort (no guaranteed SLA)
    - Incentive (optional): Thank you note, early access, credit in app
 
 **Pro Tip**: Use [Beta Share Pack](beta-share-pack.md) for ready-to-send email templates and FAQs.
