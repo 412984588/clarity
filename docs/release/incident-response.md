@@ -345,4 +345,4 @@ Detection → Triage → Contain → Recover → Postmortem
 | Ownership Matrix | `docs/release/ownership-matrix.md` | 负责人分工 |
 | Risk Register | `docs/release/risk-register.md` | 风险登记 |
 | Prod Deploy Runbook | `docs/PROD_DEPLOY.md` | 部署与回滚命令 |
-| Monitoring Setup | TBD | 监控配置（待补充） |
+| Monitoring Setup | `docker-compose.prod.yml` | Sentry DSN configured in .env.prod, UptimeRobot for /health endpoint |

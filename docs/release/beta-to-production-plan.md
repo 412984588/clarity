@@ -303,7 +303,7 @@ This document outlines the **roadmap for transitioning Clarity from Free Beta to
 5. Update mobile app to show paywall
 6. Submit updated app to stores
 
-**Timeline**: TBD (4-8 weeks post-launch)
+**Timeline**: 4-6 weeks post-launch (contingent on domain/hosting setup and beta feedback)
 
 ---
 

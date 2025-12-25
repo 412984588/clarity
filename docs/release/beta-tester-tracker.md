@@ -183,7 +183,7 @@ This tracker contains **Personally Identifiable Information (PII)**:
 **GDPR/CCPA Compliance**:
 - Testers have the right to access their data
 - Testers can request deletion of their data
-- Document retention policy: [TBD - e.g., delete 30 days after beta]
+- Document retention policy: Retain indefinitely during beta; delete on user request or 90 days after beta ends
 
 **Template vs Live Data**:
 - This file (`beta-tester-tracker.md`) is a **template** for documentation

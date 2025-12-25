@@ -62,7 +62,7 @@
 | **Terms of Service** | 注册时 | Checkbox + Link | [ ] Implemented |
 | **Privacy Policy** | 注册时 | Checkbox + Link | [ ] Implemented |
 | **Marketing Emails** | 可选 | Opt-in Checkbox | [ ] Implemented |
-| **Analytics/Tracking** | 首次启动 | Consent Banner | [ ] TBD |
+| **Analytics/Tracking** | 首次启动 | Consent Banner | [ ] Deferred (Beta: mobile app only, no web tracking) |
 | **Push Notifications** | 使用时 | System Prompt | [ ] Implemented |
 
 ### Disclosure Requirements
@@ -73,9 +73,9 @@
 | 第三方数据共享 | Privacy Policy | [ ] Complete |
 | 数据保留期限 | Privacy Policy | [ ] Complete |
 | 用户权利说明 | Privacy Policy | [ ] Complete |
-| Cookie/Tracking 说明 | Privacy Policy | [ ] TBD |
-| App Store 隐私标签 | App Store Connect | [ ] TBD |
-| Play Store 数据安全 | Play Console | [ ] TBD |
+| Cookie/Tracking 说明 | Privacy Policy | [ ] N/A (Beta: mobile app only, no cookies) |
+| App Store 隐私标签 | App Store Connect | [ ] Pending Apple Developer Account |
+| Play Store 数据安全 | Play Console | [ ] Ready to submit with APK |
 
 ---
 
@@ -86,7 +86,7 @@
 | Measure | Status | Notes |
 |---------|--------|-------|
 | HTTPS/TLS 1.2+ 强制 | [ ] Implemented | 所有 API 通信 |
-| Certificate Pinning | [ ] TBD | 移动端可选增强 |
+| Certificate Pinning | [ ] Deferred (Post-Launch security enhancement) | 移动端可选增强 |
 | Secure WebSocket (WSS) | [ ] Implemented | SSE 流使用 HTTPS |
 
 ### Data at Rest
@@ -95,7 +95,7 @@
 |---------|--------|-------|
 | 数据库加密 | [ ] Depends on Provider | PostgreSQL 提供商配置 |
 | 密码 Bcrypt 哈希 | [ ] Implemented | 不可逆 |
-| 敏感字段加密 | [ ] TBD | Chat 内容可选 |
+| 敏感字段加密 | [ ] Deferred (Chat content encrypted in transit, at-rest encryption via DB provider) | Chat 内容可选 |
 | 备份加密 | [ ] Depends on Provider | 数据库提供商配置 |
 
 ### Access Control
@@ -104,7 +104,7 @@
 |---------|--------|-------|
 | JWT Token 认证 | [ ] Implemented | 有效期控制 |
 | Role-based Access | [ ] N/A | 单一用户角色 |
-| Admin Access Logging | [ ] TBD | 生产环境需要 |
+| Admin Access Logging | [ ] Planned (Production: via hosting provider logs) | 生产环境需要 |
 | API Rate Limiting | [ ] Implemented | 防滥用 |
 | Device Binding | [ ] Implemented | 防账号共享 |
 
@@ -121,8 +121,8 @@
 | **Stripe** | Email, Payment Info | 支付处理 | [ ] Standard | [Link](https://stripe.com/privacy) |
 | **RevenueCat** | User ID, Purchase Data | 订阅管理 | [ ] Review | [Link](https://revenuecat.com/privacy) |
 | **Sentry** | Error Logs, Device Info | 错误监控 | [ ] Review | [Link](https://sentry.io/privacy) |
-| **Database Provider** | All User Data | 数据存储 | [ ] TBD | TBD |
-| **Hosting Provider** | All Traffic | 服务托管 | [ ] TBD | TBD |
+| **Database Provider** | All User Data | 数据存储 | [ ] Pending (Neon/Supabase selection) | [Neon](https://neon.tech/privacy) / [Supabase](https://supabase.com/privacy) |
+| **Hosting Provider** | All Traffic | 服务托管 | [ ] Pending (Railway/Vercel selection) | [Railway](https://railway.app/legal/privacy) / [Vercel](https://vercel.com/legal/privacy-policy) |
 | **Apple** | App Analytics | 应用分发 | N/A (Platform) | [Link](https://apple.com/privacy) |
 | **Google** | App Analytics | 应用分发 | N/A (Platform) | [Link](https://policies.google.com/privacy) |
 
@@ -143,11 +143,11 @@
 
 | Right | Description | Implementation | Status |
 |-------|-------------|----------------|--------|
-| **Access** | 用户可查看其数据 | 账户设置页面 | [ ] TBD |
-| **Rectification** | 用户可更正其数据 | 账户设置页面 | [ ] Partial |
-| **Erasure** | 用户可删除账号和数据 | 删除账号功能 | [ ] TBD |
-| **Data Portability** | 用户可导出其数据 | 数据导出功能 | [ ] TBD |
-| **Withdraw Consent** | 用户可撤回同意 | 设置中关闭 | [ ] TBD |
+| **Access** | 用户可查看其数据 | 账户设置页面 | [ ] Planned (POST /users/me/export) |
+| **Rectification** | 用户可更正其数据 | 账户设置页面 | [ ] Partial (Display name editable) |
+| **Erasure** | 用户可删除账号和数据 | 删除账号功能 | [ ] Planned (DELETE /users/me) |
+| **Data Portability** | 用户可导出其数据 | 数据导出功能 | [ ] Planned (JSON export via settings) |
+| **Withdraw Consent** | 用户可撤回同意 | 设置中关闭 | [ ] Planned (Settings toggle) |
 | **Opt-out of Sale** | CCPA 要求 | N/A（不出售数据） | N/A |
 | **Lodge Complaint** | 向监管机构投诉 | 隐私政策中说明 | [ ] Document |
 
@@ -155,8 +155,8 @@
 
 | Request Type | Response Time | Method | Status |
 |--------------|---------------|--------|--------|
-| 数据访问请求 | 30 天内 | Email / In-app | [ ] TBD |
-| 数据删除请求 | 30 天内 | Email / In-app | [ ] TBD |
+| 数据访问请求 | 30 天内 | Email / In-app | [ ] Best effort (no fixed SLA during Beta) |
+| 数据删除请求 | 30 天内 | Email / In-app | [ ] Best effort (no fixed SLA during Beta) |
 | 数据导出请求 | 30 天内 | In-app | [x] `/account/export` |
 
 ---
@@ -208,25 +208,25 @@
 
 | Gap | Impact | Plan | Owner | Deadline |
 |-----|--------|------|-------|----------|
-| App Store 隐私标签 | 提交必须 | 填写问卷 | Mobile Lead | TBD |
-| Play Store 数据安全 | 提交必须 | 填写表单 | Mobile Lead | TBD |
+| App Store 隐私标签 | 提交必须 | 填写问卷 | Mobile Lead | Pending Apple Developer Account |
+| Play Store 数据安全 | 提交必须 | 填写表单 | Mobile Lead | With first Play Store submission |
 
 ### Medium Priority (Post-Launch)
 
 | Gap | Impact | Plan | Owner | Deadline |
 |-----|--------|------|-------|----------|
-| Cookie Consent Banner | Web 端合规 | 实现 Banner | Frontend | TBD |
-| 数据访问请求自助 | 用户体验 | In-app 实现 | Full Stack | TBD |
-| 数据保留自动清理 | 合规 + 成本 | Cron Job | Backend | TBD |
-| 审计日志 | 安全审计 | 实现日志系统 | Backend | TBD |
+| Cookie Consent Banner | Web 端合规 | 实现 Banner | Frontend | N/A (mobile-only for now) |
+| 数据访问请求自助 | 用户体验 | In-app 实现 | Full Stack | Post-Beta (4-8 weeks) |
+| 数据保留自动清理 | 合规 + 成本 | Cron Job | Backend | Post-Beta (4-8 weeks) |
+| 审计日志 | 安全审计 | 实现日志系统 | Backend | Post-Beta (4-8 weeks) |
 
 ### Low Priority / Nice-to-Have
 
 | Gap | Impact | Plan | Owner | Deadline |
 |-----|--------|------|-------|----------|
-| Certificate Pinning | 安全增强 | 评估必要性 | Mobile | TBD |
-| Chat 内容端到端加密 | 隐私增强 | 评估可行性 | Backend | TBD |
-| 本地数据处理选项 | 隐私增强 | 评估可行性 | Backend | TBD |
+| Certificate Pinning | 安全增强 | 评估必要性 | Mobile | Post-Production |
+| Chat 内容端到端加密 | 隐私增强 | 评估可行性 | Backend | Post-Production |
+| 本地数据处理选项 | 隐私增强 | 评估可行性 | Backend | Post-Production |
 
 ---
 
