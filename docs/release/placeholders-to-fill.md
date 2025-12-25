@@ -43,11 +43,11 @@ This document tracks all placeholders, TBD items, and missing information across
 | support.md | Support Hours | TBD | Support availability hours (e.g., Mon-Fri 9am-6pm) | Support | Before Beta | TODO |
 | support.md | Response Time | TBD | Target response SLA (e.g., 1 business day) | Support | Before Beta | TODO |
 | support.md | Status Page URL | TBD | Public status page URL | DevOps | Before Launch | TODO |
-| free-beta-tester-guide.md | Beta Coordinator | TBD | Designated beta coordinator contact | PM | Before Beta | TODO |
-| free-beta-tester-guide.md | Coordinator Email | TBD | Beta coordinator email address | PM | Before Beta | TODO |
-| free-beta-tester-guide.md | Beta End Date | TBD | When beta testing will end | PM | Before Beta | TODO |
-| free-beta-tester-guide.md | Beta Pricing | TBD | Special pricing/perks for beta testers | Product | Before Production | TODO |
-| beta-feedback-form.md | Form URL | TBD | Actual web form link for feedback | Dev | Before Beta | TODO |
+| free-beta-tester-guide.md | Beta Coordinator | Owner (self) | Manual invites only, no dedicated coordinator | PM | Before Beta | DONE |
+| free-beta-tester-guide.md | Coordinator Email | Provided in invite (TBD) | Email provided when sending invite | PM | Before Beta | IN PROGRESS |
+| free-beta-tester-guide.md | Beta End Date | Open-ended / TBD | No fixed end date for free beta | PM | Before Beta | IN PROGRESS |
+| free-beta-tester-guide.md | Beta Pricing | None | No special pricing/perks - friend testing only | Product | Before Production | DONE |
+| beta-feedback-form.md | Form URL | TBD (web not built) | Web feedback page not deployed yet | Dev | Before Beta | BLOCKED |
 | qa-test-plan.md | Test Google Account | TBD | Google account for testing OAuth | QA | Before Testing | TODO |
 | qa-test-plan.md | Test Apple ID | TBD | Apple ID for testing Sign-In | QA | BLOCKED (needs Apple Dev Account) | BLOCKED |
 | qa-test-plan.md | RevenueCat Sandbox | TBD | RevenueCat sandbox configuration | Dev | DEFERRED (Beta doesn't need) | DEFERRED |

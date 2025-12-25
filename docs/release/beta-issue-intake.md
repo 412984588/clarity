@@ -57,14 +57,26 @@ We offer multiple ways to report issues and provide feedback. Choose the method 
 
 ---
 
-### 3. Direct Message (Slack / WeChat / Email)
+### 3. Web Feedback Page
+
+**Status**: ❌ **Not Available Yet (TBD)**
+
+**Best For:** Web-based form submissions (when deployed)
+
+**Current Status:**
+- Web feedback page has not been built or deployed yet
+- **Use GitHub Issue Forms or email instead** (see options 1 and 2 above)
+- This will be added in a future update
+
+---
+
+### 4. Direct Message (Slack / WeChat / Email)
 
 **Best For:** Quick questions, urgent issues, or private concerns
 
 **Contact Methods:**
-- Slack: [Your Beta Testing Slack Channel] (if applicable)
-- WeChat: [Beta Tester WeChat Group] (if applicable)
-- Email: [Beta Testing Email Address] (if applicable)
+- Email: Provided in your beta invite (TBD)
+- Response time: Best-effort (no guaranteed SLA for free beta)
 
 **Advantages:**
 - Fast response for urgent issues
