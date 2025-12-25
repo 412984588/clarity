@@ -3,48 +3,48 @@
 ## Backend (clarity-api)
 
 ### 配置
-- [ ] 更新 `app/config.py` 添加 RevenueCat 配置项
-- [ ] 更新 `.env.example` 添加环境变量说明
+- [x] 更新 `app/config.py` 添加 RevenueCat 配置项
+- [x] 更新 `.env.example` 添加环境变量说明
 
 ### Webhook 端点
-- [ ] 创建 `app/routers/revenuecat_webhooks.py`
-- [ ] 实现 Bearer token 认证中间件
-- [ ] 处理 INITIAL_PURCHASE 事件
-- [ ] 处理 RENEWAL 事件
-- [ ] 处理 CANCELLATION 事件
-- [ ] 处理 EXPIRATION 事件
-- [ ] 处理 BILLING_ISSUE 事件
-- [ ] 处理 PRODUCT_CHANGE 事件
-- [ ] 实现 entitlement → tier 映射
-- [ ] 实现幂等性 (复用 LRU 缓存)
-- [ ] 注册路由到 main.py
+- [x] 创建 `app/routers/revenuecat_webhooks.py`
+- [x] 实现 Bearer token 认证中间件
+- [x] 处理 INITIAL_PURCHASE 事件
+- [x] 处理 RENEWAL 事件
+- [x] 处理 CANCELLATION 事件
+- [x] 处理 EXPIRATION 事件
+- [x] 处理 BILLING_ISSUE 事件
+- [x] 处理 PRODUCT_CHANGE 事件
+- [x] 实现 entitlement → tier 映射
+- [x] 实现幂等性 (复用 LRU 缓存)
+- [x] 注册路由到 main.py
 
 ### 测试
-- [ ] `tests/test_revenuecat_webhooks.py`
-- [ ] 测试缺失 Authorization 返回 401
-- [ ] 测试无效 token 返回 401
-- [ ] 测试 INITIAL_PURCHASE 创建订阅
-- [ ] 测试 RENEWAL 更新 period_end
-- [ ] 测试 EXPIRATION 降级到 free
+- [x] `tests/test_revenuecat_webhooks.py`
+- [x] 测试缺失 Authorization 返回 401
+- [x] 测试无效 token 返回 401
+- [x] 测试 INITIAL_PURCHASE 创建订阅
+- [x] 测试 RENEWAL 更新 period_end
+- [x] 测试 EXPIRATION 降级到 free
 
 ### 验收
-- [ ] ruff check 通过
-- [ ] mypy 通过
-- [ ] pytest 全部通过
+- [x] ruff check 通过
+- [x] mypy 通过
+- [x] pytest 全部通过
 
 ---
 
 ## Mobile (clarity-mobile)
 
 ### SDK 集成
-- [ ] 安装 react-native-purchases
-- [ ] 创建 `src/services/revenuecat.ts`
-- [ ] 实现 configure() 初始化
-- [ ] 实现 login(userId) 绑定用户
-- [ ] 实现 logout() 解绑
-- [ ] 实现 getOfferings() 获取产品
-- [ ] 实现 purchasePackage() 购买
-- [ ] 实现 restorePurchases() 恢复
+- [x] 安装 react-native-purchases
+- [x] 创建 `src/services/revenuecat.ts`
+- [x] 实现 configure() 初始化
+- [x] 实现 login(userId) 绑定用户
+- [x] 实现 logout() 解绑
+- [x] 实现 getOfferings() 获取产品
+- [x] 实现 purchasePackage() 购买
+- [x] 实现 restorePurchases() 恢复
 
 ### Paywall 页面
 - [ ] 创建 `app/(main)/paywall.tsx`

@@ -8,63 +8,63 @@
 ## Tasks
 
 ### T1: Create SolveSession Model
-- [ ] Create `app/models/solve_session.py`
-- [ ] Define SolveSession with: id, user_id, device_id, status, current_step, created_at, completed_at
-- [ ] Add SessionStatus and SolveStep enums
-- [ ] Export in `app/models/__init__.py`
-- [ ] Add `solve_sessions` relationship to User model
+- [x] Create `app/models/solve_session.py`
+- [x] Define SolveSession with: id, user_id, device_id, status, current_step, created_at, completed_at
+- [x] Add SessionStatus and SolveStep enums
+- [x] Export in `app/models/__init__.py`
+- [x] Add `solve_sessions` relationship to User model
 
 ### T2: Database Migration
-- [ ] Generate Alembic migration: `alembic revision --autogenerate -m "add solve_sessions table"`
-- [ ] Review migration file
-- [ ] Run migration: `alembic upgrade head`
+- [x] Generate Alembic migration: `alembic revision --autogenerate -m "add solve_sessions table"`
+- [x] Review migration file
+- [x] Run migration: `alembic upgrade head`
 
 ### T3: Create Session Schemas
-- [ ] Create `app/schemas/session.py`
-- [ ] Define SessionResponse
-- [ ] Define SessionListResponse with pagination
-- [ ] Define MessageRequest (content, step)
-- [ ] Define SSETokenEvent and SSEDoneEvent
+- [x] Create `app/schemas/session.py`
+- [x] Define SessionResponse
+- [x] Define SessionListResponse with pagination
+- [x] Define MessageRequest (content, step)
+- [x] Define SSETokenEvent and SSEDoneEvent
 
 ### T4: Implement Session Router
-- [ ] Create `app/routers/sessions.py`
-- [ ] Implement `POST /sessions` - create session, return with usage info
-- [ ] Implement `GET /sessions` - list with pagination
-- [ ] Implement `GET /sessions/{id}` - get single session
-- [ ] Implement `POST /sessions/{id}/messages` - SSE streaming
+- [x] Create `app/routers/sessions.py`
+- [x] Implement `POST /sessions` - create session, return with usage info
+- [x] Implement `GET /sessions` - list with pagination
+- [x] Implement `GET /sessions/{id}` - get single session
+- [x] Implement `POST /sessions/{id}/messages` - SSE streaming
 
 ### T5: SSE Streaming Logic
-- [ ] Create async generator for SSE events
-- [ ] Mock response: "I understand how you feel. Let me help you work through this."
-- [ ] Stream word-by-word with 50ms delay
-- [ ] Send done event with next_step and emotion_detected
+- [x] Create async generator for SSE events
+- [x] Mock response: "I understand how you feel. Let me help you work through this."
+- [x] Stream word-by-word with 50ms delay
+- [x] Send done event with next_step and emotion_detected
 
 ### T6: Register Router
-- [ ] Import sessions router in `app/main.py`
-- [ ] Include router with prefix `/sessions`
+- [x] Import sessions router in `app/main.py`
+- [x] Include router with prefix `/sessions`
 
 ### T7: Write Tests
-- [ ] Create `tests/test_sessions.py`
-- [ ] Test: unauthenticated returns 401
-- [ ] Test: create session returns 201
-- [ ] Test: list sessions returns array
-- [ ] Test: get session returns correct data
-- [ ] Test: get other user's session returns 404
-- [ ] Test: SSE endpoint returns event stream
-- [ ] Test: invalid session returns 404
+- [x] Create `tests/test_sessions.py`
+- [x] Test: unauthenticated returns 401
+- [x] Test: create session returns 201
+- [x] Test: list sessions returns array
+- [x] Test: get session returns correct data
+- [x] Test: get other user's session returns 404
+- [x] Test: SSE endpoint returns event stream
+- [x] Test: invalid session returns 404
 
 ### T8: Local Verification
-- [ ] Run `poetry run ruff check .`
-- [ ] Run `poetry run mypy app --ignore-missing-imports`
-- [ ] Run `poetry run pytest -v`
-- [ ] Run `npm run lint` in clarity-mobile
-- [ ] Run `npx tsc --noEmit` in clarity-mobile
+- [x] Run `poetry run ruff check .`
+- [x] Run `poetry run mypy app --ignore-missing-imports`
+- [x] Run `poetry run pytest -v`
+- [x] Run `npm run lint` in clarity-mobile
+- [x] Run `npx tsc --noEmit` in clarity-mobile
 
 ---
 
 ## Completion Checklist
 
-- [ ] T1-T7 completed
-- [ ] T8 all checks pass
-- [ ] Git commit with proper message
-- [ ] PR created and merged
+- [x] T1-T7 completed
+- [x] T8 all checks pass
+- [x] Git commit with proper message
+- [x] PR created and merged

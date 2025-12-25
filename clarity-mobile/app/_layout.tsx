@@ -3,7 +3,13 @@ import React, { useEffect } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { ErrorBoundary } from '../components/ErrorBoundary';
+import { initDatabase } from '../services/database';
 import { AuthProvider, useAuth } from '../stores/authStore';
+
+// 初始化 SQLite 数据库（app 启动时只执行一次）
+initDatabase().catch((error) => {
+  console.error('Failed to initialize database:', error);
+});
 
 const AuthGate: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
