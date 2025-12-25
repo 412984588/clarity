@@ -1,11 +1,22 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-25 02:30
+**最后更新**: 2025-12-25 03:00
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-25 03:00] - Free Beta 启动清单 5 项已落地 + 更新占位符
+
+- [x] **更新启动清单**: free-beta-launch-checklist.md（Prerequisites 表格 5 项）
+- [x] **状态分布**: 1 BLOCKED（Backend）/ 3 DONE（Test Accounts/Feedback/Triage）/ 1 IN PROGRESS（Tester List）
+- [x] **占位符状态**: 5 个条目更新（TODO → BLOCKED/DONE/IN PROGRESS）
+- [x] **Bug Report Channel**: 填入 "GitHub Issue Forms + invite email"
+
+> 详见 `docs/PROGRESS.md`
+
+---
 
 ### [2025-12-25 02:30] - 统一 Beta 反馈渠道/权益/响应承诺 + 更新占位符
 

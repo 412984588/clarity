@@ -1,11 +1,42 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-25 02:30
+**最后更新**: 2025-12-25 03:00
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-25 03:00] - Free Beta 启动清单 5 项已落地 + 更新占位符
+
+- [x] **更新启动清单 (1 份)**：`docs/release/free-beta-launch-checklist.md`
+  - Prerequisites 表格 5 项状态更新：
+    1. **Backend Environment**: ⏳ TBD → 🔴 BLOCKED
+       - "TBD" → "Not deployed / TBD (awaiting hosting account)"
+    2. **Test Accounts Created**: ⏳ TBD → ✅ DONE
+       - "TBD" → "Self-register (no pre-created accounts needed)"
+    3. **Beta Tester List**: ⏳ TBD → ⏳ IN PROGRESS
+       - "TBD" → "Owner recruiting (see beta-tester-tracker.md)"
+    4. **Feedback Channels**: ⏳ TBD → ✅ DONE
+       - "TBD" → "GitHub Issue Forms + invite email contact"
+    5. **Bug Triage Process**: ⏳ TBD → ✅ DONE
+       - "TBD" → "Use feedback-triage.md"
+
+- [x] **更新占位符清单**：`docs/release/placeholders-to-fill.md`
+  - 5 个条目状态更新（High Priority - Beta Launch）：
+    1. Backend Environment: TODO → BLOCKED ("Not deployed / TBD")
+    2. Test Accounts: TODO → DONE ("Self-register")
+    3. Beta Tester List: TODO → IN PROGRESS ("Owner recruiting")
+    4. Feedback Channels: TODO → DONE ("GitHub Issue Forms + invite email")
+    5. Bug Triage Process: TODO → DONE ("Use feedback-triage.md")
+
+- [x] **更新占位符表单**：`docs/release/placeholders-intake-form.md`
+  - Bug Report Channel: 空白 → "GitHub Issue Forms + invite email"
+
+> **目的**: 更新 Free Beta 启动清单前提条件状态，反映当前准备情况
+> **注意**: Backend Environment 因无部署账号标记为 BLOCKED
+
+---
 
 ### [2025-12-25 02:30] - 统一 Beta 反馈渠道/权益/响应承诺 + 更新占位符
 

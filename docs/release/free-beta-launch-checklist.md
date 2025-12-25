@@ -38,11 +38,11 @@ Before launching free beta, ensure these are ready:
 | Item | Status | Owner | Notes |
 |------|--------|-------|-------|
 | **Android Preview APK** | ✅ READY | Dev | Build ID: `88df477f-4862-41ac-9c44-4134aa2b67e2` |
-| **Backend Environment** | ⏳ TBD | Dev | Local or simple hosting (Railway/Vercel) |
-| **Test Accounts Created** | ⏳ TBD | Dev | At least 3 test accounts for demo |
-| **Beta Tester List** | ⏳ TBD | PM | 5-10 friends/early adopters |
-| **Feedback Channels** | ⏳ TBD | PM | Email/Form ready |
-| **Bug Triage Process** | ⏳ TBD | Dev | See [Feedback Triage](feedback-triage.md) |
+| **Backend Environment** | 🔴 BLOCKED | Dev | Not deployed / TBD (awaiting hosting account) |
+| **Test Accounts Created** | ✅ DONE | Dev | Self-register (no pre-created accounts needed) |
+| **Beta Tester List** | ⏳ IN PROGRESS | PM | Owner recruiting (see [beta-tester-tracker.md](beta-tester-tracker.md)) |
+| **Feedback Channels** | ✅ DONE | PM | GitHub Issue Forms + invite email contact |
+| **Bug Triage Process** | ✅ DONE | Dev | Use [feedback-triage.md](feedback-triage.md) |
 
 ---
 
