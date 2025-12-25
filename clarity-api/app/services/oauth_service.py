@@ -224,7 +224,9 @@ class OAuthService:
 
         if user:
             # 已存在的用户，尝试记录 provider_id 以支持后续登录
-            if provider_id and (not user.auth_provider_id or user.auth_provider == provider):
+            if provider_id and (
+                not user.auth_provider_id or user.auth_provider == provider
+            ):
                 user.auth_provider = provider  # type: ignore[assignment]
                 user.auth_provider_id = provider_id  # type: ignore[assignment]
             return user

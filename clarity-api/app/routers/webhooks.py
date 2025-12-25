@@ -116,9 +116,7 @@ async def stripe_webhook(
 ):
     settings = get_settings()
     if not settings.payments_enabled:
-        raise HTTPException(
-            status_code=501, detail={"error": "PAYMENTS_DISABLED"}
-        )
+        raise HTTPException(status_code=501, detail={"error": "PAYMENTS_DISABLED"})
 
     payload = await request.body()
     if not stripe_signature:

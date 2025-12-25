@@ -45,7 +45,11 @@ async def export_account(
         .all()
     )
     active_sessions = (
-        (await db.execute(select(ActiveSession).where(ActiveSession.user_id == user.id)))
+        (
+            await db.execute(
+                select(ActiveSession).where(ActiveSession.user_id == user.id)
+            )
+        )
         .scalars()
         .all()
     )

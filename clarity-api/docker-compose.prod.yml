@@ -1,0 +1,101 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    restart: always
+    expose:
+      - "8000" # 仅在容器网络内开放端口
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/live').read()",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    depends_on:
+      - db
+      - redis
+    networks:
+      - clarity_frontend
+      - clarity_backend
+
+  db:
+    image: postgres:15-alpine
+    # 生产级参数可按机器规格调整
+    command: >
+      postgres
+      -c max_connections=100
+      -c shared_buffers=256MB
+      -c work_mem=16MB
+      -c maintenance_work_mem=64MB
+      -c effective_cache_size=768MB
+      -c wal_level=replica
+      -c checkpoint_completion_target=0.9
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-clarity}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # 数据持久化
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: always
+    shm_size: 256m
+    mem_limit: 1g # 资源限制
+    cpus: "1.0"
+    networks:
+      - clarity_backend
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data # 数据持久化
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 3s
+      retries: 5
+    restart: always
+    mem_limit: 512m # 资源限制
+    cpus: "0.5"
+    networks:
+      - clarity_backend
+
+  nginx:
+    image: nginx:1.25-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro # 预留 SSL 证书挂载点
+    depends_on:
+      - api
+    restart: always
+    networks:
+      - clarity_frontend
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  clarity_frontend:
+    driver: bridge
+  clarity_backend:
+    driver: bridge

@@ -79,9 +79,7 @@ async def create_checkout(
     """创建 Stripe Checkout 会话"""
     settings = get_settings()
     if not settings.payments_enabled:
-        raise HTTPException(
-            status_code=501, detail={"error": "PAYMENTS_DISABLED"}
-        )
+        raise HTTPException(status_code=501, detail={"error": "PAYMENTS_DISABLED"})
 
     tier = _resolve_tier(data.price_id)
     if not tier:
@@ -116,9 +114,7 @@ async def get_portal(
     """获取 Stripe Customer Portal 链接"""
     settings = get_settings()
     if not settings.payments_enabled:
-        raise HTTPException(
-            status_code=501, detail={"error": "PAYMENTS_DISABLED"}
-        )
+        raise HTTPException(status_code=501, detail={"error": "PAYMENTS_DISABLED"})
 
     result = await db.execute(
         select(Subscription).where(Subscription.user_id == current_user.id)
@@ -141,9 +137,7 @@ async def get_current_subscription(
     """获取当前订阅状态"""
     settings = get_settings()
     if not settings.payments_enabled:
-        raise HTTPException(
-            status_code=501, detail={"error": "PAYMENTS_DISABLED"}
-        )
+        raise HTTPException(status_code=501, detail={"error": "PAYMENTS_DISABLED"})
 
     result = await db.execute(
         select(Subscription).where(Subscription.user_id == current_user.id)
@@ -169,9 +163,7 @@ async def get_usage(
     """获取使用量统计"""
     settings = get_settings()
     if not settings.payments_enabled:
-        raise HTTPException(
-            status_code=501, detail={"error": "PAYMENTS_DISABLED"}
-        )
+        raise HTTPException(status_code=501, detail={"error": "PAYMENTS_DISABLED"})
 
     result = await db.execute(
         select(Subscription).where(Subscription.user_id == current_user.id)

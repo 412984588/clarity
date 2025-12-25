@@ -1,0 +1,100 @@
+name: Deploy API
+
+on:
+  # push 到 main 且 API 有改动时触发
+  push:
+    branches: [main]
+    paths:
+      - 'clarity-api/**'
+  # 允许手动触发部署
+  workflow_dispatch:
+
+# 允许推送镜像到 GHCR
+permissions:
+  contents: read
+  packages: write
+
+defaults:
+  run:
+    working-directory: clarity-api
+
+jobs:
+  test:
+    # 仅在 push 事件执行测试
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: clarity_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/clarity_test
+      JWT_SECRET: test-jwt-secret-for-ci-only
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+      - name: 设置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: 安装 Poetry
+        run: pip install poetry
+      - name: 安装依赖
+        run: poetry install
+      - name: 运行测试
+        run: poetry run pytest
+      - name: 运行类型检查
+        run: poetry run mypy app
+      - name: 运行 Ruff
+        run: poetry run ruff check
+
+  build:
+    # 测试通过后构建并推送镜像
+    if: github.event_name == 'push'
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+      - name: 设置 Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: 登录 GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: 构建并推送镜像
+        uses: docker/build-push-action@v5
+        with:
+          context: clarity-api
+          file: clarity-api/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/clarity-api:latest
+            ghcr.io/${{ github.repository }}/clarity-api:${{ github.sha }}
+
+  deploy:
+    # 仅手动触发部署
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 通过 SSH 执行部署
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            # TODO: 替换为实际部署命令
+            docker pull ghcr.io/${{ github.repository }}/clarity-api:latest
+            docker compose -f /path/to/docker-compose.prod.yml up -d

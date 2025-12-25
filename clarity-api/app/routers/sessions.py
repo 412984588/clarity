@@ -394,9 +394,7 @@ async def stream_messages(
 
         # 获取下一步
         next_step_enum = get_next_step(current_step_enum)
-        next_step = (
-            next_step_enum.value if next_step_enum else current_step_enum.value
-        )
+        next_step = next_step_enum.value if next_step_enum else current_step_enum.value
         now = utc_now()
 
         # 处理状态转换

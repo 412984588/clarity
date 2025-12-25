@@ -136,9 +136,7 @@ async def revenuecat_webhook(
 ):
     settings = get_settings()
     if not settings.payments_enabled:
-        raise HTTPException(
-            status_code=501, detail={"error": "PAYMENTS_DISABLED"}
-        )
+        raise HTTPException(status_code=501, detail={"error": "PAYMENTS_DISABLED"})
 
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail={"error": "MISSING_AUTH"})

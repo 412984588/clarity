@@ -33,7 +33,5 @@ class AnalyticsService:
             return event
         except Exception as e:
             # 埋点失败不应影响主业务，仅记录日志
-            logger.warning(
-                f"Failed to emit analytics event: {event_type}, error: {e}"
-            )
+            logger.warning(f"Failed to emit analytics event: {event_type}, error: {e}")
             return None
