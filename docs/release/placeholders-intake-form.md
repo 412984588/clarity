@@ -113,7 +113,7 @@ Fill in the **Value** column for each field below. Leave blank or write "TBD" if
 | **Beta Coordinator Email** | Contact email for beta questions | beta@clarity.app | Provided in invite (TBD) |
 | **Beta End Date** | When beta testing will conclude | 2025-02-28 | Open-ended / TBD |
 | **Beta Pricing** | Special offers for beta testers | 50% off for 6 months | None |
-| **Feedback Form URL** | Web form link for beta feedback | https://forms.gle/xxxxx | TBD (web not built) |
+| **Feedback Form URL** | Web form link for beta feedback | https://forms.gle/xxxxx | https://github.com/412984588/clarity/issues/new/choose |
 | **Bug Report Channel** | Where testers report bugs | GitHub Issues / Email / Discord | |
 
 ---

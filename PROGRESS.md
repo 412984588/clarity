@@ -1,11 +1,23 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-25 02:00
+**最后更新**: 2025-12-25 02:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-25 02:30] - 统一 Beta 反馈渠道/权益/响应承诺 + 更新占位符
+
+- [x] **更新文档**: 3 份（beta-feedback-form / free-beta-invite-templates / free-beta-start-here）
+- [x] **统一反馈渠道**: GitHub Issue Forms (https://github.com/412984588/clarity/issues/new/choose)
+- [x] **明确权益**: 暂无优惠/特权
+- [x] **明确响应**: Best-effort (no SLA)
+- [x] **占位符状态**: 2 个条目更新（BLOCKED/TODO → DONE）
+
+> 详见 `docs/PROGRESS.md`
+
+---
 
 ### [2025-12-25 02:00] - 单人负责占位符落地（roles/contacts/support）
 

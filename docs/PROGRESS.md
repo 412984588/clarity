@@ -1,11 +1,46 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-25 02:00
+**最后更新**: 2025-12-25 02:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-25 02:30] - 统一 Beta 反馈渠道/权益/响应承诺 + 更新占位符
+
+- [x] **更新反馈文档 (1 份)**：优先 GitHub Issue Forms
+  - `docs/release/beta-feedback-form.md`:
+    - Instructions: 推荐使用 GitHub Issue Forms
+    - Questions about this form: Email provided in invite (TBD)
+    - How to Submit:
+      * Option 1: GitHub Issue Forms (https://github.com/412984588/clarity/issues/new/choose)
+      * Option 2: Email (provided in invite)
+      * Option 3: Direct Message
+      * 注明 Web Form 不可用
+
+- [x] **更新邀请模板 (1 份)**：明确无权益
+  - `docs/release/free-beta-invite-templates.md`:
+    - "未来可能有的优惠（TBD）" → "暂无优惠（如有更新会通知）"
+    - "你会获得 [优惠/特权，TBD]" → "暂无优惠/特权"
+
+- [x] **更新快速指南 (1 份)**：明确无 SLA
+  - `docs/release/free-beta-start-here.md`:
+    - Response time: "You'll reply within 24 hours" → "Best-effort (no guaranteed SLA)"
+
+- [x] **更新占位符清单**：`docs/release/placeholders-to-fill.md`
+  - 2 个条目状态更新：
+    1. beta-feedback-form.md Form URL: BLOCKED → DONE
+       - "TBD (web not built)" → "GitHub Issue Forms: https://github.com/412984588/clarity/issues/new/choose"
+    2. free-beta-invite-templates.md Future Perks: TODO → DONE
+       - "TBD (2 items)" → "None (no perks)"
+
+- [x] **更新占位符表单**：`docs/release/placeholders-intake-form.md`
+  - Feedback Form URL: "TBD (web not built)" → "https://github.com/412984588/clarity/issues/new/choose"
+
+> **目的**: 统一所有文档中的反馈渠道（GitHub Issue Forms）、权益说明（暂无）和响应承诺（Best-effort）
+
+---
 
 ### [2025-12-25 02:00] - 单人负责占位符落地（roles/contacts/support）
 

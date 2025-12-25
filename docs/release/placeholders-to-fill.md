@@ -47,7 +47,7 @@ This document tracks all placeholders, TBD items, and missing information across
 | free-beta-tester-guide.md | Coordinator Email | Provided in invite (TBD) | Email provided when sending invite | PM | Before Beta | IN PROGRESS |
 | free-beta-tester-guide.md | Beta End Date | Open-ended / TBD | No fixed end date for free beta | PM | Before Beta | IN PROGRESS |
 | free-beta-tester-guide.md | Beta Pricing | None | No special pricing/perks - friend testing only | Product | Before Production | DONE |
-| beta-feedback-form.md | Form URL | TBD (web not built) | Web feedback page not deployed yet | Dev | Before Beta | BLOCKED |
+| beta-feedback-form.md | Form URL | GitHub Issue Forms: https://github.com/412984588/clarity/issues/new/choose | Web feedback page not deployed yet | Dev | Before Beta | DONE |
 | qa-test-plan.md | Test Google Account | TBD | Google account for testing OAuth | QA | Before Testing | TODO |
 | qa-test-plan.md | Test Apple ID | TBD | Apple ID for testing Sign-In | QA | BLOCKED (needs Apple Dev Account) | BLOCKED |
 | qa-test-plan.md | RevenueCat Sandbox | TBD | RevenueCat sandbox configuration | Dev | DEFERRED (Beta doesn't need) | DEFERRED |
@@ -80,7 +80,7 @@ This document tracks all placeholders, TBD items, and missing information across
 | beta-tester-tracker.md | Retention Policy | TBD | Data retention policy (e.g., delete 30 days post-beta) | Legal/PM | Before Production | TODO |
 | beta-to-production-plan.md | Timeline | TBD | 4-8 weeks estimate needs confirmation | PM | Before Production | TODO |
 | beta-release-notes-template.md | Next Release Date | TBD | Expected date for next release | PM | Per Release | TODO |
-| free-beta-invite-templates.md | Future Perks | TBD (2 items) | Discounts/special offers for beta testers | Product | Before Production | TODO |
+| free-beta-invite-templates.md | Future Perks | None (no perks) | Discounts/special offers for beta testers | Product | Before Production | DONE |
 
 ---
 

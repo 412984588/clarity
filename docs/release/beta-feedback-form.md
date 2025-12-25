@@ -7,9 +7,11 @@
 
 ## Instructions
 
-Thank you for testing Clarity! Your feedback is incredibly valuable. Please fill out this form after using the app and send it to [designated email or form link].
+Thank you for testing Clarity! Your feedback is incredibly valuable. Please fill out this form after using the app and submit it using one of the methods below.
 
-You can copy this template, fill it out, and send it via email, or we may provide a web form link later.
+**Recommended**: Use [GitHub Issue Forms](https://github.com/412984588/clarity/issues/new/choose) for quickest response.
+
+**Alternative**: Send via email (provided in your beta invite).
 
 ---
 
@@ -236,29 +238,37 @@ By submitting this feedback, I understand and agree that:
 
 Thank you for taking the time to provide detailed feedback. Your input is incredibly valuable and will help us create a better product.
 
-**Questions about this form?** Contact us at [designated email].
+**Questions about this form?** Email provided in invite (TBD).
 
 ---
 
 ## How to Submit
 
-### Option 1: Email (Recommended)
+### Option 1: GitHub Issue Forms (Recommended)
+
+1. Visit: https://github.com/412984588/clarity/issues/new/choose
+2. Select "Beta Feedback" template
+3. Fill in your feedback directly in the form
+4. Submit
+
+**Advantages**:
+- ✅ Fastest response time
+- ✅ Track status in real-time
+- ✅ See what others have reported
+
+### Option 2: Email
 
 1. Copy this entire form
 2. Fill in your answers
-3. Email to: [designated beta feedback email]
+3. Email to: Provided in invite (TBD)
 4. Subject: "Beta Feedback - [Your Name/Nickname]"
-
-### Option 2: Web Form (If Available)
-
-- Visit: [TBD - web form link]
-- Fill out the online version
-- Submit directly
 
 ### Option 3: Direct Message
 
 - Contact the beta coordinator directly
 - Share your feedback in a structured format
+
+**Note**: Web form is not available yet - use GitHub Issues or email instead.
 
 ---
 

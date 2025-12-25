@@ -61,7 +61,7 @@ This document provides email and message templates for recruiting and communicat
 **你会得到**：
 - 免费使用所有功能
 - 提前体验还没上线的版本
-- 未来可能有的优惠（TBD）
+- 暂无优惠（如有更新会通知）
 
 **需要什么设备**：
 - Android 手机（暂时没有 iOS，抱歉！）
@@ -371,7 +371,7 @@ Clarity 的 Free Beta 测试已经结束了，非常感谢你这段时间的帮�
 - 有什么最后的建议？
 
 **作为感谢**:
-- 正式上线后，你会获得 [优惠/特权，TBD]
+- 正式上线后，暂无优惠/特权
 - 如果你愿意，可以把你列为"Early Tester"（会在 About 页面展示）
 
 再次感谢你的支持！希望 Clarity 能帮到更多人。
