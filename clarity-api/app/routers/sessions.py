@@ -4,7 +4,7 @@ import json
 from typing import AsyncGenerator
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import get_settings
 from app.database import get_db
 from app.middleware.auth import get_current_user
+from app.middleware.rate_limit import limiter, AI_RATE_LIMIT
 from app.models.device import Device
 from app.models.solve_session import SolveSession, SessionStatus, SolveStep
 from app.models.step_history import StepHistory
@@ -109,7 +110,9 @@ async def _get_or_create_usage(
 
 
 @router.post("", response_model=SessionCreateResponse, status_code=201)
+@limiter.limit(AI_RATE_LIMIT)
 async def create_session(
+    request: Request,
     current_user: User = Depends(get_current_user),
     device_fingerprint: str = Header(..., alias="X-Device-Fingerprint"),
     db: AsyncSession = Depends(get_db),
@@ -313,7 +316,9 @@ async def update_session(
 
 
 @router.post("/{session_id}/messages")
+@limiter.limit(AI_RATE_LIMIT)
 async def stream_messages(
+    request: Request,
     session_id: UUID,
     data: MessageRequest,
     current_user: User = Depends(get_current_user),

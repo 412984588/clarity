@@ -5,7 +5,7 @@ import logging
 import secrets
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Header
+from fastapi import APIRouter, Depends, HTTPException, Header, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete, func
 from sqlalchemy.orm import selectinload
@@ -13,6 +13,7 @@ from sqlalchemy.orm import selectinload
 from app.config import get_settings
 from app.database import get_db
 from app.middleware.auth import get_current_user
+from app.middleware.rate_limit import limiter, AUTH_RATE_LIMIT
 from app.models.device import Device
 from app.models.password_reset import PasswordResetToken
 from app.models.session import ActiveSession
@@ -38,7 +39,8 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/register", response_model=TokenResponse, status_code=201)
-async def register(data: RegisterRequest, db: AsyncSession = Depends(get_db)):
+@limiter.limit(AUTH_RATE_LIMIT)
+async def register(request: Request, data: RegisterRequest, db: AsyncSession = Depends(get_db)):
     """注册新用户"""
     service = AuthService(db)
     try:
@@ -52,7 +54,8 @@ async def register(data: RegisterRequest, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(data: LoginRequest, db: AsyncSession = Depends(get_db)):
+@limiter.limit(AUTH_RATE_LIMIT)
+async def login(request: Request, data: LoginRequest, db: AsyncSession = Depends(get_db)):
     """邮箱登录"""
     service = AuthService(db)
     try:

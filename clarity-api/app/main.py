@@ -1,14 +1,18 @@
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 import sentry_sdk
 from sentry_sdk.integrations.fastapi import FastApiIntegration
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import get_settings, validate_production_config
 from app.database import get_db
+from app.middleware.rate_limit import limiter
 from app.routers import auth
 from app.routers import sessions
 from app.routers import subscriptions
@@ -74,6 +78,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# 注册限流器
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
 # 注册路由
 app.include_router(auth.router)
 app.include_router(sessions.router)
@@ -86,19 +94,52 @@ app.include_router(config.router)
 
 @app.get("/health")
 async def health_check(db: AsyncSession = Depends(get_db)):
-    """健康检查端点（含数据库状态和版本号）"""
+    """健康检查端点（含数据库状态、配置状态和版本号）"""
+    checks = {
+        "database": "unknown",
+        "llm_configured": "unknown",
+        "stripe_configured": "unknown",
+        "sentry_configured": "unknown",
+    }
+
+    # 数据库检查
     try:
         await db.execute(text("SELECT 1"))
-        db_status = "connected"
+        checks["database"] = "connected"
     except Exception:
-        db_status = "error"
+        checks["database"] = "error"
 
-    health_status = "healthy" if db_status == "connected" else "degraded"
+    # LLM 配置检查
+    if settings.llm_provider == "openai" and settings.openai_api_key:
+        checks["llm_configured"] = "openai"
+    elif settings.llm_provider == "anthropic" and settings.anthropic_api_key:
+        checks["llm_configured"] = "anthropic"
+    elif settings.openrouter_api_key:
+        checks["llm_configured"] = "openrouter"
+    else:
+        checks["llm_configured"] = "missing"
+
+    # Stripe 配置检查（如果启用支付）
+    if settings.payments_enabled:
+        if settings.stripe_secret_key:
+            checks["stripe_configured"] = "configured"
+        else:
+            checks["stripe_configured"] = "missing"
+    else:
+        checks["stripe_configured"] = "disabled"
+
+    # Sentry 配置检查
+    checks["sentry_configured"] = "configured" if settings.sentry_dsn else "disabled"
+
+    # 总体状态
+    has_error = checks["database"] == "error" or checks["llm_configured"] == "missing"
+    health_status = "degraded" if has_error else "healthy"
 
     return {
         "status": health_status,
         "version": settings.app_version,
-        "database": db_status,
+        "environment": "debug" if settings.debug else "production",
+        "checks": checks,
     }
 
 
