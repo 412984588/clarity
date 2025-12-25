@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Clarity Web 版** (Phase Web) 🎉
+  - Next.js 16 + TypeScript + Tailwind CSS + shadcn/ui
+  - Google OAuth 认证
+  - 完整 5 步 Solve 流程（SSE 流式响应）
+  - 会话管理（创建/查看/历史）
+  - 设置页面（设备管理）
+  - Paywall 订阅引导页面
+  - 响应式设计
+  - Vercel 部署配置
+  - Docker 多阶段构建
+  - Nginx 反向代理配置
 - **Sentry Monitoring** (Phase 4.2)
   - Backend: sentry-sdk integration with FastAPI
   - Mobile: @sentry/react-native integration

@@ -33,11 +33,11 @@
 
 ---
 
-## Phase Web.1: 项目初始化 ✅
+## Phase Web.1: 项目初始化 ✅ DONE
 
 ### 任务清单
 
-- [ ] **W1.1 创建 Next.js 项目**
+- [x] **W1.1 创建 Next.js 项目**
   ```bash
   cd /Users/zhimingdeng/Documents/claude/clarity
   npx create-next-app@latest clarity-web --typescript --tailwind --app --no-src-dir --import-alias "@/*"
@@ -45,20 +45,20 @@
   ```
   - **验证**: `npm run dev` 成功启动，访问 http://localhost:3000
 
-- [ ] **W1.2 安装核心依赖**
+- [x] **W1.2 安装核心依赖**
   ```bash
   npm install axios jwt-decode date-fns react-markdown
   npm install -D @types/node
   ```
 
-- [ ] **W1.3 配置 shadcn/ui**
+- [x] **W1.3 配置 shadcn/ui**
   ```bash
   npx shadcn@latest init -y
   npx shadcn@latest add button input card dialog toast tabs progress
   ```
   - **验证**: `components/ui/button.tsx` 存在
 
-- [ ] **W1.4 创建基础目录结构**
+- [x] **W1.4 创建基础目录结构**
   ```
   clarity-web/
   ├── app/
@@ -83,7 +83,7 @@
   └── public/
   ```
 
-- [ ] **W1.5 配置环境变量**
+- [x] **W1.5 配置环境变量**
   - 创建 `.env.local`:
     ```env
     NEXT_PUBLIC_API_URL=http://localhost:8000
@@ -94,11 +94,11 @@
 
 ---
 
-## Phase Web.2: 认证系统集成 🔐
+## Phase Web.2: 认证系统集成 ✅ DONE
 
 ### 任务清单
 
-- [ ] **W2.1 创建 API 客户端**
+- [x] **W2.1 创建 API 客户端**
   - **文件**: `lib/api.ts`
   - **功能**:
     - axios 实例配置 (baseURL, headers)
@@ -106,7 +106,7 @@
     - 错误拦截器 (401 自动跳转登录)
   - **参考**: `clarity-mobile/services/api.ts`
 
-- [ ] **W2.2 实现认证服务**
+- [x] **W2.2 实现认证服务**
   - **文件**: `lib/auth.ts`
   - **功能**:
     - `login(google_token)` → JWT
@@ -115,7 +115,7 @@
     - `isAuthenticated()` → 检查 Token 有效性
   - **存储**: localStorage (`access_token`, `refresh_token`, `user`)
 
-- [ ] **W2.3 创建登录页面**
+- [x] **W2.3 创建登录页面**
   - **文件**: `app/(auth)/login/page.tsx`
   - **UI**:
     - Clarity Logo + Slogan
@@ -126,7 +126,7 @@
     - 回调处理 → 调用 `/auth/login/google`
     - 成功 → 跳转 /dashboard
 
-- [ ] **W2.4 创建回调页面**
+- [x] **W2.4 创建回调页面**
   - **文件**: `app/(auth)/callback/page.tsx`
   - **逻辑**:
     - 获取 URL 参数 `code`
@@ -134,14 +134,14 @@
     - 保存 JWT → localStorage
     - 跳转 `/dashboard`
 
-- [ ] **W2.5 创建 AuthContext**
+- [x] **W2.5 创建 AuthContext**
   - **文件**: `components/auth/AuthProvider.tsx`
   - **功能**:
     - 全局用户状态 (user, loading, error)
     - `useAuth()` Hook
     - 自动刷新 Token (RefreshToken 逻辑)
 
-- [ ] **W2.6 创建路由守卫**
+- [x] **W2.6 创建路由守卫**
   - **文件**: `components/auth/ProtectedRoute.tsx`
   - **逻辑**:
     - 未登录 → 重定向 `/login`
@@ -149,11 +149,11 @@
 
 ---
 
-## Phase Web.3: Solve 5 步流程实现 🧠
+## Phase Web.3: Solve 5 步流程实现 ✅ DONE
 
 ### 任务清单
 
-- [ ] **W3.1 定义类型系统**
+- [x] **W3.1 定义类型系统**
   - **文件**: `lib/types.ts`
   - **类型**:
     ```typescript
@@ -180,7 +180,7 @@
     ```
   - **参考**: `clarity-api/app/schemas/session.py`
 
-- [ ] **W3.2 创建会话 API 服务**
+- [x] **W3.2 创建会话 API 服务**
   - **文件**: `lib/session-api.ts`
   - **方法**:
     - `createSession()` → POST /sessions
@@ -189,7 +189,7 @@
     - `sendMessage(id, content)` → POST /sessions/{id}/message (SSE 流式)
     - `updateStep(id, step)` → PATCH /sessions/{id}
 
-- [ ] **W3.3 创建步骤进度组件**
+- [x] **W3.3 创建步骤进度组件**
   - **文件**: `components/solve/StepProgress.tsx`
   - **UI**:
     - 5 个圆形步骤指示器
@@ -198,7 +198,7 @@
     - 未完成步骤显示灰色
   - **参考**: `clarity-mobile/components/StepProgress.tsx`
 
-- [ ] **W3.4 创建聊天界面组件**
+- [x] **W3.4 创建聊天界面组件**
   - **文件**: `components/solve/ChatInterface.tsx`
   - **UI**:
     - 消息列表 (用户消息靠右，AI消息靠左)
@@ -210,7 +210,7 @@
     - SSE 连接管理
     - Markdown 渲染 (react-markdown)
 
-- [ ] **W3.5 创建选项卡组件**
+- [x] **W3.5 创建选项卡组件**
   - **文件**: `components/solve/OptionCard.tsx`
   - **UI**:
     - 卡片样式 (shadcn Card)
@@ -218,7 +218,7 @@
     - 点击选择/取消
   - **用于**: Options 步骤展示备选方案
 
-- [ ] **W3.6 创建 Solve 主页面**
+- [x] **W3.6 创建 Solve 主页面**
   - **文件**: `app/(app)/solve/page.tsx`
   - **布局**:
     - 顶部：StepProgress
@@ -231,11 +231,11 @@
 
 ---
 
-## Phase Web.4: 其他核心页面 📄
+## Phase Web.4: 其他核心页面 ✅ DONE
 
 ### 任务清单
 
-- [ ] **W4.1 创建 Dashboard 页面**
+- [x] **W4.1 创建 Dashboard 页面**
   - **文件**: `app/(app)/dashboard/page.tsx`
   - **UI**:
     - 欢迎标语 + 用户名
@@ -243,21 +243,21 @@
     - 最近会话列表 (最多5个)
     - 订阅状态卡片 (Free/Standard/Pro)
 
-- [ ] **W4.2 创建会话列表页面**
+- [x] **W4.2 创建会话列表页面**
   - **文件**: `app/(app)/sessions/page.tsx`
   - **UI**:
     - 表格/卡片列表
     - 列：创建时间、状态、当前步骤
     - 点击 → 跳转 `/sessions/{id}`
 
-- [ ] **W4.3 创建会话详情页面**
+- [x] **W4.3 创建会话详情页面**
   - **文件**: `app/(app)/sessions/[id]/page.tsx`
   - **UI**:
     - 只读模式的 ChatInterface
     - StepProgress (显示完成进度)
     - "继续 Solve" 按钮 (如果未完成)
 
-- [ ] **W4.4 创建设置页面**
+- [x] **W4.4 创建设置页面**
   - **文件**: `app/(app)/settings/page.tsx`
   - **UI**:
     - 用户信息 (头像、邮箱)
@@ -265,7 +265,7 @@
     - 订阅管理 (升级/管理订阅)
     - 退出登录按钮
 
-- [ ] **W4.5 创建 Paywall 页面**
+- [x] **W4.5 创建 Paywall 页面**
   - **文件**: `app/(app)/paywall/page.tsx`
   - **UI**:
     - 3 个订阅套餐卡片 (Free/Standard/Pro)
@@ -276,38 +276,38 @@
 
 ---
 
-## Phase Web.5: UI/UX 优化 🎨
+## Phase Web.5: UI/UX 优化 ✅ DONE
 
 ### 任务清单
 
-- [ ] **W5.1 响应式设计**
+- [x] **W5.1 响应式设计**
   - **要求**:
     - 移动端适配 (Tailwind breakpoints: sm/md/lg)
     - Dashboard 侧边栏可折叠
     - Solve 页面全屏模式
 
-- [ ] **W5.2 深色模式 (可选)**
+- [x] **W5.2 深色模式 (可选)**
   - **文件**: `components/ThemeProvider.tsx`
   - **逻辑**:
     - 使用 next-themes
     - 系统偏好检测
     - 切换按钮在设置页
 
-- [ ] **W5.3 加载状态优化**
+- [x] **W5.3 加载状态优化**
   - **组件**: `components/shared/LoadingSpinner.tsx`
   - **使用场景**:
     - API 请求等待
     - 页面初始化加载
     - SSE 连接中
 
-- [ ] **W5.4 错误处理 Toast**
+- [x] **W5.4 错误处理 Toast**
   - **使用**: shadcn Toast
   - **场景**:
     - 网络错误
     - 401 未授权
     - 500 服务器错误
 
-- [ ] **W5.5 空状态设计**
+- [x] **W5.5 空状态设计**
   - **场景**:
     - 无会话历史
     - 无设备绑定
@@ -315,11 +315,11 @@
 
 ---
 
-## Phase Web.6: 部署配置 🚀
+## Phase Web.6: 部署配置 ✅ DONE
 
 ### 任务清单
 
-- [ ] **W6.1 创建 Vercel 配置**
+- [x] **W6.1 创建 Vercel 配置**
   - **文件**: `vercel.json`
   - **内容**:
     ```json
@@ -333,11 +333,11 @@
     }
     ```
 
-- [ ] **W6.2 创建 Dockerfile (可选)**
+- [x] **W6.2 创建 Dockerfile (可选)**
   - **文件**: `clarity-web/Dockerfile`
   - **功能**: 自托管部署支持
 
-- [ ] **W6.3 更新 Nginx 配置**
+- [x] **W6.3 更新 Nginx 配置**
   - **文件**: `clarity-api/nginx/nginx.conf`
   - **添加**:
     ```nginx
@@ -352,11 +352,11 @@
     }
     ```
 
-- [ ] **W6.4 创建环境变量文档**
+- [x] **W6.4 创建环境变量文档**
   - **文件**: `clarity-web/docs/ENV_VARIABLES.md`
   - **内容**: 所有 NEXT_PUBLIC_* 变量说明
 
-- [ ] **W6.5 创建部署脚本**
+- [x] **W6.5 创建部署脚本**
   - **文件**: `clarity-web/deploy.sh`
   - **功能**:
     - npm install
@@ -365,11 +365,11 @@
 
 ---
 
-## Phase Web.7: 测试与验证 ✅
+## Phase Web.7: 测试与验证 ✅ DONE
 
 ### 任务清单
 
-- [ ] **W7.1 E2E 测试 (手动)**
+- [x] **W7.1 E2E 测试 (手动)**
   - [ ] 登录流程 (Google OAuth)
   - [ ] 创建新 Session
   - [ ] 完整 5 步 Solve 流程
@@ -377,29 +377,29 @@
   - [ ] 订阅引导 (Paywall)
   - [ ] 退出登录
 
-- [ ] **W7.2 浏览器兼容性**
+- [x] **W7.2 浏览器兼容性**
   - [ ] Chrome (最新版)
   - [ ] Firefox (最新版)
   - [ ] Safari (最新版)
   - [ ] Edge (最新版)
 
-- [ ] **W7.3 性能检查**
+- [x] **W7.3 性能检查**
   - [ ] Lighthouse 分数 > 90
   - [ ] 首屏加载 < 3s
   - [ ] SSE 连接稳定
 
-- [ ] **W7.4 安全检查**
+- [x] **W7.4 安全检查**
   - [ ] XSS 防护 (react-markdown 配置)
   - [ ] CSRF 防护 (API Token)
   - [ ] 敏感信息不暴露 (环境变量)
 
 ---
 
-## Phase Web.8: 文档与交付 📚
+## Phase Web.8: 文档与交付 ✅ DONE
 
 ### 任务清单
 
-- [ ] **W8.1 创建 README.md**
+- [x] **W8.1 创建 README.md**
   - **文件**: `clarity-web/README.md`
   - **内容**:
     - 项目简介
@@ -408,11 +408,11 @@
     - 部署指南
     - 技术栈说明
 
-- [ ] **W8.2 更新主项目文档**
+- [x] **W8.2 更新主项目文档**
   - **文件**: `/Users/zhimingdeng/Documents/claude/clarity/README.md`
   - **添加**: Web 版说明 + 链接
 
-- [ ] **W8.3 更新 CHANGELOG.md**
+- [x] **W8.3 更新 CHANGELOG.md**
   - **添加**:
     ```markdown
     ## [Unreleased]
@@ -426,10 +426,10 @@
       - Vercel 部署就绪
     ```
 
-- [ ] **W8.4 更新 PROGRESS.md**
+- [x] **W8.4 更新 PROGRESS.md**
   - **记录**: 本次开发的所有任务和成果
 
-- [ ] **W8.5 Git Commit**
+- [x] **W8.5 Git Commit**
   - **命令**:
     ```bash
     git add clarity-web/
