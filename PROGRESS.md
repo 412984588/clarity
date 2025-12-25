@@ -1,11 +1,23 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-25 01:30
+**最后更新**: 2025-12-25 02:00
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-25 02:00] - 单人负责占位符落地（roles/contacts/support）
+
+- [x] **更新团队角色**: 3 份文档（ownership-matrix / launch-day-runbook / free-beta-launch-checklist）
+- [x] **更新联系人**: 1 份文档（launch-communications - Primary/Backup）
+- [x] **更新支持策略**: 1 份文档（support - Email/Hours/SLA/Status）
+- [x] **占位符状态**: 7 个条目 TODO → DONE
+- [x] **填写表单**: placeholders-intake-form.md Support + Contacts & Owners 部分
+
+> 详见 `docs/PROGRESS.md`
+
+---
 
 ### [2025-12-25 01:30] - 记录当前 Beta 决策 + 更新占位符
 

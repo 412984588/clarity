@@ -269,12 +269,12 @@ Clarity 团队
 
 | Role | Primary | Backup |
 |------|---------|--------|
-| Launch Commander | TBD | TBD |
-| Backend Lead | TBD | TBD |
-| Mobile Lead | TBD | TBD |
-| DevOps Lead | TBD | TBD |
-| Marketing Lead | TBD | TBD |
-| CEO | TBD | TBD |
+| Launch Commander | Owner (self) | N/A |
+| Backend Lead | Owner (self) | N/A |
+| Mobile Lead | Owner (self) | N/A |
+| DevOps Lead | Owner (self) | N/A |
+| Marketing Lead | Owner (self) | N/A |
+| CEO | Owner (self) | N/A |
 
 ---
 

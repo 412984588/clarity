@@ -97,9 +97,9 @@ Fill in the **Value** column for each field below. Leave blank or write "TBD" if
 
 | Field | Description | Example | Value |
 |-------|-------------|---------|-------|
-| **Support Hours** | When support is available | Mon-Fri 9am-6pm PST | |
-| **Response Time SLA** | Target time to first response | 1 business day | |
-| **Status Page URL** | Public uptime status page | https://status.clarity.app | |
+| **Support Hours** | When support is available | Mon-Fri 9am-6pm PST | Best effort (no fixed hours) |
+| **Response Time SLA** | Target time to first response | 1 business day | Best effort (no SLA) |
+| **Status Page URL** | Public uptime status page | https://status.clarity.app | Not available |
 | **On-Call Contact** | Emergency contact for incidents | oncall@clarity.app | |
 | **Monitoring Tool** | Choose: Sentry / Datadog / LogRocket | Sentry | |
 
@@ -126,45 +126,45 @@ Fill in names and emails for each role. Use format: `Name (email@domain.com)` or
 
 | Role | Name | Email/GitHub | Responsibility |
 |------|------|--------------|----------------|
-| **Product Lead** | | | Product strategy, roadmap |
-| **Backend Lead** | | | API, database, server logic |
-| **Mobile Lead** | | | iOS/Android app development |
-| **DevOps Lead** | | | Infrastructure, CI/CD, deployment |
-| **QA Lead** | | | Testing, quality assurance |
-| **Finance Lead** | | | Payments, billing, compliance |
-| **Support Lead** | | | User support, documentation |
-| **Marketing Lead** | | | Launch communications, growth |
+| **Product Lead** | Owner (self) | | Product strategy, roadmap |
+| **Backend Lead** | Owner (self) | | API, database, server logic |
+| **Mobile Lead** | Owner (self) | | iOS/Android app development |
+| **DevOps Lead** | Owner (self) | | Infrastructure, CI/CD, deployment |
+| **QA Lead** | Owner (self) | | Testing, quality assurance |
+| **Finance Lead** | Owner (self) | | Payments, billing, compliance |
+| **Support Lead** | Owner (self) | | User support, documentation |
+| **Marketing Lead** | Owner (self) | | Launch communications, growth |
 
 #### Launch Day Runbook Roles (7)
 
 | Role | Name | Email/GitHub | Responsibility |
 |------|------|--------------|----------------|
-| **Launch Commander** | | | Overall launch coordination |
-| **Backend Lead** | | | Backend systems monitoring |
-| **Mobile Lead** | | | App store submission, mobile issues |
-| **DevOps Lead** | | | Infrastructure, deployment |
-| **QA Lead** | | | Final testing, smoke tests |
-| **Support Lead** | | | User onboarding, support queue |
-| **Comms Lead** | | | Announcements, social media |
+| **Launch Commander** | Owner (self) | | Overall launch coordination |
+| **Backend Lead** | Owner (self) | | Backend systems monitoring |
+| **Mobile Lead** | Owner (self) | | App store submission, mobile issues |
+| **DevOps Lead** | Owner (self) | | Infrastructure, deployment |
+| **QA Lead** | Owner (self) | | Final testing, smoke tests |
+| **Support Lead** | Owner (self) | | User onboarding, support queue |
+| **Comms Lead** | Owner (self) | | Announcements, social media |
 
 #### Beta Launch Checklist Roles (5)
 
 | Role | Name | Email/GitHub | Responsibility |
 |------|------|--------------|----------------|
-| **Project Lead** | | | Beta program management |
-| **Dev Lead** | | | Technical implementation |
-| **PM Lead** | | | Coordination, timeline |
-| **QA Lead** | | | Beta testing validation |
-| **Support Lead** | | | Beta tester support |
+| **Project Lead** | Owner (self) | | Beta program management |
+| **Dev Lead** | Owner (self) | | Technical implementation |
+| **PM Lead** | Owner (self) | | Coordination, timeline |
+| **QA Lead** | Owner (self) | | Beta testing validation |
+| **Support Lead** | Owner (self) | | Beta tester support |
 
 #### Launch Communications Contacts (4)
 
 | Role | Name | Email/GitHub | Responsibility |
 |------|------|--------------|----------------|
-| **Launch Commander** | | | Master contact for launch |
-| **Backend Lead** | | | Backend escalations |
-| **Mobile Lead** | | | Mobile app escalations |
-| **DevOps Lead** | | | Infrastructure escalations |
+| **Launch Commander** | Owner (self) | | Master contact for launch |
+| **Backend Lead** | Owner (self) | | Backend escalations |
+| **Mobile Lead** | Owner (self) | | Mobile app escalations |
+| **DevOps Lead** | Owner (self) | | Infrastructure escalations |
 
 ---
 

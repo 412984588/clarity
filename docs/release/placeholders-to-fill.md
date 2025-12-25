@@ -36,13 +36,13 @@ This document tracks all placeholders, TBD items, and missing information across
 
 | Document | Section | Placeholder Text | Context | Owner | Target Date | Status |
 |----------|---------|------------------|---------|-------|-------------|--------|
-| ownership-matrix.md | Team Roles | TBD (8 roles) | Product/Backend/Mobile/DevOps/QA/Finance/Support/Marketing leads | PM | Before Go/No-Go | TODO |
-| launch-day-runbook.md | Team Roles | TBD (7 roles) | Launch Commander, Backend/Mobile/DevOps/QA/Support/Comms Leads | PM | Before Launch | TODO |
-| free-beta-launch-checklist.md | Team Roles | TBD (5 roles) | Project/Dev/PM/QA/Support Leads | PM | Before Beta | TODO |
-| launch-communications.md | Contact List | TBD (4 contacts) | Launch Commander, Backend/Mobile/DevOps Leads | PM | Before Launch | TODO |
-| support.md | Support Hours | TBD | Support availability hours (e.g., Mon-Fri 9am-6pm) | Support | Before Beta | TODO |
-| support.md | Response Time | TBD | Target response SLA (e.g., 1 business day) | Support | Before Beta | TODO |
-| support.md | Status Page URL | TBD | Public status page URL | DevOps | Before Launch | TODO |
+| ownership-matrix.md | Team Roles | Owner (self) (8 roles) | Product/Backend/Mobile/DevOps/QA/Finance/Support/Marketing leads | PM | Before Go/No-Go | DONE |
+| launch-day-runbook.md | Team Roles | Owner (self) (7 roles) | Launch Commander, Backend/Mobile/DevOps/QA/Support/Comms Leads | PM | Before Launch | DONE |
+| free-beta-launch-checklist.md | Team Roles | Owner (self) (5 roles) | Project/Dev/PM/QA/Support Leads | PM | Before Beta | DONE |
+| launch-communications.md | Contact List | Owner (self) (4 contacts) | Launch Commander, Backend/Mobile/DevOps Leads | PM | Before Launch | DONE |
+| support.md | Support Hours | Best effort (no fixed hours) | Support availability hours (e.g., Mon-Fri 9am-6pm) | Support | Before Beta | DONE |
+| support.md | Response Time | Best effort (no SLA) | Target response SLA (e.g., 1 business day) | Support | Before Beta | DONE |
+| support.md | Status Page URL | Not available | Public status page URL | DevOps | Before Launch | DONE |
 | free-beta-tester-guide.md | Beta Coordinator | Owner (self) | Manual invites only, no dedicated coordinator | PM | Before Beta | DONE |
 | free-beta-tester-guide.md | Coordinator Email | Provided in invite (TBD) | Email provided when sending invite | PM | Before Beta | IN PROGRESS |
 | free-beta-tester-guide.md | Beta End Date | Open-ended / TBD | No fixed end date for free beta | PM | Before Beta | IN PROGRESS |

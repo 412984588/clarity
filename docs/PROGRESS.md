@@ -1,11 +1,64 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-25 01:30
+**最后更新**: 2025-12-25 02:00
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-25 02:00] - 单人负责占位符落地（roles/contacts/support）
+
+- [x] **更新团队角色文档 (3 份)**：所有 TBD → Owner (self)
+  - `docs/release/ownership-matrix.md`:
+    - Roles 表 8 个角色：Product/Backend/Mobile/DevOps/QA/Finance/Support/Marketing
+    - 所有 Team/Person 列：TBD → Owner (self)
+
+  - `docs/release/launch-day-runbook.md`:
+    - Roles & Owners 表 7 个角色：Launch Commander + 6 Leads
+    - 所有 Owner 列：TBD → Owner (self)
+
+  - `docs/release/free-beta-launch-checklist.md`:
+    - Team Roles 表 5 个角色：Project/Dev/PM/QA/Support Leads
+    - 所有 Primary Owner 列：TBD → Owner (self)
+
+- [x] **更新联系人文档 (1 份)**：单人项目无备用联系人
+  - `docs/release/launch-communications.md`:
+    - Emergency Contacts 表 6 个角色
+    - 所有 Primary 列：TBD → Owner (self)
+    - 所有 Backup 列：TBD → N/A
+
+- [x] **更新支持文档 (1 份)**：明确 Beta 支持策略
+  - `docs/release/support.md`:
+    - Email: support@clarity.app → Provided in invite (TBD)
+    - Support Hours: TBD (e.g., Mon-Fri...) → Best effort (no fixed hours)
+    - Target Response Time: 1 business day (TBD) → Best effort (no SLA)
+    - Status page: TBD → Not available
+
+- [x] **更新占位符清单**：`docs/release/placeholders-to-fill.md`
+  - 7 个条目状态更新 (TODO → DONE):
+    1. ownership-matrix.md Team Roles (8 roles)
+    2. launch-day-runbook.md Team Roles (7 roles)
+    3. free-beta-launch-checklist.md Team Roles (5 roles)
+    4. launch-communications.md Contact List (4 contacts)
+    5. support.md Support Hours
+    6. support.md Response Time
+    7. support.md Status Page URL
+
+- [x] **更新占位符表单**：`docs/release/placeholders-intake-form.md`
+  - Section 5 (Monitoring & Support):
+    - Support Hours: Best effort (no fixed hours)
+    - Response Time SLA: Best effort (no SLA)
+    - Status Page URL: Not available
+  - Section 7 (Contacts & Owners):
+    - Ownership Matrix Roles (8): 所有 Name 列填入 Owner (self)
+    - Launch Day Runbook Roles (7): 所有 Name 列填入 Owner (self)
+    - Beta Launch Checklist Roles (5): 所有 Name 列填入 Owner (self)
+    - Launch Communications Contacts (4): 所有 Name 列填入 Owner (self)
+
+> **目的**: 将单人负责的现实情况写入所有团队角色和联系人相关文档
+
+---
 
 ### [2025-12-25 01:30] - 记录当前 Beta 决策 + 更新占位符
 
