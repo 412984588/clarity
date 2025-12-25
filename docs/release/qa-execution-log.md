@@ -34,12 +34,12 @@
 | AUTH-07 | Auth | 设备已绑定其他账号 | NOT RUN | |
 | ACC-01 | Account | 导出账号数据 | PASS | pytest `tests/test_account.py` |
 | ACC-02 | Account | 删除账号 | PASS | pytest `tests/test_account.py` |
-| SOLVE-01 | Solve | Step 1: Receive 输入问题 | FAIL | OpenRouter 返回 done 但无 token 内容 |
-| SOLVE-02 | Solve | Step 2: Clarify 回答追问 | FAIL | OpenRouter 返回 done 但无 token 内容 |
-| SOLVE-03 | Solve | Step 3: Reframe 重新定义 | FAIL | OpenRouter 返回 done 但无 token 内容 |
-| SOLVE-04 | Solve | Step 4: Options 选择方案 | FAIL | OpenRouter 返回 done 但无 token 内容 |
-| SOLVE-05 | Solve | Step 5: Commit 设定行动 | FAIL | OpenRouter 返回 done 但无 token 内容 |
-| SOLVE-06 | Solve | SSE 流式响应完整 | FAIL | 无 `event: token`，仅返回 done |
+| SOLVE-01 | Solve | Step 1: Receive 输入问题 | PASS | OpenRouter reasoning 兜底已修复 ✅ |
+| SOLVE-02 | Solve | Step 2: Clarify 回答追问 | PASS | OpenRouter reasoning 兜底已修复 ✅ |
+| SOLVE-03 | Solve | Step 3: Reframe 重新定义 | PASS | OpenRouter reasoning 兜底已修复 ✅ |
+| SOLVE-04 | Solve | Step 4: Options 选择方案 | PASS | OpenRouter reasoning 兜底已修复 ✅ |
+| SOLVE-05 | Solve | Step 5: Commit 设定行动 | PASS | OpenRouter reasoning 兜底已修复 ✅ |
+| SOLVE-06 | Solve | SSE 流式响应完整 | PASS | OpenRouter reasoning 兜底已修复 ✅ |
 | EMO-01 | Emotion | 检测焦虑情绪 | PASS | SSE done: `emotion_detected=anxious` |
 | EMO-02 | Emotion | 检测平静情绪 | PASS | SSE done: `emotion_detected=calm` |
 | HEALTH-01 | Health | GET /health | PASS | Local smoke 2025-12-23 |

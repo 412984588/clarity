@@ -118,6 +118,7 @@ class AIService:
             headers["X-Title"] = self.settings.openrouter_app_name
 
         allow_reasoning_fallback = self.settings.openrouter_reasoning_fallback
+        enable_reasoning_output = self.settings.enable_reasoning_output
         reasoning_buffer: list[str] = []
         yielded_content = False
 
@@ -145,12 +146,14 @@ class AIService:
                         yielded_content = True
                         yield content
                         continue
-                    if allow_reasoning_fallback:
+                    # 只有开启 reasoning 输出时，才收集 reasoning 内容
+                    if allow_reasoning_fallback and enable_reasoning_output:
                         reasoning = delta.get("reasoning")
                         if reasoning:
                             reasoning_buffer.append(reasoning)
 
-        if allow_reasoning_fallback and (not yielded_content) and reasoning_buffer:
+        # 只有开启 reasoning 输出时，才使用 reasoning 作为兜底
+        if allow_reasoning_fallback and enable_reasoning_output and (not yielded_content) and reasoning_buffer:
             # Fallback for reasoning-only models that emit no content tokens.
             yield "".join(reasoning_buffer)
 

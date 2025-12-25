@@ -37,15 +37,44 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 app = FastAPI(
     title=settings.app_name,
     description="Universal problem-solving assistant API",
-    version="0.1.0",
+    version=settings.app_version,
     docs_url="/docs",
     redoc_url="/redoc",
     lifespan=lifespan,
 )
 
+def get_cors_origins() -> list[str]:
+    """获取 CORS 白名单"""
+    if settings.debug:
+        return ["*"]
+
+    origins = []
+
+    # 从配置读取
+    if settings.cors_allowed_origins:
+        origins.extend(settings.cors_allowed_origins.split(","))
+
+    # 添加生产域名
+    if settings.frontend_url_prod:
+        origins.append(settings.frontend_url_prod)
+
+    # 添加前端 URL（如果不是 localhost）
+    if settings.frontend_url and "localhost" not in settings.frontend_url:
+        origins.append(settings.frontend_url)
+
+    # 兜底：允许 solacore.app
+    if not origins:
+        origins = [
+            "https://solacore.app",
+            "https://www.solacore.app",
+            "http://localhost:3000",
+        ]
+
+    return origins
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"] if settings.debug else [],
+    allow_origins=get_cors_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

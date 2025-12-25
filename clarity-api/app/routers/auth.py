@@ -18,6 +18,7 @@ from app.models.password_reset import PasswordResetToken
 from app.models.session import ActiveSession
 from app.models.user import User
 from app.services.auth_service import AuthService
+from app.services.email_service import send_password_reset_email
 from app.services.oauth_service import OAuthService
 from app.schemas.auth import (
     RegisterRequest,
@@ -104,6 +105,14 @@ async def forgot_password(
         )
         db.add(reset_token)
         await db.commit()
+
+        # 发送密码重置邮件
+        try:
+            await send_password_reset_email(user.email, token)
+        except Exception as e:
+            logger.error("Failed to send password reset email: %s", e)
+
+        # Debug 模式额外记录日志
         if settings.debug:
             logger.info(
                 "Password reset link: %s/auth/reset?token=%s",
@@ -339,3 +348,13 @@ async def revoke_session(
     await db.delete(session)
     await db.commit()
     return None
+
+
+@router.get("/config/features")
+async def get_features():
+    """返回前端功能开关配置"""
+    return {
+        "payments_enabled": settings.payments_enabled,
+        "beta_mode": settings.beta_mode,
+        "app_version": settings.app_version,
+    }

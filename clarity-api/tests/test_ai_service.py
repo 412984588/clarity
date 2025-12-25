@@ -150,6 +150,7 @@ async def test_stream_openrouter_reasoning_fallback(ai_service, monkeypatch):
     ai_service.settings.openrouter_api_key = "test-openrouter-key"
     ai_service.settings.openrouter_base_url = "https://openrouter.ai/api/v1/"
     ai_service.settings.openrouter_reasoning_fallback = True
+    ai_service.settings.enable_reasoning_output = True  # 必须开启才能输出 reasoning
     lines = [
         'data: {"choices":[{"delta":{"reasoning":"Think"}}]}',
         'data: {"choices":[{"delta":{"reasoning":"ing"}}]}',

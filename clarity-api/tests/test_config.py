@@ -19,5 +19,14 @@ def test_validate_blocks_default_secret_in_production() -> None:
 
 
 def test_validate_allows_custom_secret_in_production() -> None:
-    settings = _make_settings(debug=False, jwt_secret="secure-secret")
+    """生产环境配置校验 - 所有必需配置都设置时应通过"""
+    settings = _make_settings(
+        debug=False,
+        jwt_secret="secure-secret",
+        database_url="postgresql+asyncpg://user:pass@prod-db:5432/clarity",
+        openai_api_key="sk-test-key",
+        payments_enabled=False,  # 禁用支付则不需要 Stripe 配置
+        google_client_id="test-google-client-id",
+        frontend_url_prod="https://solacore.app",
+    )
     validate_production_config(settings)
