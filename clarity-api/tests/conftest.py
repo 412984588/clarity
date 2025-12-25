@@ -7,6 +7,7 @@ from sqlalchemy.pool import NullPool
 from app.main import app
 from app.database import Base, get_db
 from app.config import get_settings
+from app.middleware.rate_limit import limiter
 
 settings = get_settings()
 
@@ -39,6 +40,9 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
             yield session
 
     app.dependency_overrides[get_db] = override_get_db
+
+    # 重置 rate limiter 状态，避免测试间累积
+    limiter.reset()
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as c:

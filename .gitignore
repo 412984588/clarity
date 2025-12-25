@@ -9,3 +9,4 @@
 *.pyd
 .Python
 .DS_Store
+node_modules/

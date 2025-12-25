@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# 获取项目根目录
+ROOT_DIR=$(git rev-parse --show-toplevel)
+
+# 后端检查
+cd "$ROOT_DIR/clarity-api" && poetry run pre-commit run --all-files || exit 1
+
+# Web 前端检查（可选，lint-staged 可能失败如果没有改动）
+cd "$ROOT_DIR/clarity-web" && npx lint-staged || true
+
+# Mobile 前端检查
+cd "$ROOT_DIR/clarity-mobile" && npx lint-staged || true

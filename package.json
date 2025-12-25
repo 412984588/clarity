@@ -1,0 +1,28 @@
+{
+  "name": "clarity",
+  "version": "1.0.0",
+  "description": "Universal problem-solving assistant - 跨平台智能问题解决助手",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/412984588/clarity.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/412984588/clarity/issues"
+  },
+  "homepage": "https://github.com/412984588/clarity#readme",
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}
