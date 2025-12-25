@@ -93,7 +93,6 @@ async def forgot_password(
     result = await db.execute(select(User).where(User.email == data.email))
     user = result.scalar_one_or_none()
 
-    # 始终执行 token 生成和 hash 计算，防止时序攻击
     token = secrets.token_urlsafe(32)
     token_hash = hashlib.sha256(token.encode()).hexdigest()
 
@@ -106,11 +105,11 @@ async def forgot_password(
         db.add(reset_token)
         await db.commit()
 
-        # 发送密码重置邮件
+        # 发送邮件
         try:
-            await send_password_reset_email(user.email, token)
+            await send_password_reset_email(str(user.email), token)
         except Exception as e:
-            logger.error("Failed to send password reset email: %s", e)
+            logger.error(f"Password reset email error: {e}")
 
         # Debug 模式额外记录日志
         if settings.debug:

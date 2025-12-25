@@ -1,38 +1,26 @@
-"""邮件服务 - 发送密码重置等系统邮件"""
-import logging
-from email.message import EmailMessage
-
+"""邮件服务"""
 import aiosmtplib
-
+from email.message import EmailMessage
 from app.config import get_settings
+import logging
 
 logger = logging.getLogger(__name__)
+settings = get_settings()
 
 
 async def send_password_reset_email(to_email: str, reset_token: str) -> bool:
-    """发送密码重置邮件
-
-    Args:
-        to_email: 收件人邮箱
-        reset_token: 重置令牌
-
-    Returns:
-        bool: 发送成功返回 True
-    """
-    settings = get_settings()
-
+    """发送密码重置邮件"""
     if not settings.smtp_enabled:
-        logger.warning("SMTP is disabled, password reset email not sent to %s", to_email)
+        logger.warning("SMTP is disabled, password reset email not sent")
         return False
 
-    reset_link = f"{settings.frontend_url_prod or settings.frontend_url}/auth/reset?token={reset_token}"
+    reset_link = f"{settings.frontend_url}/auth/reset?token={reset_token}"
 
     message = EmailMessage()
     message["From"] = f"{settings.smtp_from_name} <{settings.smtp_from}>"
     message["To"] = to_email
     message["Subject"] = "密码重置 - Clarity"
 
-    # 纯文本版本
     message.set_content(f"""
 您好，
 
@@ -47,9 +35,7 @@ async def send_password_reset_email(to_email: str, reset_token: str) -> bool:
 Clarity 团队
     """)
 
-    # HTML 版本
-    message.add_alternative(
-        f"""
+    message.add_alternative(f"""
 <html>
   <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
     <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -57,11 +43,11 @@ Clarity 团队
       <p>您好，</p>
       <p>您请求重置 Clarity 账户的密码。</p>
       <p style="margin: 30px 0;">
-        <a href="{reset_link}"
-           style="background-color: #4CAF50;
-                  color: white;
-                  padding: 12px 24px;
-                  text-decoration: none;
+        <a href="{reset_link}" 
+           style="background-color: #4CAF50; 
+                  color: white; 
+                  padding: 12px 24px; 
+                  text-decoration: none; 
                   border-radius: 5px;
                   display: inline-block;">
           重置密码
@@ -74,9 +60,7 @@ Clarity 团队
     </div>
   </body>
 </html>
-    """,
-        subtype="html",
-    )
+    """, subtype="html")
 
     try:
         await aiosmtplib.send(
@@ -87,8 +71,8 @@ Clarity 团队
             password=settings.smtp_password,
             use_tls=True,
         )
-        logger.info("Password reset email sent to %s", to_email)
+        logger.info(f"Password reset email sent to {to_email}")
         return True
     except Exception as e:
-        logger.error("Failed to send password reset email to %s: %s", to_email, e)
+        logger.error(f"Failed to send password reset email to {to_email}: {e}")
         return False

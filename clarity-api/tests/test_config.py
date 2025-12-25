@@ -27,6 +27,6 @@ def test_validate_allows_custom_secret_in_production() -> None:
         openai_api_key="sk-test-key",
         payments_enabled=False,  # 禁用支付则不需要 Stripe 配置
         google_client_id="test-google-client-id",
-        frontend_url_prod="https://solacore.app",
+        frontend_url="https://solacore.app",  # 生产环境 URL
     )
     validate_production_config(settings)

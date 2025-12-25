@@ -15,6 +15,7 @@ from app.routers import subscriptions
 from app.routers import webhooks
 from app.routers import revenuecat_webhooks
 from app.routers import account
+from app.routers import config
 
 settings = get_settings()
 
@@ -34,6 +35,28 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     yield
 
 
+def get_cors_origins() -> list[str]:
+    """获取 CORS 白名单"""
+    if settings.debug:
+        return ["*"]  # Debug 模式允许所有来源
+
+    origins = []
+
+    # 使用 frontend_url
+    if settings.frontend_url and "localhost" not in settings.frontend_url:
+        origins.append(settings.frontend_url)
+
+    # 使用 cors_allowed_origins
+    if settings.cors_allowed_origins:
+        origins.extend(o.strip() for o in settings.cors_allowed_origins.split(",") if o.strip())
+
+    # 兜底：至少允许本地开发
+    if not origins:
+        origins = ["http://localhost:3000", "http://localhost:8000"]
+
+    return origins
+
+
 app = FastAPI(
     title=settings.app_name,
     description="Universal problem-solving assistant API",
@@ -42,35 +65,6 @@ app = FastAPI(
     redoc_url="/redoc",
     lifespan=lifespan,
 )
-
-def get_cors_origins() -> list[str]:
-    """获取 CORS 白名单"""
-    if settings.debug:
-        return ["*"]
-
-    origins = []
-
-    # 从配置读取
-    if settings.cors_allowed_origins:
-        origins.extend(settings.cors_allowed_origins.split(","))
-
-    # 添加生产域名
-    if settings.frontend_url_prod:
-        origins.append(settings.frontend_url_prod)
-
-    # 添加前端 URL（如果不是 localhost）
-    if settings.frontend_url and "localhost" not in settings.frontend_url:
-        origins.append(settings.frontend_url)
-
-    # 兜底：允许 solacore.app
-    if not origins:
-        origins = [
-            "https://solacore.app",
-            "https://www.solacore.app",
-            "http://localhost:3000",
-        ]
-
-    return origins
 
 app.add_middleware(
     CORSMiddleware,
@@ -87,6 +81,7 @@ app.include_router(subscriptions.router)
 app.include_router(webhooks.router)
 app.include_router(revenuecat_webhooks.router)
 app.include_router(account.router)
+app.include_router(config.router)
 
 
 @app.get("/health")

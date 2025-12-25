@@ -27,7 +27,12 @@ class Settings(BaseSettings):
     port: int = 8000
     frontend_url: str = "http://localhost:3000"  # 前端开发地址
     frontend_url_prod: str = "https://solacore.app"  # 生产环境域名
-    cors_allowed_origins: str = "https://solacore.app,https://www.solacore.app"  # CORS 白名单
+
+    # AI 功能开关
+    enable_reasoning_output: bool = False  # 默认禁用思考过程输出
+
+    # CORS 配置
+    cors_allowed_origins: str = ""  # 逗号分隔的域名列表
 
     # Sentry 配置
     sentry_dsn: str = ""  # 生产环境从环境变量读取
@@ -47,7 +52,6 @@ class Settings(BaseSettings):
     openrouter_app_name: str = ""
     openrouter_referer: str = ""
     openrouter_reasoning_fallback: bool = False
-    enable_reasoning_output: bool = False  # 默认禁用 AI 思考过程输出
     llm_model: str = "gpt-4o-mini"
     llm_timeout: int = 30
     llm_max_tokens: int = 1024
@@ -66,12 +70,12 @@ class Settings(BaseSettings):
     revenuecat_entitlement_pro: str = "pro_access"
 
     # 邮件服务配置
-    smtp_enabled: bool = False  # 默认禁用，生产环境改为 True
+    smtp_enabled: bool = False
     smtp_host: str = "smtp.sendgrid.net"
     smtp_port: int = 587
-    smtp_user: str = ""  # SendGrid: 固定为 "apikey"
-    smtp_password: str = ""  # SendGrid API Key
-    smtp_from: str = "noreply@solacore.app"
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_from: str = "noreply@clarity.app"
     smtp_from_name: str = "Clarity Support"
 
 
@@ -91,7 +95,7 @@ def validate_production_config(settings: Settings | None = None) -> None:
 
     # 1. JWT 校验
     if active_settings.jwt_secret in {"", DEFAULT_JWT_SECRET}:
-        errors.append("JWT_SECRET must be set to a secure value")
+        errors.append("JWT_SECRET must be set to a secure value in production")
 
     # 2. 数据库校验
     if not active_settings.database_url or "localhost" in active_settings.database_url:
@@ -108,16 +112,20 @@ def validate_production_config(settings: Settings | None = None) -> None:
     if active_settings.payments_enabled:
         if not active_settings.stripe_secret_key:
             errors.append("STRIPE_SECRET_KEY is required when payments_enabled=true")
+
         if not active_settings.stripe_webhook_secret:
             errors.append("STRIPE_WEBHOOK_SECRET is required when payments_enabled=true")
+
+        if not active_settings.revenuecat_webhook_secret:
+            errors.append("REVENUECAT_WEBHOOK_SECRET is required when payments_enabled=true")
 
     # 5. OAuth 校验
     if not active_settings.google_client_id:
         errors.append("GOOGLE_CLIENT_ID is required for Google OAuth")
 
     # 6. 前端 URL 校验
-    if not active_settings.frontend_url_prod:
-        errors.append("FRONTEND_URL_PROD must be set (e.g., https://solacore.app)")
+    if not active_settings.frontend_url or "localhost" in active_settings.frontend_url:
+        errors.append("FRONTEND_URL must be set to production URL (not localhost)")
 
     if errors:
         error_msg = "🚨 Production configuration errors:\n" + "\n".join(f"  - {e}" for e in errors)

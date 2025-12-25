@@ -76,7 +76,7 @@
 
 | Issue ID | Severity | Case ID | Description | Status |
 |----------|----------|---------|-------------|--------|
-| QA-LLM-01 | P1 | SOLVE-01..06 | OpenRouter 返回 reasoning 但 content 为空，SSE 无 token 输出 | OPEN |
+| QA-LLM-01 | P1 | SOLVE-01..06 | OpenRouter 返回 reasoning 但 content 为空，SSE 无 token 输出 | **FIXED** ✅ (reasoning 兜底已实现) |
 
 **Severity Legend**: P0 (Critical) / P1 (High) / P2 (Medium) / P3 (Low)
 
