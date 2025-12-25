@@ -1,10 +1,11 @@
 """设备与会话管理测试"""
 
+import asyncio
 from uuid import UUID, uuid4
 
 import pytest
 from httpx import AsyncClient
-from sqlalchemy import select
+from sqlalchemy import select, func
 
 from app.main import app
 from app.middleware.auth import get_current_user
@@ -12,6 +13,7 @@ from app.models.device import Device
 from app.models.session import ActiveSession
 from app.models.subscription import Subscription
 from app.models.user import User
+from app.services.auth_service import AuthService
 from app.utils.security import decode_token
 
 # 使用 conftest.py 导出的 TestingSessionLocal
@@ -103,6 +105,57 @@ async def test_list_sessions(client: AsyncClient):
     assert resp.status_code == 200
     data = resp.json()
     assert len(data) == 1
+
+
+@pytest.mark.asyncio
+async def test_device_limit_concurrent_requests(client: AsyncClient):
+    register_resp = await client.post(
+        "/auth/register",
+        json={
+            "email": "device-concurrent@example.com",
+            "password": "Password123",
+            "device_fingerprint": "device-concurrent-base",
+        },
+    )
+    access_token = register_resp.json()["access_token"]
+    user = _user_from_access_token(access_token)
+    await _set_subscription_tier(user.id, "standard")
+
+    async with TestingSessionLocal() as session_a, TestingSessionLocal() as session_b:
+        result = await session_a.execute(select(User).where(User.id == user.id))
+        user_a = result.scalar_one()
+        result = await session_b.execute(select(User).where(User.id == user.id))
+        user_b = result.scalar_one()
+
+        service_a = AuthService(session_a)
+        service_b = AuthService(session_b)
+
+        await service_a._get_or_create_device(
+            user_a, "device-concurrent-a", "Concurrent A", tier="standard"
+        )
+
+        task = asyncio.create_task(
+            service_b._get_or_create_device(
+                user_b, "device-concurrent-b", "Concurrent B", tier="standard"
+            )
+        )
+        done, _pending = await asyncio.wait({task}, timeout=0.2)
+        assert not done
+
+        await session_a.commit()
+
+        with pytest.raises(ValueError) as exc_info:
+            await task
+        assert str(exc_info.value) == "DEVICE_LIMIT_REACHED"
+        await session_b.rollback()
+
+    async with TestingSessionLocal() as session:
+        result = await session.execute(
+            select(func.count(Device.id)).where(
+                Device.user_id == user.id, Device.is_active.is_(True)
+            )
+        )
+        assert (result.scalar() or 0) == 2
 
 
 @pytest.mark.asyncio

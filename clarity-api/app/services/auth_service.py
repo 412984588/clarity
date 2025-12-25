@@ -184,6 +184,10 @@ class AuthService:
             return device
 
         # 检查设备限制（tier 由调用方传入，避免懒加载）
+        # 锁定用户设备行，避免并发下设备数量检查出现竞态
+        await self.db.execute(
+            select(Device.id).where(Device.user_id == user.id).with_for_update()
+        )
         result = await self.db.execute(
             select(func.count(Device.id)).where(
                 Device.user_id == user.id, Device.is_active.is_(True)
@@ -193,7 +197,9 @@ class AuthService:
 
         # Beta 模式放宽设备限制
         settings = get_settings()
-        max_devices = BETA_DEVICE_LIMIT if settings.beta_mode else DEVICE_LIMITS.get(tier, 1)
+        max_devices = (
+            BETA_DEVICE_LIMIT if settings.beta_mode else DEVICE_LIMITS.get(tier, 1)
+        )
 
         if device_count >= max_devices:
             raise ValueError("DEVICE_LIMIT_REACHED")

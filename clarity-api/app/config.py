@@ -2,6 +2,8 @@ from functools import lru_cache
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+DEFAULT_JWT_SECRET = "your-secret-key-change-in-production"
+
 
 class Settings(BaseSettings):
     """应用配置，从环境变量加载"""
@@ -12,7 +14,7 @@ class Settings(BaseSettings):
     app_version: str = "1.0.0"
     debug: bool = False
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/clarity"
-    jwt_secret: str = "your-secret-key-change-in-production"
+    jwt_secret: str = DEFAULT_JWT_SECRET
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 60
 
@@ -58,3 +60,12 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
+
+
+def validate_production_config(settings: Settings | None = None) -> None:
+    active_settings = settings or get_settings()
+    if not active_settings.debug and active_settings.jwt_secret in {
+        "",
+        DEFAULT_JWT_SECRET,
+    }:
+        raise RuntimeError("JWT_SECRET must be set to a secure value in production")

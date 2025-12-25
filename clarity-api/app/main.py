@@ -1,8 +1,11 @@
+from contextlib import asynccontextmanager
+from typing import AsyncIterator
+
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.config import get_settings
+from app.config import get_settings, validate_production_config
 from app.database import get_db
 from app.routers import auth
 from app.routers import sessions
@@ -13,11 +16,13 @@ from app.routers import account
 
 settings = get_settings()
 
-if (
-    not settings.debug
-    and settings.jwt_secret in {"", "your-secret-key-change-in-production"}
-):
-    raise RuntimeError("JWT_SECRET must be set to a secure value in production")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    # 启动时校验生产配置
+    validate_production_config(settings)
+    yield
+
 
 app = FastAPI(
     title=settings.app_name,
@@ -25,6 +30,7 @@ app = FastAPI(
     version="0.1.0",
     docs_url="/docs",
     redoc_url="/redoc",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
