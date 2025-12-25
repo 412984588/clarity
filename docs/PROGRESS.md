@@ -1,11 +1,30 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-25 03:00
+**最后更新**: 2025-12-25 03:15
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-25 03:15] - 修正 Remaining Work 扫描说明 + Inventory 数量
+
+- [x] **修正 remaining-work.md (1 份)**：`docs/release/remaining-work.md`
+  - **Open TODOs / 代码中的 TODO 标记** 段落：
+    - 扫描范围：删除 `docs/**/*.md`，明确只扫描代码
+    - 改为"扫描范围（仅代码）"
+  - **文档中的 TBD 项** 段落：
+    - 删除旧的运维决策项列表
+    - 增加说明：文档 TBD 统一在 `docs/release/placeholders-to-fill.md` 追踪
+    - 添加当前状态：39 个占位符（Critical 15 / High 5 / Medium+Low 19）
+    - 添加主要类别说明（团队角色/Beta 运营/生产环境/法律合规）
+
+- [x] **更新 project-status-summary.md (1 份)**：`docs/release/project-status-summary.md`
+  - Release docs inventory 数量：55 份文档 → 59 份文档
+
+> **目的**: 修正文档一致性，明确 TODO 扫描只针对代码，文档 TBD 统一在 placeholders-to-fill.md 追踪
+
+---
 
 ### [2025-12-25 03:00] - Free Beta 启动清单 5 项已落地 + 更新占位符
 

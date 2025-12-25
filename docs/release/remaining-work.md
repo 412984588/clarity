@@ -323,30 +323,36 @@ Domain Purchase → Hosting Setup → Backend Deploy → Mobile Build → Store 
 
 ### 代码中的 TODO 标记
 
-**扫描结果**：✅ **0 个 TODO/FIXME/TBD/XXX 标记**
+**扫描结果**：✅ **0 个 TODO/FIXME/XXX 标记**
 
-**扫描范围**：
+**扫描范围**（仅代码）：
 ```bash
 clarity-backend/app/**/*.py
 clarity-mobile/src/**/*.{ts,tsx}
 clarity-backend/tests/**/*.py
-docs/**/*.md
 ```
 
 **说明**：代码质量极高，所有已知问题已修复，无遗留技术债。
 
 ---
 
-### 文档和配置中的 TBD 项
+### 文档中的 TBD 项
 
-**运维决策项**（非代码，可延后决策）：
-1. On-call 轮值策略（`docs/release/ops-handover.md`）
-2. 数据库备份保留时长（`docs/release/ops-handover.md`）
-3. 监控告警阈值（`docs/release/incident-response.md`）
-4. PagerDuty 集成配置（`docs/release/incident-response.md`）
-5. 容量规划基准（`docs/release/ops-handover.md`）
+**统一追踪文档**：所有文档占位符和 TBD 项统一在 [`docs/release/placeholders-to-fill.md`](placeholders-to-fill.md) 追踪。
 
-**状态**：不影响功能开发，可在上线后根据实际情况调整。
+**当前状态**：
+- **总计**: 39 个占位符
+- **Critical**: 15 项（必须在生产前完成）
+- **High Priority**: 5 项（Beta 启动需要）
+- **Medium/Low**: 19 项（延后或可选）
+
+**主要类别**：
+- 团队角色与联系人（已完成，标记为 DONE）
+- Beta 运营配置（部分完成，见 placeholders-to-fill.md）
+- 生产环境配置（等待外部账号/服务）
+- 法律合规项（延后至生产阶段）
+
+**状态**：不影响 Free Beta 启动，详见 [Placeholders to Fill Inventory](placeholders-to-fill.md)。
 
 ---
 
