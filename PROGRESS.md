@@ -1,11 +1,25 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-25 03:15
+**最后更新**: 2025-12-25 04:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-25 04:30] - 安全加固三件套（全自动无人值守模式）
+
+- [x] **T1 Prompt Injection 防护**: 增强 content_filter.py（Unicode归一化 + 分词变体检测）
+- [x] **T2 设备限制并发修复**: auth_service.py 使用 SELECT FOR UPDATE 锁
+- [x] **T3 生产配置校验**: config.py 添加启动时弱密钥检测
+- [x] **测试覆盖**: 113 passed（原 106，新增 7 个安全测试）
+- [x] **代码质量**: mypy 40 files ✅ / ruff all checks ✅
+- [x] **Git Push**: commit 2237aed (#119)
+
+> **执行模式**: 全自动无人值守 + Codex 协作
+> **触发来源**: Gemini 安全审计建议
+
+---
 
 ### [2025-12-25 03:15] - 修正 Remaining Work 扫描说明 + Inventory 数量
 
