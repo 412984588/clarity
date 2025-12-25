@@ -51,8 +51,27 @@
 
 ## 执行进度
 
-- [ ] Phase 2.1: SQLite 基础架构
-- [ ] Phase 2.2: 集成到 Session 页
-- [ ] Phase 2.3: 测试验证
-- [ ] Phase 2.4: 批量任务同步
-- [ ] Git Commit + Push
+- [x] Phase 2.1: SQLite 基础架构 ✅
+- [x] Phase 2.2: 集成到 Session 页 ✅
+- [x] Phase 2.3: 测试验证 ✅
+- [x] Phase 2.4: 批量任务同步 ✅
+- [x] Git Commit + Push ✅
+
+---
+
+## 完成时间: 2025-12-25 01:45
+
+### 成果总结
+
+| 项目 | 完成状态 |
+|------|---------|
+| expo-sqlite 安装 | ✅ |
+| database.ts 创建 | ✅ |
+| stepHistory.ts 升级 | ✅ |
+| _layout.tsx 初始化 | ✅ |
+| Lint 检查 | ✅ 通过 |
+| TypeScript 检查 | ✅ 通过 |
+| 任务清单同步 | ✅ 4个文件 |
+
+### Git Commit
+- `a208aea` feat(mobile): 升级本地存储为 SQLite + 批量任务同步

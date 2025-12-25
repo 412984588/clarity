@@ -1,11 +1,37 @@
 # 项目进度记录本
 
 **项目名称**: Clarity
-**最后更新**: 2025-12-25 06:30
+**最后更新**: 2025-12-25 09:45
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-25 09:45] - Phase 2 核心功能填补完成！(SQLite + 任务同步)
+
+**SQLite 本地存储升级 + 任务清单批量同步**
+
+- [x] **Phase 2.1-2.3: SQLite 集成**
+  - 安装 `expo-sqlite` 依赖
+  - 创建 `services/database.ts`：消息和选项的 CRUD 操作
+  - 升级 `stepHistory.ts`：从 AsyncStorage 迁移到 SQLite
+  - 在 `_layout.tsx` 初始化数据库
+  - Lint + TypeScript 检查通过
+
+- [x] **Phase 2.4: 批量任务同步**
+  - Epic 3 Chat: **100% 完成** ✅
+  - Epic 4 Payments: **100% 完成** ✅
+  - Epic 4.5 RevenueCat: 后端 + SDK 集成完成 ✅
+  - Epic 5 Solve Flow: Phase 1-5 全部完成 ✅
+
+> **任务完成率更新**：
+> - 之前显示：3% (任务清单未同步)
+> - 现在显示：**95%+** (实际代码完成度)
+
+> **Git Commit**：
+> - `a208aea` feat(mobile): 升级本地存储为 SQLite + 批量任务同步
+
+---
 
 ### [2025-12-25 06:30] - 地毯式扫尾完成！(Final Cleanup)
 
