@@ -13,8 +13,29 @@ const api = axios.create({
   withCredentials: true, // 自动发送 cookies
 });
 
-// httpOnly cookies 模式：浏览器会自动发送 cookies，无需手动添加 Authorization 头
-// 移除了原有的请求拦截器
+// 设备指纹生成和存储
+const getDeviceFingerprint = (): string => {
+  if (!isBrowser) {
+    return "server-side-render";
+  }
+
+  const storageKey = "solacore_device_fingerprint";
+  let fingerprint = localStorage.getItem(storageKey);
+
+  if (!fingerprint) {
+    // 生成简单的设备指纹：UUID
+    fingerprint = crypto.randomUUID();
+    localStorage.setItem(storageKey, fingerprint);
+  }
+
+  return fingerprint;
+};
+
+// 请求拦截器：自动添加设备指纹
+api.interceptors.request.use((config) => {
+  config.headers["X-Device-Fingerprint"] = getDeviceFingerprint();
+  return config;
+});
 
 let refreshPromise: Promise<void> | null = null;
 
