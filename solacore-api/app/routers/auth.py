@@ -79,9 +79,7 @@ async def login(
 
 
 @router.post("/beta-login", response_model=TokenResponse)
-@limiter.limit(AUTH_RATE_LIMIT)
 async def beta_login(
-    request: Request,
     data: BetaLoginRequest | None = None,
     db: AsyncSession = Depends(get_db),
 ):
