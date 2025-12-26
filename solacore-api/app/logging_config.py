@@ -39,9 +39,15 @@ def redact_sensitive_data(
     if "event" in event_dict and isinstance(event_dict["event"], str):
         message = event_dict["event"]
         # 脱敏 JWT token (eyJ 开头的长字符串)
-        message = re.sub(r"eyJ[A-Za-z0-9_-]*\.[A-Za-z0-9_-]*\.[A-Za-z0-9_-]*", "***JWT_REDACTED***", message)
+        message = re.sub(
+            r"eyJ[A-Za-z0-9_-]*\.[A-Za-z0-9_-]*\.[A-Za-z0-9_-]*",
+            "***JWT_REDACTED***",
+            message,
+        )
         # 脱敏看起来像 API key 的字符串 (sk_live_, pk_live_ 等)
-        message = re.sub(r"(sk|pk)_(live|test)_[A-Za-z0-9]{24,}", "***API_KEY_REDACTED***", message)
+        message = re.sub(
+            r"(sk|pk)_(live|test)_[A-Za-z0-9]{24,}", "***API_KEY_REDACTED***", message
+        )
         # 脱敏 Bearer token
         message = re.sub(r"Bearer\s+[A-Za-z0-9_-]+", "Bearer ***REDACTED***", message)
         event_dict["event"] = message

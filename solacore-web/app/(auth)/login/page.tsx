@@ -9,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { api, betaLogin } from "@/lib/api";
-import { isAuthenticated } from "@/lib/auth";
 
 function LoginContent() {
   const router = useRouter();
@@ -43,7 +42,8 @@ function LoginContent() {
           try {
             // Beta 模式：自动登录
             await betaLogin();
-            await refreshUser();
+            // Beta 登录成功后，直接跳转，不调用 refreshUser()
+            // AuthProvider 会在页面加载后自动调用 refreshUser()
             router.replace("/dashboard");
             return;
           } catch (loginError) {

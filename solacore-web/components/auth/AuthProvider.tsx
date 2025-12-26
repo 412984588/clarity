@@ -10,12 +10,7 @@ import React, {
 } from "react";
 
 import type { User } from "@/lib/types";
-import {
-  getCurrentUser,
-  isAuthenticated,
-  logout as clearAuth,
-  refreshToken,
-} from "@/lib/auth";
+import { getCurrentUser, logout as clearAuth, refreshToken } from "@/lib/auth";
 
 interface AuthContextValue {
   user: User | null;
@@ -37,24 +32,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
 
     try {
-      // httpOnly cookies 模式：调用 isAuthenticated 验证登录状态
-      const authenticated = await isAuthenticated();
-      if (authenticated) {
+      // Beta 模式下，直接尝试获取用户信息，不要先调用 isAuthenticated()
+      // 因为在 betaLogin() 刚设置完 cookies 后，可能存在时序问题
+      try {
         const currentUser = await getCurrentUser();
         setUser(currentUser);
         return;
-      }
-
-      // 未登录或 token 过期，尝试刷新
-      try {
+      } catch {
+        // 如果获取失败，尝试刷新 token
         await refreshToken();
         const currentUser = await getCurrentUser();
         setUser(currentUser);
-      } catch {
-        // refresh 失败，清除用户状态
-        setUser(null);
       }
     } catch (err) {
+      // 所有方法都失败，清除状态
       await clearAuth();
       setUser(null);
       setError(
