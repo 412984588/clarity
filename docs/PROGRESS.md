@@ -7,6 +7,31 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2025-12-25 15:30] - Beta 模式免登录功能 🎯
+
+**核心功能**:
+- [x] 后端: `/auth/beta-login` 端点（自动创建 beta-tester@solacore.app）
+- [x] Web: 检测 beta_mode 自动登录并跳转 /dashboard
+- [x] Mobile: authStore 集成 betaLogin()
+- [x] 环境变量: BETA_MODE=true, PAYMENTS_ENABLED=false
+
+**遇到的坑**:
+> **Rate Limiting 429 错误**
+> - **现象**: 前端调用 betaLogin() 返回 429 Too Many Requests
+> - **根因**: `/auth/beta-login` 端点有 `@limiter.limit(AUTH_RATE_LIMIT)` 装饰器
+> - **解决**: 移除 beta-login 的 rate limiting（内测自动登录不需要限流）
+> - **验证**: curl 测试通过，返回正确 access_token 和 refresh_token
+
+**下一步**:
+- [ ] 用户在浏览器刷新页面测试 Beta 模式自动登录
+- [ ] 移动端测试 Beta 模式
+
+**提交记录**:
+- `39e34ff` - feat: Beta 模式免登录功能
+- `934981b` - fix(auth): 移除 beta-login 的速率限制
+
+---
+
 ### [2025-12-25 14:45] - P1-P2 开发体验优化 🛠️
 
 **Phase 1: Pre-commit Hooks**

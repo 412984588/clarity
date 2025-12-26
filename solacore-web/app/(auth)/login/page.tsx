@@ -7,11 +7,13 @@ import { Chrome } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { api, betaLogin } from "@/lib/api";
 
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { refreshUser } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [checkingBeta, setCheckingBeta] = useState(true);
 
@@ -31,6 +33,7 @@ function LoginContent() {
         if (response.data.beta_mode) {
           try {
             await betaLogin();
+            await refreshUser();
             router.replace("/dashboard");
             return;
           } catch (loginError) {

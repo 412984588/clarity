@@ -8,7 +8,7 @@ import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { api, betaLogin } from "@/lib/api";
 
 export default function Home() {
-  const { user, loading } = useAuth();
+  const { user, loading, refreshUser } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -32,6 +32,7 @@ export default function Home() {
         if (response.data.beta_mode) {
           try {
             await betaLogin();
+            await refreshUser();
             if (isActive) {
               router.replace("/dashboard");
             }
