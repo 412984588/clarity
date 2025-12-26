@@ -34,6 +34,14 @@ const resolveToken = (payload: unknown): string | null => {
   return null;
 };
 
+// 后端 SessionCreateResponse 返回 session_id，需要映射到 id
+interface CreateSessionResponse {
+  session_id: string;
+  status: string;
+  current_step: string;
+  created_at: string;
+}
+
 export const createSession = async (): Promise<Session> => {
   if (process.env.NODE_ENV === "development") {
     console.log("🆕 [Create Session] 开始创建会话", {
@@ -42,15 +50,24 @@ export const createSession = async (): Promise<Session> => {
     });
   }
 
-  const response = await api.post<Session>("/sessions");
+  const response = await api.post<CreateSessionResponse>("/sessions");
+
+  // 映射后端字段到前端 Session 类型
+  const session: Session = {
+    id: response.data.session_id,
+    status: response.data.status,
+    current_step: response.data.current_step as Session["current_step"],
+    created_at: response.data.created_at,
+    messages: [], // 新创建的会话没有消息
+  };
 
   if (process.env.NODE_ENV === "development") {
     console.log("✅ [Create Session] 会话创建成功", {
-      sessionId: response.data.id,
+      sessionId: session.id,
     });
   }
 
-  return response.data;
+  return session;
 };
 
 export const getSession = async (id: string): Promise<Session> => {
@@ -78,6 +95,7 @@ export const updateStep = async (
 export const sendMessage = async (
   id: string,
   content: string,
+  step: string, // 后端要求必传 step 字段
   handlers: StreamHandlers = {},
 ): Promise<Message | null> => {
   const fingerprint = getDeviceFingerprint();
@@ -85,6 +103,7 @@ export const sendMessage = async (
   if (process.env.NODE_ENV === "development") {
     console.log("💬 [Send Message] 发送消息", {
       sessionId: id,
+      step,
       fingerprint,
       contentLength: content.length,
       timestamp: new Date().toISOString(),
@@ -92,7 +111,7 @@ export const sendMessage = async (
   }
 
   // 🔧 修复：手动添加设备指纹到请求头（因为使用原生 fetch，不经过 axios 拦截器）
-  const response = await fetch(`${API_BASE_URL}/sessions/${id}/message`, {
+  const response = await fetch(`${API_BASE_URL}/sessions/${id}/messages`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -100,7 +119,7 @@ export const sendMessage = async (
       "X-Device-Fingerprint": fingerprint, // ✅ 添加设备指纹
     },
     credentials: "include", // httpOnly cookies 模式：自动发送 cookies
-    body: JSON.stringify({ content }),
+    body: JSON.stringify({ content, step }), // ✅ 添加 step 字段
     signal: handlers.signal,
   });
 

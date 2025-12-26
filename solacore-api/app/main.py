@@ -45,7 +45,13 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 def get_cors_origins() -> list[str]:
     """获取 CORS 白名单"""
     if settings.debug:
-        return ["*"]  # Debug 模式允许所有来源
+        # Debug 模式：必须指定具体域名，因为 allow_credentials=True 时不能用 "*"
+        return [
+            "http://localhost:3000",
+            "http://localhost:8000",
+            "http://127.0.0.1:3000",
+            "http://127.0.0.1:8000",
+        ]
 
     origins = []
 

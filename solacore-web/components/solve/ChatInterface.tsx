@@ -36,9 +36,13 @@ export function ChatInterface({
     onStreamComplete,
   });
 
+  // 只在 sessionId 变化时重置消息，避免 initialMessages 引用变化导致的无限循环
   useEffect(() => {
-    setMessages(initialMessages);
-  }, [initialMessages, sessionId, setMessages]);
+    if (sessionId) {
+      setMessages(initialMessages);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });

@@ -138,7 +138,8 @@ async def create_session(
             Device.device_fingerprint == device_fingerprint,
         )
     )
-    device = device_result.scalar_one_or_none()
+    # 使用 .first() 容错重复记录（数据库可能存在历史重复数据）
+    device = device_result.scalars().first()
     if not device:
         raise HTTPException(status_code=403, detail={"error": "DEVICE_NOT_FOUND"})
 

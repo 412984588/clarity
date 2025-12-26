@@ -38,6 +38,12 @@ export function useChatStream({
         return;
       }
 
+      // 防护：确保 sessionId 有效
+      if (!sessionId) {
+        toast.error("会话未就绪，请刷新页面重试");
+        return;
+      }
+
       const trimmed = input.trim();
       const createdAt = new Date().toISOString();
       const userMessage: Message = {
@@ -62,23 +68,28 @@ export function useChatStream({
       let aggregated = "";
 
       try {
-        const finalMessage = await sendMessage(sessionId, trimmed, {
-          onToken: (token) => {
-            aggregated += token;
-            setMessages((prev) =>
-              prev.map((message) =>
-                message.id === assistantId
-                  ? { ...message, content: aggregated }
-                  : message,
-              ),
-            );
+        const finalMessage = await sendMessage(
+          sessionId,
+          trimmed,
+          currentStep,
+          {
+            onToken: (token) => {
+              aggregated += token;
+              setMessages((prev) =>
+                prev.map((message) =>
+                  message.id === assistantId
+                    ? { ...message, content: aggregated }
+                    : message,
+                ),
+              );
+            },
+            onMessage: (message) => {
+              setMessages((prev) =>
+                prev.map((item) => (item.id === assistantId ? message : item)),
+              );
+            },
           },
-          onMessage: (message) => {
-            setMessages((prev) =>
-              prev.map((item) => (item.id === assistantId ? message : item)),
-            );
-          },
-        });
+        );
 
         if (finalMessage) {
           setMessages((prev) =>
