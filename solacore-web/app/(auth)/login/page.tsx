@@ -42,8 +42,9 @@ function LoginContent() {
           try {
             // Beta 模式：自动登录
             await betaLogin();
-            // Beta 登录成功后，直接跳转，不调用 refreshUser()
-            // AuthProvider 会在页面加载后自动调用 refreshUser()
+            // 🚨 关键修复：等待 refreshUser() 完成，确保用户状态加载完毕后再跳转
+            // 这样可以避免 ProtectedRoute 因为 loading=true 而卡住
+            await refreshUser();
             router.replace("/dashboard");
             return;
           } catch (loginError) {
