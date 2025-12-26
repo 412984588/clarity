@@ -110,7 +110,7 @@ function RegisterContent() {
 
       <div className="relative mx-auto flex min-h-screen max-w-5xl items-center justify-center px-6 py-16">
         <div className="grid w-full gap-10 md:grid-cols-[1.1fr_0.9fr]">
-          <div className="flex flex-col justify-center gap-6 text-left">
+          <div className="order-2 flex flex-col justify-center gap-6 text-left md:order-1">
             <div className="inline-flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.3em] text-foreground/70">
               <span className="h-px w-12 bg-foreground/40" />
               Solacore Web
@@ -129,11 +129,11 @@ function RegisterContent() {
             </div>
           </div>
 
-          <Card className="border-foreground/10 bg-background/80 shadow-xl backdrop-blur">
+          <Card className="order-1 border-foreground/10 bg-background/80 shadow-xl backdrop-blur md:order-2">
             <CardHeader className="space-y-4">
               <div className="flex items-center gap-3">
                 <div className="flex size-10 items-center justify-center rounded-2xl bg-foreground text-base font-semibold text-background">
-                  C
+                  S
                 </div>
                 <div>
                   <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">

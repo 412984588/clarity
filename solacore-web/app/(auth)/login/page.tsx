@@ -110,10 +110,22 @@ function LoginContent() {
 
       <div className="relative mx-auto flex min-h-screen max-w-5xl items-center justify-center px-6 py-16">
         <div className="grid w-full gap-10 md:grid-cols-[1.1fr_0.9fr]">
-          <div className="flex flex-col justify-center gap-6 text-left">
-            <div className="inline-flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.3em] text-foreground/70">
-              <span className="h-px w-12 bg-foreground/40" />
-              Solacore Web
+          <div className="order-2 flex flex-col justify-center gap-6 text-left md:order-1">
+            {/* Solacore Logo */}
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-amber-200 to-emerald-200 shadow-sm">
+                <span className="text-base font-semibold text-foreground/80">
+                  S
+                </span>
+              </div>
+              <div>
+                <span className="text-xl font-semibold tracking-tight text-foreground">
+                  Solacore
+                </span>
+                <span className="ml-1.5 text-sm font-normal text-muted-foreground">
+                  Web
+                </span>
+              </div>
             </div>
             <h1 className="text-4xl font-semibold leading-tight text-foreground md:text-5xl">
               帮你把复杂情绪转成
@@ -122,18 +134,48 @@ function LoginContent() {
             <p className="max-w-md text-base leading-relaxed text-muted-foreground">
               从澄清到承诺，Solacore 带你完成五步思考流程，留下可执行的下一步。
             </p>
-            <div className="flex items-center gap-4 text-xs text-muted-foreground">
-              <div className="rounded-full border px-3 py-1">私密对话</div>
-              <div className="rounded-full border px-3 py-1">结构化引导</div>
-              <div className="rounded-full border px-3 py-1">立即可用</div>
+            <div className="grid gap-4 pt-2">
+              <div className="flex items-start gap-3">
+                <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-amber-100 text-sm font-medium text-amber-700">
+                  1
+                </div>
+                <div>
+                  <p className="font-medium text-foreground">私密对话</p>
+                  <p className="text-sm text-muted-foreground">
+                    说出你的困扰，不用担心条理
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-sm font-medium text-emerald-700">
+                  2
+                </div>
+                <div>
+                  <p className="font-medium text-foreground">结构化引导</p>
+                  <p className="text-sm text-muted-foreground">
+                    Solacore 引导你看清问题本质
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-medium text-blue-700">
+                  3
+                </div>
+                <div>
+                  <p className="font-medium text-foreground">立即可用</p>
+                  <p className="text-sm text-muted-foreground">
+                    得到清晰可执行的下一步
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
-          <Card className="border-foreground/10 bg-background/80 shadow-xl backdrop-blur">
+          <Card className="order-1 border-foreground/10 bg-background/80 shadow-xl backdrop-blur md:order-2">
             <CardHeader className="space-y-4">
               <div className="flex items-center gap-3">
                 <div className="flex size-10 items-center justify-center rounded-2xl bg-foreground text-base font-semibold text-background">
-                  C
+                  S
                 </div>
                 <div>
                   <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
