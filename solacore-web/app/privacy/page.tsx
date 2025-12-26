@@ -64,7 +64,7 @@ export default function PrivacyPage() {
 
           <h2>7. 联系我们</h2>
           <p>
-            如果您对本隐私政策有任何疑问，请通过 support@solacore.com
+            如果您对本隐私政策有任何疑问，请通过 support@solacore.app
             与我们联系。
           </p>
         </div>

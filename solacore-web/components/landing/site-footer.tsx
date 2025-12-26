@@ -16,7 +16,7 @@ export function SiteFooter() {
             服务条款
           </Link>
           <Link
-            href="mailto:support@solacore.com"
+            href="mailto:support@solacore.app"
             className="hover:text-foreground"
           >
             联系我们

@@ -77,7 +77,7 @@ export default function TermsPage() {
 
           <h2>9. 联系方式</h2>
           <p>
-            如果您对本服务条款有任何疑问，请通过 support@solacore.com
+            如果您对本服务条款有任何疑问，请通过 support@solacore.app
             与我们联系。
           </p>
         </div>
