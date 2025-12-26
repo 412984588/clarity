@@ -49,6 +49,12 @@ class SolveSession(Base):
     step_history = relationship(
         "StepHistory", back_populates="session", lazy="selectin"
     )
+    messages = relationship(
+        "Message",
+        back_populates="session",
+        lazy="selectin",
+        order_by="Message.created_at",
+    )
 
     def __repr__(self):
         return f"<SolveSession {self.id}>"

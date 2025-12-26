@@ -13,6 +13,18 @@ class UsageResponse(BaseModel):
     tier: str
 
 
+class MessageResponse(BaseModel):
+    """消息响应"""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    role: str
+    content: str
+    step: Optional[str] = None
+    created_at: datetime
+
+
 class SessionResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -21,6 +33,7 @@ class SessionResponse(BaseModel):
     current_step: str
     created_at: datetime
     completed_at: Optional[datetime] = None
+    messages: List[MessageResponse] = []
 
 
 class SessionCreateResponse(BaseModel):

@@ -16,6 +16,7 @@ from app.middleware.rate_limit import limiter, AI_RATE_LIMIT
 from app.models.device import Device
 from app.models.solve_session import SolveSession, SessionStatus, SolveStep
 from app.models.step_history import StepHistory
+from app.models.message import Message, MessageRole
 from app.models.subscription import Subscription, Usage
 from app.models.user import User
 from app.schemas.session import (
@@ -427,10 +428,32 @@ async def stream_messages(
         # 增加消息计数
         step_history.message_count = (step_history.message_count or 0) + 1  # type: ignore[assignment]
 
-        # 流式输出 AI 响应
+        # 保存用户消息到数据库
+        user_message = Message(
+            session_id=session.id,
+            role=MessageRole.USER.value,
+            content=data.content,  # 保存原始内容
+            step=current_step_enum.value,
+        )
+        db.add(user_message)
+        await db.flush()
+
+        # 流式输出 AI 响应，同时累积完整回复
+        ai_response_parts: list[str] = []
         async for token in ai_service.stream(system_prompt, sanitized_input):
+            ai_response_parts.append(token)
             payload = json.dumps({"content": token})
             yield f"event: token\ndata: {payload}\n\n"
+
+        # 保存 AI 回复到数据库
+        ai_content = "".join(ai_response_parts)
+        ai_message = Message(
+            session_id=session.id,
+            role=MessageRole.ASSISTANT.value,
+            content=ai_content,
+            step=current_step_enum.value,
+        )
+        db.add(ai_message)
 
         # 获取下一步
         next_step_enum = get_next_step(current_step_enum)

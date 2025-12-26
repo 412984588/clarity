@@ -7,6 +7,7 @@ from app.models.password_reset import PasswordResetToken
 from app.models.webhook_event import ProcessedWebhookEvent
 from app.models.step_history import StepHistory
 from app.models.analytics_event import AnalyticsEvent
+from app.models.message import Message
 
 __all__ = [
     "User",
@@ -19,4 +20,5 @@ __all__ = [
     "ProcessedWebhookEvent",
     "StepHistory",
     "AnalyticsEvent",
+    "Message",
 ]
