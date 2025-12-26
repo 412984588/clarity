@@ -1,11 +1,50 @@
 # 项目进度记录本
 
 **项目名称**: Solacore
-**最后更新**: 2025-12-25 14:45
+**最后更新**: 2025-12-25 18:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-25 18:30] - P1 httpOnly Cookies 认证系统完成 ✅
+
+**已完成**:
+- [x] **后端改造 (7 个端点)**
+  - `/auth/register`, `/auth/login`, `/auth/beta-login` - 设置 httpOnly cookies
+  - `/auth/refresh`, `/auth/oauth/google`, `/auth/oauth/apple` - 设置 httpOnly cookies
+  - `/auth/logout` - 清除 cookies
+  - `/auth/me` - 新增端点获取当前用户信息
+  - 新增 `set_auth_cookies()` 辅助函数
+  - 修改 auth 中间件优先从 cookie 读取 token（向后兼容 Authorization 头）
+
+- [x] **前端改造**
+  - `lib/api.ts`: 移除 localStorage 逻辑，启用 `withCredentials: true`
+  - `lib/auth.ts`: 改为异步调用 `/auth/me` API
+  - `AuthProvider.tsx`: 适配异步认证逻辑
+  - `login/page.tsx`: 修复 isAuthenticated 异步调用
+
+**安全提升**:
+- 🛡️ **XSS 防护**: httpOnly cookies 防止 JavaScript 访问
+- 🛡️ **CSRF 防护**: SameSite=lax 配置
+- 🛡️ **传输安全**: Secure flag (生产环境强制 HTTPS)
+- 🛡️ **生命周期管理**: 后端统一管理 cookies 过期时间
+
+**技术细节**:
+- Cookie 配置: `httponly=True, secure=!debug, samesite="lax"`
+- Access token: 1小时过期
+- Refresh token: 30天过期
+- 向后兼容: 仍支持 Authorization 头（方便 API 测试）
+
+**下一步计划**:
+- [ ] **测试所有认证流程**: Beta 登录、Email 注册/登录、Google OAuth、Token 刷新、登出
+- [ ] **合并到主分支**: 测试通过后合并
+- [ ] **P4 代码优化**: 重构 ChatInterface.tsx
+
+**提交记录**:
+- `aed3595` - feat(auth): 实现 httpOnly cookies 认证系统 (P1 安全优化)
+
+---
 
 ### [2025-12-25 17:00] - P2/P3 安全修复完成 ✅
 
