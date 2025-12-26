@@ -33,7 +33,17 @@ const getDeviceFingerprint = (): string => {
 
 // 请求拦截器：自动添加设备指纹
 api.interceptors.request.use((config) => {
-  config.headers["X-Device-Fingerprint"] = getDeviceFingerprint();
+  const fingerprint = getDeviceFingerprint();
+  config.headers["X-Device-Fingerprint"] = fingerprint;
+
+  if (process.env.NODE_ENV === "development") {
+    console.log("📤 [Request]", {
+      url: config.url,
+      method: config.method,
+      fingerprint,
+    });
+  }
+
   return config;
 });
 
@@ -58,12 +68,26 @@ const refreshTokens = async (): Promise<void> => {
 };
 
 const betaLogin = async (): Promise<void> => {
+  const fingerprint = getDeviceFingerprint();
+
+  if (process.env.NODE_ENV === "development") {
+    console.log("🔐 [Beta Login] 开始登录", {
+      fingerprint,
+      device_name: "Web Browser",
+      timestamp: new Date().toISOString(),
+    });
+  }
+
   // httpOnly cookies 模式：后端会自动设置 cookies，前端无需处理
   // 传递设备指纹，确保后续 API 调用可以识别该设备
   await api.post("/auth/beta-login", {
-    device_fingerprint: getDeviceFingerprint(),
+    device_fingerprint: fingerprint,
     device_name: "Web Browser",
   });
+
+  if (process.env.NODE_ENV === "development") {
+    console.log("✅ [Beta Login] 登录成功", { fingerprint });
+  }
 };
 
 api.interceptors.response.use(
@@ -123,4 +147,4 @@ api.interceptors.response.use(
   },
 );
 
-export { api, refreshTokens, betaLogin };
+export { api, refreshTokens, betaLogin, getDeviceFingerprint };

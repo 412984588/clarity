@@ -1,5 +1,5 @@
 import type { Message, Session, SolveStep } from "@/lib/types";
-import { api } from "@/lib/api";
+import { api, getDeviceFingerprint } from "@/lib/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -35,7 +35,21 @@ const resolveToken = (payload: unknown): string | null => {
 };
 
 export const createSession = async (): Promise<Session> => {
+  if (process.env.NODE_ENV === "development") {
+    console.log("🆕 [Create Session] 开始创建会话", {
+      fingerprint: getDeviceFingerprint(),
+      timestamp: new Date().toISOString(),
+    });
+  }
+
   const response = await api.post<Session>("/sessions");
+
+  if (process.env.NODE_ENV === "development") {
+    console.log("✅ [Create Session] 会话创建成功", {
+      sessionId: response.data.id,
+    });
+  }
+
   return response.data;
 };
 
@@ -66,11 +80,24 @@ export const sendMessage = async (
   content: string,
   handlers: StreamHandlers = {},
 ): Promise<Message | null> => {
+  const fingerprint = getDeviceFingerprint();
+
+  if (process.env.NODE_ENV === "development") {
+    console.log("💬 [Send Message] 发送消息", {
+      sessionId: id,
+      fingerprint,
+      contentLength: content.length,
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  // 🔧 修复：手动添加设备指纹到请求头（因为使用原生 fetch，不经过 axios 拦截器）
   const response = await fetch(`${API_BASE_URL}/sessions/${id}/message`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Accept: "text/event-stream",
+      "X-Device-Fingerprint": fingerprint, // ✅ 添加设备指纹
     },
     credentials: "include", // httpOnly cookies 模式：自动发送 cookies
     body: JSON.stringify({ content }),
@@ -78,6 +105,13 @@ export const sendMessage = async (
   });
 
   if (!response.ok) {
+    if (process.env.NODE_ENV === "development") {
+      console.error("❌ [Send Message] 请求失败", {
+        status: response.status,
+        statusText: response.statusText,
+        fingerprint,
+      });
+    }
     throw new Error("Failed to send message");
   }
 

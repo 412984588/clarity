@@ -1,11 +1,61 @@
 # 项目进度记录本
 
 **项目名称**: Solacore
-**最后更新**: 2025-12-26 11:10
+**最后更新**: 2025-12-26 14:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-26 14:30] - 🔧 修复用户清除 cookies 后的 403 错误 ✅
+
+**问题诊断**:
+- **现象**: 用户清除 cookies 后，sendMessage 请求返回 403 DEVICE_NOT_FOUND
+- **根因**: sendMessage 使用原生 fetch API，绕过 axios 拦截器，没有自动添加 `X-Device-Fingerprint` 请求头
+- **触发场景**: 清除 cookies、隐私模式、首次访问
+
+**修复方案**:
+1. **导出设备指纹函数** (`solacore-web/lib/api.ts`):
+   - 导出 `getDeviceFingerprint` 供其他模块使用
+   - 添加详细调试日志（仅开发环境）
+
+2. **修复 sendMessage** (`solacore-web/lib/session-api.ts`):
+   - 导入 `getDeviceFingerprint`
+   - 手动添加 `X-Device-Fingerprint` 请求头
+   - 添加发送消息调试日志
+
+**关键代码**:
+```typescript
+// session-api.ts
+const fingerprint = getDeviceFingerprint();
+const response = await fetch(..., {
+  headers: {
+    "X-Device-Fingerprint": fingerprint, // ✅ 修复
+    ...
+  },
+});
+```
+
+**验证结果**:
+- ✅ TypeScript 编译通过
+- ✅ ESLint 检查通过
+- ✅ 自动化验证脚本通过
+- ⏳ 待手动测试验证
+
+**相关文档**:
+- `FIX_SUMMARY.md` - 修复总结
+- `DIAGNOSIS_REPORT.md` - 详细诊断报告
+- `TEST_403_FIX.md` - 测试指南
+- `BACKEND_IMPROVEMENT_SUGGESTIONS.md` - 后端优化建议
+- `verify-fix.sh` - 自动化验证脚本
+
+**下一步**:
+- [ ] 手动测试验证
+- [ ] Git commit & push
+- [ ] 部署到测试环境
+- [ ] 后端优化（可选）
+
+---
 
 ### [2025-12-26 11:30] - 🚨 Gemini 审查修复 - 阻止登录页无限重定向 ✅
 
