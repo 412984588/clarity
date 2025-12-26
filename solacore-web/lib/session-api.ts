@@ -45,8 +45,9 @@ export const getSession = async (id: string): Promise<Session> => {
 };
 
 export const listSessions = async (): Promise<Session[]> => {
-  const response = await api.get<Session[]>("/sessions");
-  return response.data;
+  const response = await api.get<{ sessions: Session[] }>("/sessions");
+  // 后端返回 { sessions: [], total: 0, limit: 20, offset: 0 }
+  return response.data.sessions;
 };
 
 export const updateStep = async (
