@@ -15,7 +15,7 @@ export default function PrivacyPage() {
         </Button>
 
         <h1 className="mb-8 text-4xl font-bold">隐私政策</h1>
-        <p className="mb-8 text-muted-foreground">最后更新：2025 年 1 月</p>
+        <p className="mb-8 text-muted-foreground">最后更新：2025 年 12 月</p>
 
         <div className="prose prose-neutral max-w-none dark:prose-invert">
           <h2>1. 信息收集</h2>
