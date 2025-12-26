@@ -1,13 +1,14 @@
 from datetime import datetime
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
 from app.database import get_db
 from app.middleware.auth import get_current_user
+from app.middleware.rate_limit import limiter, SUBSCRIPTION_RATE_LIMIT
 from app.models.subscription import Subscription, Usage
 from app.models.user import User
 from app.schemas.subscription import (
@@ -71,7 +72,9 @@ async def _get_or_create_usage(
 
 
 @router.post("/checkout", response_model=CheckoutResponse)
+@limiter.limit(SUBSCRIPTION_RATE_LIMIT)
 async def create_checkout(
+    request: Request,
     data: CheckoutRequest,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -107,7 +110,9 @@ async def create_checkout(
 
 
 @router.get("/portal", response_model=PortalResponse)
+@limiter.limit(SUBSCRIPTION_RATE_LIMIT)
 async def get_portal(
+    request: Request,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -130,7 +135,9 @@ async def get_portal(
 
 
 @router.get("/current", response_model=SubscriptionResponse)
+@limiter.limit(SUBSCRIPTION_RATE_LIMIT)
 async def get_current_subscription(
+    request: Request,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -156,7 +163,9 @@ async def get_current_subscription(
 
 
 @router.get("/usage", response_model=UsageResponse)
+@limiter.limit(SUBSCRIPTION_RATE_LIMIT)
 async def get_usage(
+    request: Request,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):

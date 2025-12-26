@@ -1,13 +1,14 @@
 from datetime import datetime
 from typing import Any, Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.database import get_db
 from app.middleware.auth import get_current_user
+from app.middleware.rate_limit import limiter, DEFAULT_RATE_LIMIT
 from app.models.analytics_event import AnalyticsEvent
 from app.models.device import Device
 from app.models.session import ActiveSession
@@ -26,7 +27,9 @@ def _dt(value: object | None) -> Optional[str]:
 
 
 @router.get("/export")
+@limiter.limit(DEFAULT_RATE_LIMIT)
 async def export_account(
+    request: Request,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
@@ -167,7 +170,9 @@ async def export_account(
 
 
 @router.delete("", status_code=204)
+@limiter.limit(DEFAULT_RATE_LIMIT)
 async def delete_account(
+    request: Request,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> None:
