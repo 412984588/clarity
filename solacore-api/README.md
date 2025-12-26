@@ -83,3 +83,4 @@ poetry run pytest
 - `JWT_SECRET` - JWT 密钥
 - `HOST` - 服务器地址
 - `PORT` - 服务器端口
+# Auto-deploy test Fri Dec 26 17:39:43 EST 2025
