@@ -50,6 +50,24 @@
 > - **用户体验改进**: 首页改为 Landing Page，展示产品介绍，点击按钮才进入登录
 > - **教训**: 自动登录逻辑必须有防御性检查，避免重复生成 token
 
+> **坑4: 仍然无限刷新（API 401 拦截器 + Beta 自动登录）**
+> - **现象**: 即使添加防御性检查，页面仍然不停刷新
+> - **根因**: API 401 错误拦截器 + Beta 自动登录形成死循环（Gemini 深度分析）
+>   1. Dashboard 发起 API 请求 → 返回 401（token 无效/过期）
+>   2. API 拦截器清空 token → 重定向到 `/login`
+>   3. Login 页面检测 beta_mode → 自动 betaLogin 生成新 token
+>   4. 跳转回 `/dashboard` → 发起 API 请求
+>   5. 如果新 token 仍有问题 → 401 → 重定向 `/login`
+>   6. 死循环...
+> - **解决**: API 拦截器重定向时添加 `?cause=auth_error` 参数
+>   - Login 页面检测到此参数 → 跳过自动登录 → 显示登录界面
+>   - 中断死循环
+> - **技术细节**:
+>   - `lib/api.ts`: 401 重定向改为 `/login?cause=auth_error`
+>   - `login/page.tsx`: 检测 `searchParams.get("cause")` === "auth_error"
+>   - 使用 `useState(!isAuthError)` 避免 ESLint 警告
+> - **教训**: 自动登录 + API 拦截器需要协调机制，避免互相触发死循环
+
 **下一步**:
 - [ ] 用户在浏览器刷新页面测试 Beta 模式自动登录
 - [ ] 移动端测试 Beta 模式
@@ -59,6 +77,7 @@
 - `934981b` - fix(auth): 移除 beta-login 的速率限制
 - `013fd65` - fix(web): 修复 Beta 模式重定向循环问题
 - `32a0ec8` - feat(web): 改进用户体验 - Landing Page + 防御性登录检查
+- `182b2f9` - fix(web): 彻底解决无限刷新循环 - API 401 + Beta 自动登录
 
 ---
 
