@@ -3,18 +3,31 @@
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Chrome } from "lucide-react";
+import { Eye, EyeOff, LogIn } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { api, betaLogin } from "@/lib/api";
+import { api, betaLogin, getDeviceFingerprint } from "@/lib/api";
+
+interface LoginError {
+  response?: {
+    data?: {
+      detail?: string | { error?: string };
+    };
+  };
+}
 
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, refreshUser } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // 检查是否因认证错误重定向过来（防止无限循环）
@@ -43,8 +56,6 @@ function LoginContent() {
           try {
             // Beta 模式：自动登录
             await betaLogin();
-            // 🚨 关键修复：等待 refreshUser() 完成，确保用户状态加载完毕后再跳转
-            // 这样可以避免 ProtectedRoute 因为 loading=true 而卡住
             await refreshUser();
             router.replace("/dashboard");
             return;
@@ -61,7 +72,7 @@ function LoginContent() {
       }
     };
 
-    // 3. 如果 Context 里已经有 user 了，也直接跳
+    // 如果 Context 里已经有 user 了，直接跳转
     if (user) {
       router.replace(redirectPath);
       return;
@@ -74,25 +85,57 @@ function LoginContent() {
     };
   }, [router, user, refreshUser, redirectPath, isAuthError]);
 
-  const startGoogleLogin = () => {
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-    if (!clientId) {
-      setError("缺少 Google Client ID，请检查环境变量。");
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    // 验证邮箱格式
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("请输入有效的邮箱地址");
       return;
     }
 
-    const redirectUri = `${window.location.origin}/callback`;
-    const params = new URLSearchParams({
-      client_id: clientId,
-      redirect_uri: redirectUri,
-      response_type: "code",
-      scope: "openid email profile",
-      access_type: "offline",
-      prompt: "consent",
-      state: JSON.stringify({ redirect: redirectPath }),
-    });
+    if (!password) {
+      setError("请输入密码");
+      return;
+    }
 
-    window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+    setLoading(true);
+
+    try {
+      const fingerprint = getDeviceFingerprint();
+
+      await api.post("/auth/login", {
+        email,
+        password,
+        device_fingerprint: fingerprint,
+        device_name: "Web Browser",
+      });
+
+      // 登录成功后刷新用户状态并跳转
+      await refreshUser();
+      router.replace(redirectPath);
+    } catch (err) {
+      const loginError = err as LoginError;
+      const detail = loginError.response?.data?.detail;
+
+      if (typeof detail === "object" && detail?.error) {
+        if (detail.error === "INVALID_CREDENTIALS") {
+          setError("邮箱或密码错误");
+        } else if (detail.error === "DEVICE_LIMIT_REACHED") {
+          setError("设备数量已达上限，请先退出其他设备");
+        } else {
+          setError(detail.error);
+        }
+      } else if (typeof detail === "string") {
+        setError(detail);
+      } else {
+        setError("登录失败，请稍后重试");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (checkingBeta) {
@@ -185,33 +228,89 @@ function LoginContent() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="rounded-2xl border border-dashed px-4 py-6 text-sm text-muted-foreground">
-                登录后即可继续你的会话、查看进度，并解锁更深入的洞察。
-              </div>
-              <Button
-                type="button"
-                onClick={startGoogleLogin}
-                className="w-full"
-              >
-                <Chrome className="size-4" />
-                使用 Google 登录
-              </Button>
-              {error ? (
-                <p className="text-sm text-destructive">{error}</p>
-              ) : null}
-              <p className="text-center text-sm text-muted-foreground">
-                还没有账号？{" "}
-                <Link
-                  href="/register"
-                  className="font-medium text-foreground hover:underline"
-                >
-                  立即注册
-                </Link>
-              </p>
-              <p className="text-xs text-muted-foreground">
-                登录即表示你同意 Solacore 的服务条款与隐私政策。
-              </p>
+            <CardContent>
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="email" className="text-sm font-medium">
+                    邮箱地址
+                  </label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    disabled={loading}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="password" className="text-sm font-medium">
+                    密码
+                  </label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="输入密码"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      disabled={loading}
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="size-4" />
+                      ) : (
+                        <Eye className="size-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {error ? (
+                  <p className="text-sm text-destructive">{error}</p>
+                ) : null}
+
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? (
+                    <LoadingSpinner label="" />
+                  ) : (
+                    <>
+                      <LogIn className="size-4" />
+                      登录
+                    </>
+                  )}
+                </Button>
+
+                <p className="text-center text-sm text-muted-foreground">
+                  还没有账号？{" "}
+                  <Link
+                    href="/register"
+                    className="font-medium text-foreground hover:underline"
+                  >
+                    立即注册
+                  </Link>
+                </p>
+
+                <p className="text-xs text-muted-foreground">
+                  登录即表示你同意 Solacore 的
+                  <Link href="/terms" className="underline">
+                    服务条款
+                  </Link>
+                  与
+                  <Link href="/privacy" className="underline">
+                    隐私政策
+                  </Link>
+                  。
+                </p>
+              </form>
             </CardContent>
           </Card>
         </div>
