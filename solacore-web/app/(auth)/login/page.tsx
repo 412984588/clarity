@@ -34,15 +34,6 @@ function LoginContent() {
     let isActive = true;
 
     const checkBetaMode = async () => {
-      // 1. 防御性检查：如果已经验证通过（httpOnly cookies 模式）
-      // 直接刷新上下文并跳转，千万别再调 betaLogin 生成新 Token
-      const authenticated = await isAuthenticated();
-      if (authenticated) {
-        await refreshUser();
-        router.replace(redirectPath);
-        return;
-      }
-
       try {
         const response = await api.get<{ beta_mode: boolean }>(
           "/auth/config/features",
@@ -50,7 +41,7 @@ function LoginContent() {
 
         if (response.data.beta_mode) {
           try {
-            // 2. 确实没登录，才执行自动登录
+            // Beta 模式：自动登录
             await betaLogin();
             await refreshUser();
             router.replace("/dashboard");
