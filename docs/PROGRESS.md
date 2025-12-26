@@ -1,11 +1,47 @@
 # 项目进度记录本
 
 **项目名称**: Solacore
-**最后更新**: 2025-12-25 19:00
+**最后更新**: 2025-12-26 11:10
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-26 11:10] - 修复 Beta 登录死循环问题 ✅
+
+**问题诊断**:
+- betaLogin() 成功设置 httpOnly cookies
+- 但 refreshUser() 中的 isAuthenticated() 调用 /auth/me 仍返回 401
+- 401 拦截器重定向到 /login?cause=auth_error，导致死循环
+
+**解决方案**:
+1. **AuthProvider.tsx**:
+   - 移除 refreshUser() 中的 isAuthenticated() 检查
+   - 直接尝试 getCurrentUser()，失败再尝试 refreshToken()
+   - 简化错误处理逻辑
+
+2. **login/page.tsx**:
+   - Beta 登录成功后直接跳转，不调用 refreshUser()
+   - AuthProvider 会在页面加载后自动调用 refreshUser()
+   - 移除未使用的 isAuthenticated 导入
+
+3. **api.ts**:
+   - 移除 betaLogin() 中的调试日志
+
+4. **后端代码格式化** (ruff auto-fix):
+   - logging_config.py: 长行自动换行
+   - auth.py: 移除未使用的导入
+
+**测试说明**:
+- 清除浏览器 cookies
+- 访问 http://localhost:3000
+- 应该自动进入 /dashboard
+- 无 401 错误
+
+**提交记录**:
+- `273ef9e` - fix(web): 修复 Beta 登录死循环问题
+
+---
 
 ### [2025-12-25 19:00] - P4 代码质量优化完成 ✅
 
