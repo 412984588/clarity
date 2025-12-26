@@ -44,19 +44,15 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 def get_cors_origins() -> list[str]:
     """获取 CORS 白名单"""
-    if settings.debug:
-        # Debug 模式：必须指定具体域名，因为 allow_credentials=True 时不能用 "*"
-        return [
-            "http://localhost:3000",
-            "http://localhost:8000",
-            "http://127.0.0.1:3000",
-            "http://127.0.0.1:8000",
-        ]
-
-    origins = []
+    origins = [
+        "http://localhost:3000",
+        "http://localhost:8000",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:8000",
+    ]
 
     # 使用 frontend_url
-    if settings.frontend_url and "localhost" not in settings.frontend_url:
+    if settings.frontend_url:
         origins.append(settings.frontend_url)
 
     # 使用 cors_allowed_origins
@@ -64,10 +60,6 @@ def get_cors_origins() -> list[str]:
         origins.extend(
             o.strip() for o in settings.cors_allowed_origins.split(",") if o.strip()
         )
-
-    # 兜底：至少允许本地开发
-    if not origins:
-        origins = ["http://localhost:3000", "http://localhost:8000"]
 
     return origins
 
