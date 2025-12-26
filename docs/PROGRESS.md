@@ -7,6 +7,120 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2025-12-25 17:00] - P2/P3 安全修复完成 ✅
+
+**已修复**:
+- [x] **P2 - Rate Limiting 配置完善**
+  - account.py: `/export`, `/delete` (60/minute)
+  - subscriptions.py: `/checkout`, `/portal`, `/current`, `/usage` (30/minute)
+  - config.py: `/features` (60/minute)
+  - 导入必要的模块: `Request`, `limiter`, `DEFAULT_RATE_LIMIT`, `SUBSCRIPTION_RATE_LIMIT`
+
+- [x] **P3 - 日志脱敏**
+  - 新增 `redact_sensitive_data()` processor
+  - 脱敏字段: password, token, access_token, refresh_token, api_key, secret, authorization 等
+  - 脱敏模式:
+    - JWT token (eyJ 开头): `***JWT_REDACTED***`
+    - API keys (sk_live_, pk_test_ 等): `***API_KEY_REDACTED***`
+    - Bearer token: `Bearer ***REDACTED***`
+  - 集成到 structlog processors pipeline
+
+**技术细节**:
+- 使用 slowapi 的 decorator 方式（而非 SlowAPIMiddleware）
+- 每个端点根据功能选择合适的限流规则
+- 日志脱敏使用正则表达式匹配敏感模式
+
+**下一步计划**:
+- [ ] **P1 安全修复**: localStorage → httpOnly cookies（认证系统重构）
+  - 改动范围: 后端 6 个端点 + 前端整个认证系统
+  - 建议使用 git worktree 隔离开发
+  - 需要充分测试所有认证流程
+  - 预计工作量: 2-3天
+
+**提交记录**:
+- `fe13a70` - fix(security): P2/P3 安全加固 - 限流配置 + 日志脱敏
+
+---
+
+### [2025-12-25 16:30] - 三AI协作全面审核 🔍
+
+**审核范围**:
+- [x] Codex: 后端测试检查（pytest, mypy, ruff）
+- [x] Codex: 前端代码检查（ESLint, TypeScript）
+- [x] Gemini: 后端安全性和质量审核
+- [x] Gemini: 前端安全性、性能和代码质量审核
+
+**Codex 发现的问题**:
+> **后端测试**:
+> - ❌ 网络限制导致无法安装 pytest/mypy/ruff 依赖
+> - ✅ 建议: 本地手动运行 `pytest` 进行完整测试
+
+> **前端检查**:
+> - ✅ ESLint: 无 warnings/errors（代码规范良好）
+> - ❌ TypeScript: 只读沙箱导致无法写入 tsbuildinfo
+> - ❌ npm audit: 网络限制无法获取安全漏洞列表
+> - ✅ 建议: 本地运行 `npx tsc --noEmit` 和 `npm audit`
+
+**Gemini 发现的问题**:
+
+> **后端审核结果** (app/main.py, app/middleware/rate_limit.py):
+> - ⚠️ **Medium**: Rate Limiting 配置正确但覆盖不全
+>   - ✅ 已配置: auth.py (register, login), sessions.py (create_session, stream_messages)
+>   - ❌ 未配置: account.py, webhooks.py, subscriptions.py, config.py
+>   - 建议: 为其他路由添加适当的限流 decorator
+> - ✅ **Good**: JWT/OAuth 实现正确，密码哈希使用 bcrypt
+> - ✅ **Good**: Webhook 签名验证已实现（Stripe, RevenueCat）
+> - 💡 **Suggestion**: 添加日志脱敏（密码、token 等敏感信息）
+
+> **前端审核结果** (solacore-web):
+> - 🔴 **Critical**: localStorage 存储 JWT Token → **XSS 风险**
+>   - **问题**: `lib/api.ts` 中 `readTokens()`/`writeTokens()` 使用 localStorage
+>   - **风险**: 任何恶意脚本都可以读取 localStorage 窃取用户 session
+>   - **建议**: 改用 **httpOnly cookies**（需要后端配合设置 Set-Cookie）
+>   - **影响范围**: 整个认证系统需要重构
+>   - **优先级**: High（但改动较大，需要规划）
+> - ⚠️ **Medium**: ChatInterface.tsx 组件过于复杂
+>   - **问题**: UI 渲染 + API streaming 逻辑混在一起
+>   - **建议**: 提取 `useChatStream` 自定义 Hook
+>   - **优先级**: Low（代码质量问题，不影响功能）
+> - ✅ **Good**: TypeScript 类型安全优秀（无 any, 无 @ts-ignore）
+> - ✅ **Good**: Next.js 优化配置正确（lucide-react, bundle-analyzer）
+> - ✅ **Good**: react-markdown 默认安全（自动转义 HTML）
+
+**遇到的坑**:
+> **环境限制导致部分检查失败**
+> - **现象**: Codex 无法完成后端测试和前端 npm audit
+> - **原因**: 沙箱网络限制 + 只读文件系统
+> - **解决**: 记录问题，建议本地手动执行
+> - **教训**: 自动化工具在受限环境下有局限性
+
+**安全风险评估**:
+| 问题 | 严重程度 | 影响范围 | 优先级 |
+|------|---------|---------|--------|
+| localStorage 存储 Token | Critical | 整个认证系统 | P1 |
+| 部分路由缺少限流 | Medium | API 滥用风险 | P2 |
+| 日志可能包含敏感信息 | Low | 隐私合规 | P3 |
+| ChatInterface 复杂度高 | Low | 代码维护性 | P4 |
+
+**下一步**:
+- [ ] **P1 安全修复**: 规划认证系统重构（localStorage → httpOnly cookies）
+  - 需要前后端协作（后端设置 Set-Cookie, 前端移除 localStorage）
+  - 评估改动范围和测试工作量
+  - 预计工作量: 2-3天
+- [ ] **P2 安全加固**: 为其他路由添加限流配置
+  - account.py: `@limiter.limit(DEFAULT_RATE_LIMIT)`
+  - webhooks.py: 考虑是否需要（通常 webhook 由服务商调用）
+  - subscriptions.py: `@limiter.limit(SUBSCRIPTION_RATE_LIMIT)`
+  - config.py: `@limiter.limit(DEFAULT_RATE_LIMIT)`
+- [ ] **P3 日志安全**: 添加敏感信息脱敏（密码、token、API keys）
+- [ ] **P4 代码重构**: 提取 useChatStream hook（优先级低）
+- [ ] 本地手动测试: pytest, mypy, ruff, tsc, npm audit
+
+**提交记录**:
+- (无新提交 - 仅审核和记录问题)
+
+---
+
 ### [2025-12-25 15:30] - Beta 模式免登录功能 🎯
 
 **核心功能**:
