@@ -16,20 +16,22 @@ function LoginContent() {
   const searchParams = useSearchParams();
   const { user, refreshUser } = useAuth();
   const [error, setError] = useState<string | null>(null);
-  const [checkingBeta, setCheckingBeta] = useState(true);
+
+  // 检查是否因认证错误重定向过来（防止无限循环）
+  const isAuthError = searchParams.get("cause") === "auth_error";
+  const [checkingBeta, setCheckingBeta] = useState(!isAuthError);
 
   const redirectPath = useMemo(() => {
     return searchParams.get("redirect") || "/dashboard";
   }, [searchParams]);
 
   useEffect(() => {
-    let isActive = true;
-
-    // 防止无限循环：如果是因认证错误重定向回来的，终止自动登录逻辑
-    if (searchParams.get("cause") === "auth_error") {
-      setCheckingBeta(false);
+    // 如果是认证错误，直接跳过自动登录
+    if (isAuthError) {
       return;
     }
+
+    let isActive = true;
 
     const checkBetaMode = async () => {
       // 1. 防御性检查：如果本地已经验证通过（LocalStorage 有 Token 且未过期）
@@ -76,7 +78,7 @@ function LoginContent() {
     return () => {
       isActive = false;
     };
-  }, [router, user, refreshUser, redirectPath, searchParams]);
+  }, [router, user, refreshUser, redirectPath, isAuthError]);
 
   const startGoogleLogin = () => {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
