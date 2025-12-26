@@ -99,7 +99,12 @@ export function ChatInterface({
                   <p>{message.content}</p>
                 ) : (
                   <div className="prose prose-sm max-w-none text-foreground">
-                    <ReactMarkdown>{message.content || "..."}</ReactMarkdown>
+                    <ReactMarkdown>
+                      {(message.content || "...").replace(
+                        /\n?NEXT_STEP:\s*\w+\s*$/i,
+                        "",
+                      )}
+                    </ReactMarkdown>
                   </div>
                 )}
               </div>
