@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { Chrome } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -157,6 +158,15 @@ function LoginContent() {
               {error ? (
                 <p className="text-sm text-destructive">{error}</p>
               ) : null}
+              <p className="text-center text-sm text-muted-foreground">
+                还没有账号？{" "}
+                <Link
+                  href="/register"
+                  className="font-medium text-foreground hover:underline"
+                >
+                  立即注册
+                </Link>
+              </p>
               <p className="text-xs text-muted-foreground">
                 登录即表示你同意 Solacore 的服务条款与隐私政策。
               </p>

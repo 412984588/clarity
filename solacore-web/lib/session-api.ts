@@ -37,9 +37,11 @@ const resolveToken = (payload: unknown): string | null => {
 // 后端 SessionCreateResponse 返回 session_id，需要映射到 id
 interface CreateSessionResponse {
   session_id: string;
+  user_id: string;
   status: string;
   current_step: string;
   created_at: string;
+  updated_at: string;
 }
 
 export const createSession = async (): Promise<Session> => {
@@ -55,9 +57,11 @@ export const createSession = async (): Promise<Session> => {
   // 映射后端字段到前端 Session 类型
   const session: Session = {
     id: response.data.session_id,
-    status: response.data.status,
+    user_id: response.data.user_id,
+    status: response.data.status as Session["status"],
     current_step: response.data.current_step as Session["current_step"],
     created_at: response.data.created_at,
+    updated_at: response.data.updated_at,
     messages: [], // 新创建的会话没有消息
   };
 
