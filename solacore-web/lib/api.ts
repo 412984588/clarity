@@ -59,7 +59,11 @@ const refreshTokens = async (): Promise<void> => {
 
 const betaLogin = async (): Promise<void> => {
   // httpOnly cookies 模式：后端会自动设置 cookies，前端无需处理
-  await api.post("/auth/beta-login");
+  // 传递设备指纹，确保后续 API 调用可以识别该设备
+  await api.post("/auth/beta-login", {
+    device_fingerprint: getDeviceFingerprint(),
+    device_name: "Web Browser",
+  });
 };
 
 api.interceptors.response.use(
