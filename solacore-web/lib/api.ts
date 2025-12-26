@@ -67,11 +67,14 @@ api.interceptors.response.use(
       } catch (refreshError) {
         // refresh 失败，清除 cookies 并跳转登录页
         if (isBrowser) {
-          // httpOnly cookies 由后端管理，前端调用 /auth/logout 清除
-          await api.post("/auth/logout").catch(() => {
-            // 忽略 logout 错误
-          });
-          window.location.href = "/login?cause=auth_error";
+          // 🚨 Gemini 修复：如果已经在登录页，不要再重定向，避免无限循环
+          if (!window.location.pathname.startsWith("/login")) {
+            // httpOnly cookies 由后端管理，前端调用 /auth/logout 清除
+            await api.post("/auth/logout").catch(() => {
+              // 忽略 logout 错误
+            });
+            window.location.href = "/login?cause=auth_error";
+          }
         }
         return Promise.reject(refreshError);
       }
@@ -80,11 +83,14 @@ api.interceptors.response.use(
     // 其他 401 错误：清除 cookies 并跳转登录页
     if (status === 401) {
       if (isBrowser) {
-        // httpOnly cookies 由后端管理，前端调用 /auth/logout 清除
-        await api.post("/auth/logout").catch(() => {
-          // 忽略 logout 错误
-        });
-        window.location.href = "/login?cause=auth_error";
+        // 🚨 Gemini 修复：如果已经在登录页，不要再重定向，避免无限循环
+        if (!window.location.pathname.startsWith("/login")) {
+          // httpOnly cookies 由后端管理，前端调用 /auth/logout 清除
+          await api.post("/auth/logout").catch(() => {
+            // 忽略 logout 错误
+          });
+          window.location.href = "/login?cause=auth_error";
+        }
       }
     }
 
