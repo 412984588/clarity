@@ -18,7 +18,7 @@ export function HeroSection() {
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out">
           <div className="inline-flex items-center rounded-full border bg-background/50 px-3 py-1 text-sm text-muted-foreground backdrop-blur-sm">
             <Sparkles className="mr-2 size-3.5 text-amber-500" />
-            <span>AI 驱动的情绪梳理助手</span>
+            <span>Solacore 情绪梳理助手</span>
           </div>
         </div>
 
