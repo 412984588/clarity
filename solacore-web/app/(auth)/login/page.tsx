@@ -25,6 +25,12 @@ function LoginContent() {
   useEffect(() => {
     let isActive = true;
 
+    // 防止无限循环：如果是因认证错误重定向回来的，终止自动登录逻辑
+    if (searchParams.get("cause") === "auth_error") {
+      setCheckingBeta(false);
+      return;
+    }
+
     const checkBetaMode = async () => {
       // 1. 防御性检查：如果本地已经验证通过（LocalStorage 有 Token 且未过期）
       // 直接刷新上下文并跳转，千万别再调 betaLogin 生成新 Token
@@ -70,7 +76,7 @@ function LoginContent() {
     return () => {
       isActive = false;
     };
-  }, [router, user, refreshUser, redirectPath]);
+  }, [router, user, refreshUser, redirectPath, searchParams]);
 
   const startGoogleLogin = () => {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;

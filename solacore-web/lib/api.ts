@@ -127,7 +127,7 @@ api.interceptors.response.use(
       } catch (refreshError) {
         clearTokens();
         if (isBrowser) {
-          window.location.href = "/login";
+          window.location.href = "/login?cause=auth_error";
         }
         return Promise.reject(refreshError);
       }
@@ -136,7 +136,7 @@ api.interceptors.response.use(
     if (status === 401) {
       clearTokens();
       if (isBrowser) {
-        window.location.href = "/login";
+        window.location.href = "/login?cause=auth_error";
       }
     }
 

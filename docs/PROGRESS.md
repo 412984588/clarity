@@ -12,6 +12,8 @@
 **核心功能**:
 - [x] 后端: `/auth/beta-login` 端点（自动创建 beta-tester@solacore.app）
 - [x] Web: 检测 beta_mode 自动登录并跳转 /dashboard
+- [x] Web: Landing Page（首页产品介绍）
+- [x] Web: 防御性登录检查（避免重复 betaLogin）
 - [x] Mobile: authStore 集成 betaLogin()
 - [x] 环境变量: BETA_MODE=true, PAYMENTS_ENABLED=false
 
@@ -34,6 +36,20 @@
 > - **分析**: Gemini 深度分析确认是竞态条件
 > - **教训**: localStorage 变化不会触发 React 状态更新，必须手动刷新
 
+> **坑3: 页面不停刷新（重复调用 betaLogin）**
+> - **现象**: 即使添加 refreshUser 后，页面仍然不停刷新
+> - **根因**: Login 页面每次加载都重新调用 betaLogin()，生成新 token
+>   - Dashboard 重定向到 Login（ProtectedRoute 误判）
+>   - Login 强行 betaLogin 生成新 token
+>   - 跳转回 Dashboard → 状态未同步 → 再次重定向
+>   - 死循环...
+> - **解决**: 添加防御性检查（Gemini 方案）
+>   1. 进入 Login 页面先检查 `isAuthenticated()`
+>   2. 如果 localStorage 已有有效 token，直接 refreshUser + 跳转
+>   3. 只有真正未登录时才调用 betaLogin()
+> - **用户体验改进**: 首页改为 Landing Page，展示产品介绍，点击按钮才进入登录
+> - **教训**: 自动登录逻辑必须有防御性检查，避免重复生成 token
+
 **下一步**:
 - [ ] 用户在浏览器刷新页面测试 Beta 模式自动登录
 - [ ] 移动端测试 Beta 模式
@@ -42,6 +58,7 @@
 - `39e34ff` - feat: Beta 模式免登录功能
 - `934981b` - fix(auth): 移除 beta-login 的速率限制
 - `013fd65` - fix(web): 修复 Beta 模式重定向循环问题
+- `32a0ec8` - feat(web): 改进用户体验 - Landing Page + 防御性登录检查
 
 ---
 
