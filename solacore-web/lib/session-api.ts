@@ -1,5 +1,5 @@
 import type { Message, Session, SolveStep } from "@/lib/types";
-import { api, getStoredTokens } from "@/lib/api";
+import { api } from "@/lib/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -14,16 +14,6 @@ const createLocalId = (): string => {
     return crypto.randomUUID();
   }
   return `local-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-};
-
-const getAuthHeaders = (): HeadersInit => {
-  const stored = getStoredTokens();
-  const token = stored?.access_token;
-  if (!token) {
-    return {};
-  }
-  const tokenType = stored?.token_type ?? "Bearer";
-  return { Authorization: `${tokenType} ${token}` };
 };
 
 const resolveToken = (payload: unknown): string | null => {
@@ -80,8 +70,8 @@ export const sendMessage = async (
     headers: {
       "Content-Type": "application/json",
       Accept: "text/event-stream",
-      ...getAuthHeaders(),
     },
+    credentials: "include", // httpOnly cookies 模式：自动发送 cookies
     body: JSON.stringify({ content }),
     signal: handlers.signal,
   });
