@@ -3,13 +3,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { SendHorizontal } from "lucide-react";
-import { toast } from "sonner";
 
 import type { Message, SolveStep } from "@/lib/types";
-import { sendMessage } from "@/lib/session-api";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useChatStream } from "@/hooks/useChatStream";
 
 interface ChatInterfaceProps {
   sessionId: string;
@@ -20,13 +19,6 @@ interface ChatInterfaceProps {
   onStreamComplete?: () => void;
 }
 
-const createLocalId = (): string => {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
-    return crypto.randomUUID();
-  }
-  return `local-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-};
-
 export function ChatInterface({
   sessionId,
   initialMessages = [],
@@ -35,14 +27,18 @@ export function ChatInterface({
   className,
   onStreamComplete,
 }: ChatInterfaceProps) {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState("");
-  const [sending, setSending] = useState(false);
   const bottomRef = useRef<HTMLDivElement | null>(null);
+
+  const { messages, sending, handleSend, setMessages } = useChatStream({
+    sessionId,
+    currentStep,
+    onStreamComplete,
+  });
 
   useEffect(() => {
     setMessages(initialMessages);
-  }, [initialMessages, sessionId]);
+  }, [initialMessages, sessionId, setMessages]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -52,66 +48,14 @@ export function ChatInterface({
     return `${messages.length} 条消息`;
   }, [messages.length]);
 
-  const handleSend = async () => {
+  const onSendClick = async () => {
     if (!input.trim() || sending || readonly) {
       return;
     }
 
     const trimmed = input.trim();
-    const createdAt = new Date().toISOString();
-    const userMessage: Message = {
-      id: createLocalId(),
-      role: "user",
-      content: trimmed,
-      step: currentStep,
-      created_at: createdAt,
-    };
-    const assistantId = createLocalId();
-    const assistantMessage: Message = {
-      id: assistantId,
-      role: "assistant",
-      content: "",
-      step: currentStep,
-      created_at: createdAt,
-    };
-
-    setMessages((prev) => [...prev, userMessage, assistantMessage]);
     setInput("");
-    setSending(true);
-
-    let aggregated = "";
-
-    try {
-      const finalMessage = await sendMessage(sessionId, trimmed, {
-        onToken: (token) => {
-          aggregated += token;
-          setMessages((prev) =>
-            prev.map((message) =>
-              message.id === assistantId
-                ? { ...message, content: aggregated }
-                : message,
-            ),
-          );
-        },
-        onMessage: (message) => {
-          setMessages((prev) =>
-            prev.map((item) => (item.id === assistantId ? message : item)),
-          );
-        },
-      });
-
-      if (finalMessage) {
-        setMessages((prev) =>
-          prev.map((item) => (item.id === assistantId ? finalMessage : item)),
-        );
-      }
-    } catch (err) {
-      setMessages((prev) => prev.filter((item) => item.id !== assistantId));
-      toast.error(err instanceof Error ? err.message : "发送失败");
-    } finally {
-      setSending(false);
-      onStreamComplete?.();
-    }
+    await handleSend(trimmed);
   };
 
   return (
@@ -173,7 +117,7 @@ export function ChatInterface({
             />
             <Button
               type="button"
-              onClick={handleSend}
+              onClick={onSendClick}
               className="md:w-32"
               disabled={sending || !input.trim()}
             >
