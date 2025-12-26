@@ -1,79 +1,56 @@
-import { jwtDecode } from "jwt-decode";
+import type { User } from "@/lib/types";
+import { api, refreshTokens } from "@/lib/api";
 
-import type { AuthTokens, User } from "@/lib/types";
-import {
-  api,
-  clearStoredTokens,
-  getStoredTokens,
-  refreshTokens,
-  setStoredTokens,
-} from "@/lib/api";
-
-interface TokenPayload {
-  sub?: string;
-  user_id?: string;
-  email?: string;
-  name?: string;
-  picture?: string;
-  subscription_tier?: "free" | "standard" | "pro";
-  created_at?: string;
-  exp?: number;
+interface UserResponse {
+  id: string;
+  email: string;
+  auth_provider: string;
+  locale: string;
 }
 
-export const login = async (googleToken: string): Promise<AuthTokens> => {
-  const response = await api.post<AuthTokens>("/auth/login/google", {
+export const login = async (googleToken: string): Promise<void> => {
+  // httpOnly cookies 模式：后端会自动设置 cookies，前端无需处理
+  await api.post("/auth/login/google", {
     token: googleToken,
     code: googleToken,
   });
-  setStoredTokens(response.data);
-  return response.data;
 };
 
-export const logout = (): void => {
-  clearStoredTokens();
+export const logout = async (): Promise<void> => {
+  // httpOnly cookies 模式：调用后端 logout 清除 cookies
+  await api.post("/auth/logout");
 };
 
-export const getCurrentUser = (): User | null => {
-  const token = getStoredTokens()?.access_token;
-  if (!token) {
-    return null;
-  }
-
+export const getCurrentUser = async (): Promise<User | null> => {
   try {
-    const payload = jwtDecode<TokenPayload>(token);
-    const id = payload.sub ?? payload.user_id ?? "";
+    // httpOnly cookies 模式：调用 /auth/me API 获取当前用户
+    const response = await api.get<UserResponse>("/auth/me");
+    const data = response.data;
 
     return {
-      id,
-      email: payload.email ?? "",
-      name: payload.name ?? "",
-      picture: payload.picture,
-      subscription_tier: payload.subscription_tier ?? "free",
-      created_at: payload.created_at ?? new Date().toISOString(),
+      id: data.id,
+      email: data.email,
+      name: data.email.split("@")[0], // 临时从 email 生成 name
+      picture: undefined,
+      subscription_tier: "free", // 后续从后端获取
+      created_at: new Date().toISOString(),
     };
   } catch {
     return null;
   }
 };
 
-export const isAuthenticated = (): boolean => {
-  const token = getStoredTokens()?.access_token;
-  if (!token) {
-    return false;
-  }
-
+export const isAuthenticated = async (): Promise<boolean> => {
   try {
-    const payload = jwtDecode<TokenPayload>(token);
-    if (!payload.exp) {
-      return true;
-    }
-    return payload.exp * 1000 > Date.now();
+    // httpOnly cookies 模式：调用 /auth/me API 验证登录状态
+    await api.get("/auth/me");
+    return true;
   } catch {
     return false;
   }
 };
 
-export const refreshToken = async (): Promise<AuthTokens> => {
-  const tokens = await refreshTokens();
-  return tokens;
+export const refreshToken = async (): Promise<void> => {
+  // httpOnly cookies 模式：调用 refresh API，cookies 会自动更新
+  await refreshTokens();
 };

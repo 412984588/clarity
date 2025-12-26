@@ -2,7 +2,7 @@ from app.utils.datetime_utils import utc_now
 from typing import Optional
 from uuid import UUID
 
-from fastapi import Depends, Header, HTTPException
+from fastapi import Depends, Header, HTTPException, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -13,15 +13,24 @@ from app.utils.security import decode_token
 
 
 async def get_current_user(
+    request: Request,
     token: Optional[str] = Header(None, alias="Authorization"),
     db: AsyncSession = Depends(get_db),
 ) -> User:
-    """从 Authorization header 获取当前用户"""
-    if not token:
-        raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"})
+    """从 httpOnly cookie 或 Authorization header 获取当前用户"""
+    # 优先从 cookie 读取 access_token (httpOnly cookies 模式)
+    access_token = request.cookies.get("access_token")
 
-    if token.startswith("Bearer "):
-        token = token.split(" ", 1)[1]
+    # 如果 cookie 没有，尝试从 Authorization 头读取（向后兼容）
+    if not access_token:
+        if not token:
+            raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"})
+        if token.startswith("Bearer "):
+            access_token = token.split(" ", 1)[1]
+        else:
+            access_token = token
+
+    token = access_token
 
     payload = decode_token(token)
     if not payload or payload.get("type") != "access":

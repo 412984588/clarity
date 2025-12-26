@@ -5,7 +5,7 @@ import logging
 import secrets
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Header, Request
+from fastapi import APIRouter, Depends, HTTPException, Header, Request, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete, func
 from sqlalchemy.orm import selectinload
@@ -27,6 +27,8 @@ from app.schemas.auth import (
     LoginRequest,
     BetaLoginRequest,
     TokenResponse,
+    AuthSuccessResponse,
+    UserResponse,
     RefreshRequest,
     OAuthRequest,
     ForgotPasswordRequest,
@@ -40,16 +42,54 @@ settings = get_settings()
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@router.post("/register", response_model=TokenResponse, status_code=201)
+def set_auth_cookies(response: Response, access_token: str, refresh_token: str) -> None:
+    """设置认证 cookies (httpOnly, Secure, SameSite)"""
+    cookie_config = {
+        "httponly": True,  # 防止 JavaScript 访问
+        "secure": not settings.debug,  # 生产环境强制 HTTPS
+        "samesite": "lax",  # CSRF 保护
+    }
+
+    # Access token cookie (1小时过期)
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        max_age=3600,  # 1 hour
+        **cookie_config,
+    )
+
+    # Refresh token cookie (30天过期)
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        max_age=30 * 24 * 3600,  # 30 days
+        **cookie_config,
+    )
+
+
+@router.post("/register", response_model=AuthSuccessResponse, status_code=201)
 @limiter.limit(AUTH_RATE_LIMIT)
 async def register(
-    request: Request, data: RegisterRequest, db: AsyncSession = Depends(get_db)
+    request: Request,
+    response: Response,
+    data: RegisterRequest,
+    db: AsyncSession = Depends(get_db),
 ):
-    """注册新用户"""
+    """注册新用户 (httpOnly cookies 模式)"""
     service = AuthService(db)
     try:
-        _, tokens = await service.register(data)
-        return tokens
+        user, tokens = await service.register(data)
+        # 设置 httpOnly cookies
+        set_auth_cookies(response, tokens.access_token, tokens.refresh_token)
+        # 返回用户信息（不包含 token）
+        return AuthSuccessResponse(
+            user=UserResponse(
+                id=user.id,
+                email=user.email,
+                auth_provider=user.auth_provider,
+                locale=user.locale,
+            )
+        )
     except ValueError as e:
         error_code = str(e)
         if error_code == "EMAIL_ALREADY_EXISTS":
@@ -57,16 +97,29 @@ async def register(
         raise HTTPException(status_code=400, detail={"error": error_code})
 
 
-@router.post("/login", response_model=TokenResponse)
+@router.post("/login", response_model=AuthSuccessResponse)
 @limiter.limit(AUTH_RATE_LIMIT)
 async def login(
-    request: Request, data: LoginRequest, db: AsyncSession = Depends(get_db)
+    request: Request,
+    response: Response,
+    data: LoginRequest,
+    db: AsyncSession = Depends(get_db),
 ):
-    """邮箱登录"""
+    """邮箱登录 (httpOnly cookies 模式)"""
     service = AuthService(db)
     try:
-        _, tokens = await service.login(data)
-        return tokens
+        user, tokens = await service.login(data)
+        # 设置 httpOnly cookies
+        set_auth_cookies(response, tokens.access_token, tokens.refresh_token)
+        # 返回用户信息（不包含 token）
+        return AuthSuccessResponse(
+            user=UserResponse(
+                id=user.id,
+                email=user.email,
+                auth_provider=user.auth_provider,
+                locale=user.locale,
+            )
+        )
     except ValueError as e:
         error_code = str(e)
         if error_code == "INVALID_CREDENTIALS":
@@ -78,8 +131,9 @@ async def login(
         raise HTTPException(status_code=400, detail={"error": error_code})
 
 
-@router.post("/beta-login", response_model=TokenResponse)
+@router.post("/beta-login", response_model=AuthSuccessResponse)
 async def beta_login(
+    response: Response,
     data: BetaLoginRequest | None = None,
     db: AsyncSession = Depends(get_db),
 ):
@@ -138,16 +192,56 @@ async def beta_login(
         raise HTTPException(status_code=400, detail={"error": error_code})
 
     await db.commit()
-    return tokens
+    # 设置 httpOnly cookies
+    set_auth_cookies(response, tokens.access_token, tokens.refresh_token)
+    # 返回用户信息（不包含 token）
+    return AuthSuccessResponse(
+        user=UserResponse(
+            id=user.id,
+            email=user.email,
+            auth_provider=user.auth_provider,
+            locale=user.locale,
+        )
+    )
 
 
-@router.post("/refresh", response_model=TokenResponse)
-async def refresh(data: RefreshRequest, db: AsyncSession = Depends(get_db)):
-    """刷新 access token"""
+@router.post("/refresh", response_model=AuthSuccessResponse)
+async def refresh(
+    request: Request,
+    response: Response,
+    db: AsyncSession = Depends(get_db),
+):
+    """刷新 access token (httpOnly cookies 模式)"""
+    # 从 cookie 读取 refresh_token
+    refresh_token = request.cookies.get("refresh_token")
+    if not refresh_token:
+        raise HTTPException(status_code=401, detail={"error": "MISSING_REFRESH_TOKEN"})
+
     service = AuthService(db)
     try:
-        tokens = await service.refresh_token(data.refresh_token)
-        return tokens
+        tokens = await service.refresh_token(refresh_token)
+        # 获取用户信息
+        payload = decode_token(tokens.access_token)
+        if not payload:
+            raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"})
+
+        user_id = payload.get("sub")
+        result = await db.execute(select(User).where(User.id == user_id))
+        user = result.scalar_one_or_none()
+        if not user:
+            raise HTTPException(status_code=404, detail={"error": "USER_NOT_FOUND"})
+
+        # 设置 httpOnly cookies
+        set_auth_cookies(response, tokens.access_token, tokens.refresh_token)
+        # 返回用户信息（不包含 token）
+        return AuthSuccessResponse(
+            user=UserResponse(
+                id=user.id,
+                email=user.email,
+                auth_provider=user.auth_provider,
+                locale=user.locale,
+            )
+        )
     except ValueError as e:
         error_code = str(e)
         if error_code == "INVALID_TOKEN":
@@ -229,16 +323,24 @@ async def reset_password(
 
 @router.post("/logout", status_code=204)
 async def logout(
-    token: str | None = Header(None, alias="Authorization"),
+    response: Response,
+    request: Request,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """登出 - 使当前 access token 对应 session 失效"""
-    if not token:
-        raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"})
+    """登出 - 使当前 access token 对应 session 失效，清除 cookies"""
+    # 优先从 cookie 读取 token
+    token = request.cookies.get("access_token")
 
-    if token.startswith("Bearer "):
-        token = token.split(" ", 1)[1]
+    # 如果 cookie 没有，从 Authorization 头读取（向后兼容）
+    if not token:
+        auth_header = request.headers.get("Authorization")
+        if not auth_header:
+            raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"})
+        if auth_header.startswith("Bearer "):
+            token = auth_header.split(" ", 1)[1]
+        else:
+            token = auth_header
 
     payload = decode_token(token)
     if not payload or payload.get("type") != "access":
@@ -250,6 +352,7 @@ async def logout(
     except (TypeError, ValueError):
         raise HTTPException(status_code=401, detail={"error": "SESSION_NOT_FOUND"})
 
+    # 删除数据库中的 session
     await db.execute(
         delete(ActiveSession).where(
             ActiveSession.id == session_uuid,
@@ -257,16 +360,34 @@ async def logout(
         )
     )
     await db.commit()
+
+    # 清除 cookies (httpOnly cookies 模式)
+    response.delete_cookie("access_token")
+    response.delete_cookie("refresh_token")
     return None
 
 
-@router.post("/oauth/google", response_model=TokenResponse)
-async def google_oauth(data: OAuthRequest, db: AsyncSession = Depends(get_db)):
-    """Google OAuth 登录"""
+@router.post("/oauth/google", response_model=AuthSuccessResponse)
+async def google_oauth(
+    response: Response,
+    data: OAuthRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """Google OAuth 登录 (httpOnly cookies 模式)"""
     service = OAuthService(db)
     try:
         user, tokens = await service.google_auth(data)
-        return tokens
+        # 设置 httpOnly cookies
+        set_auth_cookies(response, tokens.access_token, tokens.refresh_token)
+        # 返回用户信息（不包含 token）
+        return AuthSuccessResponse(
+            user=UserResponse(
+                id=user.id,
+                email=user.email,
+                auth_provider=user.auth_provider,
+                locale=user.locale,
+            )
+        )
     except ValueError as e:
         error_code = str(e)
         if "GOOGLE_TOKEN_INVALID" in error_code:
@@ -280,13 +401,27 @@ async def google_oauth(data: OAuthRequest, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=400, detail={"error": error_code})
 
 
-@router.post("/oauth/apple", response_model=TokenResponse)
-async def apple_oauth(data: OAuthRequest, db: AsyncSession = Depends(get_db)):
-    """Apple Sign-in 登录"""
+@router.post("/oauth/apple", response_model=AuthSuccessResponse)
+async def apple_oauth(
+    response: Response,
+    data: OAuthRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """Apple Sign-in 登录 (httpOnly cookies 模式)"""
     service = OAuthService(db)
     try:
         user, tokens = await service.apple_auth(data)
-        return tokens
+        # 设置 httpOnly cookies
+        set_auth_cookies(response, tokens.access_token, tokens.refresh_token)
+        # 返回用户信息（不包含 token）
+        return AuthSuccessResponse(
+            user=UserResponse(
+                id=user.id,
+                email=user.email,
+                auth_provider=user.auth_provider,
+                locale=user.locale,
+            )
+        )
     except ValueError as e:
         error_code = str(e)
         if "APPLE_TOKEN" in error_code:
@@ -299,6 +434,19 @@ async def apple_oauth(data: OAuthRequest, db: AsyncSession = Depends(get_db)):
         if error_code == "DEVICE_BOUND_TO_OTHER":
             raise HTTPException(status_code=403, detail={"error": error_code})
         raise HTTPException(status_code=400, detail={"error": error_code})
+
+
+@router.get("/me", response_model=UserResponse)
+async def get_current_user_info(
+    current_user: User = Depends(get_current_user),
+):
+    """获取当前用户信息 (httpOnly cookies 模式)"""
+    return UserResponse(
+        id=current_user.id,
+        email=current_user.email,
+        auth_provider=current_user.auth_provider,
+        locale=current_user.locale,
+    )
 
 
 @router.get("/devices")

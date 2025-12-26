@@ -80,6 +80,13 @@ class UserResponse(BaseModel):
     locale: str
 
 
+class AuthSuccessResponse(BaseModel):
+    """认证成功响应（httpOnly cookies 模式）"""
+
+    user: UserResponse
+    message: str = "Authentication successful"
+
+
 class DeviceResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

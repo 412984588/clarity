@@ -34,9 +34,10 @@ function LoginContent() {
     let isActive = true;
 
     const checkBetaMode = async () => {
-      // 1. 防御性检查：如果本地已经验证通过（LocalStorage 有 Token 且未过期）
+      // 1. 防御性检查：如果已经验证通过（httpOnly cookies 模式）
       // 直接刷新上下文并跳转，千万别再调 betaLogin 生成新 Token
-      if (isAuthenticated()) {
+      const authenticated = await isAuthenticated();
+      if (authenticated) {
         await refreshUser();
         router.replace(redirectPath);
         return;

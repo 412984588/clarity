@@ -16,14 +16,13 @@ import {
   logout as clearAuth,
   refreshToken,
 } from "@/lib/auth";
-import { getStoredTokens } from "@/lib/api";
 
 interface AuthContextValue {
   user: User | null;
   loading: boolean;
   error: string | null;
   refreshUser: () => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -38,21 +37,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
 
     try {
-      if (isAuthenticated()) {
-        setUser(getCurrentUser());
+      // httpOnly cookies 模式：调用 isAuthenticated 验证登录状态
+      const authenticated = await isAuthenticated();
+      if (authenticated) {
+        const currentUser = await getCurrentUser();
+        setUser(currentUser);
         return;
       }
 
-      const stored = getStoredTokens();
-      if (stored?.refresh_token) {
+      // 未登录或 token 过期，尝试刷新
+      try {
         await refreshToken();
-        setUser(getCurrentUser());
-        return;
+        const currentUser = await getCurrentUser();
+        setUser(currentUser);
+      } catch {
+        // refresh 失败，清除用户状态
+        setUser(null);
       }
-
-      setUser(null);
     } catch (err) {
-      clearAuth();
+      await clearAuth();
       setUser(null);
       setError(
         err instanceof Error ? err.message : "Failed to refresh session",
@@ -66,8 +69,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     void refreshUser();
   }, [refreshUser]);
 
-  const logout = useCallback(() => {
-    clearAuth();
+  const logout = useCallback(async () => {
+    // httpOnly cookies 模式：调用后端 logout 清除 cookies
+    await clearAuth();
     setUser(null);
   }, []);
 

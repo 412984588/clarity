@@ -1,9 +1,6 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 
-import type { AuthTokens } from "@/lib/types";
-
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
-const STORAGE_KEY = "solacore_auth_tokens";
 
 const isBrowser = typeof window !== "undefined";
 
@@ -11,73 +8,26 @@ interface RetryRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
 
-const readTokens = (): AuthTokens | null => {
-  if (!isBrowser) {
-    return null;
-  }
-
-  const raw = window.localStorage.getItem(STORAGE_KEY);
-  if (!raw) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(raw) as AuthTokens;
-  } catch {
-    return null;
-  }
-};
-
-const writeTokens = (tokens: AuthTokens): void => {
-  if (!isBrowser) {
-    return;
-  }
-
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(tokens));
-};
-
-const clearTokens = (): void => {
-  if (!isBrowser) {
-    return;
-  }
-
-  window.localStorage.removeItem(STORAGE_KEY);
-};
-
 const api = axios.create({
   baseURL: API_BASE_URL,
+  withCredentials: true, // 自动发送 cookies
 });
 
-api.interceptors.request.use((config) => {
-  const stored = readTokens();
-  const token = stored?.access_token;
-  if (token) {
-    const tokenType = stored?.token_type ?? "Bearer";
-    config.headers = config.headers ?? {};
-    config.headers.Authorization = `${tokenType} ${token}`;
-  }
-  return config;
-});
+// httpOnly cookies 模式：浏览器会自动发送 cookies，无需手动添加 Authorization 头
+// 移除了原有的请求拦截器
 
-let refreshPromise: Promise<AuthTokens> | null = null;
+let refreshPromise: Promise<void> | null = null;
 
-const refreshTokens = async (): Promise<AuthTokens> => {
+const refreshTokens = async (): Promise<void> => {
   if (refreshPromise) {
     return refreshPromise;
   }
 
-  const stored = readTokens();
-  if (!stored?.refresh_token) {
-    throw new Error("Missing refresh token");
-  }
-
-  refreshPromise = axios
-    .post<AuthTokens>(`${API_BASE_URL}/auth/refresh`, {
-      refresh_token: stored.refresh_token,
-    })
-    .then((response) => {
-      writeTokens(response.data);
-      return response.data;
+  // httpOnly cookies 模式：后端从 cookie 读取 refresh_token，前端不需要传递
+  refreshPromise = api
+    .post("/auth/refresh")
+    .then(() => {
+      // httpOnly cookies 模式：token 存储在 cookie 中，前端无需处理
     })
     .finally(() => {
       refreshPromise = null;
@@ -87,17 +37,8 @@ const refreshTokens = async (): Promise<AuthTokens> => {
 };
 
 const betaLogin = async (): Promise<void> => {
-  const response = await api.post<{
-    access_token: string;
-    refresh_token: string;
-    token_type?: string;
-  }>("/auth/beta-login");
-
-  writeTokens({
-    access_token: response.data.access_token,
-    refresh_token: response.data.refresh_token,
-    token_type: response.data.token_type ?? "Bearer",
-  });
+  // httpOnly cookies 模式：后端会自动设置 cookies，前端无需处理
+  await api.post("/auth/beta-login");
 };
 
 api.interceptors.response.use(
@@ -109,6 +50,7 @@ api.interceptors.response.use(
     const isAuthRefresh = originalRequest?.url?.includes("/auth/refresh");
     const isAuthLogin = originalRequest?.url?.includes("/auth/login");
 
+    // 401 错误：尝试刷新 token
     if (
       status === 401 &&
       originalRequest &&
@@ -119,23 +61,29 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const tokens = await refreshTokens();
-        const tokenType = tokens.token_type ?? "Bearer";
-        originalRequest.headers = originalRequest.headers ?? {};
-        originalRequest.headers.Authorization = `${tokenType} ${tokens.access_token}`;
+        await refreshTokens();
+        // httpOnly cookies 模式：token 已自动更新在 cookie 中
         return api.request(originalRequest);
       } catch (refreshError) {
-        clearTokens();
+        // refresh 失败，清除 cookies 并跳转登录页
         if (isBrowser) {
+          // httpOnly cookies 由后端管理，前端调用 /auth/logout 清除
+          await api.post("/auth/logout").catch(() => {
+            // 忽略 logout 错误
+          });
           window.location.href = "/login?cause=auth_error";
         }
         return Promise.reject(refreshError);
       }
     }
 
+    // 其他 401 错误：清除 cookies 并跳转登录页
     if (status === 401) {
-      clearTokens();
       if (isBrowser) {
+        // httpOnly cookies 由后端管理，前端调用 /auth/logout 清除
+        await api.post("/auth/logout").catch(() => {
+          // 忽略 logout 错误
+        });
         window.location.href = "/login?cause=auth_error";
       }
     }
@@ -144,11 +92,4 @@ api.interceptors.response.use(
   },
 );
 
-export {
-  api,
-  readTokens as getStoredTokens,
-  writeTokens as setStoredTokens,
-  clearTokens as clearStoredTokens,
-  refreshTokens,
-  betaLogin,
-};
+export { api, refreshTokens, betaLogin };
