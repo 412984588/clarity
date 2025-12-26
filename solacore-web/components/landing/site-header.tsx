@@ -31,12 +31,9 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-4">
-          <Link
-            href="/login"
-            className="hidden text-sm font-medium hover:underline sm:block"
-          >
-            登录
-          </Link>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/login">登录</Link>
+          </Button>
           <Button asChild size="sm" className="rounded-full px-6">
             <Link href="/register">开始使用</Link>
           </Button>
