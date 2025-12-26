@@ -7,6 +7,45 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2025-12-26 11:30] - 🚨 Gemini 审查修复 - 阻止登录页无限重定向 ✅
+
+**Gemini 审查发现的致命问题**:
+- Codex 的修复只是"止痛药"，治标不治本
+- 真正的病灶：`AuthProvider` 在 `/login` 页面运行
+- AuthProvider 调用 `/auth/me` → 401 → 拦截器重定向 → `/login?cause=auth_error` → **无限刷新循环**
+
+**Gemini 的修复建议** (已应用):
+- 在 `api.ts` 的 401 拦截器中添加登录页检查
+- 如果当前已经在 `/login` 页面，不要再重定向，直接 reject error
+- 这样 AuthProvider 的 401 错误不会触发重定向，避免无限循环
+
+**修改代码**:
+```typescript
+// solacore-web/lib/api.ts (两处修改)
+if (isBrowser) {
+  // 🚨 Gemini 修复：如果已经在登录页，不要再重定向，避免无限循环
+  if (!window.location.pathname.startsWith("/login")) {
+    await api.post("/auth/logout").catch(() => {});
+    window.location.href = "/login?cause=auth_error";
+  }
+}
+```
+
+**Gemini 的其他建议** (待处理):
+1. **安全性**：后端必须在非 Beta 模式下严格禁用 `/auth/beta-login` 路由
+2. **CSRF 防护**：确认 `/auth/beta-login` 接口有适当的 CSRF 防护
+3. **UX 改进**：`cause=auth_error` 时显示友好提示
+
+**提交记录**:
+- `99e19f0` - fix(web): 🚨 Gemini 修复 - 阻止登录页无限重定向循环
+
+**协作分工**:
+- Codex: 修复第一层问题（Beta 登录流程）
+- Gemini: 审查发现根本问题（AuthProvider 死循环）
+- Claude: 应用 Gemini 建议并完成修复
+
+---
+
 ### [2025-12-26 11:10] - 修复 Beta 登录死循环问题 ✅
 
 **问题诊断**:
