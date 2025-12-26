@@ -16,11 +16,23 @@
 - [x] 环境变量: BETA_MODE=true, PAYMENTS_ENABLED=false
 
 **遇到的坑**:
-> **Rate Limiting 429 错误**
+> **坑1: Rate Limiting 429 错误**
 > - **现象**: 前端调用 betaLogin() 返回 429 Too Many Requests
 > - **根因**: `/auth/beta-login` 端点有 `@limiter.limit(AUTH_RATE_LIMIT)` 装饰器
 > - **解决**: 移除 beta-login 的 rate limiting（内测自动登录不需要限流）
 > - **验证**: curl 测试通过，返回正确 access_token 和 refresh_token
+
+> **坑2: 重定向循环（页面一直加载中并闪动）**
+> - **现象**: 访问页面时一直显示"加载中..."，页面不断闪动
+> - **根因**: Token 写入与 React 状态更新不同步（时序问题）
+>   1. betaLogin() 写入 token 到 localStorage
+>   2. 立即 router.replace('/dashboard')
+>   3. ProtectedRoute 检查 user 状态，但 AuthProvider 还未感知 token 变化
+>   4. user 为 null，重定向回 /login
+>   5. 形成死循环
+> - **解决**: betaLogin() 后调用 `await refreshUser()` 强制刷新认证状态
+> - **分析**: Gemini 深度分析确认是竞态条件
+> - **教训**: localStorage 变化不会触发 React 状态更新，必须手动刷新
 
 **下一步**:
 - [ ] 用户在浏览器刷新页面测试 Beta 模式自动登录
@@ -29,6 +41,7 @@
 **提交记录**:
 - `39e34ff` - feat: Beta 模式免登录功能
 - `934981b` - fix(auth): 移除 beta-login 的速率限制
+- `013fd65` - fix(web): 修复 Beta 模式重定向循环问题
 
 ---
 

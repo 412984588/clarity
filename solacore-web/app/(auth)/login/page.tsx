@@ -9,11 +9,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { api, betaLogin } from "@/lib/api";
+import { isAuthenticated } from "@/lib/auth";
 
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { refreshUser } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [checkingBeta, setCheckingBeta] = useState(true);
 
@@ -25,6 +26,14 @@ function LoginContent() {
     let isActive = true;
 
     const checkBetaMode = async () => {
+      // 1. 防御性检查：如果本地已经验证通过（LocalStorage 有 Token 且未过期）
+      // 直接刷新上下文并跳转，千万别再调 betaLogin 生成新 Token
+      if (isAuthenticated()) {
+        await refreshUser();
+        router.replace(redirectPath);
+        return;
+      }
+
       try {
         const response = await api.get<{ beta_mode: boolean }>(
           "/auth/config/features",
@@ -32,6 +41,7 @@ function LoginContent() {
 
         if (response.data.beta_mode) {
           try {
+            // 2. 确实没登录，才执行自动登录
             await betaLogin();
             await refreshUser();
             router.replace("/dashboard");
@@ -49,12 +59,18 @@ function LoginContent() {
       }
     };
 
+    // 3. 如果 Context 里已经有 user 了，也直接跳
+    if (user) {
+      router.replace(redirectPath);
+      return;
+    }
+
     void checkBetaMode();
 
     return () => {
       isActive = false;
     };
-  }, [router]);
+  }, [router, user, refreshUser, redirectPath]);
 
   const startGoogleLogin = () => {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
