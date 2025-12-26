@@ -18,25 +18,20 @@ _暂无_
 
 ## 🟢 P2 - Medium（可延后处理）
 
-### [P4] ChatInterface.tsx 组件复杂度高
-
-**问题描述**：
-- `ChatInterface.tsx` 组件混合了 UI 渲染和 API streaming 逻辑
-- 组件职责过多，不利于维护和测试
-
-**推荐解决方案**：
-提取 `useChatStream` 自定义 Hook
-
-**改动范围**（预计 2-3 小时）：
-1. 创建 `hooks/useChatStream.ts`
-2. 将 `sendMessage` 逻辑迁移到 hook
-3. ChatInterface 组件只负责 UI 渲染
-
-**优先级**：P2 - Medium（代码质量问题，不影响功能）
+_暂无_
 
 ---
 
 ## 📝 归档（已完成）
+
+### ✅ [P4] ChatInterface.tsx 组件复杂度高
+- **状态**：已修复 ✅（2025-12-25）
+- **提交**：1a94ec0
+- **解决方案**：提取 useChatStream 自定义 Hook
+- **改动范围**：
+  - 新增 hooks/useChatStream.ts
+  - 重构 ChatInterface.tsx (188行 → 133行)
+- **优化效果**: 职责分离、可测试性提升、可复用性增强
 
 ### ✅ [P1] localStorage 存储 JWT Token → XSS 安全风险
 - **状态**：已修复 ✅（2025-12-25）
