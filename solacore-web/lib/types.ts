@@ -19,19 +19,18 @@ export interface Message {
   id: string;
   role: "user" | "assistant" | "system";
   content: string;
-  step: SolveStep;
+  step?: SolveStep; // Optional to match backend
   emotion?: string;
   created_at: string;
 }
 
 export interface Session {
   id: string;
-  user_id: string;
   current_step: SolveStep;
   status: SessionStatus;
   messages: Message[];
   created_at: string;
-  updated_at: string;
+  completed_at?: string; // Renamed from updated_at to match backend
 }
 
 export interface AuthTokens {
