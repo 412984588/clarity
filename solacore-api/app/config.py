@@ -34,6 +34,9 @@ class Settings(BaseSettings):
     # CORS 配置
     cors_allowed_origins: str = ""  # 逗号分隔的域名列表
 
+    # Cookie 配置（跨子域名共享）
+    cookie_domain: str = ""  # 生产环境设置为 ".solacore.app"
+
     # Sentry 配置
     sentry_dsn: str = ""  # 生产环境从环境变量读取
     sentry_environment: str = "development"

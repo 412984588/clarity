@@ -42,11 +42,16 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 def set_auth_cookies(response: Response, access_token: str, refresh_token: str) -> None:
     """设置认证 cookies (httpOnly, Secure, SameSite)"""
-    cookie_config = {
+    cookie_config: dict = {
         "httponly": True,  # 防止 JavaScript 访问
         "secure": not settings.debug,  # 生产环境强制 HTTPS
         "samesite": "lax",  # CSRF 保护
     }
+
+    # 生产环境设置 domain，允许跨子域名共享 cookie
+    # 例如：.solacore.app 允许 api.solacore.app 和 www.solacore.app 共享
+    if settings.cookie_domain:
+        cookie_config["domain"] = settings.cookie_domain
 
     # Access token cookie (1小时过期)
     response.set_cookie(
