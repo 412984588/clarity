@@ -22,6 +22,7 @@ from app.models.user import User
 from app.schemas.session import (
     MessageRequest,
     SessionCreateResponse,
+    SessionListItem,
     SessionListResponse,
     SessionResponse,
     SessionUpdateRequest,
@@ -275,7 +276,7 @@ async def list_sessions(
     sessions = result.scalars().all()
 
     return SessionListResponse(
-        sessions=[SessionResponse.model_validate(session) for session in sessions],
+        sessions=[SessionListItem.model_validate(session) for session in sessions],
         total=total,
         limit=limit,
         offset=offset,
@@ -433,103 +434,114 @@ async def stream_messages(
         session.current_step = current_step_enum.value  # type: ignore[assignment]
 
     async def event_generator() -> AsyncGenerator[str, None]:
-        # 获取或创建当前步骤的 StepHistory
-        step_history_result = await db.execute(
-            select(StepHistory)
-            .where(
-                StepHistory.session_id == session.id,
-                StepHistory.step == current_step_enum.value,
-                StepHistory.completed_at.is_(None),
+        try:
+            # 获取或创建当前步骤的 StepHistory
+            step_history_result = await db.execute(
+                select(StepHistory)
+                .where(
+                    StepHistory.session_id == session.id,
+                    StepHistory.step == current_step_enum.value,
+                    StepHistory.completed_at.is_(None),
+                )
+                .order_by(StepHistory.started_at.desc())
+                .limit(1)
             )
-            .order_by(StepHistory.started_at.desc())
-            .limit(1)
-        )
-        step_history = step_history_result.scalar_one_or_none()
-        if not step_history:
-            step_history = StepHistory(
+            step_history = step_history_result.scalar_one_or_none()
+            if not step_history:
+                step_history = StepHistory(
+                    session_id=session.id,
+                    step=current_step_enum.value,
+                    started_at=utc_now(),
+                )
+                db.add(step_history)
+                await db.flush()
+
+            # 增加消息计数
+            step_history.message_count = (step_history.message_count or 0) + 1  # type: ignore[assignment]
+
+            # 保存用户消息到数据库
+            user_message = Message(
                 session_id=session.id,
+                role=MessageRole.USER.value,
+                content=data.content,  # 保存原始内容
                 step=current_step_enum.value,
-                started_at=utc_now(),
             )
-            db.add(step_history)
+            db.add(user_message)
             await db.flush()
 
-        # 增加消息计数
-        step_history.message_count = (step_history.message_count or 0) + 1  # type: ignore[assignment]
+            # 流式输出 AI 响应，同时累积完整回复
+            ai_response_parts: list[str] = []
+            async for token in ai_service.stream(system_prompt, sanitized_input):
+                ai_response_parts.append(token)
+                payload = json.dumps({"content": token})
+                yield f"event: token\ndata: {payload}\n\n"
 
-        # 保存用户消息到数据库
-        user_message = Message(
-            session_id=session.id,
-            role=MessageRole.USER.value,
-            content=data.content,  # 保存原始内容
-            step=current_step_enum.value,
-        )
-        db.add(user_message)
-        await db.flush()
-
-        # 流式输出 AI 响应，同时累积完整回复
-        ai_response_parts: list[str] = []
-        async for token in ai_service.stream(system_prompt, sanitized_input):
-            ai_response_parts.append(token)
-            payload = json.dumps({"content": token})
-            yield f"event: token\ndata: {payload}\n\n"
-
-        # 保存 AI 回复到数据库
-        ai_content = "".join(ai_response_parts)
-        ai_message = Message(
-            session_id=session.id,
-            role=MessageRole.ASSISTANT.value,
-            content=ai_content,
-            step=current_step_enum.value,
-        )
-        db.add(ai_message)
-
-        # 获取下一步
-        next_step_enum = get_next_step(current_step_enum)
-        next_step = next_step_enum.value if next_step_enum else current_step_enum.value
-        now = utc_now()
-
-        # 处理状态转换
-        if next_step_enum and can_transition(current_step_enum, next_step_enum):
-            step_history.completed_at = now  # type: ignore[assignment]
-            db.add(
-                StepHistory(
-                    session_id=session.id,
-                    step=next_step_enum.value,
-                    started_at=now,
-                )
+            # 保存 AI 回复到数据库
+            ai_content = "".join(ai_response_parts)
+            ai_message = Message(
+                session_id=session.id,
+                role=MessageRole.ASSISTANT.value,
+                content=ai_content,
+                step=current_step_enum.value,
             )
-            session.current_step = next_step_enum.value  # type: ignore[assignment]
-            await analytics_service.emit(
-                "step_completed",
-                session.id,  # type: ignore[arg-type]
-                {"from_step": current_step_enum.value, "to_step": next_step_enum.value},
+            db.add(ai_message)
+
+            # 获取下一步
+            next_step_enum = get_next_step(current_step_enum)
+            next_step = (
+                next_step_enum.value if next_step_enum else current_step_enum.value
             )
-        elif is_final_step(current_step_enum):
-            # 最终步骤完成
-            if step_history.completed_at is None:
+            now = utc_now()
+
+            # 处理状态转换
+            if next_step_enum and can_transition(current_step_enum, next_step_enum):
                 step_history.completed_at = now  # type: ignore[assignment]
+                db.add(
+                    StepHistory(
+                        session_id=session.id,
+                        step=next_step_enum.value,
+                        started_at=now,
+                    )
+                )
+                session.current_step = next_step_enum.value  # type: ignore[assignment]
                 await analytics_service.emit(
                     "step_completed",
                     session.id,  # type: ignore[arg-type]
-                    {"step": current_step_enum.value},
+                    {
+                        "from_step": current_step_enum.value,
+                        "to_step": next_step_enum.value,
+                    },
                 )
-            session.status = SessionStatus.COMPLETED.value  # type: ignore[assignment]
-            session.completed_at = now  # type: ignore[assignment]
-            await analytics_service.emit(
-                "session_completed",
-                session.id,  # type: ignore[arg-type]
-                {"final_step": current_step_enum.value},
-            )
+            elif is_final_step(current_step_enum):
+                # 最终步骤完成
+                if step_history.completed_at is None:
+                    step_history.completed_at = now  # type: ignore[assignment]
+                    await analytics_service.emit(
+                        "step_completed",
+                        session.id,  # type: ignore[arg-type]
+                        {"step": current_step_enum.value},
+                    )
+                session.status = SessionStatus.COMPLETED.value  # type: ignore[assignment]
+                session.completed_at = now  # type: ignore[assignment]
+                await analytics_service.emit(
+                    "session_completed",
+                    session.id,  # type: ignore[arg-type]
+                    {"final_step": current_step_enum.value},
+                )
 
-        await db.commit()
-        done_payload = json.dumps(
-            {
-                "next_step": next_step,
-                "emotion_detected": emotion_result.emotion.value,
-                "confidence": emotion_result.confidence,
-            }
-        )
-        yield f"event: done\ndata: {done_payload}\n\n"
+            await db.commit()
+            done_payload = json.dumps(
+                {
+                    "next_step": next_step,
+                    "emotion_detected": emotion_result.emotion.value,
+                    "confidence": emotion_result.confidence,
+                }
+            )
+            yield f"event: done\ndata: {done_payload}\n\n"
+        except Exception as e:
+            # 发生异常时回滚事务，防止连接泄漏
+            await db.rollback()
+            error_payload = json.dumps({"error": "STREAM_ERROR", "message": str(e)})
+            yield f"event: error\ndata: {error_payload}\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")

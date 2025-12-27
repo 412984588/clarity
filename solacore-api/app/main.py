@@ -43,19 +43,25 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 
 def get_cors_origins() -> list[str]:
-    """获取 CORS 白名单"""
-    origins = [
-        "http://localhost:3000",
-        "http://localhost:8000",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:8000",
-    ]
+    """获取 CORS 白名单 - 生产环境不包含 localhost"""
+    origins: list[str] = []
+
+    # 仅在 debug 模式下允许 localhost（开发环境）
+    if settings.debug:
+        origins.extend(
+            [
+                "http://localhost:3000",
+                "http://localhost:8000",
+                "http://127.0.0.1:3000",
+                "http://127.0.0.1:8000",
+            ]
+        )
 
     # 使用 frontend_url
     if settings.frontend_url:
         origins.append(settings.frontend_url)
 
-    # 使用 cors_allowed_origins
+    # 使用 cors_allowed_origins（生产环境主要靠这个）
     if settings.cors_allowed_origins:
         origins.extend(
             o.strip() for o in settings.cors_allowed_origins.split(",") if o.strip()
@@ -97,22 +103,38 @@ app.include_router(config.router)
 
 @app.get("/health")
 async def health_check(db: AsyncSession = Depends(get_db)):
-    """健康检查端点（含数据库状态、配置状态和版本号）"""
+    """健康检查端点 - 生产环境仅返回基本状态，debug 模式返回详细配置"""
+    # 数据库检查
+    db_ok = False
+    try:
+        await db.execute(text("SELECT 1"))
+        db_ok = True
+    except Exception:
+        pass
+
+    # 基础状态判断
+    llm_ok = bool(
+        (settings.llm_provider == "openai" and settings.openai_api_key)
+        or (settings.llm_provider == "anthropic" and settings.anthropic_api_key)
+        or settings.openrouter_api_key
+    )
+    health_status = "healthy" if (db_ok and llm_ok) else "degraded"
+
+    # 生产环境：仅返回基本状态（不暴露内部配置）
+    if not settings.debug:
+        return {
+            "status": health_status,
+            "version": settings.app_version,
+        }
+
+    # Debug 模式：返回详细配置信息（便于开发调试）
     checks = {
-        "database": "unknown",
+        "database": "connected" if db_ok else "error",
         "llm_configured": "unknown",
         "stripe_configured": "unknown",
         "sentry_configured": "unknown",
     }
 
-    # 数据库检查
-    try:
-        await db.execute(text("SELECT 1"))
-        checks["database"] = "connected"
-    except Exception:
-        checks["database"] = "error"
-
-    # LLM 配置检查
     if settings.llm_provider == "openai" and settings.openai_api_key:
         checks["llm_configured"] = "openai"
     elif settings.llm_provider == "anthropic" and settings.anthropic_api_key:
@@ -122,26 +144,19 @@ async def health_check(db: AsyncSession = Depends(get_db)):
     else:
         checks["llm_configured"] = "missing"
 
-    # Stripe 配置检查（如果启用支付）
     if settings.payments_enabled:
-        if settings.stripe_secret_key:
-            checks["stripe_configured"] = "configured"
-        else:
-            checks["stripe_configured"] = "missing"
+        checks["stripe_configured"] = (
+            "configured" if settings.stripe_secret_key else "missing"
+        )
     else:
         checks["stripe_configured"] = "disabled"
 
-    # Sentry 配置检查
     checks["sentry_configured"] = "configured" if settings.sentry_dsn else "disabled"
-
-    # 总体状态
-    has_error = checks["database"] == "error" or checks["llm_configured"] == "missing"
-    health_status = "degraded" if has_error else "healthy"
 
     return {
         "status": health_status,
         "version": settings.app_version,
-        "environment": "debug" if settings.debug else "production",
+        "environment": "debug",
         "checks": checks,
     }
 

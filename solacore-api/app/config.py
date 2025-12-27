@@ -134,6 +134,12 @@ def validate_production_config(settings: Settings | None = None) -> None:
     if not active_settings.frontend_url or "localhost" in active_settings.frontend_url:
         errors.append("FRONTEND_URL must be set to production URL (not localhost)")
 
+    # 7. Beta 模式安全校验 - 生产环境禁止开启
+    if active_settings.beta_mode:
+        errors.append(
+            "BETA_MODE must be disabled in production (security risk: shared account bypass)"
+        )
+
     if errors:
         error_msg = "🚨 Production configuration errors:\n" + "\n".join(
             f"  - {e}" for e in errors

@@ -4,6 +4,7 @@ from typing import Optional
 from uuid import UUID
 from passlib.context import CryptContext
 from jose import jwt, JWTError
+import anyio
 from app.config import get_settings
 
 settings = get_settings()
@@ -12,13 +13,25 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def hash_password(password: str) -> str:
-    """Hash password using bcrypt"""
+    """Hash password using bcrypt (同步版本，用于测试)"""
     return pwd_context.hash(password)
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify password against hash"""
+    """Verify password against hash (同步版本，用于测试)"""
     return pwd_context.verify(plain_password, hashed_password)
+
+
+async def hash_password_async(password: str) -> str:
+    """Hash password using bcrypt (异步版本，避免阻塞事件循环)"""
+    return await anyio.to_thread.run_sync(pwd_context.hash, password)
+
+
+async def verify_password_async(plain_password: str, hashed_password: str) -> bool:
+    """Verify password against hash (异步版本，避免阻塞事件循环)"""
+    return await anyio.to_thread.run_sync(
+        pwd_context.verify, plain_password, hashed_password
+    )
 
 
 def create_access_token(

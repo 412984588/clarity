@@ -11,8 +11,8 @@ from app.models.device import Device
 from app.models.session import ActiveSession
 from app.models.subscription import Subscription
 from app.utils.security import (
-    hash_password,
-    verify_password,
+    hash_password_async,
+    verify_password_async,
     create_access_token,
     create_refresh_token,
     decode_token,
@@ -38,10 +38,11 @@ class AuthService:
         if existing.scalar_one_or_none():
             raise ValueError("EMAIL_ALREADY_EXISTS")
 
-        # 创建用户
+        # 创建用户（使用异步 hash 避免阻塞事件循环）
+        hashed = await hash_password_async(data.password)
         user = User(
             email=data.email,
-            password_hash=hash_password(data.password),
+            password_hash=hashed,
             auth_provider="email",
         )
         self.db.add(user)
@@ -75,7 +76,8 @@ class AuthService:
         if not user or not user.password_hash:
             raise ValueError("INVALID_CREDENTIALS")
 
-        if not verify_password(data.password, user.password_hash):  # type: ignore[arg-type]
+        # 使用异步验证避免阻塞事件循环
+        if not await verify_password_async(data.password, user.password_hash):  # type: ignore[arg-type]
             raise ValueError("INVALID_CREDENTIALS")
 
         # 检查/创建设备（subscription 已通过 selectinload 预加载）

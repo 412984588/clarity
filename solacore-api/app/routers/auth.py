@@ -32,7 +32,7 @@ from app.schemas.auth import (
     ForgotPasswordRequest,
     ResetPasswordRequest,
 )
-from app.utils.security import decode_token, hash_password
+from app.utils.security import decode_token, hash_password_async
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -149,9 +149,10 @@ async def beta_login(
 
     if not user:
         random_password = secrets.token_urlsafe(32)
+        hashed_pw = await hash_password_async(random_password)
         user = User(
             email=beta_email,
-            password_hash=hash_password(random_password),
+            password_hash=hashed_pw,
             auth_provider="email",
         )
         db.add(user)
@@ -308,7 +309,7 @@ async def reset_password(
             status_code=400, detail={"error": "INVALID_OR_EXPIRED_TOKEN"}
         )
 
-    reset_token.user.password_hash = hash_password(data.new_password)  # type: ignore[assignment]
+    reset_token.user.password_hash = await hash_password_async(data.new_password)  # type: ignore[assignment]
     reset_token.used_at = utc_now()  # type: ignore[assignment]
 
     await db.execute(

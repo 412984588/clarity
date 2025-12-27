@@ -25,7 +25,9 @@ class MessageResponse(BaseModel):
     created_at: datetime
 
 
-class SessionResponse(BaseModel):
+class SessionListItem(BaseModel):
+    """会话列表项（不包含消息，用于列表展示）"""
+
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
@@ -33,7 +35,19 @@ class SessionResponse(BaseModel):
     current_step: str
     created_at: datetime
     completed_at: Optional[datetime] = None
-    messages: List[MessageResponse] = []
+
+
+class SessionResponse(BaseModel):
+    """会话详情（包含消息，用于单个会话查询）"""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    status: str
+    current_step: str
+    created_at: datetime
+    completed_at: Optional[datetime] = None
+    messages: List[MessageResponse] = Field(default_factory=list)
 
 
 class SessionCreateResponse(BaseModel):
@@ -45,7 +59,9 @@ class SessionCreateResponse(BaseModel):
 
 
 class SessionListResponse(BaseModel):
-    sessions: List[SessionResponse]
+    """会话列表响应（使用轻量级 SessionListItem）"""
+
+    sessions: List[SessionListItem]
     total: int
     limit: int
     offset: int
