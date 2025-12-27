@@ -20,6 +20,7 @@ class Settings(BaseSettings):
 
     # OAuth 配置
     google_client_id: str = ""
+    google_client_secret: str = ""  # Code exchange flow 需要
     apple_client_id: str = ""
 
     # Server 配置

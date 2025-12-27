@@ -256,8 +256,11 @@ async def refresh(
 
 
 @router.post("/forgot-password")
+@limiter.limit("3/hour")  # 防止邮件轰炸：每小时最多 3 次
 async def forgot_password(
-    data: ForgotPasswordRequest, db: AsyncSession = Depends(get_db)
+    request: Request,
+    data: ForgotPasswordRequest,
+    db: AsyncSession = Depends(get_db),
 ):
     """忘记密码（始终返回 200，防止时序攻击）"""
     result = await db.execute(select(User).where(User.email == data.email))
@@ -366,9 +369,54 @@ async def logout(
     await db.commit()
 
     # 清除 cookies (httpOnly cookies 模式)
-    response.delete_cookie("access_token")
-    response.delete_cookie("refresh_token")
+    # 必须使用与设置时相同的 domain 参数，否则无法清除
+    cookie_params = {}
+    if settings.cookie_domain:
+        cookie_params["domain"] = settings.cookie_domain
+
+    response.delete_cookie("access_token", **cookie_params)
+    response.delete_cookie("refresh_token", **cookie_params)
     return None
+
+
+@router.post("/oauth/google/code", response_model=AuthSuccessResponse)
+async def google_oauth_code(
+    response: Response,
+    code: str,
+    device_fingerprint: str | None = None,
+    device_name: str | None = None,
+    db: AsyncSession = Depends(get_db),
+):
+    """Google OAuth code exchange (标准 authorization code flow)"""
+    service = OAuthService(db)
+    try:
+        user, tokens = await service.google_auth_with_code(
+            code=code,
+            device_fingerprint=device_fingerprint or f"web-{code[:8]}",
+            device_name=device_name or "Web Browser",
+        )
+        # 设置 httpOnly cookies
+        set_auth_cookies(response, tokens.access_token, tokens.refresh_token)
+        # 返回用户信息（不包含 token）
+        return AuthSuccessResponse(
+            user=UserResponse(
+                id=user.id,
+                email=user.email,
+                auth_provider=user.auth_provider,
+                locale=user.locale,
+            )
+        )
+    except ValueError as e:
+        error_code = str(e)
+        if "GOOGLE_" in error_code:
+            raise HTTPException(status_code=401, detail={"error": error_code})
+        if error_code == "EMAIL_NOT_VERIFIED":
+            raise HTTPException(status_code=400, detail={"error": error_code})
+        if error_code == "DEVICE_LIMIT_REACHED":
+            raise HTTPException(status_code=403, detail={"error": error_code})
+        if error_code == "DEVICE_BOUND_TO_OTHER":
+            raise HTTPException(status_code=403, detail={"error": error_code})
+        raise HTTPException(status_code=400, detail={"error": error_code})
 
 
 @router.post("/oauth/google", response_model=AuthSuccessResponse)
@@ -377,7 +425,7 @@ async def google_oauth(
     data: OAuthRequest,
     db: AsyncSession = Depends(get_db),
 ):
-    """Google OAuth 登录 (httpOnly cookies 模式)"""
+    """Google OAuth 登录 (httpOnly cookies 模式 - id_token 直接验证)"""
     service = OAuthService(db)
     try:
         user, tokens = await service.google_auth(data)

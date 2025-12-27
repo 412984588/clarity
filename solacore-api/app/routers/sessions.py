@@ -192,20 +192,41 @@ async def create_session(
         sessions_limit = 0  # 0 表示无限制
 
     usage = await _get_or_create_usage(db, subscription)
-    if sessions_limit > 0 and (usage.session_count or 0) >= sessions_limit:
+
+    # 原子递增 session_count，避免并发丢失更新
+    from sqlalchemy import update
+
+    period_start = _period_start_for_tier(subscription)
+    stmt = (
+        update(Usage)
+        .where(Usage.user_id == current_user.id, Usage.period_start == period_start)
+        .values(session_count=Usage.session_count + 1)
+        .returning(Usage.session_count)
+    )
+    result = await db.execute(stmt)
+    new_count = result.scalar_one()
+
+    # 检查是否超限（递增后再检查，避免竞态条件）
+    if sessions_limit > 0 and new_count > sessions_limit:
+        # 超限则回滚递增
+        rollback_stmt = (
+            update(Usage)
+            .where(Usage.user_id == current_user.id, Usage.period_start == period_start)
+            .values(session_count=Usage.session_count - 1)
+        )
+        await db.execute(rollback_stmt)
         raise HTTPException(
             status_code=403,
             detail={
                 "error": "QUOTA_EXCEEDED",
                 "usage": {
-                    "used": int(usage.session_count or 0),
+                    "used": new_count - 1,
                     "limit": sessions_limit,
                     "tier": tier,
                 },
                 "upgrade_url": "/subscriptions/checkout",
             },
         )
-    usage.session_count = (usage.session_count or 0) + 1  # type: ignore[assignment]
 
     session = SolveSession(
         user_id=current_user.id,

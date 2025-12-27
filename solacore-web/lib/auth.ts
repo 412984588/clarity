@@ -8,12 +8,16 @@ interface UserResponse {
   locale: string;
 }
 
-export const login = async (googleToken: string): Promise<void> => {
+export const login = async (googleCode: string): Promise<void> => {
   // httpOnly cookies 模式：后端会自动设置 cookies，前端无需处理
-  await api.post("/auth/login/google", {
-    token: googleToken,
-    code: googleToken,
+  // 使用 authorization code flow（更安全）
+  const params = new URLSearchParams({
+    code: googleCode,
+    device_fingerprint: `web-${Date.now()}`,
+    device_name: navigator.userAgent.substring(0, 50),
   });
+
+  await api.post(`/auth/oauth/google/code?${params.toString()}`);
 };
 
 export const logout = async (): Promise<void> => {

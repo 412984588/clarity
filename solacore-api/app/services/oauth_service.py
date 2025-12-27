@@ -41,8 +41,22 @@ class OAuthService:
         self.db = db
         self.auth_service = AuthService(db)
 
+    async def google_auth_with_code(
+        self, code: str, device_fingerprint: str, device_name: Optional[str]
+    ) -> Tuple[User, TokenResponse]:
+        """Google OAuth code 交换（标准 authorization code flow）"""
+        id_token_str = await self._exchange_google_code(code)
+        user_info = await self._verify_google_token(id_token_str)
+        return await self._process_oauth_login(
+            email=user_info["email"],
+            provider="google",
+            provider_id=user_info["sub"],
+            device_fingerprint=device_fingerprint,
+            device_name=device_name,
+        )
+
     async def google_auth(self, data: OAuthRequest) -> Tuple[User, TokenResponse]:
-        """Google OAuth 登录"""
+        """Google OAuth 登录（兼容旧的 id_token 直接验证）"""
         user_info = await self._verify_google_token(data.id_token)
         return await self._process_oauth_login(
             email=user_info["email"],
@@ -103,6 +117,32 @@ class OAuthService:
 
         await self.db.commit()
         return user, tokens
+
+    async def _exchange_google_code(self, code: str) -> str:
+        """使用 authorization code 交换 Google tokens"""
+        if not settings.google_client_secret:
+            raise ValueError("GOOGLE_CLIENT_SECRET_NOT_CONFIGURED")
+
+        token_url = "https://oauth2.googleapis.com/token"
+        redirect_uri = f"{settings.frontend_url}/callback"
+
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                token_url,
+                data={
+                    "code": code,
+                    "client_id": settings.google_client_id,
+                    "client_secret": settings.google_client_secret,
+                    "redirect_uri": redirect_uri,
+                    "grant_type": "authorization_code",
+                },
+            )
+
+            if response.status_code != 200:
+                raise ValueError(f"GOOGLE_CODE_EXCHANGE_FAILED: {response.text}")
+
+            data = response.json()
+            return data["id_token"]
 
     async def _verify_google_token(self, token: str) -> dict:
         """
