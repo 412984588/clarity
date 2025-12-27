@@ -17,9 +17,10 @@ async def test_register_success(client: AsyncClient):
     )
     assert response.status_code == 201
     data = response.json()
-    assert "access_token" in data
-    assert "refresh_token" in data
-    assert data["token_type"] == "bearer"
+    assert "user" in data
+    assert "message" in data
+    assert "access_token" in response.cookies
+    assert "refresh_token" in response.cookies
 
 
 @pytest.mark.asyncio
@@ -112,8 +113,10 @@ async def test_login_success(client: AsyncClient):
     )
     assert response.status_code == 200
     data = response.json()
-    assert "access_token" in data
-    assert "refresh_token" in data
+    assert "user" in data
+    assert "message" in data
+    assert "access_token" in response.cookies
+    assert "refresh_token" in response.cookies
 
 
 @pytest.mark.asyncio
@@ -168,16 +171,21 @@ async def test_refresh_token(client: AsyncClient):
             "device_fingerprint": "test-device-010",
         },
     )
-    refresh_token = register_resp.json()["refresh_token"]
+    refresh_token = register_resp.cookies.get("refresh_token")
+    assert refresh_token is not None
 
     # 刷新 token
     response = await client.post("/auth/refresh", json={"refresh_token": refresh_token})
     assert response.status_code == 200
     data = response.json()
-    assert "access_token" in data
-    assert "refresh_token" in data
+    assert "user" in data
+    assert "message" in data
+    assert "access_token" in response.cookies
+    assert "refresh_token" in response.cookies
     # Token rotation 验证：新 token 应该有效（同一秒内可能相同，所以只验证格式）
-    assert data["refresh_token"].startswith("eyJ")
+    refresh_cookie = response.cookies.get("refresh_token")
+    assert refresh_cookie is not None
+    assert refresh_cookie.startswith("eyJ")
 
 
 @pytest.mark.asyncio
