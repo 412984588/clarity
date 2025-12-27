@@ -32,6 +32,7 @@ from app.schemas.auth import (
     ForgotPasswordRequest,
     ResetPasswordRequest,
 )
+from app.utils.exceptions import raise_auth_error
 from app.utils.security import decode_token, hash_password_async
 
 logger = logging.getLogger(__name__)
@@ -94,10 +95,7 @@ async def register(
             )
         )
     except ValueError as e:
-        error_code = str(e)
-        if error_code == "EMAIL_ALREADY_EXISTS":
-            raise HTTPException(status_code=409, detail={"error": error_code})
-        raise HTTPException(status_code=400, detail={"error": error_code})
+        raise_auth_error(e, context="register")
 
 
 @router.post("/login", response_model=AuthSuccessResponse)
@@ -124,14 +122,7 @@ async def login(
             )
         )
     except ValueError as e:
-        error_code = str(e)
-        if error_code == "INVALID_CREDENTIALS":
-            raise HTTPException(status_code=401, detail={"error": error_code})
-        if error_code == "DEVICE_LIMIT_REACHED":
-            raise HTTPException(status_code=403, detail={"error": error_code})
-        if error_code == "DEVICE_BOUND_TO_OTHER":
-            raise HTTPException(status_code=403, detail={"error": error_code})
-        raise HTTPException(status_code=400, detail={"error": error_code})
+        raise_auth_error(e, context="login")
 
 
 @router.post("/beta-login", response_model=AuthSuccessResponse)
@@ -188,12 +179,7 @@ async def beta_login(
         )
         tokens = await service._create_session(user, device)
     except ValueError as e:
-        error_code = str(e)
-        if error_code == "DEVICE_LIMIT_REACHED":
-            raise HTTPException(status_code=403, detail={"error": error_code})
-        if error_code == "DEVICE_BOUND_TO_OTHER":
-            raise HTTPException(status_code=403, detail={"error": error_code})
-        raise HTTPException(status_code=400, detail={"error": error_code})
+        raise_auth_error(e, context="beta_login")
 
     await db.commit()
     # 设置 httpOnly cookies
@@ -247,12 +233,7 @@ async def refresh(
             )
         )
     except ValueError as e:
-        error_code = str(e)
-        if error_code == "INVALID_TOKEN":
-            raise HTTPException(status_code=401, detail={"error": error_code})
-        if error_code == "TOKEN_EXPIRED":
-            raise HTTPException(status_code=401, detail={"error": error_code})
-        raise HTTPException(status_code=400, detail={"error": error_code})
+        raise_auth_error(e, context="refresh")
 
 
 @router.post("/forgot-password")
@@ -407,16 +388,7 @@ async def google_oauth_code(
             )
         )
     except ValueError as e:
-        error_code = str(e)
-        if "GOOGLE_" in error_code:
-            raise HTTPException(status_code=401, detail={"error": error_code})
-        if error_code == "EMAIL_NOT_VERIFIED":
-            raise HTTPException(status_code=400, detail={"error": error_code})
-        if error_code == "DEVICE_LIMIT_REACHED":
-            raise HTTPException(status_code=403, detail={"error": error_code})
-        if error_code == "DEVICE_BOUND_TO_OTHER":
-            raise HTTPException(status_code=403, detail={"error": error_code})
-        raise HTTPException(status_code=400, detail={"error": error_code})
+        raise_auth_error(e, context="google_oauth_code")
 
 
 @router.post("/oauth/google", response_model=AuthSuccessResponse)
@@ -441,16 +413,7 @@ async def google_oauth(
             )
         )
     except ValueError as e:
-        error_code = str(e)
-        if "GOOGLE_TOKEN_INVALID" in error_code:
-            raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"})
-        if error_code == "EMAIL_NOT_VERIFIED":
-            raise HTTPException(status_code=400, detail={"error": error_code})
-        if error_code == "DEVICE_LIMIT_REACHED":
-            raise HTTPException(status_code=403, detail={"error": error_code})
-        if error_code == "DEVICE_BOUND_TO_OTHER":
-            raise HTTPException(status_code=403, detail={"error": error_code})
-        raise HTTPException(status_code=400, detail={"error": error_code})
+        raise_auth_error(e, context="google_oauth")
 
 
 @router.post("/oauth/apple", response_model=AuthSuccessResponse)
@@ -475,17 +438,7 @@ async def apple_oauth(
             )
         )
     except ValueError as e:
-        error_code = str(e)
-        if "APPLE_TOKEN" in error_code:
-            raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"})
-        if error_code == "OAUTH_ACCOUNT_NOT_LINKED":
-            # Apple 后续登录但找不到用户记录
-            raise HTTPException(status_code=400, detail={"error": error_code})
-        if error_code == "DEVICE_LIMIT_REACHED":
-            raise HTTPException(status_code=403, detail={"error": error_code})
-        if error_code == "DEVICE_BOUND_TO_OTHER":
-            raise HTTPException(status_code=403, detail={"error": error_code})
-        raise HTTPException(status_code=400, detail={"error": error_code})
+        raise_auth_error(e, context="apple_oauth")
 
 
 @router.get("/me", response_model=UserResponse)

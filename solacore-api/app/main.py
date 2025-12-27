@@ -1,8 +1,9 @@
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 import sentry_sdk
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from slowapi import _rate_limit_exceeded_handler
@@ -20,6 +21,7 @@ from app.routers import webhooks
 from app.routers import revenuecat_webhooks
 from app.routers import account
 from app.routers import config
+from app.utils.exceptions import AuthError
 
 settings = get_settings()
 
@@ -90,6 +92,15 @@ app.add_middleware(
 # 注册限流器
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)  # type: ignore[arg-type]
+
+
+@app.exception_handler(AuthError)
+async def auth_error_handler(request: Request, exc: AuthError):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"error": exc.code, "detail": exc.detail},
+    )
+
 
 # 注册路由
 app.include_router(auth.router)
