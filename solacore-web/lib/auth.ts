@@ -32,12 +32,16 @@ export const getCurrentUser = async (): Promise<User | null> => {
     const data = response.data;
 
     // 获取订阅信息
-    let subscriptionTier = "free";
+    let subscriptionTier: "free" | "standard" | "pro" = "free";
     try {
       const subResponse = await api.get<{ tier: string }>(
         "/subscriptions/current",
       );
-      subscriptionTier = subResponse.data.tier;
+      const tier = subResponse.data.tier;
+      // 验证 tier 是否为有效值
+      if (tier === "free" || tier === "standard" || tier === "pro") {
+        subscriptionTier = tier;
+      }
     } catch {
       // 订阅信息获取失败，默认 free
     }
