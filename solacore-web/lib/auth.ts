@@ -31,12 +31,23 @@ export const getCurrentUser = async (): Promise<User | null> => {
     const response = await api.get<UserResponse>("/auth/me");
     const data = response.data;
 
+    // 获取订阅信息
+    let subscriptionTier = "free";
+    try {
+      const subResponse = await api.get<{ tier: string }>(
+        "/subscriptions/current",
+      );
+      subscriptionTier = subResponse.data.tier;
+    } catch {
+      // 订阅信息获取失败，默认 free
+    }
+
     return {
       id: data.id,
       email: data.email,
       name: data.email.split("@")[0], // 临时从 email 生成 name
       picture: undefined,
-      subscription_tier: "free", // 后续从后端获取
+      subscription_tier: subscriptionTier,
       created_at: new Date().toISOString(),
     };
   } catch {

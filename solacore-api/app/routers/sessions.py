@@ -1,6 +1,7 @@
 from app.utils.datetime_utils import utc_now
 from datetime import datetime
 import json
+import logging
 from typing import AsyncGenerator
 from uuid import UUID
 
@@ -41,6 +42,7 @@ from app.services.state_machine import (
     validate_transition,
 )
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/sessions", tags=["sessions"])
 
 SESSION_LIMITS = {"free": 10, "standard": 100, "pro": 0}
@@ -562,7 +564,13 @@ async def stream_messages(
         except Exception as e:
             # 发生异常时回滚事务，防止连接泄漏
             await db.rollback()
-            error_payload = json.dumps({"error": "STREAM_ERROR", "message": str(e)})
+            # 记录详细错误到日志，但不暴露给客户端
+            logger.error(
+                f"SSE stream error in session {session_id}: {type(e).__name__}: {e}",
+                exc_info=True,
+            )
+            # 客户端只返回通用错误码，不泄露内部详情
+            error_payload = json.dumps({"error": "STREAM_ERROR"})
             yield f"event: error\ndata: {error_payload}\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
