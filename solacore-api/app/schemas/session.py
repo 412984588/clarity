@@ -38,7 +38,7 @@ class SessionListItem(BaseModel):
 
 
 class SessionResponse(BaseModel):
-    """会话详情（包含消息，用于单个会话查询）"""
+    """会话详情（消息可选，用于单个会话查询）"""
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -47,7 +47,7 @@ class SessionResponse(BaseModel):
     current_step: str
     created_at: datetime
     completed_at: Optional[datetime] = None
-    messages: List[MessageResponse] = Field(default_factory=list)
+    messages: Optional[List[MessageResponse]] = None
 
 
 class SessionCreateResponse(BaseModel):

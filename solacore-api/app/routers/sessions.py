@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import noload
 
 from app.config import get_settings
 from app.database import get_db
@@ -22,6 +23,7 @@ from app.models.subscription import Subscription, Usage
 from app.models.user import User
 from app.schemas.session import (
     MessageRequest,
+    MessageResponse,
     SessionCreateResponse,
     SessionListItem,
     SessionListResponse,
@@ -309,23 +311,53 @@ async def list_sessions(
 @router.get(
     "/{session_id}",
     response_model=SessionResponse,
+    response_model_exclude_none=True,
     summary="获取单个会话详情",
-    description="获取指定会话的完整信息，包括所有消息历史。",
+    description=(
+        "获取指定会话的详细信息。默认不返回消息历史，"
+        "需要时可通过 include_messages=true 返回分页消息。"
+    ),
 )
 async def get_session(
     session_id: UUID,
+    include_messages: bool = Query(False, description="是否返回会话消息（默认不返回）"),
+    limit: int = Query(
+        20, ge=1, le=100, description="消息分页大小，仅 include_messages=true 生效"
+    ),
+    offset: int = Query(
+        0, ge=0, description="消息分页偏移，仅 include_messages=true 生效"
+    ),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
-        select(SolveSession).where(
-            SolveSession.id == session_id, SolveSession.user_id == current_user.id
-        )
+        select(SolveSession)
+        .options(noload(SolveSession.messages))
+        .where(SolveSession.id == session_id, SolveSession.user_id == current_user.id)
     )
     session = result.scalar_one_or_none()
     if not session:
         raise HTTPException(status_code=404, detail={"error": "SESSION_NOT_FOUND"})
-    return SessionResponse.model_validate(session)
+    messages = None
+    if include_messages:
+        messages_result = await db.execute(
+            select(Message)
+            .where(Message.session_id == session_id)
+            .order_by(Message.created_at)
+            .limit(limit)
+            .offset(offset)
+        )
+        message_rows = messages_result.scalars().all()
+        messages = [MessageResponse.model_validate(message) for message in message_rows]
+
+    return SessionResponse(
+        id=session.id,
+        status=str(session.status),
+        current_step=str(session.current_step),
+        created_at=session.created_at,
+        completed_at=session.completed_at,
+        messages=messages,
+    )
 
 
 @router.patch("/{session_id}", response_model=SessionUpdateResponse)
