@@ -3,6 +3,88 @@
 **项目名称**: SolaCore API
 **最后更新**: 2025-12-28
 
+### [2025-12-28] - 生产环境故障恢复完成
+
+- [x] **权限问题修复**: 解决 API 容器启动失败
+  - 错误: `PermissionError: [Errno 13] Permission denied: '/app/app/utils/__init__.py'`
+  - 原因: rsync 同步时 3 个文件权限为 600（只读）
+  - 解决: 批量修改文件权限为 644
+  - 受影响文件: `app/utils/__init__.py`, `app/logging_config.py`, `app/models/message.py`
+
+- [x] **Docker 网络隔离问题**: 修复 nginx 502 错误
+  - 错误: `host not found in upstream "api:8000"`
+  - 原因: 旧的 nginx 容器和新的 API 容器不在同一个 Docker 网络中
+  - 解决: 停止所有旧容器，使用 `docker-compose.prod.yml` 重新启动完整服务栈
+  - 教训: 生产环境必须明确指定使用 `-f docker-compose.prod.yml`
+
+- [x] **限流兼容性问题**: 修复 `/config/features` 端点 500 错误
+  - 错误: `Exception: parameter response must be an instance of starlette.responses.Response`
+  - 原因: slowapi 装饰器期望 Response 对象，但端点返回字典
+  - 解决: 显式返回 `JSONResponse` 对象
+  - 文件: `app/routers/config.py`
+  - 提交: `ebbddb9`
+
+> **遇到的坑**:
+>
+> **文件权限导致容器启动失败**
+> - **现象**: API 容器反复重启，日志显示 `PermissionError`
+> - **原因**: rsync 同步时保留了本地的 600 权限（只有所有者可读）
+> - **诊断**: `find /path -type f -perm 600` 快速定位所有异常权限文件
+> - **解决**: `chmod 644` 批量修复
+> - **教训**: rsync 同步后需要检查文件权限，Docker 容器内的用户可能无法读取
+>
+> **Docker Compose 版本混用**
+> - **现象**: `docker compose up -d` 只启动了 api/db/redis，缺少 nginx/grafana/prometheus
+> - **原因**: 有两个 compose 文件（`docker-compose.yml` 和 `docker-compose.prod.yml`），默认使用前者
+> - **解决**: 明确指定 `-f docker-compose.prod.yml`
+> - **教训**: 生产环境必须使用完整配置文件，建议删除或重命名开发环境的 `docker-compose.yml`
+>
+> **Docker 网络不一致**
+> - **现象**: nginx 容器找不到 api 服务，反复重启
+> - **原因**: docker-compose v1 和 v2 创建的网络不同，旧容器和新容器隔离
+> - **解决**: 停止所有旧容器（`docker stop`），使用 `--remove-orphans` 清理
+> - **教训**: 升级 Docker Compose 版本时需要完全重新部署
+>
+> **slowapi 装饰器限制**
+> - **现象**: 某些端点返回 500 错误
+> - **原因**: slowapi 的 `_inject_headers` 方法只支持 Response 对象，不支持字典
+> - **解决**: 端点显式返回 `JSONResponse`
+> - **教训**: 使用第三方装饰器时需要注意返回值类型要求
+
+### 生产环境恢复流程
+
+| 步骤 | 操作 | 结果 |
+|------|------|------|
+| 1. 诊断 | 检查健康检查端点 | 502 Bad Gateway |
+| 2. 容器检查 | `docker compose ps` | API 容器缺失 |
+| 3. 日志分析 | `docker compose logs api` | PermissionError |
+| 4. 权限修复 | `chmod 644` 3 个文件 | 容器启动但仍 502 |
+| 5. 网络诊断 | nginx 日志 | host not found in upstream |
+| 6. 网络修复 | 停止旧容器，重新部署 | 所有服务正常 |
+| 7. 端点测试 | 测试 `/config/features` | 500 Internal Server Error |
+| 8. 代码修复 | 显式返回 JSONResponse | ✅ 所有端点正常 |
+
+### 当前服务状态
+
+| 服务 | 状态 | 健康检查 | 端口 |
+|------|------|----------|------|
+| api | Up | healthy ✅ | 8000 (内部) |
+| db | Up | healthy ✅ | 5432 (内部) |
+| redis | Up | healthy ✅ | 6379 (内部) |
+| nginx | Up | - | 80, 443 |
+| grafana | Up | - | 3000 |
+| prometheus | Up | - | 9090 |
+| node-exporter | Up | - | 9100 (内部) |
+| backup | Up | - | - |
+
+### Git 提交
+
+```bash
+ebbddb9 fix(api): 修复 /config/features 端点限流兼容性问题 - 显式返回 JSONResponse
+```
+
+---
+
 ### [2025-12-28] - 备份容器启动修复完成
 
 - [x] **备份容器修复**: 解决启动失败问题
