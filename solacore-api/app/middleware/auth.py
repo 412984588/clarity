@@ -18,6 +18,10 @@ async def get_current_user(
     db: AsyncSession = Depends(get_db),
 ) -> User:
     """从 httpOnly cookie 或 Authorization header 获取当前用户"""
+    # 请求级缓存：同一个 HTTP 请求内重复调用直接复用结果
+    if hasattr(request.state, "current_user"):
+        return request.state.current_user
+
     # 优先从 cookie 读取 access_token (httpOnly cookies 模式)
     access_token = request.cookies.get("access_token")
 
@@ -48,22 +52,24 @@ async def get_current_user(
     except (TypeError, ValueError):
         raise HTTPException(status_code=401, detail={"error": "SESSION_NOT_FOUND"})
 
-    session_result = await db.execute(
-        select(ActiveSession).where(
+    # 合并查询：一次 JOIN 获取 session + user，减少数据库往返
+    result = await db.execute(
+        select(ActiveSession, User)
+        .outerjoin(User, ActiveSession.user_id == User.id)
+        .where(
             ActiveSession.id == session_uuid,
             ActiveSession.user_id == user_uuid,
             ActiveSession.expires_at > utc_now(),
         )
     )
-    session = session_result.scalar_one_or_none()
-    if not session:
+    row = result.one_or_none()
+    if not row:
         raise HTTPException(status_code=401, detail={"error": "SESSION_REVOKED"})
 
-    # 鉴权只需要 User 基础信息，不需要加载关联数据
-    result = await db.execute(select(User).where(User.id == user_uuid))
-    user = result.scalar_one_or_none()
+    _session, user = row
 
     if not user or not user.is_active:
         raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"})
 
+    request.state.current_user = user
     return user
