@@ -92,10 +92,7 @@ services:
     restart: always
     networks:
       - solacore_backend
-    command: >
-      sh -c "chmod +x /scripts/*.sh
-      && printf 'PATH=/usr/local/bin:/usr/bin:/bin\n0 2 * * * /scripts/backup_database.sh\n' > /etc/crontabs/root
-      && crond -f -l 2"
+    command: ["/scripts/entrypoint_backup.sh"]
 
   nginx:
     image: nginx:1.25-alpine
