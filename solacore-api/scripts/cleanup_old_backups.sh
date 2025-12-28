@@ -31,16 +31,18 @@ fi
 
 log "Cleaning backups older than ${BACKUP_RETENTION_DAYS} days in $BACKUP_DIR."
 
-old_count=$(find "$BACKUP_DIR" -type f -name "backup_*.sql.gz" -mtime +"$BACKUP_RETENTION_DAYS" \
-  -print | wc -l | tr -d ' ')
+# Count old backups
+old_count=$(find "$BACKUP_DIR" -type f -name "backup_*.sql.gz" -mtime +"$BACKUP_RETENTION_DAYS" -print 2>/dev/null | wc -l | tr -d ' ')
 
+# Remove old backups if any exist
 if [ "$old_count" -gt 0 ]; then
-  if ! find "$BACKUP_DIR" -type f -name "backup_*.sql.gz" -mtime +"$BACKUP_RETENTION_DAYS" \
-    -exec rm -f {} \; then
+  find "$BACKUP_DIR" -type f -name "backup_*.sql.gz" -mtime +"$BACKUP_RETENTION_DAYS" -exec rm -f {} \;
+  if [ $? -eq 0 ]; then
+    log "Removed $old_count old backup(s)."
+  else
     err "Failed to remove old backups."
     exit 1
   fi
-  log "Removed $old_count old backup(s)."
 else
   log "No old backups to remove."
 fi

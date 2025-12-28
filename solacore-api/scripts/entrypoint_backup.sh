@@ -4,8 +4,8 @@ set -e
 echo "=== Backup Container Entrypoint ==="
 echo "Starting initialization..."
 
-# 设置权限
-chmod +x /scripts/*.sh
+# 设置权限（跳过只读文件系统的错误）
+chmod +x /scripts/*.sh 2>/dev/null || echo "Warning: scripts are read-only (this is expected)"
 
 # 生成 crontab (每晚 2 点运行)
 echo "Setting up cron schedule..."
