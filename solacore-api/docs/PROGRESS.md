@@ -3,6 +3,71 @@
 **项目名称**: SolaCore API
 **最后更新**: 2025-12-28
 
+### [2025-12-28] - 备份容器启动修复完成
+
+- [x] **备份容器修复**: 解决启动失败问题
+  - 错误: KeyError: 'ContainerConfig'
+  - 原因: docker-compose v1.29.2 与 Docker Engine v28 不兼容
+  - 解决: 优化 entrypoint 脚本 + 迁移到 docker compose v2
+  - 文件: `scripts/entrypoint_backup.sh`, `docker-compose.prod.yml`
+  - 提交: `ce2e831`, `97c2b3a`
+
+- [x] **脚本优化**: 提高可维护性和兼容性
+  - entrypoint: 跳过只读文件系统的 chmod 错误
+  - cleanup: 简化 if 嵌套逻辑，修复语法错误
+  - 增加详细的初始化日志
+
+- [x] **备份功能验证**: 所有测试通过
+  - 容器状态: Up 44 seconds ✅
+  - 手动备份: 3 个备份文件已创建 ✅
+  - 文件完整性: gzip -t 检查通过 ✅
+  - cron 配置: 每晚 2:00 执行 ✅
+  - cleanup 功能: 30 天保留策略正常 ✅
+
+> **遇到的坑**:
+>
+> **docker-compose 版本不兼容**
+> - **现象**: backup 容器启动失败，错误 `KeyError: 'ContainerConfig'`
+> - **原因**: 生产环境使用 docker-compose v1.29.2（Python），与 Docker Engine v28 不兼容
+> - **解决**: 使用 `docker compose` (v2) 替代 `docker-compose` (v1)
+> - **教训**: 尽早升级到 Docker Compose v2（Go 版本）
+>
+> **只读文件系统的权限问题**
+> - **现象**: chmod 失败导致容器反复重启
+> - **原因**: volumes 挂载为 `:ro`，无法修改文件权限
+> - **解决**: entrypoint 脚本中跳过 chmod 错误，宿主机提前设置权限
+> - **教训**: 只读挂载时需要在容器外设置权限
+>
+> **cleanup 脚本语法错误**
+> - **现象**: sh 解析错误 "unexpected fi"
+> - **原因**: 复杂的 if 嵌套逻辑导致 shell 解析问题
+> - **解决**: 简化逻辑，拆分条件判断
+> - **教训**: shell 脚本尽量保持简单，避免过度嵌套
+
+> **技术改进**:
+> - **解耦配置**: 复杂的 command 逻辑移入独立脚本
+> - **容错处理**: 添加错误处理和友好提示
+> - **日志增强**: 详细的初始化和备份日志
+
+### 备份服务状态
+
+| 组件 | 状态 | 说明 |
+|------|------|------|
+| backup 容器 | ✅ Up | postgres:15-alpine |
+| cron 定时任务 | ✅ Running | 每晚 2:00 执行 |
+| 备份脚本 | ✅ Tested | 3 次测试全部通过 |
+| cleanup 脚本 | ✅ Fixed | 30 天保留策略 |
+| 备份文件 | ✅ Valid | gzip 完整性检查通过 |
+
+### Git 提交
+
+```bash
+97c2b3a fix(docker): 修复 backup 容器脚本兼容性问题
+ce2e831 fix(docker): 修复备份容器启动失败 - 优化 cron 初始化流程
+```
+
+---
+
 ### [2025-12-28] - 限流功能测试验证完成
 
 - [x] **限流测试脚本**: 完整的限流功能测试工具
