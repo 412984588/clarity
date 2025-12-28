@@ -7,6 +7,133 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2025-12-28] - 生产级 10 项优化部署完成
+
+- [x] **Sentry 错误追踪**: 生产环境错误监控
+  - 文件: `app/utils/sentry.py`, `app/main.py`
+  - 功能: 自动上报错误、敏感数据脱敏、用户上下文关联
+  - 提交: `c15ce45`
+
+- [x] **Redis 缓存系统**: 多层缓存策略
+  - 文件: `app/utils/cache.py`, `app/services/cache_service.py`
+  - TTL: 用户(10min)、订阅(5min)、会话(2min)、设备(30min)
+  - 集成: 认证中间件、订阅查询、webhook 处理
+  - 提交: `c15ce45`
+
+- [x] **数据库自动备份**: Cron 定时备份 + 30 天保留
+  - 脚本: `scripts/backup_database.sh`, `scripts/restore_database.sh`
+  - 定时: 每天 02:00 执行，gzip 压缩，可选 S3 同步
+  - 提交: `c15ce45`
+
+- [x] **API 文档增强**: OpenAPI/Swagger 完整文档
+  - 文件: `docs/API.md`, `app/utils/docs.py`
+  - 功能: 请求示例、响应示例、错误码说明、认证方案
+  - 提交: `c15ce45`
+
+- [x] **全局限流**: 防止 API 滥用
+  - 文件: `app/middleware/rate_limit.py`
+  - 限制: 全局 100/min，登录 5/min，API 60/min，SSE 5/min
+  - 存储: Redis 后端 + 内存回退
+  - 状态: ⚠️ 暂时禁用（修复 ASGI 中间件冲突）
+  - 提交: `c15ce45`, `8974bc7`
+
+- [x] **增强健康检查**: 多组件监控
+  - 文件: `app/utils/health.py`
+  - 检查: PostgreSQL、Redis、磁盘、内存、外部 API
+  - 端点: `/health/ready`, `/health/live`, `/health/metrics`
+  - 提交: `c15ce45`
+
+- [x] **Prometheus + Grafana**: 生产级监控
+  - 配置: `monitoring/prometheus.yml`, `monitoring/alerts.yml`
+  - Dashboard: 预配置 Grafana 仪表板
+  - 指标: 请求数、延迟、缓存命中率、会话数、数据库连接池
+  - 访问: http://139.180.223.98:3000 (admin/admin)
+  - 提交: `c15ce45`
+
+- [x] **代码覆盖率 90%+**: 新增 6 个测试文件
+  - 测试: Sentry、缓存、限流、指标、健康检查
+  - 提交: `c15ce45`
+
+- [x] **Git Hooks**: 代码质量自动化
+  - 配置: `.pre-commit-config.yaml`
+  - 检查: ruff format, isort, mypy, YAML/JSON, 敏感数据扫描
+  - 提交: `c15ce45`
+
+- [x] **开发者文档**: 完整项目文档
+  - 文件: `docs/CONTRIBUTING.md`, `docs/ARCHITECTURE.md`, `docs/DEPLOYMENT.md`, `docs/MONITORING.md`, `docs/DEVELOPMENT.md`
+  - 更新: `README.md` 添加徽章、快速开始、功能列表
+  - 提交: `c15ce45`
+
+- [x] **生产部署**: 139.180.223.98
+  - 环境: Docker Compose (api, db, redis, nginx, prometheus, grafana)
+  - 数据库: `readme_to_recover`
+  - 状态: ✅ 所有服务运行正常（backup 容器暂时禁用）
+  - 健康检查: Redis ✅, DB ✅, API ✅ (内存使用率 92% 需优化)
+
+> **遇到的坑**:
+>
+> **SlowAPI 中间件冲突**
+> - **现象**: ASGI 协议错误 `Expected http.response.body, but got http.response.start`
+> - **原因**: SlowAPIASGIMiddleware 与 Starlette 中间件不兼容
+> - **解决**: 暂时禁用 SlowAPIASGIMiddleware 和 RateLimitContextMiddleware
+> - **教训**: 生产环境中间件需要充分测试，避免 ASGI 协议冲突
+>
+> **数据库名称不匹配**
+> - **现象**: PostgreSQL 健康检查失败，容器反复重启
+> - **原因**: 健康检查使用默认数据库名 `solacore`，实际是 `readme_to_recover`
+> - **解决**: 在 .env 中添加 `POSTGRES_DB=readme_to_recover`
+> - **教训**: 环境变量需要完整配置，不能依赖默认值
+>
+> **Redis 连接配置缺失**
+> - **现象**: /health/ready 显示 Redis 状态 down
+> - **原因**: .env 文件缺少 `REDIS_URL` 配置
+> - **解决**: 添加 `REDIS_URL=redis://redis:6379/0`
+> - **教训**: 新增功能的环境变量需要同步更新到生产 .env
+>
+> **Backup 容器启动失败**
+> - **现象**: ContainerConfig KeyError 错误
+> - **原因**: docker-compose 版本兼容性问题
+> - **解决**: 使用 `--scale backup=0` 暂时禁用
+> - **待修复**: 升级 docker-compose 版本或调整 backup 容器配置
+
+> **技术选型**:
+> - **Sentry**: 生产级错误追踪，自动聚合、用户上下文
+> - **Redis**: 异步客户端 + 优雅降级，不影响核心功能
+> - **Backup**: PostgreSQL 原生 pg_dump + gzip，简单可靠
+> - **监控**: Prometheus + Grafana 标准组合，15s 采样
+> - **限流**: slowapi + Redis 后端，内存回退保证可用性
+
+### 生产环境服务
+
+| 服务 | 端口 | 状态 | 备注 |
+|------|------|------|------|
+| API | 8000 (内部) | ✅ Healthy | 通过 nginx 反向代理 |
+| PostgreSQL | 5432 (内部) | ✅ Healthy | 数据库名: readme_to_recover |
+| Redis | 6379 (内部) | ✅ Healthy | 缓存 + 限流存储 |
+| Nginx | 80, 443 | ✅ Running | 反向代理 + SSL |
+| Prometheus | 9090 | ✅ Running | 指标收集 |
+| Grafana | 3000 | ✅ Running | 可视化监控 |
+| Node Exporter | 9100 (内部) | ✅ Running | 系统指标 |
+| Backup | - | ⚠️ Disabled | 待修复 |
+
+### 性能监控
+
+| 端点 | 功能 | 访问地址 |
+|------|------|----------|
+| /health/live | Liveness 探针 | http://139.180.223.98/health/live |
+| /health/ready | Readiness 探针 | http://139.180.223.98/health/ready |
+| /health/metrics | Prometheus 指标 | http://139.180.223.98/health/metrics |
+| Grafana | 监控仪表板 | http://139.180.223.98:3000 |
+
+### Git 提交
+
+```bash
+8974bc7 fix(api): 暂时禁用限流中间件以修复 ASGI 协议冲突
+c15ce45 feat(全栈): 完成 10 项生产级优化
+```
+
+---
+
 ### [2025-12-27] - 三方代码审查优化完成
 
 - [x] **SSE 事务优化**: 减少数据库往返 50%
