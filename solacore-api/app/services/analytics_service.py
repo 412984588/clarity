@@ -20,6 +20,7 @@ class AnalyticsService:
         event_type: str,
         session_id: Optional[UUID] = None,
         payload: Optional[Dict[str, Any]] = None,
+        flush: bool = True,
     ) -> Optional[AnalyticsEvent]:
         """记录分析事件，失败时仅记录日志不影响主流程"""
         try:
@@ -29,7 +30,8 @@ class AnalyticsService:
                 payload=payload,
             )
             self.db.add(event)
-            await self.db.flush()
+            if flush:
+                await self.db.flush()
             return event
         except Exception as e:
             # 埋点失败不应影响主业务，仅记录日志

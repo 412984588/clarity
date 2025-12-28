@@ -7,7 +7,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
-from sqlalchemy import select, func
+from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import noload
 
@@ -447,13 +447,23 @@ async def stream_messages(
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
-        select(SolveSession).where(
-            SolveSession.id == session_id, SolveSession.user_id == current_user.id
+        select(SolveSession, StepHistory)
+        .outerjoin(
+            StepHistory,
+            and_(
+                StepHistory.session_id == SolveSession.id,
+                StepHistory.step == SolveSession.current_step,
+                StepHistory.completed_at.is_(None),
+            ),
         )
+        .where(SolveSession.id == session_id, SolveSession.user_id == current_user.id)
+        .order_by(StepHistory.started_at.desc())
+        .limit(1)
     )
-    session = result.scalar_one_or_none()
-    if not session:
+    row = result.first()
+    if not row:
         raise HTTPException(status_code=404, detail={"error": "SESSION_NOT_FOUND"})
+    session, step_history = row
     if session.status == SessionStatus.COMPLETED.value:
         raise HTTPException(status_code=400, detail={"error": "SESSION_COMPLETED"})
 
@@ -465,6 +475,7 @@ async def stream_messages(
             "crisis_detected",
             session.id,  # type: ignore[arg-type]
             {"keyword": crisis_result.matched_keyword},
+            flush=False,
         )
         await db.commit()
         # 返回危机资源响应，不继续 Solve 流程
@@ -491,28 +502,24 @@ async def stream_messages(
     async def event_generator() -> AsyncGenerator[str, None]:
         try:
             # 获取或创建当前步骤的 StepHistory
-            step_history_result = await db.execute(
-                select(StepHistory)
-                .where(
-                    StepHistory.session_id == session.id,
-                    StepHistory.step == current_step_enum.value,
-                    StepHistory.completed_at.is_(None),
-                )
-                .order_by(StepHistory.started_at.desc())
-                .limit(1)
-            )
-            step_history = step_history_result.scalar_one_or_none()
-            if not step_history:
-                step_history = StepHistory(
+            active_step_history = step_history
+            if (
+                active_step_history
+                and active_step_history.step != current_step_enum.value
+            ):
+                active_step_history = None
+            if not active_step_history:
+                active_step_history = StepHistory(
                     session_id=session.id,
                     step=current_step_enum.value,
                     started_at=utc_now(),
                 )
-                db.add(step_history)
-                await db.flush()
+                db.add(active_step_history)
 
             # 增加消息计数
-            step_history.message_count = (step_history.message_count or 0) + 1  # type: ignore[assignment]
+            active_step_history.message_count = (  # type: ignore[assignment]
+                (active_step_history.message_count or 0) + 1
+            )
 
             # 保存用户消息到数据库
             user_message = Message(
@@ -522,7 +529,6 @@ async def stream_messages(
                 step=current_step_enum.value,
             )
             db.add(user_message)
-            await db.flush()
 
             # 流式输出 AI 响应，同时累积完整回复
             ai_response_parts: list[str] = []
@@ -550,7 +556,7 @@ async def stream_messages(
 
             # 处理状态转换
             if next_step_enum and can_transition(current_step_enum, next_step_enum):
-                step_history.completed_at = now  # type: ignore[assignment]
+                active_step_history.completed_at = now  # type: ignore[assignment]
                 db.add(
                     StepHistory(
                         session_id=session.id,
@@ -566,15 +572,17 @@ async def stream_messages(
                         "from_step": current_step_enum.value,
                         "to_step": next_step_enum.value,
                     },
+                    flush=False,
                 )
             elif is_final_step(current_step_enum):
                 # 最终步骤完成
-                if step_history.completed_at is None:
-                    step_history.completed_at = now  # type: ignore[assignment]
+                if active_step_history.completed_at is None:
+                    active_step_history.completed_at = now  # type: ignore[assignment]
                     await analytics_service.emit(
                         "step_completed",
                         session.id,  # type: ignore[arg-type]
                         {"step": current_step_enum.value},
+                        flush=False,
                     )
                 session.status = SessionStatus.COMPLETED.value  # type: ignore[assignment]
                 session.completed_at = now  # type: ignore[assignment]
@@ -582,6 +590,7 @@ async def stream_messages(
                     "session_completed",
                     session.id,  # type: ignore[arg-type]
                     {"final_step": current_step_enum.value},
+                    flush=False,
                 )
 
             await db.commit()

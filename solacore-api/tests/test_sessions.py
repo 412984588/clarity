@@ -4,9 +4,13 @@ from uuid import UUID, uuid4
 
 import pytest
 from httpx import AsyncClient
+from sqlalchemy import select
 
+from app.models.solve_session import SolveStep
+from app.models.step_history import StepHistory
 from app.utils.security import decode_token
 from app.routers import sessions as sessions_router
+from tests.conftest import TestingSessionLocal
 
 
 async def _register_user(client: AsyncClient, email: str, fingerprint: str) -> str:
@@ -19,7 +23,8 @@ async def _register_user(client: AsyncClient, email: str, fingerprint: str) -> s
         },
     )
     assert response.status_code == 201
-    return response.json()["access_token"]
+    # httpOnly cookie mode: get token from cookie
+    return response.cookies["access_token"]
 
 
 @pytest.mark.asyncio
@@ -33,7 +38,8 @@ async def test_revoked_session_invalidates_token(client: AsyncClient):
         },
     )
     assert register_resp.status_code == 201
-    access_token = register_resp.json()["access_token"]
+    # httpOnly cookie mode: get token from cookie
+    access_token = register_resp.cookies["access_token"]
 
     payload = decode_token(access_token) or {}
     session_id = UUID(str(payload.get("sid")))
@@ -206,3 +212,51 @@ async def test_sse_invalid_session_returns_404(client: AsyncClient):
     )
     assert response.status_code == 404
     assert response.json()["detail"]["error"] == "SESSION_NOT_FOUND"
+
+
+@pytest.mark.asyncio
+async def test_sse_updates_step_history_message_count(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+):
+    class FakeAIService:
+        async def stream(self, system_prompt: str, user_prompt: str):
+            for token in ["ping"]:
+                yield token
+
+    monkeypatch.setattr(sessions_router, "AIService", FakeAIService)
+    token = await _register_user(
+        client, "session-step-history@example.com", "session-device-008"
+    )
+    create_resp = await client.post(
+        "/sessions",
+        json={},
+        headers={
+            "Authorization": f"Bearer {token}",
+            "X-Device-Fingerprint": "session-device-008",
+        },
+    )
+    session_id = create_resp.json()["session_id"]
+
+    async with client.stream(
+        "POST",
+        f"/sessions/{session_id}/messages",
+        json={"content": "hello", "step": "receive"},
+        headers={"Authorization": f"Bearer {token}"},
+    ) as response:
+        assert response.status_code == 200
+        await response.aread()
+
+    async with TestingSessionLocal() as session:
+        result = await session.execute(
+            select(StepHistory)
+            .where(
+                StepHistory.session_id == UUID(session_id),
+                StepHistory.step == SolveStep.RECEIVE.value,
+            )
+            .order_by(StepHistory.started_at.desc())
+            .limit(1)
+        )
+        step_history = result.scalar_one_or_none()
+
+    assert step_history is not None
+    assert step_history.message_count == 1

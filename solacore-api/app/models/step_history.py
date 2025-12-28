@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Column, DateTime, ForeignKey, Index, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -12,6 +12,15 @@ class StepHistory(Base):
     """步骤历史记录 - 追踪每个 Solve 步骤的开始/结束时间"""
 
     __tablename__ = "step_history"
+    __table_args__ = (
+        Index(
+            "ix_step_history_session_step_completed_started_at",
+            "session_id",
+            "step",
+            "completed_at",
+            "started_at",
+        ),
+    )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     session_id = Column(
