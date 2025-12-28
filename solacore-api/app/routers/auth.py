@@ -5,7 +5,7 @@ import logging
 import secrets
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Header, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Header, Path, Query, Request, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete, func
 from sqlalchemy.orm import selectinload
@@ -18,32 +18,48 @@ from app.middleware.csrf import (
     generate_csrf_token,
     set_csrf_cookies,
 )
-from app.middleware.rate_limit import limiter, AUTH_RATE_LIMIT
+from app.middleware.rate_limit import (
+    API_RATE_LIMIT,
+    AUTH_RATE_LIMIT,
+    FORGOT_PASSWORD_RATE_LIMIT,
+    OAUTH_RATE_LIMIT,
+    ip_rate_limit_key,
+    limiter,
+    user_rate_limit_key,
+)
 from app.models.device import Device
 from app.models.password_reset import PasswordResetToken
 from app.models.session import ActiveSession
 from app.models.subscription import Subscription
 from app.models.user import User
 from app.services.auth_service import AuthService
+from app.services.cache_service import CacheService
 from app.services.email_service import send_password_reset_email
 from app.services.oauth_service import OAuthService
 from app.schemas.auth import (
-    RegisterRequest,
-    LoginRequest,
-    BetaLoginRequest,
+    ActiveSessionResponse,
     AuthSuccessResponse,
-    UserResponse,
-    OAuthRequest,
+    BetaLoginRequest,
+    CsrfTokenResponse,
+    DeviceResponse,
+    FeatureConfigResponse,
     ForgotPasswordRequest,
+    LoginRequest,
+    OAuthRequest,
+    RegisterRequest,
     ResetPasswordRequest,
+    StatusMessageResponse,
+    UserResponse,
 )
+from app.utils.docs import COMMON_ERROR_RESPONSES
 from app.utils.exceptions import raise_auth_error
 from app.utils.security import decode_token, hash_password_async
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
+cache_service = CacheService()
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
 def set_auth_cookies(response: Response, access_token: str, refresh_token: str) -> None:
@@ -83,28 +99,50 @@ def set_session_cookies(
     set_csrf_cookies(response, generate_csrf_token())
 
 
-@router.get("/csrf")
+@router.get(
+    "/csrf",
+    response_model=CsrfTokenResponse,
+    summary="获取 CSRF Token",
+    description=(
+        "生成新的 CSRF Token，并写入 `csrf_token` 与 `csrf_token_http` 两个 cookie。"
+        "用于 Cookie 认证下的写操作。"
+    ),
+    responses=COMMON_ERROR_RESPONSES,
+)
 async def get_csrf_token(response: Response):
-    """获取 CSRF token，并写入双 cookie"""
+    """生成 CSRF Token 并写入双 Cookie，供后续写操作使用。"""
     token = generate_csrf_token()
     set_csrf_cookies(response, token)
     return {"csrf_token": token}
 
 
-@router.post("/register", response_model=AuthSuccessResponse, status_code=201)
-@limiter.limit(AUTH_RATE_LIMIT)
+@router.post(
+    "/register",
+    response_model=AuthSuccessResponse,
+    status_code=201,
+    summary="注册新用户",
+    description=(
+        "使用邮箱与密码注册新账号，成功后写入 httpOnly 的 access/refresh cookies。"
+        "注册接口免 CSRF 校验。"
+    ),
+    responses=COMMON_ERROR_RESPONSES,
+)
+@limiter.limit(
+    AUTH_RATE_LIMIT, key_func=ip_rate_limit_key, override_defaults=False
+)
 async def register(
     request: Request,
     response: Response,
     data: RegisterRequest,
     db: AsyncSession = Depends(get_db),
 ):
-    """注册新用户 (httpOnly cookies 模式)"""
+    """注册新用户并写入认证 Cookie，返回用户基础信息。"""
     service = AuthService(db)
     try:
         user, tokens = await service.register(data)
         # 设置 httpOnly cookies
         set_session_cookies(response, tokens.access_token, tokens.refresh_token)
+        await cache_service.invalidate_sessions(user.id)
         # 返回用户信息（不包含 token）
         return AuthSuccessResponse(
             user=UserResponse(
@@ -118,20 +156,29 @@ async def register(
         raise_auth_error(e, context="register")
 
 
-@router.post("/login", response_model=AuthSuccessResponse)
-@limiter.limit(AUTH_RATE_LIMIT)
+@router.post(
+    "/login",
+    response_model=AuthSuccessResponse,
+    summary="邮箱登录",
+    description="使用邮箱与密码登录，成功后写入 httpOnly 的 access/refresh cookies。",
+    responses=COMMON_ERROR_RESPONSES,
+)
+@limiter.limit(
+    AUTH_RATE_LIMIT, key_func=ip_rate_limit_key, override_defaults=False
+)
 async def login(
     request: Request,
     response: Response,
     data: LoginRequest,
     db: AsyncSession = Depends(get_db),
 ):
-    """邮箱登录 (httpOnly cookies 模式)"""
+    """邮箱登录并写入认证 Cookie，返回用户基础信息。"""
     service = AuthService(db)
     try:
         user, tokens = await service.login(data)
         # 设置 httpOnly cookies
         set_session_cookies(response, tokens.access_token, tokens.refresh_token)
+        await cache_service.invalidate_sessions(user.id)
         # 返回用户信息（不包含 token）
         return AuthSuccessResponse(
             user=UserResponse(
@@ -145,13 +192,25 @@ async def login(
         raise_auth_error(e, context="login")
 
 
-@router.post("/beta-login", response_model=AuthSuccessResponse)
+@router.post(
+    "/beta-login",
+    response_model=AuthSuccessResponse,
+    summary="Beta 模式自动登录",
+    description=(
+        "仅在 Beta 模式开启时可用，自动登录到测试账号并写入认证 cookies。"
+    ),
+    responses=COMMON_ERROR_RESPONSES,
+)
+@limiter.limit(
+    AUTH_RATE_LIMIT, key_func=ip_rate_limit_key, override_defaults=False
+)
 async def beta_login(
+    request: Request,
     response: Response,
     data: BetaLoginRequest | None = None,
     db: AsyncSession = Depends(get_db),
 ):
-    """Beta 模式自动登录"""
+    """在 Beta 模式下自动登录并创建会话。"""
     if not settings.beta_mode:
         raise HTTPException(status_code=403, detail={"error": "BETA_MODE_DISABLED"})
 
@@ -204,6 +263,7 @@ async def beta_login(
     await db.commit()
     # 设置 httpOnly cookies
     set_session_cookies(response, tokens.access_token, tokens.refresh_token)
+    await cache_service.invalidate_sessions(user.id)
     # 返回用户信息（不包含 token）
     return AuthSuccessResponse(
         user=UserResponse(
@@ -215,13 +275,19 @@ async def beta_login(
     )
 
 
-@router.post("/refresh", response_model=AuthSuccessResponse)
+@router.post(
+    "/refresh",
+    response_model=AuthSuccessResponse,
+    summary="刷新访问令牌",
+    description="使用 refresh_token cookie 刷新 access token，并更新认证 cookies。",
+    responses=COMMON_ERROR_RESPONSES,
+)
 async def refresh(
     request: Request,
     response: Response,
     db: AsyncSession = Depends(get_db),
 ):
-    """刷新 access token (httpOnly cookies 模式)"""
+    """刷新 access token 并更新认证 Cookie。"""
     # 从 cookie 读取 refresh_token
     refresh_token = request.cookies.get("refresh_token")
     if not refresh_token:
@@ -256,14 +322,39 @@ async def refresh(
         raise_auth_error(e, context="refresh")
 
 
-@router.post("/forgot-password")
-@limiter.limit("3/hour")  # 防止邮件轰炸：每小时最多 3 次
+@router.post(
+    "/forgot-password",
+    response_model=StatusMessageResponse,
+    summary="发送密码重置邮件",
+    description=(
+        "提交邮箱地址触发密码重置邮件发送。为避免用户枚举，"
+        "无论邮箱是否存在都返回同样的响应。"
+    ),
+    responses={
+        **COMMON_ERROR_RESPONSES,
+        200: {
+            "description": "请求已受理",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "message": "If an account exists, a reset link has been sent"
+                    }
+                }
+            },
+        },
+    },
+)
+@limiter.limit(
+    FORGOT_PASSWORD_RATE_LIMIT,
+    key_func=ip_rate_limit_key,
+    override_defaults=False,
+)  # 防止邮件轰炸：每小时最多 3 次
 async def forgot_password(
     request: Request,
     data: ForgotPasswordRequest,
     db: AsyncSession = Depends(get_db),
 ):
-    """忘记密码（始终返回 200，防止时序攻击）"""
+    """发送密码重置邮件，始终返回成功提示以防止枚举攻击。"""
     result = await db.execute(select(User).where(User.email == data.email))
     user = result.scalar_one_or_none()
 
@@ -296,11 +387,25 @@ async def forgot_password(
     return {"message": "If an account exists, a reset link has been sent"}
 
 
-@router.post("/reset-password")
+@router.post(
+    "/reset-password",
+    response_model=StatusMessageResponse,
+    summary="重置密码",
+    description="使用重置 token 更新密码，并清理所有活跃会话。",
+    responses={
+        **COMMON_ERROR_RESPONSES,
+        200: {
+            "description": "重置成功",
+            "content": {
+                "application/json": {"example": {"message": "Password reset successful"}}
+            },
+        },
+    },
+)
 async def reset_password(
     data: ResetPasswordRequest, db: AsyncSession = Depends(get_db)
 ):
-    """重置密码"""
+    """使用重置 token 更新密码并清理历史会话。"""
     token_hash = hashlib.sha256(data.token.encode()).hexdigest()
     result = await db.execute(
         select(PasswordResetToken)
@@ -326,17 +431,30 @@ async def reset_password(
     )
 
     await db.commit()
+    await cache_service.invalidate_sessions(reset_token.user_id)
     return {"message": "Password reset successful"}
 
 
-@router.post("/logout", status_code=204)
+@router.post(
+    "/logout",
+    status_code=204,
+    summary="登出并撤销当前会话",
+    description="撤销当前 access token 对应的会话并清除认证 cookies。",
+    responses={
+        **COMMON_ERROR_RESPONSES,
+        204: {"description": "No Content"},
+    },
+)
+@limiter.limit(
+    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
+)
 async def logout(
     response: Response,
     request: Request,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """登出 - 使当前 access token 对应 session 失效，清除 cookies"""
+    """使当前 access token 对应 session 失效并清除认证 Cookie。"""
     # 优先从 cookie 读取 token
     token = request.cookies.get("access_token")
 
@@ -368,6 +486,7 @@ async def logout(
         )
     )
     await db.commit()
+    await cache_service.invalidate_sessions(current_user.id)
 
     # 清除 cookies (httpOnly cookies 模式)
     # 必须使用与设置时相同的 domain 参数，否则无法清除
@@ -381,15 +500,37 @@ async def logout(
     return None
 
 
-@router.post("/oauth/google/code", response_model=AuthSuccessResponse)
+@router.post(
+    "/oauth/google/code",
+    response_model=AuthSuccessResponse,
+    summary="Google OAuth 授权码登录",
+    description="使用 OAuth 授权码换取令牌并登录，成功后写入认证 cookies。",
+    responses=COMMON_ERROR_RESPONSES,
+)
+@limiter.limit(
+    OAUTH_RATE_LIMIT, key_func=ip_rate_limit_key, override_defaults=False
+)
 async def google_oauth_code(
     response: Response,
-    code: str,
-    device_fingerprint: str | None = None,
-    device_name: str | None = None,
+    request: Request,
+    code: str = Query(
+        ...,
+        description="Google OAuth 授权码",
+        example="4/0AX4XfWj8M7WmC9o0pP3yR",
+    ),
+    device_fingerprint: str | None = Query(
+        default=None,
+        description="设备指纹（用于识别登录设备）",
+        example="web-2f1a8c7d",
+    ),
+    device_name: str | None = Query(
+        default=None,
+        description="设备名称",
+        example="Chrome on macOS",
+    ),
     db: AsyncSession = Depends(get_db),
 ):
-    """Google OAuth code exchange (标准 authorization code flow)"""
+    """Google OAuth 授权码登录并写入认证 Cookie。"""
     service = OAuthService(db)
     try:
         user, tokens = await service.google_auth_with_code(
@@ -412,13 +553,23 @@ async def google_oauth_code(
         raise_auth_error(e, context="google_oauth_code")
 
 
-@router.post("/oauth/google", response_model=AuthSuccessResponse)
+@router.post(
+    "/oauth/google",
+    response_model=AuthSuccessResponse,
+    summary="Google OAuth 登录",
+    description="使用 Google ID Token 登录，成功后写入认证 cookies。",
+    responses=COMMON_ERROR_RESPONSES,
+)
+@limiter.limit(
+    OAUTH_RATE_LIMIT, key_func=ip_rate_limit_key, override_defaults=False
+)
 async def google_oauth(
     response: Response,
+    request: Request,
     data: OAuthRequest,
     db: AsyncSession = Depends(get_db),
 ):
-    """Google OAuth 登录 (httpOnly cookies 模式 - id_token 直接验证)"""
+    """使用 Google ID Token 登录并写入认证 Cookie。"""
     service = OAuthService(db)
     try:
         user, tokens = await service.google_auth(data)
@@ -437,13 +588,23 @@ async def google_oauth(
         raise_auth_error(e, context="google_oauth")
 
 
-@router.post("/oauth/apple", response_model=AuthSuccessResponse)
+@router.post(
+    "/oauth/apple",
+    response_model=AuthSuccessResponse,
+    summary="Apple Sign-in 登录",
+    description="使用 Apple ID Token 登录，成功后写入认证 cookies。",
+    responses=COMMON_ERROR_RESPONSES,
+)
+@limiter.limit(
+    OAUTH_RATE_LIMIT, key_func=ip_rate_limit_key, override_defaults=False
+)
 async def apple_oauth(
     response: Response,
+    request: Request,
     data: OAuthRequest,
     db: AsyncSession = Depends(get_db),
 ):
-    """Apple Sign-in 登录 (httpOnly cookies 模式)"""
+    """使用 Apple Sign-in 登录并写入认证 Cookie。"""
     service = OAuthService(db)
     try:
         user, tokens = await service.apple_auth(data)
@@ -462,11 +623,21 @@ async def apple_oauth(
         raise_auth_error(e, context="apple_oauth")
 
 
-@router.get("/me", response_model=UserResponse)
+@router.get(
+    "/me",
+    response_model=UserResponse,
+    summary="获取当前用户信息",
+    description="返回当前登录用户的基础信息。",
+    responses=COMMON_ERROR_RESPONSES,
+)
+@limiter.limit(
+    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
+)
 async def get_current_user_info(
+    request: Request,
     current_user: User = Depends(get_current_user),
 ):
-    """获取当前用户信息 (httpOnly cookies 模式)"""
+    """获取当前登录用户的基础资料。"""
     return UserResponse(
         id=current_user.id,
         email=current_user.email,
@@ -475,11 +646,21 @@ async def get_current_user_info(
     )
 
 
-@router.get("/devices")
+@router.get(
+    "/devices",
+    response_model=list[DeviceResponse],
+    summary="获取活跃设备列表",
+    description="返回当前用户的活跃设备列表。",
+    responses=COMMON_ERROR_RESPONSES,
+)
+@limiter.limit(
+    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
+)
 async def list_devices(
+    request: Request,
     current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ):
-    """获取当前用户的活跃设备列表"""
+    """获取当前用户的活跃设备列表。"""
     # 只查询需要的字段，不加载关联数据
     result = await db.execute(
         select(Device)
@@ -487,9 +668,14 @@ async def list_devices(
         .order_by(Device.created_at.asc())
     )
     devices = result.scalars().all()
-    return [
-        {
-            "id": device.id,
+    response: list[dict[str, object]] = []
+    for device in devices:
+        cached_device = await cache_service.get_device(device.id)
+        if isinstance(cached_device, dict):
+            response.append(cached_device)
+            continue
+        payload = {
+            "id": str(device.id),
             "device_name": device.device_name,
             "platform": device.platform,
             "last_active_at": device.last_active_at.isoformat()
@@ -497,18 +683,41 @@ async def list_devices(
             else None,
             "is_active": device.is_active,
         }
-        for device in devices
-    ]
+        response.append(payload)
+        await cache_service.set_device(device.id, payload)
+    return response
 
 
-@router.delete("/devices/{device_id}", status_code=204)
+@router.delete(
+    "/devices/{device_id}",
+    status_code=204,
+    summary="解绑设备",
+    description="撤销指定设备的登录授权，并终止该设备的活跃会话。",
+    responses={
+        **COMMON_ERROR_RESPONSES,
+        204: {"description": "No Content"},
+    },
+)
+@limiter.limit(
+    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
+)
 async def revoke_device(
-    device_id: UUID,
-    device_fingerprint: str = Header(..., alias="X-Device-Fingerprint"),
+    request: Request,
+    device_id: UUID = Path(
+        ...,
+        description="设备 ID",
+        example="1c2d3e4f-5a6b-7c8d-9e0f-1a2b3c4d5e6f",
+    ),
+    device_fingerprint: str = Header(
+        ...,
+        alias="X-Device-Fingerprint",
+        description="当前设备指纹，用于避免解绑自己",
+        example="ios-4f3e9b2c",
+    ),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """解绑设备"""
+    """解绑设备并清理相关会话。"""
     result = await db.execute(
         select(Device).where(Device.id == device_id, Device.user_id == current_user.id)
     )
@@ -541,14 +750,29 @@ async def revoke_device(
     await db.execute(delete(ActiveSession).where(ActiveSession.device_id == device_id))
 
     await db.commit()
+    await cache_service.invalidate_device(device_id)
+    await cache_service.invalidate_sessions(current_user.id)
     return None
 
 
-@router.get("/sessions")
+@router.get(
+    "/sessions",
+    response_model=list[ActiveSessionResponse],
+    summary="获取活跃会话列表",
+    description="返回当前用户的活跃登录会话。",
+    responses=COMMON_ERROR_RESPONSES,
+)
+@limiter.limit(
+    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
+)
 async def list_sessions(
+    request: Request,
     current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ):
-    """获取当前用户的活跃会话"""
+    """获取当前用户的活跃会话列表。"""
+    cached_sessions = await cache_service.get_sessions(current_user.id)
+    if isinstance(cached_sessions, list):
+        return cached_sessions
     # 只查询需要的字段，不加载 device 关联
     result = await db.execute(
         select(ActiveSession)
@@ -559,10 +783,10 @@ async def list_sessions(
         .order_by(ActiveSession.created_at.asc())
     )
     sessions = result.scalars().all()
-    return [
+    response = [
         {
-            "id": session.id,
-            "device_id": session.device_id,
+            "id": str(session.id),
+            "device_id": str(session.device_id) if session.device_id else None,
             "created_at": session.created_at.isoformat()
             if session.created_at
             else None,
@@ -572,15 +796,34 @@ async def list_sessions(
         }
         for session in sessions
     ]
+    await cache_service.set_sessions(current_user.id, response)
+    return response
 
 
-@router.delete("/sessions/{session_id}", status_code=204)
+@router.delete(
+    "/sessions/{session_id}",
+    status_code=204,
+    summary="终止单个会话",
+    description="终止指定会话并使其立即失效。",
+    responses={
+        **COMMON_ERROR_RESPONSES,
+        204: {"description": "No Content"},
+    },
+)
+@limiter.limit(
+    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
+)
 async def revoke_session(
-    session_id: UUID,
+    request: Request,
+    session_id: UUID = Path(
+        ...,
+        description="会话 ID",
+        example="5f1c9b3e-7c2a-4d1a-9a1d-0b8f7c5f2c10",
+    ),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """终止会话"""
+    """终止指定活跃会话。"""
     result = await db.execute(
         select(ActiveSession).where(
             ActiveSession.id == session_id, ActiveSession.user_id == current_user.id
@@ -592,12 +835,19 @@ async def revoke_session(
 
     await db.delete(session)
     await db.commit()
+    await cache_service.invalidate_sessions(current_user.id)
     return None
 
 
-@router.get("/config/features")
+@router.get(
+    "/config/features",
+    response_model=FeatureConfigResponse,
+    summary="获取前端功能开关",
+    description="返回前端需要的功能开关与版本信息。",
+    responses=COMMON_ERROR_RESPONSES,
+)
 async def get_features():
-    """返回前端功能开关配置"""
+    """返回前端功能开关配置与版本信息。"""
     return {
         "payments_enabled": settings.payments_enabled,
         "beta_mode": settings.beta_mode,

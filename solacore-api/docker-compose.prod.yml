@@ -76,6 +76,27 @@ services:
     networks:
       - solacore_backend
 
+  backup:
+    image: postgres:15-alpine
+    env_file:
+      - .env
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST:-db}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      BACKUP_DIR: ${BACKUP_DIR:-/backups}
+    volumes:
+      - ./scripts:/scripts:ro
+      - backups:/backups
+    depends_on:
+      - db
+    restart: always
+    networks:
+      - solacore_backend
+    command: >
+      sh -c "chmod +x /scripts/*.sh
+      && printf 'PATH=/usr/local/bin:/usr/bin:/bin\n0 2 * * * /scripts/backup_database.sh\n' > /etc/crontabs/root
+      && crond -f -l 2"
+
   nginx:
     image: nginx:1.25-alpine
     ports:
@@ -90,9 +111,65 @@ services:
     networks:
       - solacore_frontend
 
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=${PROMETHEUS_RETENTION_TIME:-30d}"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    depends_on:
+      - api
+      - node-exporter
+    restart: always
+    networks:
+      - solacore_backend
+
+  grafana:
+    image: grafana/grafana-oss:10.4.2
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: ${GRAFANA_ANONYMOUS_ENABLED:-false}
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    depends_on:
+      - prometheus
+    restart: always
+    networks:
+      - solacore_backend
+
+  node-exporter:
+    image: prom/node-exporter:v1.7.0
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
+      - "--path.rootfs=/rootfs"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    restart: always
+    networks:
+      - solacore_backend
+
 volumes:
   postgres_data:
   redis_data:
+  backups:
+  prometheus_data:
+  grafana_data:
 
 networks:
   solacore_frontend:

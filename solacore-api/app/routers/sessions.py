@@ -5,7 +5,7 @@ import logging
 from typing import AsyncGenerator
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, Header, HTTPException, Path, Query, Request
 from fastapi.responses import StreamingResponse
 from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,7 +14,12 @@ from sqlalchemy.orm import noload
 from app.config import get_settings
 from app.database import get_db
 from app.middleware.auth import get_current_user
-from app.middleware.rate_limit import limiter, AI_RATE_LIMIT
+from app.middleware.rate_limit import (
+    API_RATE_LIMIT,
+    SSE_RATE_LIMIT,
+    limiter,
+    user_rate_limit_key,
+)
 from app.models.device import Device
 from app.models.solve_session import SolveSession, SessionStatus, SolveStep
 from app.models.step_history import StepHistory
@@ -43,9 +48,10 @@ from app.services.state_machine import (
     is_final_step,
     validate_transition,
 )
+from app.utils.docs import COMMON_ERROR_RESPONSES
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/sessions", tags=["sessions"])
+router = APIRouter(prefix="/sessions", tags=["Sessions"])
 
 SESSION_LIMITS = {"free": 10, "standard": 100, "pro": 0}
 STEP_SYSTEM_PROMPTS = {
@@ -152,21 +158,30 @@ async def _get_or_create_usage(
     description="""
     创建一个新的 5 步 Solve 会话。
 
-    **需要认证**: 是（Bearer Token）
+    **需要认证**: 是（Bearer Token / Cookie）
 
     **Headers 必须**:
     - `X-Device-Fingerprint`: 设备指纹
 
     **返回**: 新建会话的 ID 和初始状态
     """,
+    responses=COMMON_ERROR_RESPONSES,
 )
-@limiter.limit(AI_RATE_LIMIT)
+@limiter.limit(
+    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
+)
 async def create_session(
     request: Request,
     current_user: User = Depends(get_current_user),
-    device_fingerprint: str = Header(..., alias="X-Device-Fingerprint"),
+    device_fingerprint: str = Header(
+        ...,
+        alias="X-Device-Fingerprint",
+        description="设备指纹，用于识别当前设备",
+        example="ios-4f3e9b2c",
+    ),
     db: AsyncSession = Depends(get_db),
 ):
+    """创建新的 Solve 会话并返回会话基础信息与使用量。"""
     device_result = await db.execute(
         select(Device).where(
             Device.user_id == current_user.id,
@@ -277,13 +292,30 @@ async def create_session(
     response_model=SessionListResponse,
     summary="获取会话列表",
     description="获取当前用户的所有会话列表，支持分页。",
+    responses=COMMON_ERROR_RESPONSES,
+)
+@limiter.limit(
+    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
 )
 async def list_sessions(
-    limit: int = Query(20, ge=1, le=100),
-    offset: int = Query(0, ge=0),
+    request: Request,
+    limit: int = Query(
+        20,
+        ge=1,
+        le=100,
+        description="分页大小（1-100）",
+        example=20,
+    ),
+    offset: int = Query(
+        0,
+        ge=0,
+        description="分页偏移量",
+        example=0,
+    ),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    """分页返回当前用户的 Solve 会话列表。"""
     total_result = await db.execute(
         select(func.count(SolveSession.id)).where(
             SolveSession.user_id == current_user.id
@@ -317,19 +349,40 @@ async def list_sessions(
         "获取指定会话的详细信息。默认不返回消息历史，"
         "需要时可通过 include_messages=true 返回分页消息。"
     ),
+    responses=COMMON_ERROR_RESPONSES,
+)
+@limiter.limit(
+    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
 )
 async def get_session(
-    session_id: UUID,
-    include_messages: bool = Query(False, description="是否返回会话消息（默认不返回）"),
+    request: Request,
+    session_id: UUID = Path(
+        ...,
+        description="会话 ID",
+        example="2c3d4e5f-6a7b-8c9d-0e1f-2a3b4c5d6e7f",
+    ),
+    include_messages: bool = Query(
+        False,
+        description="是否返回会话消息（默认不返回）",
+        example=False,
+    ),
     limit: int = Query(
-        20, ge=1, le=100, description="消息分页大小，仅 include_messages=true 生效"
+        20,
+        ge=1,
+        le=100,
+        description="消息分页大小，仅 include_messages=true 生效",
+        example=20,
     ),
     offset: int = Query(
-        0, ge=0, description="消息分页偏移，仅 include_messages=true 生效"
+        0,
+        ge=0,
+        description="消息分页偏移，仅 include_messages=true 生效",
+        example=0,
     ),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    """获取单个 Solve 会话详情，可选返回消息列表。"""
     result = await db.execute(
         select(SolveSession)
         .options(noload(SolveSession.messages))
@@ -360,14 +413,28 @@ async def get_session(
     )
 
 
-@router.patch("/{session_id}", response_model=SessionUpdateResponse)
+@router.patch(
+    "/{session_id}",
+    response_model=SessionUpdateResponse,
+    summary="更新会话状态",
+    description="更新 Solve 会话的状态、步骤或本地化配置。",
+    responses=COMMON_ERROR_RESPONSES,
+)
+@limiter.limit(
+    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
+)
 async def update_session(
-    session_id: UUID,
+    request: Request,
     updates: SessionUpdateRequest,
+    session_id: UUID = Path(
+        ...,
+        description="会话 ID",
+        example="2c3d4e5f-6a7b-8c9d-0e1f-2a3b4c5d6e7f",
+    ),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """更新 Solve 会话"""
+    """更新 Solve 会话状态、步骤或提醒信息。"""
     result = await db.execute(
         select(SolveSession).where(
             SolveSession.id == session_id, SolveSession.user_id == current_user.id
@@ -437,15 +504,38 @@ async def update_session(
     - `done`: 生成完成，包含元数据
     - `error`: 发生错误
     """,
+    responses={
+        **COMMON_ERROR_RESPONSES,
+        200: {
+            "description": "SSE Stream",
+            "content": {
+                "text/event-stream": {
+                    "example": (
+                        "event: token\n"
+                        "data: {\"content\": \"我能理解你的感受，\"}\n\n"
+                        "event: done\n"
+                        "data: {\"next_step\": \"clarify\", \"emotion_detected\": \"sadness\"}\n\n"
+                    )
+                }
+            },
+        },
+    },
 )
-@limiter.limit(AI_RATE_LIMIT)
+@limiter.limit(
+    SSE_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
+)
 async def stream_messages(
     request: Request,
-    session_id: UUID,
     data: MessageRequest,
+    session_id: UUID = Path(
+        ...,
+        description="会话 ID",
+        example="2c3d4e5f-6a7b-8c9d-0e1f-2a3b4c5d6e7f",
+    ),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    """向会话发送消息并以 SSE 方式流式返回 AI 回复。"""
     result = await db.execute(
         select(SolveSession, StepHistory)
         .outerjoin(

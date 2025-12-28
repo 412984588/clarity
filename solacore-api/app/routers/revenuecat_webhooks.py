@@ -15,10 +15,12 @@ from app.database import get_db
 from app.models.subscription import Subscription
 from app.models.user import User
 from app.models.webhook_event import ProcessedWebhookEvent
+from app.services.cache_service import CacheService
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/webhooks", tags=["webhooks"])
+cache_service = CacheService()
 
 
 def _entitlement_to_tier(entitlement_ids: list[str]) -> str:
@@ -228,6 +230,7 @@ async def revenuecat_webhook(
         cancel_at_period_end=cancel_at_period_end,  # type: ignore[arg-type]
         current_period_end=current_period_end,  # type: ignore[arg-type]
     )
+    await cache_service.invalidate_subscription(user.id)
 
     await db.commit()
     logger.info(

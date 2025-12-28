@@ -8,8 +8,10 @@ services:
     environment:
       - DEBUG=true
       - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/solacore
+      - REDIS_URL=redis://redis:6379/0
     depends_on:
       - db
+      - redis
     volumes:
       - ./app:/app/app
 
@@ -23,6 +25,13 @@ services:
       - POSTGRES_DB=solacore
     volumes:
       - postgres_data:/var/lib/postgresql/data
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
 
 volumes:
   postgres_data:
+  redis_data:

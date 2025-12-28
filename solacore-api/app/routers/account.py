@@ -8,16 +8,19 @@ from sqlalchemy.orm import selectinload
 
 from app.database import get_db
 from app.middleware.auth import get_current_user
-from app.middleware.rate_limit import limiter, DEFAULT_RATE_LIMIT
+from app.middleware.rate_limit import API_RATE_LIMIT, limiter, user_rate_limit_key
 from app.models.analytics_event import AnalyticsEvent
 from app.models.device import Device
 from app.models.session import ActiveSession
 from app.models.solve_session import SolveSession
 from app.models.step_history import StepHistory
 from app.models.user import User
+from app.services.cache_service import CacheService
 from app.utils.datetime_utils import utc_now
+from app.utils.docs import COMMON_ERROR_RESPONSES
 
-router = APIRouter(prefix="/account", tags=["account"])
+router = APIRouter(prefix="/account", tags=["Account"])
+cache_service = CacheService()
 
 
 def _dt(value: object | None) -> Optional[str]:
@@ -26,13 +29,58 @@ def _dt(value: object | None) -> Optional[str]:
     return None
 
 
-@router.get("/export")
-@limiter.limit(DEFAULT_RATE_LIMIT)
+@router.get(
+    "/export",
+    summary="导出账户数据",
+    description="导出当前用户的账号、订阅、设备、会话与分析事件数据。",
+    responses={
+        **COMMON_ERROR_RESPONSES,
+        200: {
+            "description": "导出数据",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "exported_at": "2024-06-01T12:00:00Z",
+                        "user": {
+                            "id": "2f1c9b3e-7c2a-4d1a-9a1d-0b8f7c5f2c10",
+                            "email": "user@example.com",
+                            "auth_provider": "email",
+                            "auth_provider_id": None,
+                            "locale": "en",
+                            "is_active": True,
+                            "created_at": "2024-05-01T10:00:00Z",
+                            "updated_at": "2024-06-01T10:00:00Z",
+                        },
+                        "subscription": {
+                            "id": "6e7f8a9b-0c1d-2e3f-4a5b-6c7d8e9f0a1b",
+                            "tier": "free",
+                            "status": "active",
+                            "current_period_start": "2024-06-01T00:00:00Z",
+                            "current_period_end": "2024-07-01T00:00:00Z",
+                            "cancel_at_period_end": False,
+                            "created_at": "2024-05-01T10:00:00Z",
+                            "updated_at": "2024-06-01T10:00:00Z",
+                        },
+                        "devices": [],
+                        "active_sessions": [],
+                        "solve_sessions": [],
+                        "step_history": [],
+                        "analytics_events": [],
+                    }
+                }
+            },
+        },
+    },
+)
+@limiter.limit(
+    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
+)
 async def export_account(
     request: Request,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
+    """导出当前账户的所有相关数据，便于数据携带与合规导出。"""
     result = await db.execute(
         select(User)
         .options(selectinload(User.subscription))
@@ -169,13 +217,25 @@ async def export_account(
     }
 
 
-@router.delete("", status_code=204)
-@limiter.limit(DEFAULT_RATE_LIMIT)
+@router.delete(
+    "",
+    status_code=204,
+    summary="删除账户",
+    description="永久删除当前账户及关联数据。",
+    responses={
+        **COMMON_ERROR_RESPONSES,
+        204: {"description": "No Content"},
+    },
+)
+@limiter.limit(
+    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
+)
 async def delete_account(
     request: Request,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> None:
+    """删除当前用户账户并清理相关缓存。"""
     result = await db.execute(
         delete(User).where(User.id == current_user.id).returning(User.id)
     )
@@ -183,4 +243,7 @@ async def delete_account(
     if not deleted_id:
         raise HTTPException(status_code=404, detail={"error": "USER_NOT_FOUND"})
     await db.commit()
+    await cache_service.invalidate_user(current_user.id)
+    await cache_service.invalidate_subscription(current_user.id)
+    await cache_service.invalidate_sessions(current_user.id)
     return None

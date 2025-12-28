@@ -4,6 +4,7 @@ from typing import Tuple
 import stripe
 
 from app.config import get_settings
+from app.models.subscription import Subscription
 from app.models.user import User
 
 
@@ -17,12 +18,14 @@ def _configure_stripe():
     return settings
 
 
-async def create_checkout_session(user: User, price_id: str) -> Tuple[str, str]:
+async def create_checkout_session(
+    user: User, subscription: Subscription, price_id: str
+) -> Tuple[str, str]:
     settings = _configure_stripe()
-    if not user.subscription:
+    if not subscription:
         raise ValueError("NO_SUBSCRIPTION")
 
-    customer_id = user.subscription.stripe_customer_id
+    customer_id = subscription.stripe_customer_id
     if not customer_id:
         customer = await asyncio.to_thread(
             stripe.Customer.create,
@@ -30,7 +33,7 @@ async def create_checkout_session(user: User, price_id: str) -> Tuple[str, str]:
             metadata={"user_id": str(user.id)},
         )
         customer_id = customer.get("id")
-        user.subscription.stripe_customer_id = customer_id  # type: ignore[assignment]
+        subscription.stripe_customer_id = customer_id  # type: ignore[assignment]
 
     session = await asyncio.to_thread(
         stripe.checkout.Session.create,

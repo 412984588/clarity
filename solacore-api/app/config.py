@@ -14,9 +14,20 @@ class Settings(BaseSettings):
     app_version: str = "0.1.0"
     debug: bool = False
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/solacore"
+    redis_url: str = "redis://localhost:6379/0"
     jwt_secret: str = DEFAULT_JWT_SECRET
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 60
+
+    # Rate limiting 配置
+    rate_limit_global: str = "100/minute"
+    rate_limit_auth: str = "5/minute"
+    rate_limit_oauth: str = "10/minute"
+    rate_limit_forgot_password: str = "3/hour"
+    rate_limit_api: str = "60/minute"
+    rate_limit_sse: str = "5/minute"
+    rate_limit_ip_whitelist: str = ""  # 逗号分隔的 IP 白名单
+    rate_limit_redis_url: str = ""  # 默认使用 redis_url
 
     # OAuth 配置
     google_client_id: str = ""
@@ -40,7 +51,7 @@ class Settings(BaseSettings):
 
     # Sentry 配置
     sentry_dsn: str = ""  # 生产环境从环境变量读取
-    sentry_environment: str = "development"
+    sentry_environment: str = "production"
     sentry_traces_sample_rate: float = 0.1
 
     # Free Beta 配置

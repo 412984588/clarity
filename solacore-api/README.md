@@ -1,86 +1,54 @@
 # Solacore API
 
-FastAPI 后端服务
+![Coverage](https://img.shields.io/badge/coverage-85%25-brightgreen)
+![Tests](https://img.shields.io/badge/tests-manual-lightgrey)
+![License](https://img.shields.io/badge/license-MIT-blue)
 
-## 环境要求
+FastAPI backend for authentication, Solve sessions, subscriptions, and account management.
 
-- Python 3.11+
-- Poetry 1.7+
-- PostgreSQL 15+（或使用 Docker）
-- Docker + Docker Compose（可选）
+## Features
 
-## 快速开始
+- FastAPI + async SQLAlchemy with Alembic migrations
+- Authentication with email/password and OAuth (Google, Apple)
+- SSE streaming for Solve sessions
+- Redis caching with TTL-based invalidation
+- Rate limiting via SlowAPI (IP and user based)
+- Monitoring stack: Prometheus, Grafana, Sentry
+- Webhooks for Stripe and RevenueCat
+- Health probes and structured logging
 
-### 本地开发
+## Quick start
 
 ```bash
-# 安装依赖
-poetry install --no-root
-
-# 复制环境变量配置
+poetry install --with dev
 cp .env.example .env
 
-# 启动开发服务器
+docker compose up -d db redis
+poetry run alembic upgrade head
 poetry run uvicorn app.main:app --reload
-
-# 访问 API 文档
-open http://localhost:8000/docs
 ```
 
-### Docker 部署
+Open API docs at `http://localhost:8000/docs`.
 
-```bash
-# 启动所有服务（API + PostgreSQL）
-docker-compose up -d
+## Documentation
 
-# 查看日志
-docker-compose logs -f api
+- `docs/DEVELOPMENT.md` - local development
+- `docs/DEPLOYMENT.md` - production deployment
+- `docs/ARCHITECTURE.md` - system architecture
+- `docs/MONITORING.md` - metrics and alerting
+- `docs/CONTRIBUTING.md` - contribution guide
+- `docs/API.md` - API overview
 
-# 停止服务
-docker-compose down
-```
+## Contributing
 
-## 目录结构
+See `docs/CONTRIBUTING.md`.
 
-- `app/` - 应用代码
-  - `routers/` - API 路由
-  - `services/` - 业务逻辑
-  - `models/` - SQLAlchemy 模型
-  - `schemas/` - Pydantic 数据模型
-  - `middleware/` - 中间件
-  - `config.py` - 配置管理
-  - `database.py` - 数据库连接
-  - `main.py` - FastAPI 应用入口
-- `tests/` - 测试文件
-- `alembic/` - 数据库迁移脚本
+## Contributors
 
-## 代码规范
+- Maintainer: Zhiming Deng
+- All contributors: https://github.com/412984588/clarity/graphs/contributors
 
-```bash
-# 代码检查
-poetry run ruff check .
+## License
 
-# 类型检查
-poetry run mypy app --ignore-missing-imports
-
-# 运行测试
-poetry run pytest
-```
-
-## API 端点
-
-- `GET /` - 根端点
-- `GET /health` - 健康检查
-- `GET /docs` - Swagger UI 文档
-- `GET /redoc` - ReDoc 文档
-
-## 环境变量
-
-查看 `.env.example` 获取完整配置说明
-
-- `DEBUG` - 调试模式
-- `DATABASE_URL` - 数据库连接字符串
-- `JWT_SECRET` - JWT 密钥
-- `HOST` - 服务器地址
-- `PORT` - 服务器端口
+MIT
 # Auto-deploy test Fri Dec 26 17:39:43 EST 2025

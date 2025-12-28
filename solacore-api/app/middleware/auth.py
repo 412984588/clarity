@@ -9,7 +9,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.models.session import ActiveSession
 from app.models.user import User
+from app.services.cache_service import CacheService
 from app.utils.security import decode_token
+
+cache_service = CacheService()
 
 
 async def get_current_user(
@@ -52,24 +55,47 @@ async def get_current_user(
     except (TypeError, ValueError):
         raise HTTPException(status_code=401, detail={"error": "SESSION_NOT_FOUND"})
 
-    # 合并查询：一次 JOIN 获取 session + user，减少数据库往返
-    result = await db.execute(
-        select(ActiveSession, User)
-        .outerjoin(User, ActiveSession.user_id == User.id)
-        .where(
+    session_result = await db.execute(
+        select(ActiveSession).where(
             ActiveSession.id == session_uuid,
             ActiveSession.user_id == user_uuid,
             ActiveSession.expires_at > utc_now(),
         )
     )
-    row = result.one_or_none()
-    if not row:
+    session = session_result.scalar_one_or_none()
+    if not session:
         raise HTTPException(status_code=401, detail={"error": "SESSION_REVOKED"})
 
-    _session, user = row
+    cached_user = await cache_service.get_user(user_uuid)
+    if isinstance(cached_user, dict) and cached_user.get("email"):
+        if not cached_user.get("is_active", True):
+            raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"})
+
+        user = User(
+            id=user_uuid,
+            email=str(cached_user.get("email")),
+            auth_provider=str(cached_user.get("auth_provider") or "email"),
+            locale=str(cached_user.get("locale") or "en"),
+            is_active=bool(cached_user.get("is_active", True)),
+        )
+        request.state.current_user = user
+        return user
+
+    result = await db.execute(select(User).where(User.id == user_uuid))
+    user = result.scalar_one_or_none()
 
     if not user or not user.is_active:
         raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"})
 
+    await cache_service.set_user(
+        user.id,
+        {
+            "id": str(user.id),
+            "email": user.email,
+            "auth_provider": user.auth_provider,
+            "locale": user.locale,
+            "is_active": user.is_active,
+        },
+    )
     request.state.current_user = user
     return user

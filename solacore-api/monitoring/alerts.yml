@@ -1,0 +1,27 @@
+groups:
+  - name: solacore-alerts
+    rules:
+      - alert: ApiHighErrorRate
+        expr: |
+          sum(rate(http_requests_total{job="api",status=~"4..|5.."}[5m]))
+            /
+          sum(rate(http_requests_total{job="api"}[5m]))
+            > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High API error rate"
+          description: "API 4xx/5xx error rate is above 5% for 5 minutes."
+      - alert: ApiHighLatency
+        expr: |
+          sum(rate(http_request_duration_seconds_sum{job="api"}[5m]))
+            /
+          sum(rate(http_request_duration_seconds_count{job="api"}[5m]))
+            > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High API latency"
+          description: "Average API latency is above 1s for 5 minutes."

@@ -13,10 +13,12 @@ from app.config import get_settings
 from app.database import get_db
 from app.models.subscription import Subscription, Usage
 from app.models.webhook_event import ProcessedWebhookEvent
+from app.services.cache_service import CacheService
 from app.services import stripe_service
 from app.utils.datetime_utils import utc_now
 
 router = APIRouter(prefix="/webhooks", tags=["webhooks"])
+cache_service = CacheService()
 
 
 def _resolve_tier(price_id: str) -> Optional[str]:
@@ -178,6 +180,7 @@ async def _handle_checkout_completed(db: AsyncSession, session: dict) -> None:
     subscription.stripe_subscription_id = session.get("subscription")  # type: ignore[assignment]
     subscription.status = "active"  # type: ignore[assignment]
     subscription.cancel_at_period_end = False  # type: ignore[assignment]
+    await cache_service.invalidate_subscription(user_uuid)
 
 
 async def _handle_invoice_paid(db: AsyncSession, invoice: dict) -> None:
@@ -204,6 +207,7 @@ async def _handle_invoice_paid(db: AsyncSession, invoice: dict) -> None:
 
     if str(subscription.tier) != "free":
         await _reset_usage_for_period(db, subscription.user_id, period_start)  # type: ignore[arg-type]
+    await cache_service.invalidate_subscription(subscription.user_id)
 
 
 async def _handle_invoice_payment_failed(db: AsyncSession, invoice: dict) -> None:
@@ -213,6 +217,7 @@ async def _handle_invoice_payment_failed(db: AsyncSession, invoice: dict) -> Non
     if not subscription:
         return
     subscription.status = "past_due"  # type: ignore[assignment]
+    await cache_service.invalidate_subscription(subscription.user_id)
 
 
 async def _handle_subscription_deleted(
@@ -230,3 +235,4 @@ async def _handle_subscription_deleted(
     subscription.current_period_start = None  # type: ignore[assignment]
     subscription.current_period_end = None  # type: ignore[assignment]
     subscription.cancel_at_period_end = False  # type: ignore[assignment]
+    await cache_service.invalidate_subscription(subscription.user_id)

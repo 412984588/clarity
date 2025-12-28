@@ -1,16 +1,61 @@
+default_install_hook_types:
+  - pre-commit
+  - commit-msg
+  - pre-push
+
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.6
+    rev: v0.14.10
     hooks:
-      - id: ruff
-        args: [--fix]
       - id: ruff-format
+        stages: [pre-commit]
+      - id: ruff
+        stages: [pre-commit]
+        args: [--fix]
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        stages: [pre-commit]
+        args: [--profile=black]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v4.6.0
     hooks:
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
       - id: check-yaml
+        stages: [pre-commit]
+      - id: check-json
+        stages: [pre-commit]
+      - id: trailing-whitespace
+        stages: [pre-commit]
+      - id: end-of-file-fixer
+        stages: [pre-commit]
       - id: check-added-large-files
-        args: ['--maxkb=1000']
+        stages: [pre-commit]
+        args: [--maxkb=500]
+      - id: detect-private-key
+        stages: [pre-commit]
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.19.1
+    hooks:
+      - id: mypy
+        stages: [pre-commit]
+        args: [--ignore-missing-imports]
+
+  - repo: local
+    hooks:
+      - id: commit-msg-format
+        name: check commit message format
+        entry: python scripts/check-commit-msg.py
+        language: system
+        stages: [commit-msg]
+        pass_filenames: true
+
+      - id: pytest-coverage
+        name: pytest (fast) with coverage
+        entry: bash -c 'if [ -n "$CI" ]; then echo "CI detected, skipping tests."; exit 0; fi; pytest -q --maxfail=1 --disable-warnings --cov=app --cov-fail-under=85'
+        language: system
+        stages: [pre-push]
+        pass_filenames: false
