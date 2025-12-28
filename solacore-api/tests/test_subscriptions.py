@@ -14,7 +14,7 @@ async def _register_user(client: AsyncClient, email: str, fingerprint: str) -> s
             "device_fingerprint": fingerprint,
         },
     )
-    return response.json()["access_token"]
+    return response.cookies["access_token"]
 
 
 @pytest.mark.asyncio
@@ -62,7 +62,7 @@ async def test_checkout_invalid_price_id(client: AsyncClient):
         "/subscriptions/checkout", json={"price_id": "invalid_price"}, headers=headers
     )
     assert response.status_code == 400
-    assert response.json()["detail"]["error"] == "INVALID_PRICE_ID"
+    assert response.json()["error"] == "INVALID_PRICE_ID"
 
 
 @pytest.mark.asyncio
@@ -73,4 +73,4 @@ async def test_portal_no_customer_returns_404(client: AsyncClient):
 
     response = await client.get("/subscriptions/portal", headers=headers)
     assert response.status_code == 404
-    assert response.json()["detail"]["error"] == "NO_SUBSCRIPTION"
+    assert response.json()["error"] == "NO_SUBSCRIPTION"

@@ -52,7 +52,7 @@ async def test_webhook_missing_auth_returns_401(client: AsyncClient):
         json={"event": {"type": "INITIAL_PURCHASE"}},
     )
     assert response.status_code == 401
-    assert response.json()["detail"]["error"] == "MISSING_AUTH"
+    assert response.json()["error"] == "MISSING_AUTH"
 
 
 @pytest.mark.asyncio
@@ -67,7 +67,7 @@ async def test_webhook_invalid_auth_returns_401(client: AsyncClient):
             headers={"Authorization": "Bearer wrong"},
         )
     assert response.status_code == 401
-    assert response.json()["detail"]["error"] == "INVALID_AUTH"
+    assert response.json()["error"] == "INVALID_AUTH"
 
 
 @pytest.mark.asyncio

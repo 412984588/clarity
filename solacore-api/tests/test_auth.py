@@ -87,7 +87,7 @@ async def test_register_duplicate_email(client: AsyncClient):
         },
     )
     assert response.status_code == 409
-    assert response.json()["detail"]["error"] == "EMAIL_ALREADY_EXISTS"
+    assert response.json()["error"] == "EMAIL_ALREADY_EXISTS"
 
 
 @pytest.mark.asyncio
@@ -131,7 +131,7 @@ async def test_login_invalid_email(client: AsyncClient):
         },
     )
     assert response.status_code == 401
-    assert response.json()["detail"]["error"] == "INVALID_CREDENTIALS"
+    assert response.json()["error"] == "INVALID_CREDENTIALS"
 
 
 @pytest.mark.asyncio
@@ -156,7 +156,7 @@ async def test_login_wrong_password(client: AsyncClient):
         },
     )
     assert response.status_code == 401
-    assert response.json()["detail"]["error"] == "INVALID_CREDENTIALS"
+    assert response.json()["error"] == "INVALID_CREDENTIALS"
 
 
 @pytest.mark.asyncio
@@ -195,4 +195,4 @@ async def test_refresh_invalid_token(client: AsyncClient):
         "/auth/refresh", json={"refresh_token": "invalid-token"}
     )
     assert response.status_code == 401
-    assert response.json()["detail"]["error"] == "INVALID_TOKEN"
+    assert response.json()["error"] == "INVALID_TOKEN"

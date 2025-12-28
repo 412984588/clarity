@@ -64,7 +64,7 @@ async def test_list_devices(client: AsyncClient):
             "device_fingerprint": "device-list-001",
         },
     )
-    access_token = response.json()["access_token"]
+    access_token = response.cookies["access_token"]
     user = _user_from_access_token(access_token)
 
     app.dependency_overrides[get_current_user] = lambda: user
@@ -91,7 +91,7 @@ async def test_list_sessions(client: AsyncClient):
             "device_fingerprint": "session-list-001",
         },
     )
-    access_token = response.json()["access_token"]
+    access_token = response.cookies["access_token"]
     user = _user_from_access_token(access_token)
 
     app.dependency_overrides[get_current_user] = lambda: user
@@ -117,7 +117,7 @@ async def test_device_limit_concurrent_requests(client: AsyncClient):
             "device_fingerprint": "device-concurrent-base",
         },
     )
-    access_token = register_resp.json()["access_token"]
+    access_token = register_resp.cookies["access_token"]
     user = _user_from_access_token(access_token)
     await _set_subscription_tier(user.id, "standard")
 
@@ -168,7 +168,7 @@ async def test_revoke_device_success(client: AsyncClient):
             "device_fingerprint": "device-old",
         },
     )
-    access_token = register_resp.json()["access_token"]
+    access_token = register_resp.cookies["access_token"]
     user = _user_from_access_token(access_token)
     await _set_subscription_tier(user.id, "standard")
 
@@ -208,7 +208,7 @@ async def test_cannot_revoke_current_device(client: AsyncClient):
             "device_fingerprint": "device-current",
         },
     )
-    access_token = register_resp.json()["access_token"]
+    access_token = register_resp.cookies["access_token"]
     user = _user_from_access_token(access_token)
     current_device_id = await _get_device_id("device-current")
 
@@ -225,7 +225,7 @@ async def test_cannot_revoke_current_device(client: AsyncClient):
         app.dependency_overrides.pop(get_current_user, None)
 
     assert resp.status_code == 400
-    assert resp.json()["detail"]["error"] == "CANNOT_REMOVE_CURRENT_DEVICE"
+    assert resp.json()["error"] == "CANNOT_REMOVE_CURRENT_DEVICE"
 
 
 @pytest.mark.asyncio
@@ -238,7 +238,7 @@ async def test_revoke_limit_once_per_day(client: AsyncClient):
             "device_fingerprint": "device-a",
         },
     )
-    access_token = register_resp.json()["access_token"]
+    access_token = register_resp.cookies["access_token"]
     user = _user_from_access_token(access_token)
     await _set_subscription_tier(user.id, "pro")
 
@@ -283,7 +283,7 @@ async def test_revoke_limit_once_per_day(client: AsyncClient):
 
     assert first_resp.status_code == 204
     assert second_resp.status_code == 429
-    assert second_resp.json()["detail"]["error"] == "REMOVAL_LIMIT_EXCEEDED"
+    assert second_resp.json()["error"] == "REMOVAL_LIMIT_EXCEEDED"
 
 
 @pytest.mark.asyncio
@@ -296,7 +296,7 @@ async def test_revoke_session_success(client: AsyncClient):
             "device_fingerprint": "session-old",
         },
     )
-    access_token = register_resp.json()["access_token"]
+    access_token = register_resp.cookies["access_token"]
     user = _user_from_access_token(access_token)
     await _set_subscription_tier(user.id, "standard")
 
@@ -334,7 +334,7 @@ async def test_revoke_session_not_found(client: AsyncClient):
             "device_fingerprint": "session-missing",
         },
     )
-    access_token = register_resp.json()["access_token"]
+    access_token = register_resp.cookies["access_token"]
     user = _user_from_access_token(access_token)
 
     app.dependency_overrides[get_current_user] = lambda: user
@@ -347,4 +347,4 @@ async def test_revoke_session_not_found(client: AsyncClient):
         app.dependency_overrides.pop(get_current_user, None)
 
     assert resp.status_code == 404
-    assert resp.json()["detail"]["error"] == "SESSION_NOT_FOUND"
+    assert resp.json()["error"] == "SESSION_NOT_FOUND"

@@ -40,8 +40,8 @@ async def test_google_oauth_success(client: AsyncClient):
 
         assert response.status_code == 200
         data = response.json()
-        assert "access_token" in data
-        assert "refresh_token" in data
+        assert "access_token" in response.cookies
+        assert "refresh_token" in response.cookies
         assert data["token_type"] == "bearer"
 
 
@@ -108,8 +108,7 @@ async def test_google_oauth_links_existing_user(client: AsyncClient):
         )
 
         assert response.status_code == 200
-        data = response.json()
-        assert "access_token" in data
+        assert "access_token" in response.cookies
 
 
 @pytest.mark.asyncio
@@ -129,7 +128,7 @@ async def test_google_oauth_invalid_token(client: AsyncClient):
         )
 
         assert response.status_code == 401
-        assert response.json()["detail"]["error"] == "INVALID_TOKEN"
+        assert response.json()["error"] == "INVALID_TOKEN"
 
 
 @pytest.mark.asyncio
@@ -149,7 +148,7 @@ async def test_google_oauth_email_not_verified(client: AsyncClient):
         )
 
         assert response.status_code == 400
-        assert response.json()["detail"]["error"] == "EMAIL_NOT_VERIFIED"
+        assert response.json()["error"] == "EMAIL_NOT_VERIFIED"
 
 
 @pytest.mark.asyncio
@@ -176,8 +175,8 @@ async def test_apple_oauth_success(client: AsyncClient):
 
         assert response.status_code == 200
         data = response.json()
-        assert "access_token" in data
-        assert "refresh_token" in data
+        assert "access_token" in response.cookies
+        assert "refresh_token" in response.cookies
         assert data["token_type"] == "bearer"
 
 
@@ -243,7 +242,7 @@ async def test_apple_oauth_subsequent_login_succeeds(client: AsyncClient):
         )
 
         assert response.status_code == 200
-        assert "access_token" in response.json()
+        assert "access_token" in response.cookies
 
 
 @pytest.mark.asyncio
@@ -263,4 +262,4 @@ async def test_google_oauth_issuer_invalid(client: AsyncClient):
         )
 
         assert response.status_code == 400
-        assert response.json()["detail"]["error"] == "INVALID_TOKEN_ISSUER"
+        assert response.json()["error"] == "INVALID_TOKEN_ISSUER"

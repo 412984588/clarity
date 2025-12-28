@@ -18,7 +18,7 @@ async def _register_user(client: AsyncClient, email: str, fingerprint: str) -> s
         },
     )
     assert response.status_code == 201
-    return response.json()["access_token"]
+    return response.cookies["access_token"]
 
 
 @pytest.mark.asyncio

@@ -14,7 +14,7 @@ async def _register_user(client: AsyncClient, email: str, fingerprint: str) -> s
         },
     )
     assert response.status_code == 201
-    return response.json()["access_token"]
+    return response.cookies["access_token"]
 
 
 async def _create_session(client: AsyncClient, token: str, fingerprint: str) -> str:
@@ -83,7 +83,7 @@ async def test_update_step_invalid_transition_fails(client: AsyncClient):
     )
 
     assert response.status_code == 400
-    assert response.json()["detail"]["error"] == "INVALID_STEP_TRANSITION"
+    assert response.json()["error"] == "INVALID_STEP_TRANSITION"
 
 
 @pytest.mark.asyncio
@@ -103,4 +103,4 @@ async def test_update_other_users_session_fails(client: AsyncClient):
     )
 
     assert response.status_code == 404
-    assert response.json()["detail"]["error"] == "SESSION_NOT_FOUND"
+    assert response.json()["error"] == "SESSION_NOT_FOUND"

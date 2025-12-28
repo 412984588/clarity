@@ -42,7 +42,7 @@ async def test_webhook_missing_signature_returns_400(client: AsyncClient):
         headers={"Content-Type": "application/json"},
     )
     assert response.status_code == 400
-    assert response.json()["detail"]["error"] == "MISSING_SIGNATURE"
+    assert response.json()["error"] == "MISSING_SIGNATURE"
 
 
 @pytest.mark.asyncio
@@ -64,7 +64,7 @@ async def test_webhook_invalid_signature_returns_400(client: AsyncClient):
             },
         )
     assert response.status_code == 400
-    assert response.json()["detail"]["error"] == "INVALID_SIGNATURE"
+    assert response.json()["error"] == "INVALID_SIGNATURE"
 
 
 @pytest.mark.asyncio
