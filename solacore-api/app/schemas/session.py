@@ -2,11 +2,9 @@ from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
-
-from app.schemas.fields import Field
-
 from app.models.solve_session import SolveStep
+from app.schemas.fields import Field
+from pydantic import BaseModel, ConfigDict
 
 
 class UsageResponse(BaseModel):

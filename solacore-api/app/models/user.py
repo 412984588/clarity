@@ -1,9 +1,10 @@
-from app.utils.datetime_utils import utc_now
 import uuid
-from sqlalchemy import Column, String, DateTime, Boolean
+
+from app.database import Base
+from app.utils.datetime_utils import utc_now
+from sqlalchemy import Boolean, Column, DateTime, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-from app.database import Base
 
 
 class User(Base):

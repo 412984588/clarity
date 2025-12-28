@@ -31,6 +31,5 @@ def downgrade() -> None:
     """Drop composite index for StepHistory lookups."""
     with op.get_context().autocommit_block():
         op.execute(
-            "DROP INDEX CONCURRENTLY "
-            "ix_step_history_session_step_completed_started_at"
+            "DROP INDEX CONCURRENTLY ix_step_history_session_step_completed_started_at"
         )

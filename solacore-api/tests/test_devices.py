@@ -4,9 +4,6 @@ import asyncio
 from uuid import UUID, uuid4
 
 import pytest
-from httpx import AsyncClient
-from sqlalchemy import select, func
-
 from app.main import app
 from app.middleware.auth import get_current_user
 from app.models.device import Device
@@ -15,6 +12,8 @@ from app.models.subscription import Subscription
 from app.models.user import User
 from app.services.auth_service import AuthService
 from app.utils.security import decode_token
+from httpx import AsyncClient
+from sqlalchemy import func, select
 
 # 使用 conftest.py 导出的 TestingSessionLocal
 from tests.conftest import TestingSessionLocal

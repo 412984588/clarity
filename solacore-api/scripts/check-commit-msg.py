@@ -16,9 +16,7 @@ ALLOWED_TYPES = (
 )
 
 SCOPE_PATTERN = r"[a-zA-Z0-9._-]+"
-COMMIT_PATTERN = re.compile(
-    rf"^({'|'.join(ALLOWED_TYPES)})\({SCOPE_PATTERN}\): .+"
-)
+COMMIT_PATTERN = re.compile(rf"^({'|'.join(ALLOWED_TYPES)})\({SCOPE_PATTERN}\): .+")
 
 
 def _first_subject_line(message_path: Path) -> str:
@@ -50,9 +48,7 @@ def main() -> int:
 
     if not COMMIT_PATTERN.match(subject):
         allowed = ", ".join(ALLOWED_TYPES)
-        print(
-            "Invalid commit message. Expected: type(scope): subject", file=sys.stderr
-        )
+        print("Invalid commit message. Expected: type(scope): subject", file=sys.stderr)
         print(f"Allowed types: {allowed}", file=sys.stderr)
         print("Example: feat(auth): add login", file=sys.stderr)
         return 1

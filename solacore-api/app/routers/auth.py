@@ -1,14 +1,8 @@
-from app.utils.datetime_utils import utc_now
-from datetime import timedelta
 import hashlib
 import logging
 import secrets
+from datetime import timedelta
 from uuid import UUID
-
-from fastapi import APIRouter, Depends, HTTPException, Header, Path, Query, Request, Response
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete, func
-from sqlalchemy.orm import selectinload
 
 from app.config import get_settings
 from app.database import get_db
@@ -32,10 +26,6 @@ from app.models.password_reset import PasswordResetToken
 from app.models.session import ActiveSession
 from app.models.subscription import Subscription
 from app.models.user import User
-from app.services.auth_service import AuthService
-from app.services.cache_service import CacheService
-from app.services.email_service import send_password_reset_email
-from app.services.oauth_service import OAuthService
 from app.schemas.auth import (
     ActiveSessionResponse,
     AuthSuccessResponse,
@@ -51,9 +41,27 @@ from app.schemas.auth import (
     StatusMessageResponse,
     UserResponse,
 )
+from app.services.auth_service import AuthService
+from app.services.cache_service import CacheService
+from app.services.email_service import send_password_reset_email
+from app.services.oauth_service import OAuthService
+from app.utils.datetime_utils import utc_now
 from app.utils.docs import COMMON_ERROR_RESPONSES
 from app.utils.exceptions import raise_auth_error
 from app.utils.security import decode_token, hash_password_async
+from fastapi import (
+    APIRouter,
+    Depends,
+    Header,
+    HTTPException,
+    Path,
+    Query,
+    Request,
+    Response,
+)
+from sqlalchemy import delete, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -127,9 +135,7 @@ async def get_csrf_token(response: Response):
     ),
     responses=COMMON_ERROR_RESPONSES,
 )
-@limiter.limit(
-    AUTH_RATE_LIMIT, key_func=ip_rate_limit_key, override_defaults=False
-)
+@limiter.limit(AUTH_RATE_LIMIT, key_func=ip_rate_limit_key, override_defaults=False)
 async def register(
     request: Request,
     response: Response,
@@ -163,9 +169,7 @@ async def register(
     description="使用邮箱与密码登录，成功后写入 httpOnly 的 access/refresh cookies。",
     responses=COMMON_ERROR_RESPONSES,
 )
-@limiter.limit(
-    AUTH_RATE_LIMIT, key_func=ip_rate_limit_key, override_defaults=False
-)
+@limiter.limit(AUTH_RATE_LIMIT, key_func=ip_rate_limit_key, override_defaults=False)
 async def login(
     request: Request,
     response: Response,
@@ -196,14 +200,10 @@ async def login(
     "/beta-login",
     response_model=AuthSuccessResponse,
     summary="Beta 模式自动登录",
-    description=(
-        "仅在 Beta 模式开启时可用，自动登录到测试账号并写入认证 cookies。"
-    ),
+    description=("仅在 Beta 模式开启时可用，自动登录到测试账号并写入认证 cookies。"),
     responses=COMMON_ERROR_RESPONSES,
 )
-@limiter.limit(
-    AUTH_RATE_LIMIT, key_func=ip_rate_limit_key, override_defaults=False
-)
+@limiter.limit(AUTH_RATE_LIMIT, key_func=ip_rate_limit_key, override_defaults=False)
 async def beta_login(
     request: Request,
     response: Response,
@@ -397,7 +397,9 @@ async def forgot_password(
         200: {
             "description": "重置成功",
             "content": {
-                "application/json": {"example": {"message": "Password reset successful"}}
+                "application/json": {
+                    "example": {"message": "Password reset successful"}
+                }
             },
         },
     },
@@ -445,9 +447,7 @@ async def reset_password(
         204: {"description": "No Content"},
     },
 )
-@limiter.limit(
-    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
-)
+@limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def logout(
     response: Response,
     request: Request,
@@ -507,9 +507,7 @@ async def logout(
     description="使用 OAuth 授权码换取令牌并登录，成功后写入认证 cookies。",
     responses=COMMON_ERROR_RESPONSES,
 )
-@limiter.limit(
-    OAUTH_RATE_LIMIT, key_func=ip_rate_limit_key, override_defaults=False
-)
+@limiter.limit(OAUTH_RATE_LIMIT, key_func=ip_rate_limit_key, override_defaults=False)
 async def google_oauth_code(
     response: Response,
     request: Request,
@@ -560,9 +558,7 @@ async def google_oauth_code(
     description="使用 Google ID Token 登录，成功后写入认证 cookies。",
     responses=COMMON_ERROR_RESPONSES,
 )
-@limiter.limit(
-    OAUTH_RATE_LIMIT, key_func=ip_rate_limit_key, override_defaults=False
-)
+@limiter.limit(OAUTH_RATE_LIMIT, key_func=ip_rate_limit_key, override_defaults=False)
 async def google_oauth(
     response: Response,
     request: Request,
@@ -595,9 +591,7 @@ async def google_oauth(
     description="使用 Apple ID Token 登录，成功后写入认证 cookies。",
     responses=COMMON_ERROR_RESPONSES,
 )
-@limiter.limit(
-    OAUTH_RATE_LIMIT, key_func=ip_rate_limit_key, override_defaults=False
-)
+@limiter.limit(OAUTH_RATE_LIMIT, key_func=ip_rate_limit_key, override_defaults=False)
 async def apple_oauth(
     response: Response,
     request: Request,
@@ -630,9 +624,7 @@ async def apple_oauth(
     description="返回当前登录用户的基础信息。",
     responses=COMMON_ERROR_RESPONSES,
 )
-@limiter.limit(
-    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
-)
+@limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def get_current_user_info(
     request: Request,
     current_user: User = Depends(get_current_user),
@@ -653,12 +645,11 @@ async def get_current_user_info(
     description="返回当前用户的活跃设备列表。",
     responses=COMMON_ERROR_RESPONSES,
 )
-@limiter.limit(
-    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
-)
+@limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def list_devices(
     request: Request,
-    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """获取当前用户的活跃设备列表。"""
     # 只查询需要的字段，不加载关联数据
@@ -698,9 +689,7 @@ async def list_devices(
         204: {"description": "No Content"},
     },
 )
-@limiter.limit(
-    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
-)
+@limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def revoke_device(
     request: Request,
     device_id: UUID = Path(
@@ -762,12 +751,11 @@ async def revoke_device(
     description="返回当前用户的活跃登录会话。",
     responses=COMMON_ERROR_RESPONSES,
 )
-@limiter.limit(
-    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
-)
+@limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def list_sessions(
     request: Request,
-    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """获取当前用户的活跃会话列表。"""
     cached_sessions = await cache_service.get_sessions(current_user.id)
@@ -810,9 +798,7 @@ async def list_sessions(
         204: {"description": "No Content"},
     },
 )
-@limiter.limit(
-    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
-)
+@limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def revoke_session(
     request: Request,
     session_id: UUID = Path(

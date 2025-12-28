@@ -1,9 +1,10 @@
-from app.utils.datetime_utils import utc_now
 import uuid
-from sqlalchemy import Column, String, DateTime, Boolean, ForeignKey
+
+from app.database import Base
+from app.utils.datetime_utils import utc_now
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-from app.database import Base
 
 
 class Device(Base):

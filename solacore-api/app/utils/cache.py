@@ -5,12 +5,11 @@ import logging
 import time
 from typing import Any
 
+from app.config import get_settings
+from app.utils.metrics import metrics
 from redis.asyncio import Redis
 from redis.asyncio.connection import ConnectionPool
 from redis.exceptions import RedisError
-
-from app.config import get_settings
-from app.utils.metrics import metrics
 
 logger = logging.getLogger(__name__)
 
@@ -51,9 +50,7 @@ class RedisCache:
             metrics.record_cache_miss()
             return None
         finally:
-            metrics.record_redis_command(
-                time.perf_counter() - start, command="get"
-            )
+            metrics.record_redis_command(time.perf_counter() - start, command="get")
         if value is None:
             metrics.record_cache_miss()
             return None
@@ -75,9 +72,7 @@ class RedisCache:
         except RedisError:
             logger.debug("Redis set failed", exc_info=True)
         finally:
-            metrics.record_redis_command(
-                time.perf_counter() - start, command="set"
-            )
+            metrics.record_redis_command(time.perf_counter() - start, command="set")
 
     async def delete(self, key: str) -> None:
         if not self._client:
@@ -88,9 +83,7 @@ class RedisCache:
         except RedisError:
             logger.debug("Redis delete failed", exc_info=True)
         finally:
-            metrics.record_redis_command(
-                time.perf_counter() - start, command="delete"
-            )
+            metrics.record_redis_command(time.perf_counter() - start, command="delete")
 
     async def invalidate(self, pattern: str) -> None:
         if not self._client:

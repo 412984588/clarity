@@ -50,9 +50,7 @@ class MetricsRegistry:
     def snapshot(self) -> dict[str, Any]:
         with self._lock:
             total_cache = self._cache_hits + self._cache_misses
-            cache_hit_rate = (
-                self._cache_hits / total_cache if total_cache > 0 else 0.0
-            )
+            cache_hit_rate = self._cache_hits / total_cache if total_cache > 0 else 0.0
             total_request_count = sum(self._request_counts.values())
             total_request_duration_sum = sum(self._request_duration_sum.values())
             total_request_duration_count = sum(self._request_duration_count.values())
@@ -73,7 +71,9 @@ class MetricsRegistry:
                 "db_query_duration_sum": self._db_query_duration_sum,
                 "db_query_duration_count": self._db_query_duration_count,
                 "redis_command_duration_sum": dict(self._redis_command_duration_sum),
-                "redis_command_duration_count": dict(self._redis_command_duration_count),
+                "redis_command_duration_count": dict(
+                    self._redis_command_duration_count
+                ),
             }
 
 
@@ -89,9 +89,7 @@ def format_prometheus_metrics(
     cache_hit_rate = float(snapshot.get("cache_hit_rate", 0.0))
     cache_hits = int(snapshot.get("cache_hits", 0))
     cache_misses = int(snapshot.get("cache_misses", 0))
-    request_counts: dict[tuple[str, str, str], int] = snapshot.get(
-        "request_counts", {}
-    )
+    request_counts: dict[tuple[str, str, str], int] = snapshot.get("request_counts", {})
     request_duration_sum: dict[tuple[str, str, str], float] = snapshot.get(
         "request_duration_sum", {}
     )

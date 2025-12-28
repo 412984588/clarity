@@ -9,13 +9,12 @@ from pathlib import Path
 from typing import Any, Awaitable, Callable
 
 import httpx
-from redis.asyncio import Redis
-from sqlalchemy import func, select, text
-
 from app.config import get_settings
 from app.database import AsyncSessionLocal
 from app.models.session import ActiveSession
 from app.utils.datetime_utils import utc_now
+from redis.asyncio import Redis
+from sqlalchemy import func, select, text
 
 CHECK_TIMEOUT_SECONDS = 2.0
 CACHE_TTL_SECONDS = 5.0
@@ -217,8 +216,7 @@ async def _build_readiness_report() -> dict[str, Any]:
 
     required_checks = {"database", "redis", "disk", "memory"}
     required_ok = all(
-        checks_payload.get(name, {}).get("status") == "up"
-        for name in required_checks
+        checks_payload.get(name, {}).get("status") == "up" for name in required_checks
     )
 
     optional_ok = True
@@ -275,8 +273,9 @@ async def get_active_users_count() -> int:
     try:
         async with AsyncSessionLocal() as session:
             result = await session.execute(
-                select(func.count(func.distinct(ActiveSession.user_id)))
-                .where(ActiveSession.expires_at > utc_now())
+                select(func.count(func.distinct(ActiveSession.user_id))).where(
+                    ActiveSession.expires_at > utc_now()
+                )
             )
             return int(result.scalar_one())
     except Exception:

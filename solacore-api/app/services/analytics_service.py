@@ -2,9 +2,8 @@ import logging
 from typing import Any, Dict, Optional
 from uuid import UUID
 
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.models.analytics_event import AnalyticsEvent
+from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 

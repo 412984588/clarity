@@ -4,14 +4,13 @@ import logging
 import re
 from typing import Any, Iterable
 
-from fastapi import FastAPI, Request
 import sentry_sdk
+from app.config import Settings
+from app.utils.security import decode_token
+from fastapi import FastAPI, Request
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
-
-from app.config import Settings
-from app.utils.security import decode_token
 
 _REDACTED = "***REDACTED***"
 _SENSITIVE_KEYS = {
@@ -26,9 +25,7 @@ _SENSITIVE_KEYS = {
     "api_key",
     "apikey",
 }
-_JWT_PATTERN = re.compile(
-    r"eyJ[A-Za-z0-9_-]*\.[A-Za-z0-9_-]*\.[A-Za-z0-9_-]*"
-)
+_JWT_PATTERN = re.compile(r"eyJ[A-Za-z0-9_-]*\.[A-Za-z0-9_-]*\.[A-Za-z0-9_-]*")
 _BEARER_PATTERN = re.compile(r"Bearer\s+[A-Za-z0-9._-]+", re.IGNORECASE)
 
 

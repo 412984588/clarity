@@ -3,13 +3,12 @@
 from uuid import UUID, uuid4
 
 import pytest
-from httpx import AsyncClient
-from sqlalchemy import select
-
 from app.models.solve_session import SolveStep
 from app.models.step_history import StepHistory
-from app.utils.security import decode_token
 from app.routers import sessions as sessions_router
+from app.utils.security import decode_token
+from httpx import AsyncClient
+from sqlalchemy import select
 from tests.conftest import TestingSessionLocal
 
 

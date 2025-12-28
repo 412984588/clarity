@@ -1,31 +1,23 @@
-from contextlib import asynccontextmanager
 import time
+from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
-from fastapi import FastAPI, Depends, HTTPException, Request, status
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.openapi.utils import get_openapi
-from fastapi.responses import JSONResponse, PlainTextResponse
-from slowapi import _rate_limit_exceeded_handler
-from slowapi.errors import RateLimitExceeded
-from slowapi.middleware import SlowAPIASGIMiddleware
-from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import get_settings, validate_production_config
 from app.database import get_db, get_db_pool_stats
 from app.logging_config import setup_logging
-from app.middleware.rate_limit import RateLimitContextMiddleware, limiter
 from app.middleware.csrf import validate_csrf
-from app.routers import auth
-from app.routers import sessions
-from app.routers import subscriptions
-from app.routers import webhooks
-from app.routers import revenuecat_webhooks
-from app.routers import account
-from app.routers import config
-from app.utils.exceptions import AuthError
-from app.utils.sentry import setup_sentry
+from app.middleware.rate_limit import limiter
+from app.routers import (
+    account,
+    auth,
+    config,
+    revenuecat_webhooks,
+    sessions,
+    subscriptions,
+    webhooks,
+)
 from app.utils.docs import COMMON_ERROR_RESPONSES
+from app.utils.exceptions import AuthError
 from app.utils.health import (
     get_active_sessions_count,
     get_active_users_count,
@@ -33,6 +25,15 @@ from app.utils.health import (
     get_readiness_report,
 )
 from app.utils.metrics import format_prometheus_metrics, metrics
+from app.utils.sentry import setup_sentry
+from fastapi import Depends, FastAPI, HTTPException, Request, status
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.utils import get_openapi
+from fastapi.responses import JSONResponse, PlainTextResponse
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
 
 settings = get_settings()
 
@@ -202,8 +203,10 @@ async def csrf_middleware(request: Request, call_next):
     return await call_next(request)
 
 
-app.add_middleware(SlowAPIASGIMiddleware)
-app.add_middleware(RateLimitContextMiddleware)
+# 暂时禁用限流中间件，避免 ASGI 协议冲突
+# TODO: 修复 SlowAPI 与 Starlette 的兼容性问题
+# app.add_middleware(SlowAPIASGIMiddleware)
+# app.add_middleware(RateLimitContextMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
@@ -271,7 +274,7 @@ app.include_router(config.router)
                     }
                 }
             },
-        }
+        },
     },
 )
 async def health_check(db: AsyncSession = Depends(get_db)):
@@ -405,7 +408,7 @@ async def readiness_check():
                     }
                 }
             },
-        }
+        },
     },
 )
 async def liveness_check():

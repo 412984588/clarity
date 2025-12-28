@@ -1,10 +1,6 @@
 """Tests for emotion detection service"""
 
-from app.services.emotion_detector import (
-    EmotionType,
-    EmotionResult,
-    detect_emotion,
-)
+from app.services.emotion_detector import EmotionResult, EmotionType, detect_emotion
 
 
 class TestEmotionDetector:

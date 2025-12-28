@@ -5,13 +5,12 @@ from __future__ import annotations
 from contextvars import ContextVar
 from typing import Optional
 
+from app.config import get_settings
+from app.utils.security import decode_token
 from fastapi import Request
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 from starlette.types import ASGIApp, Receive, Scope, Send
-
-from app.config import get_settings
-from app.utils.security import decode_token
 
 settings = get_settings()
 

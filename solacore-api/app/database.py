@@ -1,10 +1,10 @@
 import time
 
-from sqlalchemy import event
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy.orm import declarative_base
 from app.config import get_settings
 from app.utils.metrics import metrics
+from sqlalchemy import event
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.orm import declarative_base
 
 settings = get_settings()
 
@@ -44,6 +44,7 @@ def handle_error(exception_context) -> None:
         return
     start_time = start_times.pop()
     metrics.record_db_query(time.perf_counter() - start_time)
+
 
 AsyncSessionLocal = async_sessionmaker(
     engine,

@@ -2,11 +2,9 @@ import asyncio
 from typing import Tuple
 
 import stripe
-
 from app.config import get_settings
 from app.models.subscription import Subscription
 from app.models.user import User
-
 
 STRIPE_API_VERSION = "2024-12-18.acacia"
 

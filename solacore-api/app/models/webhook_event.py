@@ -1,10 +1,9 @@
 from uuid import uuid4
 
-from sqlalchemy import Column, DateTime, String, Text
-from sqlalchemy.dialects.postgresql import UUID
-
 from app.database import Base
 from app.utils.datetime_utils import utc_now
+from sqlalchemy import Column, DateTime, String, Text
+from sqlalchemy.dialects.postgresql import UUID
 
 
 class ProcessedWebhookEvent(Base):

@@ -1,12 +1,11 @@
-from app.utils.datetime_utils import utc_now
 import uuid
 from enum import Enum
 
+from app.database import Base
+from app.utils.datetime_utils import utc_now
 from sqlalchemy import Column, DateTime, ForeignKey, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-
-from app.database import Base
 
 
 class SessionStatus(str, Enum):

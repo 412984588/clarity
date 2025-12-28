@@ -1,16 +1,15 @@
 from __future__ import annotations
 
-from uuid import uuid4
 from unittest.mock import AsyncMock, MagicMock
+from uuid import uuid4
 
 import pytest
-
 from app.services.cache_service import (
-    CacheService,
     DEVICE_TTL_SECONDS,
     SESSIONS_TTL_SECONDS,
     SUBSCRIPTION_TTL_SECONDS,
     USER_TTL_SECONDS,
+    CacheService,
 )
 
 

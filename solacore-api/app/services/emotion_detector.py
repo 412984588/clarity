@@ -5,9 +5,9 @@ Analyzes user message content to detect emotional state.
 Returns emotion type and confidence score.
 """
 
+import re
 from dataclasses import dataclass
 from enum import Enum
-import re
 from typing import Dict, List, Tuple
 
 

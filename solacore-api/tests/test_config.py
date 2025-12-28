@@ -1,5 +1,4 @@
 import pytest
-
 from app.config import DEFAULT_JWT_SECRET, Settings, validate_production_config
 
 

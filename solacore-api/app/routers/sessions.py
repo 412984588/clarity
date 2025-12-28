@@ -1,15 +1,8 @@
-from app.utils.datetime_utils import utc_now
-from datetime import datetime
 import json
 import logging
+from datetime import datetime
 from typing import AsyncGenerator
 from uuid import UUID
-
-from fastapi import APIRouter, Depends, Header, HTTPException, Path, Query, Request
-from fastapi.responses import StreamingResponse
-from sqlalchemy import and_, func, select
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import noload
 
 from app.config import get_settings
 from app.database import get_db
@@ -21,9 +14,9 @@ from app.middleware.rate_limit import (
     user_rate_limit_key,
 )
 from app.models.device import Device
-from app.models.solve_session import SolveSession, SessionStatus, SolveStep
-from app.models.step_history import StepHistory
 from app.models.message import Message, MessageRole
+from app.models.solve_session import SessionStatus, SolveSession, SolveStep
+from app.models.step_history import StepHistory
 from app.models.subscription import Subscription, Usage
 from app.models.user import User
 from app.schemas.session import (
@@ -48,7 +41,13 @@ from app.services.state_machine import (
     is_final_step,
     validate_transition,
 )
+from app.utils.datetime_utils import utc_now
 from app.utils.docs import COMMON_ERROR_RESPONSES
+from fastapi import APIRouter, Depends, Header, HTTPException, Path, Query, Request
+from fastapi.responses import StreamingResponse
+from sqlalchemy import and_, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import noload
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/sessions", tags=["Sessions"])
@@ -167,9 +166,7 @@ async def _get_or_create_usage(
     """,
     responses=COMMON_ERROR_RESPONSES,
 )
-@limiter.limit(
-    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
-)
+@limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def create_session(
     request: Request,
     current_user: User = Depends(get_current_user),
@@ -294,9 +291,7 @@ async def create_session(
     description="获取当前用户的所有会话列表，支持分页。",
     responses=COMMON_ERROR_RESPONSES,
 )
-@limiter.limit(
-    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
-)
+@limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def list_sessions(
     request: Request,
     limit: int = Query(
@@ -351,9 +346,7 @@ async def list_sessions(
     ),
     responses=COMMON_ERROR_RESPONSES,
 )
-@limiter.limit(
-    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
-)
+@limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def get_session(
     request: Request,
     session_id: UUID = Path(
@@ -420,9 +413,7 @@ async def get_session(
     description="更新 Solve 会话的状态、步骤或本地化配置。",
     responses=COMMON_ERROR_RESPONSES,
 )
-@limiter.limit(
-    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
-)
+@limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def update_session(
     request: Request,
     updates: SessionUpdateRequest,
@@ -512,18 +503,16 @@ async def update_session(
                 "text/event-stream": {
                     "example": (
                         "event: token\n"
-                        "data: {\"content\": \"我能理解你的感受，\"}\n\n"
+                        'data: {"content": "我能理解你的感受，"}\n\n'
                         "event: done\n"
-                        "data: {\"next_step\": \"clarify\", \"emotion_detected\": \"sadness\"}\n\n"
+                        'data: {"next_step": "clarify", "emotion_detected": "sadness"}\n\n'
                     )
                 }
             },
         },
     },
 )
-@limiter.limit(
-    SSE_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
-)
+@limiter.limit(SSE_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def stream_messages(
     request: Request,
     data: MessageRequest,

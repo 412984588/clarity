@@ -7,10 +7,10 @@ OAuth 相关测试
 3. 更新测试匹配新的错误码
 """
 
+from unittest.mock import AsyncMock, patch
+
 import pytest
 from httpx import AsyncClient
-from unittest.mock import patch, AsyncMock
-
 
 # Google OAuth 测试用户信息 fixture
 GOOGLE_USER_INFO = {

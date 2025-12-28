@@ -3,7 +3,6 @@ import json
 from typing import AsyncGenerator
 
 import httpx
-
 from app.config import get_settings
 
 

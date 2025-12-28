@@ -1,16 +1,15 @@
-from app.utils.datetime_utils import utc_now
 from typing import Optional
 from uuid import UUID
-
-from fastapi import Depends, Header, HTTPException, Request
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.models.session import ActiveSession
 from app.models.user import User
 from app.services.cache_service import CacheService
+from app.utils.datetime_utils import utc_now
 from app.utils.security import decode_token
+from fastapi import Depends, Header, HTTPException, Request
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 cache_service = CacheService()
 

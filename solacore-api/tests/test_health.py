@@ -8,7 +8,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
 import pytest
-
 from app.utils import health as health_module
 
 
@@ -82,7 +81,9 @@ async def test_check_database_up_and_down(monkeypatch) -> None:
 
 @pytest.mark.asyncio
 async def test_check_redis_missing_url(monkeypatch) -> None:
-    monkeypatch.setattr(health_module, "get_settings", lambda: _make_settings(redis_url=""))
+    monkeypatch.setattr(
+        health_module, "get_settings", lambda: _make_settings(redis_url="")
+    )
     result = await health_module._check_redis()
     assert result == {"status": "down", "error": "missing_url"}
 
@@ -172,28 +173,38 @@ def test_memory_usage_percent_with_sysconf(monkeypatch) -> None:
 
 def test_should_check_external_api(monkeypatch) -> None:
     monkeypatch.setattr(
-        health_module, "get_settings", lambda: _make_settings(llm_provider="openai", openai_api_key="")
+        health_module,
+        "get_settings",
+        lambda: _make_settings(llm_provider="openai", openai_api_key=""),
     )
     assert health_module._should_check_external_api() is False
 
     monkeypatch.setattr(
-        health_module, "get_settings", lambda: _make_settings(llm_provider="anthropic", anthropic_api_key="key")
+        health_module,
+        "get_settings",
+        lambda: _make_settings(llm_provider="anthropic", anthropic_api_key="key"),
     )
     assert health_module._should_check_external_api() is True
 
     monkeypatch.setattr(
-        health_module, "get_settings", lambda: _make_settings(llm_provider="other", openrouter_api_key="key")
+        health_module,
+        "get_settings",
+        lambda: _make_settings(llm_provider="other", openrouter_api_key="key"),
     )
     assert health_module._should_check_external_api() is True
 
 
 @pytest.mark.asyncio
 async def test_check_external_api_openai_paths(monkeypatch) -> None:
-    monkeypatch.setattr(health_module, "get_settings", lambda: _make_settings(openai_api_key=""))
+    monkeypatch.setattr(
+        health_module, "get_settings", lambda: _make_settings(openai_api_key="")
+    )
     result = await health_module._check_external_api()
     assert result["status"] == "skipped"
 
-    monkeypatch.setattr(health_module, "get_settings", lambda: _make_settings(openai_api_key="key"))
+    monkeypatch.setattr(
+        health_module, "get_settings", lambda: _make_settings(openai_api_key="key")
+    )
 
     success_response = MagicMock()
     success_response.status_code = 200
@@ -267,7 +278,9 @@ async def test_build_readiness_report_statuses(monkeypatch) -> None:
     monkeypatch.setattr(health_module, "_check_disk", await make_check("up"))
     monkeypatch.setattr(health_module, "_check_memory", await make_check("up"))
     monkeypatch.setattr(health_module, "_should_check_external_api", lambda: True)
-    monkeypatch.setattr(health_module, "_check_external_api", await make_check("skipped"))
+    monkeypatch.setattr(
+        health_module, "_check_external_api", await make_check("skipped")
+    )
 
     report = await health_module._build_readiness_report()
     assert report["status"] == "healthy"
@@ -286,7 +299,9 @@ async def test_get_readiness_report_uses_cache(monkeypatch) -> None:
     report = {"status": "healthy"}
     build_mock = AsyncMock(return_value=report)
     monkeypatch.setattr(health_module, "_build_readiness_report", build_mock)
-    monkeypatch.setattr(health_module, "_ready_cache", {"timestamp": 0.0, "report": None})
+    monkeypatch.setattr(
+        health_module, "_ready_cache", {"timestamp": 0.0, "report": None}
+    )
     monkeypatch.setattr(health_module.time, "monotonic", lambda: 100.0)
 
     result1 = await health_module.get_readiness_report()

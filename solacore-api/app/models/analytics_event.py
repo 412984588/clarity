@@ -1,10 +1,9 @@
 import uuid
 
-from sqlalchemy import Column, DateTime, ForeignKey, String
-from sqlalchemy.dialects.postgresql import JSONB, UUID
-
 from app.database import Base
 from app.utils.datetime_utils import utc_now
+from sqlalchemy import Column, DateTime, ForeignKey, String
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 
 
 class AnalyticsEvent(Base):

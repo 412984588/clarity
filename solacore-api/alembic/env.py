@@ -1,12 +1,13 @@
 import asyncio
 from logging.config import fileConfig
-from sqlalchemy import pool
-from sqlalchemy.engine import Connection
-from sqlalchemy.ext.asyncio import async_engine_from_config
+
 from alembic import context
 from app.config import get_settings
 from app.database import Base
 from app.models import User  # noqa: F401 确保模型被导入以便 Alembic 检测
+from sqlalchemy import pool
+from sqlalchemy.engine import Connection
+from sqlalchemy.ext.asyncio import async_engine_from_config
 
 config = context.config
 settings = get_settings()

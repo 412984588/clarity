@@ -54,7 +54,7 @@ def test_format_prometheus_metrics_includes_pool_stats() -> None:
     assert "http_requests_total" in output
     assert "cache_hit_rate" in output
     assert "db_pool_size" in output
-    assert "redis_command_duration_seconds_sum{command=\"get\"}" in output
+    assert 'redis_command_duration_seconds_sum{command="get"}' in output
 
 
 def test_format_prometheus_metrics_without_pool() -> None:

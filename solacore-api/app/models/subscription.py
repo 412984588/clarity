@@ -1,17 +1,18 @@
-from app.utils.datetime_utils import utc_now
 import uuid
+
+from app.database import Base
+from app.utils.datetime_utils import utc_now
 from sqlalchemy import (
+    Boolean,
     Column,
-    String,
     DateTime,
     ForeignKey,
     Integer,
+    String,
     UniqueConstraint,
-    Boolean,
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-from app.database import Base
 
 
 class Subscription(Base):

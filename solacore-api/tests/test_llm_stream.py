@@ -3,9 +3,8 @@
 import json
 
 import pytest
-from httpx import AsyncClient
-
 from app.routers import sessions as sessions_router
+from httpx import AsyncClient
 
 
 async def _register_user(client: AsyncClient, email: str, fingerprint: str) -> str:

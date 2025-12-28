@@ -3,10 +3,9 @@
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
+import app.services.ai_service as ai_module
 import httpx
 import pytest
-
-import app.services.ai_service as ai_module
 from app.services.ai_service import AIService
 
 

@@ -1,9 +1,10 @@
 """邮件服务"""
 
-import aiosmtplib
-from email.message import EmailMessage
-from app.config import get_settings
 import logging
+from email.message import EmailMessage
+
+import aiosmtplib
+from app.config import get_settings
 
 logger = logging.getLogger(__name__)
 settings = get_settings()

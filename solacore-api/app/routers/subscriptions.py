@@ -1,10 +1,6 @@
 from datetime import datetime
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Request
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.config import get_settings
 from app.database import get_db
 from app.middleware.auth import get_current_user
@@ -18,10 +14,13 @@ from app.schemas.subscription import (
     SubscriptionResponse,
     UsageResponse,
 )
-from app.services.cache_service import CacheService
 from app.services import stripe_service
+from app.services.cache_service import CacheService
 from app.utils.datetime_utils import utc_now
 from app.utils.docs import COMMON_ERROR_RESPONSES
+from fastapi import APIRouter, Depends, HTTPException, Request
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/subscriptions", tags=["Subscriptions"])
 cache_service = CacheService()
@@ -96,9 +95,7 @@ async def _get_or_create_usage(
     description="创建 Stripe Checkout 会话用于订阅升级。",
     responses=COMMON_ERROR_RESPONSES,
 )
-@limiter.limit(
-    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
-)
+@limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def create_checkout(
     request: Request,
     data: CheckoutRequest,
@@ -142,9 +139,7 @@ async def create_checkout(
     description="创建 Stripe Customer Portal 会话，返回管理订阅的跳转链接。",
     responses=COMMON_ERROR_RESPONSES,
 )
-@limiter.limit(
-    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
-)
+@limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def get_portal(
     request: Request,
     current_user: User = Depends(get_current_user),
@@ -187,9 +182,7 @@ async def get_portal(
     description="返回当前用户订阅等级与状态。",
     responses=COMMON_ERROR_RESPONSES,
 )
-@limiter.limit(
-    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
-)
+@limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def get_current_subscription(
     request: Request,
     current_user: User = Depends(get_current_user),
@@ -242,9 +235,7 @@ async def get_current_subscription(
     description="返回当前周期已使用的会话数量与限额。",
     responses=COMMON_ERROR_RESPONSES,
 )
-@limiter.limit(
-    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
-)
+@limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def get_usage(
     request: Request,
     current_user: User = Depends(get_current_user),

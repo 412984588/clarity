@@ -1,11 +1,10 @@
 import uuid
 
+from app.database import Base
+from app.utils.datetime_utils import utc_now
 from sqlalchemy import Column, DateTime, ForeignKey, Index, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-
-from app.database import Base
-from app.utils.datetime_utils import utc_now
 
 
 class StepHistory(Base):

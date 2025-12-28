@@ -10,23 +10,21 @@ OAuth Service - Google & Apple Sign-in
 """
 
 import asyncio
-from typing import Tuple, Optional
-from google.oauth2 import id_token
-from google.auth.transport import requests as google_requests
-import jwt
+from typing import Optional, Tuple
+
 import httpx
-from cachetools import TTLCache  # type: ignore[import-untyped]
-
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from sqlalchemy.orm import selectinload
-
-from app.models.user import User
+import jwt
+from app.config import get_settings
 from app.models.subscription import Subscription
+from app.models.user import User
 from app.schemas.auth import OAuthRequest, TokenResponse
 from app.services.auth_service import AuthService
-from app.config import get_settings
-
+from cachetools import TTLCache  # type: ignore[import-untyped]
+from google.auth.transport import requests as google_requests
+from google.oauth2 import id_token
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 settings = get_settings()
 

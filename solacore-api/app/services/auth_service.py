@@ -1,26 +1,25 @@
-from app.utils.datetime_utils import utc_now
 from datetime import timedelta
 from typing import Optional, Tuple
 from uuid import UUID
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
-from sqlalchemy.orm import selectinload
 
-from app.models.user import User
+from app.config import get_settings
 from app.models.device import Device
 from app.models.session import ActiveSession
 from app.models.subscription import Subscription
+from app.models.user import User
+from app.schemas.auth import LoginRequest, RegisterRequest, TokenResponse
+from app.utils.datetime_utils import utc_now
 from app.utils.security import (
-    hash_password_async,
-    verify_password_async,
     create_access_token,
     create_refresh_token,
     decode_token,
+    hash_password_async,
     hash_token,
+    verify_password_async,
 )
-from app.schemas.auth import RegisterRequest, LoginRequest, TokenResponse
-from app.config import get_settings
-
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 # 设备限制
 DEVICE_LIMITS = {"free": 1, "standard": 2, "pro": 3}

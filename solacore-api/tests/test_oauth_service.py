@@ -1,7 +1,7 @@
-import pytest
-import jwt
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import jwt
+import pytest
 from app.services.oauth_service import OAuthService, _apple_key_cache
 
 

@@ -2,19 +2,19 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-import pytest
-from fastapi import FastAPI
-from starlette.requests import Request
-
 from app.config import Settings
 from app.utils import sentry as sentry_utils
+from fastapi import FastAPI
+from starlette.requests import Request
 
 
 async def _receive() -> dict:
     return {"type": "http.request", "body": b"", "more_body": False}
 
 
-def _make_request(*, headers: dict[str, str] | None = None, cookies: dict[str, str] | None = None) -> Request:
+def _make_request(
+    *, headers: dict[str, str] | None = None, cookies: dict[str, str] | None = None
+) -> Request:
     scope = {
         "type": "http",
         "method": "GET",
@@ -84,13 +84,19 @@ def test_before_send_scrubs_event() -> None:
 
 def test_extract_user_id_from_cookie() -> None:
     request = _make_request(cookies={"access_token": "token"})
-    with patch("app.utils.sentry.decode_token", return_value={"type": "access", "sub": "user-1"}):
+    with patch(
+        "app.utils.sentry.decode_token",
+        return_value={"type": "access", "sub": "user-1"},
+    ):
         assert sentry_utils._extract_user_id(request) == "user-1"
 
 
 def test_extract_user_id_from_header_and_invalid_payload() -> None:
     request = _make_request(headers={"Authorization": "Bearer token"})
-    with patch("app.utils.sentry.decode_token", return_value={"type": "refresh", "sub": "user-1"}):
+    with patch(
+        "app.utils.sentry.decode_token",
+        return_value={"type": "refresh", "sub": "user-1"},
+    ):
         assert sentry_utils._extract_user_id(request) is None
 
 

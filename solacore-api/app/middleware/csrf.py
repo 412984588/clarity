@@ -1,9 +1,8 @@
 import secrets
 from typing import Iterable
 
-from fastapi import HTTPException, Request, Response, status
-
 from app.config import get_settings
+from fastapi import HTTPException, Request, Response, status
 
 CSRF_COOKIE_NAME = "csrf_token"
 CSRF_COOKIE_HTTP_ONLY_NAME = "csrf_token_http"

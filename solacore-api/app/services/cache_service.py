@@ -3,7 +3,8 @@ from __future__ import annotations
 from typing import Any
 from uuid import UUID
 
-from app.utils.cache import RedisCache, cache as redis_cache
+from app.utils.cache import RedisCache
+from app.utils.cache import cache as redis_cache
 
 USER_TTL_SECONDS = 600
 SUBSCRIPTION_TTL_SECONDS = 300

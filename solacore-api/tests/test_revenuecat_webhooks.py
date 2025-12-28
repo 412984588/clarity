@@ -6,13 +6,12 @@ from unittest.mock import patch
 from uuid import uuid4
 
 import pytest
-from httpx import AsyncClient
-from sqlalchemy import select
-
-from tests.conftest import TestingSessionLocal
 from app.models.subscription import Subscription
 from app.models.user import User
 from app.models.webhook_event import ProcessedWebhookEvent
+from httpx import AsyncClient
+from sqlalchemy import select
+from tests.conftest import TestingSessionLocal
 
 
 class _TestSettings:

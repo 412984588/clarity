@@ -2,7 +2,6 @@ from typing import Dict, Tuple
 
 from app.models.solve_session import SolveStep
 
-
 VALID_TRANSITIONS: Dict[SolveStep, Tuple[SolveStep, ...]] = {
     SolveStep.RECEIVE: (SolveStep.CLARIFY,),
     SolveStep.CLARIFY: (SolveStep.REFRAME,),

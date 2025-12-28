@@ -1,11 +1,6 @@
 from datetime import datetime
 from typing import Any, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Request
-from sqlalchemy import delete, select
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
-
 from app.database import get_db
 from app.middleware.auth import get_current_user
 from app.middleware.rate_limit import API_RATE_LIMIT, limiter, user_rate_limit_key
@@ -18,6 +13,10 @@ from app.models.user import User
 from app.services.cache_service import CacheService
 from app.utils.datetime_utils import utc_now
 from app.utils.docs import COMMON_ERROR_RESPONSES
+from fastapi import APIRouter, Depends, HTTPException, Request
+from sqlalchemy import delete, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 router = APIRouter(prefix="/account", tags=["Account"])
 cache_service = CacheService()
@@ -72,9 +71,7 @@ def _dt(value: object | None) -> Optional[str]:
         },
     },
 )
-@limiter.limit(
-    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
-)
+@limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def export_account(
     request: Request,
     current_user: User = Depends(get_current_user),
@@ -227,9 +224,7 @@ async def export_account(
         204: {"description": "No Content"},
     },
 )
-@limiter.limit(
-    API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False
-)
+@limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def delete_account(
     request: Request,
     current_user: User = Depends(get_current_user),

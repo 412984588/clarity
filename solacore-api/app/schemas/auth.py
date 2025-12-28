@@ -3,9 +3,8 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, EmailStr, field_validator
-
 from app.schemas.fields import Field
+from pydantic import BaseModel, ConfigDict, EmailStr, field_validator
 
 
 def _validate_password_strength(value: str) -> str:

@@ -5,9 +5,8 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from redis.exceptions import RedisError
-
 from app.utils import cache as cache_module
+from redis.exceptions import RedisError
 
 
 def _make_cache(client: AsyncMock | None) -> cache_module.RedisCache:

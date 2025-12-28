@@ -4,9 +4,8 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 from uuid import uuid4
 
-import pytest
-
 import app.services.stripe_service as stripe_service
+import pytest
 from app.models.subscription import Subscription
 from app.models.user import User
 

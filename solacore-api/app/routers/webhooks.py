@@ -4,18 +4,17 @@ from typing import Optional
 from uuid import UUID
 
 import stripe
-from fastapi import APIRouter, Depends, Header, HTTPException, Request
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.dialects.postgresql import insert as pg_insert
-
 from app.config import get_settings
 from app.database import get_db
 from app.models.subscription import Subscription, Usage
 from app.models.webhook_event import ProcessedWebhookEvent
-from app.services.cache_service import CacheService
 from app.services import stripe_service
+from app.services.cache_service import CacheService
 from app.utils.datetime_utils import utc_now
+from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import insert as pg_insert
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/webhooks", tags=["webhooks"])
 cache_service = CacheService()

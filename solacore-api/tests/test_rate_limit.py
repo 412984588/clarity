@@ -4,16 +4,17 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
-from starlette.requests import Request
-
 from app.middleware import rate_limit as rate_limit_module
+from starlette.requests import Request
 
 
 async def _receive() -> dict:
     return {"type": "http.request", "body": b"", "more_body": False}
 
 
-def _make_request(*, headers: dict[str, str] | None = None, cookies: dict[str, str] | None = None) -> Request:
+def _make_request(
+    *, headers: dict[str, str] | None = None, cookies: dict[str, str] | None = None
+) -> Request:
     scope = {
         "type": "http",
         "method": "GET",
@@ -116,17 +117,26 @@ def test_extract_user_id_prefers_request_state() -> None:
 
 def test_extract_user_id_from_cookie_and_header() -> None:
     request = _make_request(cookies={"access_token": "token"})
-    with patch("app.middleware.rate_limit.decode_token", return_value={"type": "access", "sub": "user-2"}):
+    with patch(
+        "app.middleware.rate_limit.decode_token",
+        return_value={"type": "access", "sub": "user-2"},
+    ):
         assert rate_limit_module._extract_user_id(request) == "user-2"
 
     request = _make_request(headers={"Authorization": "Bearer token"})
-    with patch("app.middleware.rate_limit.decode_token", return_value={"type": "access", "sub": "user-3"}):
+    with patch(
+        "app.middleware.rate_limit.decode_token",
+        return_value={"type": "access", "sub": "user-3"},
+    ):
         assert rate_limit_module._extract_user_id(request) == "user-3"
 
 
 def test_extract_user_id_invalid_token() -> None:
     request = _make_request(headers={"Authorization": "token"})
-    with patch("app.middleware.rate_limit.decode_token", return_value={"type": "refresh", "sub": "user"}):
+    with patch(
+        "app.middleware.rate_limit.decode_token",
+        return_value={"type": "refresh", "sub": "user"},
+    ):
         assert rate_limit_module._extract_user_id(request) is None
 
 
@@ -141,7 +151,8 @@ def test_user_rate_limit_key_prefers_user() -> None:
     with patch("app.middleware.rate_limit._extract_user_id", return_value="user-5"):
         assert rate_limit_module.user_rate_limit_key(request) == "user:user-5"
 
-    with patch("app.middleware.rate_limit._extract_user_id", return_value=None), patch(
-        "app.middleware.rate_limit.get_remote_address", return_value="5.6.7.8"
+    with (
+        patch("app.middleware.rate_limit._extract_user_id", return_value=None),
+        patch("app.middleware.rate_limit.get_remote_address", return_value="5.6.7.8"),
     ):
         assert rate_limit_module.user_rate_limit_key(request) == "5.6.7.8"
