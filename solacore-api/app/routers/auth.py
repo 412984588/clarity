@@ -282,6 +282,7 @@ async def beta_login(
     description="使用 refresh_token cookie 刷新 access token，并更新认证 cookies。",
     responses=COMMON_ERROR_RESPONSES,
 )
+@limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def refresh(
     request: Request,
     response: Response,
@@ -404,8 +405,11 @@ async def forgot_password(
         },
     },
 )
+@limiter.limit(API_RATE_LIMIT, key_func=ip_rate_limit_key, override_defaults=False)
 async def reset_password(
-    data: ResetPasswordRequest, db: AsyncSession = Depends(get_db)
+    request: Request,
+    data: ResetPasswordRequest,
+    db: AsyncSession = Depends(get_db),
 ):
     """使用重置 token 更新密码并清理历史会话。"""
     token_hash = hashlib.sha256(data.token.encode()).hexdigest()
