@@ -13,6 +13,11 @@ from sqlalchemy.orm import selectinload
 from app.config import get_settings
 from app.database import get_db
 from app.middleware.auth import get_current_user
+from app.middleware.csrf import (
+    clear_csrf_cookies,
+    generate_csrf_token,
+    set_csrf_cookies,
+)
 from app.middleware.rate_limit import limiter, AUTH_RATE_LIMIT
 from app.models.device import Device
 from app.models.password_reset import PasswordResetToken
@@ -71,6 +76,21 @@ def set_auth_cookies(response: Response, access_token: str, refresh_token: str) 
     )
 
 
+def set_session_cookies(
+    response: Response, access_token: str, refresh_token: str
+) -> None:
+    set_auth_cookies(response, access_token, refresh_token)
+    set_csrf_cookies(response, generate_csrf_token())
+
+
+@router.get("/csrf")
+async def get_csrf_token(response: Response):
+    """获取 CSRF token，并写入双 cookie"""
+    token = generate_csrf_token()
+    set_csrf_cookies(response, token)
+    return {"csrf_token": token}
+
+
 @router.post("/register", response_model=AuthSuccessResponse, status_code=201)
 @limiter.limit(AUTH_RATE_LIMIT)
 async def register(
@@ -84,7 +104,7 @@ async def register(
     try:
         user, tokens = await service.register(data)
         # 设置 httpOnly cookies
-        set_auth_cookies(response, tokens.access_token, tokens.refresh_token)
+        set_session_cookies(response, tokens.access_token, tokens.refresh_token)
         # 返回用户信息（不包含 token）
         return AuthSuccessResponse(
             user=UserResponse(
@@ -111,7 +131,7 @@ async def login(
     try:
         user, tokens = await service.login(data)
         # 设置 httpOnly cookies
-        set_auth_cookies(response, tokens.access_token, tokens.refresh_token)
+        set_session_cookies(response, tokens.access_token, tokens.refresh_token)
         # 返回用户信息（不包含 token）
         return AuthSuccessResponse(
             user=UserResponse(
@@ -183,7 +203,7 @@ async def beta_login(
 
     await db.commit()
     # 设置 httpOnly cookies
-    set_auth_cookies(response, tokens.access_token, tokens.refresh_token)
+    set_session_cookies(response, tokens.access_token, tokens.refresh_token)
     # 返回用户信息（不包含 token）
     return AuthSuccessResponse(
         user=UserResponse(
@@ -222,7 +242,7 @@ async def refresh(
             raise HTTPException(status_code=404, detail={"error": "USER_NOT_FOUND"})
 
         # 设置 httpOnly cookies
-        set_auth_cookies(response, tokens.access_token, tokens.refresh_token)
+        set_session_cookies(response, tokens.access_token, tokens.refresh_token)
         # 返回用户信息（不包含 token）
         return AuthSuccessResponse(
             user=UserResponse(
@@ -357,6 +377,7 @@ async def logout(
 
     response.delete_cookie("access_token", **cookie_params)
     response.delete_cookie("refresh_token", **cookie_params)
+    clear_csrf_cookies(response)
     return None
 
 
@@ -377,7 +398,7 @@ async def google_oauth_code(
             device_name=device_name or "Web Browser",
         )
         # 设置 httpOnly cookies
-        set_auth_cookies(response, tokens.access_token, tokens.refresh_token)
+        set_session_cookies(response, tokens.access_token, tokens.refresh_token)
         # 返回用户信息（不包含 token）
         return AuthSuccessResponse(
             user=UserResponse(
@@ -402,7 +423,7 @@ async def google_oauth(
     try:
         user, tokens = await service.google_auth(data)
         # 设置 httpOnly cookies
-        set_auth_cookies(response, tokens.access_token, tokens.refresh_token)
+        set_session_cookies(response, tokens.access_token, tokens.refresh_token)
         # 返回用户信息（不包含 token）
         return AuthSuccessResponse(
             user=UserResponse(
@@ -427,7 +448,7 @@ async def apple_oauth(
     try:
         user, tokens = await service.apple_auth(data)
         # 设置 httpOnly cookies
-        set_auth_cookies(response, tokens.access_token, tokens.refresh_token)
+        set_session_cookies(response, tokens.access_token, tokens.refresh_token)
         # 返回用户信息（不包含 token）
         return AuthSuccessResponse(
             user=UserResponse(

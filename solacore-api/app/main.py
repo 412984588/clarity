@@ -14,6 +14,7 @@ from app.config import get_settings, validate_production_config
 from app.database import get_db
 from app.logging_config import setup_logging
 from app.middleware.rate_limit import limiter
+from app.middleware.csrf import validate_csrf
 from app.routers import auth
 from app.routers import sessions
 from app.routers import subscriptions
@@ -80,6 +81,20 @@ app = FastAPI(
     redoc_url="/redoc",
     lifespan=lifespan,
 )
+
+
+@app.middleware("http")
+async def csrf_middleware(request: Request, call_next):
+    try:
+        validate_csrf(request)
+    except HTTPException as exc:
+        # CSRF 验证失败，返回 JSON 错误响应
+        return JSONResponse(
+            status_code=exc.status_code,
+            content=exc.detail,
+        )
+    return await call_next(request)
+
 
 app.add_middleware(
     CORSMiddleware,

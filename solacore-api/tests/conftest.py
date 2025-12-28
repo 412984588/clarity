@@ -1,4 +1,5 @@
 import pytest_asyncio
+from http.cookies import SimpleCookie
 from typing import AsyncGenerator
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
@@ -26,6 +27,21 @@ TestingSessionLocal = async_sessionmaker(
 __all__ = ["TestingSessionLocal", "TEST_DATABASE_URL"]
 
 
+async def _add_csrf_header(request) -> None:
+    if request.method.upper() not in {"POST", "PUT", "PATCH", "DELETE"}:
+        return
+    if "x-csrf-token" in request.headers:
+        return
+    cookie_header = request.headers.get("cookie")
+    if not cookie_header:
+        return
+    cookie = SimpleCookie()
+    cookie.load(cookie_header)
+    token = cookie.get("csrf_token")
+    if token:
+        request.headers["X-CSRF-Token"] = token.value
+
+
 @pytest_asyncio.fixture(scope="function")
 async def client() -> AsyncGenerator[AsyncClient, None]:
     """每个测试函数使用独立的数据库状态"""
@@ -42,6 +58,32 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
     app.dependency_overrides[get_db] = override_get_db
 
     # 重置 rate limiter 状态，避免测试间累积
+    limiter.reset()
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(
+        transport=transport,
+        base_url="http://test",
+        event_hooks={"request": [_add_csrf_header]},
+    ) as c:
+        await c.get("/auth/csrf")
+        yield c
+
+    app.dependency_overrides.clear()
+
+
+@pytest_asyncio.fixture(scope="function")
+async def client_no_csrf() -> AsyncGenerator[AsyncClient, None]:
+    """不自动注入 CSRF header 的测试客户端"""
+    async with engine_test.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+        await conn.run_sync(Base.metadata.create_all)
+
+    async def override_get_db() -> AsyncGenerator[AsyncSession, None]:
+        async with TestingSessionLocal() as session:
+            yield session
+
+    app.dependency_overrides[get_db] = override_get_db
     limiter.reset()
 
     transport = ASGITransport(app=app)
