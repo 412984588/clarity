@@ -31,6 +31,7 @@ export interface Session {
   messages: Message[];
   created_at: string;
   completed_at?: string; // Renamed from updated_at to match backend
+  first_message?: string; // First user message for list display
 }
 
 export interface AuthTokens {

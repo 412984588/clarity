@@ -118,7 +118,9 @@ export default function DashboardPage() {
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-semibold">会话 {session.id}</p>
+                    <p className="text-sm font-semibold">
+                      {session.first_message || `新会话 · ${format(new Date(session.created_at), "MM/dd HH:mm")}`}
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       {format(new Date(session.created_at), "yyyy/MM/dd HH:mm")}
                     </p>

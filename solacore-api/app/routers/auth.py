@@ -634,11 +634,15 @@ async def get_current_user_info(
     current_user: User = Depends(get_current_user),
 ):
     """获取当前登录用户的基础资料。"""
-    return UserResponse(
-        id=current_user.id,
-        email=current_user.email,
-        auth_provider=current_user.auth_provider,
-        locale=current_user.locale,
+    from fastapi.responses import JSONResponse
+
+    return JSONResponse(
+        content={
+            "id": str(current_user.id),
+            "email": current_user.email,
+            "auth_provider": current_user.auth_provider,
+            "locale": current_user.locale,
+        }
     )
 
 

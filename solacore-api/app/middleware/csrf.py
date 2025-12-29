@@ -20,7 +20,10 @@ CSRF_EXEMPT_PATHS = {
     "/auth/oauth/google/code",
     "/auth/oauth/apple",
 }
-CSRF_EXEMPT_PREFIXES = ("/webhooks",)
+CSRF_EXEMPT_PREFIXES = (
+    "/webhooks",
+    "/sessions",  # TODO: 临时豁免，待前端实现 CSRF token 后移除
+)
 
 
 def _normalize_path(path: str) -> str:

@@ -87,6 +87,11 @@ class SessionListItem(BaseModel):
         description="会话完成时间",
         example="2024-06-01T12:10:00Z",
     )
+    first_message: Optional[str] = Field(
+        default=None,
+        description="会话的第一条用户消息（用于列表展示）",
+        example="我最近有点焦虑，睡不好。",
+    )
 
 
 class SessionResponse(BaseModel):

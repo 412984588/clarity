@@ -76,6 +76,7 @@ export default function SessionsPage() {
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead>内容</TableHead>
             <TableHead>创建时间</TableHead>
             <TableHead>当前步骤</TableHead>
             <TableHead>状态</TableHead>
@@ -85,7 +86,10 @@ export default function SessionsPage() {
         <TableBody>
           {sessions.map((session) => (
             <TableRow key={session.id}>
-              <TableCell className="font-medium">
+              <TableCell className="font-medium max-w-md truncate">
+                {session.first_message || "新会话"}
+              </TableCell>
+              <TableCell className="text-muted-foreground">
                 {format(new Date(session.created_at), "yyyy/MM/dd HH:mm")}
               </TableCell>
               <TableCell>{session.current_step}</TableCell>

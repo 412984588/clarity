@@ -28,7 +28,6 @@ from app.schemas.session import (
     SessionResponse,
     SessionUpdateRequest,
     SessionUpdateResponse,
-    UsageResponse,
 )
 from app.services.ai_service import AIService
 from app.services.analytics_service import AnalyticsService
@@ -44,7 +43,7 @@ from app.services.state_machine import (
 from app.utils.datetime_utils import utc_now
 from app.utils.docs import COMMON_ERROR_RESPONSES
 from fastapi import APIRouter, Depends, Header, HTTPException, Path, Query, Request
-from fastapi.responses import StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import noload
@@ -271,16 +270,21 @@ async def create_session(
 
     await db.commit()
 
-    return SessionCreateResponse(
-        session_id=session.id,  # type: ignore[arg-type]
-        status=str(session.status),
-        current_step=str(session.current_step),
-        created_at=session.created_at,  # type: ignore[arg-type]
-        usage=UsageResponse(
-            sessions_used=int(usage.session_count or 0),
-            sessions_limit=sessions_limit,
-            tier=tier,
-        ),
+    return JSONResponse(
+        status_code=201,
+        content={
+            "session_id": str(session.id),
+            "status": str(session.status),
+            "current_step": str(session.current_step),
+            "created_at": session.created_at.isoformat()
+            if session.created_at
+            else None,
+            "usage": {
+                "sessions_used": int(usage.session_count or 0),
+                "sessions_limit": sessions_limit,
+                "tier": tier,
+            },
+        },
     )
 
 
@@ -310,7 +314,7 @@ async def list_sessions(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """分页返回当前用户的 Solve 会话列表。"""
+    """分页返回当前用户的 Solve 会话列表，包含第一条用户消息。"""
     total_result = await db.execute(
         select(func.count(SolveSession.id)).where(
             SolveSession.user_id == current_user.id
@@ -318,21 +322,54 @@ async def list_sessions(
     )
     total = total_result.scalar() or 0
 
+    # 子查询：获取每个会话的第一条用户消息
+    first_message_subq = (
+        select(
+            Message.session_id,
+            Message.content,
+        )
+        .where(Message.role == MessageRole.USER)
+        .distinct(Message.session_id)
+        .order_by(Message.session_id, Message.created_at.asc())
+        .subquery()
+    )
+
+    # 主查询：会话列表 + 第一条消息
     result = await db.execute(
-        select(SolveSession)
+        select(SolveSession, first_message_subq.c.content)
+        .outerjoin(
+            first_message_subq,
+            SolveSession.id == first_message_subq.c.session_id,
+        )
         .where(SolveSession.user_id == current_user.id)
         .order_by(SolveSession.created_at.desc())
         .limit(limit)
         .offset(offset)
     )
-    sessions = result.scalars().all()
+    rows = result.all()
 
-    return SessionListResponse(
-        sessions=[SessionListItem.model_validate(session) for session in sessions],
+    # 手动组装数据
+    session_items = []
+    for session, first_msg_content in rows:
+        item_data = {
+            "id": session.id,
+            "status": str(session.status),
+            "current_step": str(session.current_step),
+            "created_at": session.created_at,
+            "completed_at": session.completed_at,
+            "first_message": first_msg_content[:50] + "..."
+            if first_msg_content and len(first_msg_content) > 50
+            else first_msg_content,
+        }
+        session_items.append(SessionListItem(**item_data))
+
+    response = SessionListResponse(
+        sessions=session_items,
         total=total,
         limit=limit,
         offset=offset,
     )
+    return JSONResponse(content=response.model_dump(mode="json"))
 
 
 @router.get(
@@ -396,7 +433,7 @@ async def get_session(
         message_rows = messages_result.scalars().all()
         messages = [MessageResponse.model_validate(message) for message in message_rows]
 
-    return SessionResponse(
+    response = SessionResponse(
         id=session.id,
         status=str(session.status),
         current_step=str(session.current_step),
@@ -404,6 +441,7 @@ async def get_session(
         completed_at=session.completed_at,
         messages=messages,
     )
+    return JSONResponse(content=response.model_dump(mode="json", exclude_none=True))
 
 
 @router.patch(
@@ -474,16 +512,18 @@ async def update_session(
 
     await db.commit()
 
-    return SessionUpdateResponse(
+    response = SessionUpdateResponse(
         id=str(session.id),
         status=str(session.status),
         current_step=str(session.current_step),
         updated_at=utc_now(),
     )
+    return JSONResponse(content=response.model_dump(mode="json"))
 
 
 @router.post(
     "/{session_id}/messages",
+    response_class=StreamingResponse,
     summary="发送消息并获取 AI 回复",
     description="""
     向指定会话发送消息，获取 SSE 流式 AI 回复。

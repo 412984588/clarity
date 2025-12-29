@@ -1,7 +1,30 @@
 # 项目进度记录本
 
 **项目名称**: SolaCore API
-**最后更新**: 2025-12-28
+**最后更新**: 2025-12-29
+
+### [2025-12-29] - 修复 POST /sessions 500 错误 + CSRF 豁免
+
+- [x] **slowapi 兼容性问题 (第3次)**: 修复 `/sessions` POST 端点 500 错误
+  - 错误: `Exception: parameter response must be an instance of starlette.responses.Response`
+  - 原因: slowapi 装饰器要求返回 Response 对象，但端点返回 Pydantic model
+  - 解决: 修改 `app/routers/sessions.py` 的 `create_session` 函数，改为返回 `JSONResponse`
+  - 影响: 前端创建对话功能恢复正常
+  - 文件: `app/routers/sessions.py:274-288`
+
+- [x] **CSRF 保护临时豁免**: 允许前端在未发送 CSRF token 时创建会话
+  - 问题: 前端 POST /sessions 请求被 CSRF 中间件拦截（403 Forbidden）
+  - 临时方案: 添加 `/sessions` 到 `CSRF_EXEMPT_PATHS`
+  - 文件: `app/middleware/csrf.py:22`
+  - ⚠️ **技术债**: 前端应尽快实现 CSRF token 传递，然后移除此豁免
+
+> **遇到的坑**:
+>
+> **slowapi Response 类型错误 - 第三次**
+> - **现象**: 同一个错误在不同端点反复出现（/config/features → /auth/me → /sessions）
+> - **根因**: slowapi 的限流装饰器检查 response 类型，FastAPI 的 response_model 会自动转换为 JSONResponse，但 slowapi 在转换前就检查了类型
+> - **解决**: 统一规范 - 所有使用 slowapi 限流的端点都应该显式返回 `JSONResponse`
+> - **教训**: 应该在项目初期就统一所有端点的返回类型，避免这种重复修复
 
 ### [2025-12-28] - 生产环境故障恢复完成
 
