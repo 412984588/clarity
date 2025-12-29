@@ -3,6 +3,26 @@
 **项目名称**: SolaCore API
 **最后更新**: 2025-12-29
 
+### [2025-12-29] - 会话列表显示对话内容
+
+- [x] **功能改进**: 会话列表显示第一条消息内容，替代 UUID
+  - 后端修改:
+    - `app/schemas/session.py`: 给 `SessionListItem` 添加 `first_message` 字段
+    - `app/routers/sessions.py`: 修改 `list_sessions` 函数，使用 LEFT JOIN 子查询获取第一条用户消息
+    - 消息超过 50 字符自动截断（添加 "..."）
+  - 前端修改:
+    - `solacore-web/lib/types.ts`: 给 `Session` 接口添加 `first_message?` 字段
+    - `solacore-web/app/(app)/dashboard/page.tsx`: 首页会话列表显示消息内容
+    - `solacore-web/app/(app)/sessions/page.tsx`: 完整列表页面添加"内容"列
+    - 空会话显示占位符: "新会话 · {时间}"
+  - 性能: 使用一次 SQL 查询完成，避免 N+1 问题
+  - 提交: `9806b2b`
+
+> **技术选型**:
+> - **方案选择**: 后端扩展 API（LEFT JOIN 子查询）
+> - **理由**: 性能好（一次查询）+ 前端代码简单 + 无需数据库迁移
+> - **替代方案**: ① 前端 N+1 查询（慢）② 数据库加 title 字段（需迁移）
+
 ### [2025-12-29] - 修复 POST /sessions 500 错误 + CSRF 豁免
 
 - [x] **slowapi 兼容性问题 (第3次)**: 修复 `/sessions` POST 端点 500 错误
