@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 import { ChatInterface } from "@/components/solve/ChatInterface";
 import { OptionCard } from "@/components/solve/OptionCard";
@@ -114,9 +115,12 @@ export default function SolvePage() {
     setDeleting(true);
     try {
       await deleteSession(session.id);
+      // 先关闭对话框，再跳转，避免路由慢时体验不一致
+      setDeleteDialogOpen(false);
       router.push("/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "删除会话失败");
+      // 用 toast 提示而不是 setError，避免隐藏有效会话
+      toast.error(err instanceof Error ? err.message : "删除会话失败");
       setDeleteDialogOpen(false);
     } finally {
       setDeleting(false);
