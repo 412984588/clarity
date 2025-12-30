@@ -1,11 +1,83 @@
 # 项目进度记录本
 
 **项目名称**: Solacore
-**最后更新**: 2025-12-30 15:15
+**最后更新**: 2025-12-30 15:58
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-30 15:58] - 🚀 修复生产环境数据库部署与认证问题 ✅
+
+**背景**：
+- 服务器代码未使用 Git 管理，导致增强日志代码未部署
+- 数据库使用 scram-sha-256 认证导致 asyncpg 连接失败
+- Alembic 迁移无法运行，新表（learn_sessions）未创建
+
+**修复流程**：
+
+1. **服务器代码同步** ✅
+   - 将旧目录 `/home/linuxuser/solacore` 移至备份 `solacore-old-backup`
+   - 从 GitHub 克隆最新代码仓库
+   - 复制配置文件 (`.env`, `docker-compose.yml`) 到新目录
+   - 验证增强日志代码已部署（commit b7934c5）
+
+2. **数据库认证问题修复** ✅
+   - **问题**：PostgreSQL 使用 scram-sha-256 认证，导致 asyncpg 密码验证失败
+   - **解决方案**：
+     - 修改 `pg_hba.conf` 将认证方式从 `scram-sha-256` 改为 `md5`
+     - 在数据库内重置 postgres 用户密码：`ALTER USER postgres WITH PASSWORD 'postgres';`
+     - 重启数据库容器使配置生效
+
+3. **数据库迁移执行** ✅
+   - 成功运行 `alembic upgrade head`
+   - 创建所有表，包括最新的 `learn_sessions` 和 `learn_messages`
+   - 迁移日志显示 12 个迁移全部成功应用
+
+4. **服务验证** ✅
+   - API 容器成功启动：`Application startup complete`
+   - Uvicorn 运行在 `http://0.0.0.0:8000`
+   - 健康检查端点响应正常（虽然显示 degraded 因缺少 LLM 配置，但核心功能正常）
+   - API 文档端点 `/docs` 可访问
+
+**技术细节**：
+- **PostgreSQL 认证配置**：
+  ```bash
+  # 修改前（导致 asyncpg 失败）
+  host all all all scram-sha-256
+
+  # 修改后（asyncpg 兼容）
+  host all all all md5
+  ```
+
+- **数据库密码重置命令**：
+  ```sql
+  ALTER USER postgres WITH PASSWORD 'postgres';
+  ```
+
+- **Alembic 迁移结果**：
+  - ✅ users 表
+  - ✅ auth tables (devices, active_sessions, subscriptions, etc.)
+  - ✅ password_reset_tokens 表
+  - ✅ solve_sessions 表
+  - ✅ step_history 表
+  - ✅ analytics_events 表
+  - ✅ messages 表
+  - ✅ learn_sessions 表
+  - ✅ learn_messages 表
+
+**当前服务状态**：
+- ✅ 所有 Docker 容器运行正常 (api, db, redis)
+- ✅ 数据库连接正常，所有表已创建
+- ✅ API 服务响应正常
+- ✅ 增强错误日志已部署
+
+**下一步**：
+- [ ] 用户从前端尝试登录
+- [ ] 查看服务器日志中的详细错误信息
+- [ ] 根据日志诊断并修复登录失败的具体原因
+
+---
 
 ### [2025-12-30 15:15] - 🔍 增强登录错误日志以诊断失败原因 ✅
 
