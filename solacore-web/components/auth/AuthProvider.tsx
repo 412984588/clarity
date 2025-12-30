@@ -32,17 +32,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
 
     try {
-      // Beta 模式下，直接尝试获取用户信息，不要先调用 isAuthenticated()
-      // 因为在 betaLogin() 刚设置完 cookies 后，可能存在时序问题
-      try {
-        const currentUser = await getCurrentUser();
+      // 1. 尝试直接获取当前用户
+      let currentUser = await getCurrentUser();
+
+      // 2. 如果获取失败（返回 null），尝试刷新 token 再重试
+      // 这是为了处理 access token 过期或首次设置 cookie 的情况
+      if (!currentUser) {
+        try {
+          await refreshToken();
+          currentUser = await getCurrentUser();
+        } catch {
+          // 刷新 token 失败，忽略错误，让后续检查处理
+        }
+      }
+
+      // 3. 最终检查：如果还是没有用户，视为失败
+      if (currentUser) {
         setUser(currentUser);
-        return;
-      } catch {
-        // 如果获取失败，尝试刷新 token
-        await refreshToken();
-        const currentUser = await getCurrentUser();
-        setUser(currentUser);
+      } else {
+        // 明确抛出错误，触发 catch 块的清理逻辑
+        throw new Error("无法获取用户信息");
       }
     } catch (err) {
       // 所有方法都失败，清除状态
