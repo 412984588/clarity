@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Trash2 } from "lucide-react";
 
 import { ChatInterface } from "@/components/solve/ChatInterface";
 import { OptionCard } from "@/components/solve/OptionCard";
@@ -9,8 +10,16 @@ import { StepProgress } from "@/components/solve/StepProgress";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import type { Session } from "@/lib/types";
-import { createSession, getSession } from "@/lib/session-api";
+import { createSession, getSession, deleteSession } from "@/lib/session-api";
 
 const optionDeck = [
   {
@@ -31,6 +40,7 @@ const optionDeck = [
 ];
 
 export default function SolvePage() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session");
   const [session, setSession] = useState<Session | null>(null);
@@ -39,6 +49,8 @@ export default function SolvePage() {
   const [selectedOptions, setSelectedOptions] = useState<Set<string>>(
     () => new Set(),
   );
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const currentStep = session?.current_step ?? "receive";
 
@@ -92,6 +104,29 @@ export default function SolvePage() {
     });
   };
 
+  const handleDeleteClick = () => {
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!session?.id) return;
+
+    setDeleting(true);
+    try {
+      await deleteSession(session.id);
+      router.push("/dashboard");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "删除会话失败");
+      setDeleteDialogOpen(false);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteDialogOpen(false);
+  };
+
   if (loading) {
     return (
       <div className="flex h-[70vh] items-center justify-center">
@@ -112,7 +147,18 @@ export default function SolvePage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <StepProgress currentStep={currentStep} />
+      <div className="flex items-center justify-between">
+        <StepProgress currentStep={currentStep} />
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleDeleteClick}
+          aria-label="删除会话"
+          title="删除当前会话"
+        >
+          <Trash2 className="size-5 text-muted-foreground hover:text-destructive" />
+        </Button>
+      </div>
 
       <ChatInterface
         sessionId={session.id}
@@ -135,6 +181,34 @@ export default function SolvePage() {
           ))}
         </div>
       ) : null}
+
+      {/* 删除确认对话框 */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>确认删除会话</DialogTitle>
+            <DialogDescription>
+              您确定要删除当前会话吗？此操作无法撤销，会话的所有消息和历史记录都将被永久删除。
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={handleCancelDelete}
+              disabled={deleting}
+            >
+              取消
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleConfirmDelete}
+              disabled={deleting}
+            >
+              {deleting ? "删除中..." : "确认删除"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
