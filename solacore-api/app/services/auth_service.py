@@ -81,7 +81,9 @@ class AuthService:
                 email=data.email,
                 user_found=user is not None,
                 has_password_hash=bool(user and user.password_hash),
-                subscription_tier=user.subscription.tier if user and user.subscription else None,
+                subscription_tier=user.subscription.tier
+                if user and user.subscription
+                else None,
             )
         else:
             logger.info(
@@ -89,7 +91,9 @@ class AuthService:
                 email=data.email,
                 user_found=user is not None,
                 has_password_hash=bool(user and user.password_hash),
-                subscription_tier=user.subscription.tier if user and user.subscription else None,
+                subscription_tier=user.subscription.tier
+                if user and user.subscription
+                else None,
             )
 
         if not user or not user.password_hash:
