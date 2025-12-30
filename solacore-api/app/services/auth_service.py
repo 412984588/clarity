@@ -3,6 +3,7 @@ from typing import Optional, Tuple
 from uuid import UUID
 
 from app.config import get_settings
+from app.logging_config import get_logger
 from app.models.device import Device
 from app.models.session import ActiveSession
 from app.models.subscription import Subscription
@@ -20,6 +21,9 @@ from app.utils.security import (
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
+
+logger = get_logger(__name__)
+settings = get_settings()
 
 # 设备限制
 DEVICE_LIMITS = {"free": 1, "standard": 2, "pro": 3}
@@ -71,6 +75,22 @@ class AuthService:
             .where(User.email == data.email)
         )
         user = result.scalar_one_or_none()
+        if settings.debug:
+            logger.debug(
+                "auth.login.user_lookup",
+                email=data.email,
+                user_found=user is not None,
+                has_password_hash=bool(user and user.password_hash),
+                subscription_tier=user.subscription.tier if user and user.subscription else None,
+            )
+        else:
+            logger.info(
+                "auth.login.user_lookup",
+                email=data.email,
+                user_found=user is not None,
+                has_password_hash=bool(user and user.password_hash),
+                subscription_tier=user.subscription.tier if user and user.subscription else None,
+            )
 
         if not user or not user.password_hash:
             raise ValueError("INVALID_CREDENTIALS")
@@ -197,7 +217,6 @@ class AuthService:
         device_count = result.scalar() or 0
 
         # Beta 模式放宽设备限制
-        settings = get_settings()
         max_devices = (
             BETA_DEVICE_LIMIT if settings.beta_mode else DEVICE_LIMITS.get(tier, 1)
         )

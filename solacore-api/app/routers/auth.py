@@ -1,11 +1,11 @@
 import hashlib
-import logging
 import secrets
 from datetime import timedelta
 from uuid import UUID
 
 from app.config import get_settings
 from app.database import get_db
+from app.logging_config import get_logger
 from app.middleware.auth import get_current_user
 from app.middleware.csrf import (
     clear_csrf_cookies,
@@ -63,7 +63,7 @@ from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 settings = get_settings()
 cache_service = CacheService()
 
@@ -177,6 +177,16 @@ async def login(
     db: AsyncSession = Depends(get_db),
 ):
     """邮箱登录并写入认证 Cookie，返回用户基础信息。"""
+    log_context = {
+        "email": data.email,
+        "device_fingerprint": data.device_fingerprint,
+        "device_name": data.device_name,
+    }
+    request.state.auth_context = log_context
+    if settings.debug:
+        logger.debug("auth.login.attempt", **log_context)
+    else:
+        logger.info("auth.login.attempt", **log_context)
     service = AuthService(db)
     try:
         user, tokens = await service.login(data)

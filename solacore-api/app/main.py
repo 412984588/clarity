@@ -4,7 +4,7 @@ from typing import AsyncIterator
 
 from app.config import get_settings, validate_production_config
 from app.database import get_db, get_db_pool_stats
-from app.logging_config import setup_logging
+from app.logging_config import get_logger, setup_logging
 from app.middleware.csrf import validate_csrf
 from app.middleware.rate_limit import limiter
 from app.routers import (
@@ -40,6 +40,7 @@ settings = get_settings()
 
 # 初始化结构化日志
 setup_logging(debug=settings.debug)
+logger = get_logger(__name__)
 
 OPENAPI_TAGS = [
     {
@@ -238,6 +239,18 @@ setup_sentry(app, settings)
 
 @app.exception_handler(AuthError)
 async def auth_error_handler(request: Request, exc: AuthError):
+    auth_context = getattr(request.state, "auth_context", None)
+    logger.warning(
+        "auth.error",
+        error_type=exc.__class__.__name__,
+        error_code=exc.code,
+        error_detail=exc.detail,
+        status_code=exc.status_code,
+        method=request.method,
+        path=request.url.path,
+        client_ip=request.client.host if request.client else None,
+        auth_context=auth_context,
+    )
     return JSONResponse(
         status_code=exc.status_code,
         content={"error": exc.code, "detail": exc.detail},
