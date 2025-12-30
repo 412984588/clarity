@@ -117,7 +117,19 @@ def get_cors_origins() -> list[str]:
             o.strip() for o in settings.cors_allowed_origins.split(",") if o.strip()
         )
 
-    return origins
+    # 生产环境默认允许正式域名（主域 + www）
+    if not settings.debug:
+        origins.extend(["https://solacore.app", "https://www.solacore.app"])
+
+    deduped: list[str] = []
+    seen: set[str] = set()
+    for origin in origins:
+        if not origin or origin in seen:
+            continue
+        seen.add(origin)
+        deduped.append(origin)
+
+    return deduped
 
 
 app = FastAPI(

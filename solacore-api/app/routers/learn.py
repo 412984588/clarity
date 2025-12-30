@@ -16,7 +16,6 @@ from datetime import datetime, timedelta
 from typing import AsyncGenerator
 from uuid import UUID
 
-from app.config import get_settings
 from app.database import get_db
 from app.middleware.auth import get_current_user
 from app.middleware.rate_limit import (
@@ -494,7 +493,9 @@ async def send_learn_message(
         for msg in history_messages[-6:]:  # 只保留最近 6 条消息
             role_label = "User" if msg["role"] == "user" else "Assistant"
             history_text += f"{role_label}: {msg['content']}\n"
-        user_prompt_with_history = f"{history_text}\nCurrent message: {sanitized_content}"
+        user_prompt_with_history = (
+            f"{history_text}\nCurrent message: {sanitized_content}"
+        )
     else:
         user_prompt_with_history = sanitized_content
 
