@@ -1,11 +1,42 @@
 # 项目进度记录本
 
 **项目名称**: Solacore
-**最后更新**: 2025-12-30 14:30
+**最后更新**: 2025-12-30 15:15
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-30 15:15] - 🔍 增强登录错误日志以诊断失败原因 ✅
+
+**背景**：
+- CORS 问题已修复，但用户仍然无法登录
+- 前端显示通用错误："登录失败，请稍后重试"
+- 需要查看生产环境日志来诊断具体原因
+
+**增强日志记录** (commit: 5b661c8):
+1. **`app/main.py`** - AuthError 异常处理器
+   - 记录：error_type, error_code, status_code, path, method, client_ip
+   - 级别：warning（确保生产环境可见）
+2. **`app/routers/auth.py`** - 登录尝试记录
+   - 记录：email, device_fingerprint, device_name
+   - 级别：debug (dev) / info (prod)
+3. **`app/services/auth_service.py`** - 用户查询结果
+   - 记录：user_found, has_password_hash, subscription_tier
+   - 级别：debug (dev) / info (prod)
+
+**修复的附加问题**：
+- ✅ CI 配置错误：`backend.yml` 工作目录路径错误 (clarity-api → solacore-api)
+- ✅ 语法错误：`learn.py` 第 556 行 f-string 跨行导致语法错误
+
+**部署状态**：
+- ✅ 代码已推送（commits: 5b661c8, 7e23f23, 4009a3d）
+- ✅ Deploy API 成功（运行 ID 20591100594）
+- ✅ 增强日志已在生产环境运行
+
+**下一步**：
+- [ ] 用户尝试登录并查看 Railway 日志
+- [ ] 根据日志中的具体错误信息实施修复
 
 ### [2025-12-30 14:30] - 🔧 修复生产环境 CORS 跨域问题 ✅
 
