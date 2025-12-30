@@ -553,16 +553,13 @@ async def send_learn_message(
             await db.refresh(ai_message)
 
             # 发送完成事件
-            yield f"event: done\ndata: {
-                json.dumps(
-                    {
-                        'message_id': str(ai_message.id),
-                        'next_step': next_step.value if next_step else None,
-                        'step_completed': step_completed,
-                        'session_completed': session.status == 'completed',
-                    }
-                )
-            }\n\n"
+            done_data = json.dumps({
+                'message_id': str(ai_message.id),
+                'next_step': next_step.value if next_step else None,
+                'step_completed': step_completed,
+                'session_completed': session.status == 'completed',
+            })
+            yield f"event: done\ndata: {done_data}\n\n"
 
         except Exception as e:
             logger.error(f"Error in learn stream: {e}")
