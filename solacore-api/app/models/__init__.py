@@ -1,5 +1,7 @@
 from app.models.analytics_event import AnalyticsEvent
 from app.models.device import Device
+from app.models.learn_message import LearnMessage
+from app.models.learn_session import LearnSession
 from app.models.message import Message
 from app.models.password_reset import PasswordResetToken
 from app.models.session import ActiveSession
@@ -14,6 +16,8 @@ __all__ = [
     "Device",
     "ActiveSession",
     "SolveSession",
+    "LearnSession",
+    "LearnMessage",
     "Subscription",
     "Usage",
     "PasswordResetToken",

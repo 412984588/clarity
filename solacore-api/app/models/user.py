@@ -36,6 +36,9 @@ class User(Base):
     solve_sessions = relationship(
         "SolveSession", back_populates="user", cascade="all, delete-orphan"
     )
+    learn_sessions = relationship(
+        "LearnSession", back_populates="user", cascade="all, delete-orphan"
+    )
     subscription = relationship("Subscription", back_populates="user", uselist=False)
     password_reset_tokens = relationship(
         "PasswordResetToken", back_populates="user", cascade="all, delete-orphan"

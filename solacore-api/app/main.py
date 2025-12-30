@@ -11,6 +11,7 @@ from app.routers import (
     account,
     auth,
     config,
+    learn,
     revenuecat_webhooks,
     sessions,
     subscriptions,
@@ -234,6 +235,7 @@ async def auth_error_handler(request: Request, exc: AuthError):
 # 注册路由
 app.include_router(auth.router)
 app.include_router(sessions.router)
+app.include_router(learn.router)
 app.include_router(subscriptions.router)
 app.include_router(webhooks.router)
 app.include_router(revenuecat_webhooks.router)

@@ -1,11 +1,17 @@
-import type { Message, Session, SolveStep } from "@/lib/types";
+import type { LearnMessage, LearnSession, LearnStep } from "@/lib/types";
 import { api, getDeviceFingerprint } from "@/lib/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 interface StreamHandlers {
   onToken?: (token: string) => void;
-  onMessage?: (message: Message) => void;
+  onMessage?: (message: LearnMessage) => void;
+  onDone?: (data: {
+    message_id: string;
+    next_step: LearnStep | null;
+    step_completed: boolean;
+    session_completed: boolean;
+  }) => void;
   signal?: AbortSignal;
 }
 
@@ -34,40 +40,34 @@ const resolveToken = (payload: unknown): string | null => {
   return null;
 };
 
-// 后端 SessionCreateResponse 返回 session_id，需要映射到 id
-interface CreateSessionResponse {
+// 后端返回的创建会话响应
+interface CreateLearnSessionResponse {
   session_id: string;
   status: string;
   current_step: string;
   created_at: string;
-  usage: {
-    sessions_used: number;
-    sessions_limit: number;
-    tier: string;
-  };
 }
 
-export const createSession = async (): Promise<Session> => {
+export const createLearnSession = async (): Promise<LearnSession> => {
   if (process.env.NODE_ENV === "development") {
-    console.log("🆕 [Create Session] 开始创建会话", {
+    console.log("🎓 [Create Learn Session] 开始创建学习会话", {
       fingerprint: getDeviceFingerprint(),
       timestamp: new Date().toISOString(),
     });
   }
 
-  const response = await api.post<CreateSessionResponse>("/sessions");
+  const response = await api.post<CreateLearnSessionResponse>("/learn");
 
-  // 映射后端字段到前端 Session 类型
-  const session: Session = {
+  const session: LearnSession = {
     id: response.data.session_id,
-    status: response.data.status as Session["status"],
-    current_step: response.data.current_step as Session["current_step"],
+    status: response.data.status as LearnSession["status"],
+    current_step: response.data.current_step as LearnSession["current_step"],
     created_at: response.data.created_at,
-    messages: [], // 新创建的会话没有消息
+    messages: [],
   };
 
   if (process.env.NODE_ENV === "development") {
-    console.log("✅ [Create Session] 会话创建成功", {
+    console.log("✅ [Create Learn Session] 学习会话创建成功", {
       sessionId: session.id,
     });
   }
@@ -75,38 +75,36 @@ export const createSession = async (): Promise<Session> => {
   return session;
 };
 
-export const getSession = async (id: string): Promise<Session> => {
-  const response = await api.get<Session>(`/sessions/${id}`);
+export const getLearnSession = async (id: string): Promise<LearnSession> => {
+  const response = await api.get<LearnSession>(`/learn/${id}`);
   return response.data;
 };
 
-export const listSessions = async (): Promise<Session[]> => {
-  const response = await api.get<{ sessions: Session[] }>("/sessions");
-  // 后端返回 { sessions: [], total: 0, limit: 20, offset: 0 }
+export const listLearnSessions = async (): Promise<LearnSession[]> => {
+  const response = await api.get<{ sessions: LearnSession[] }>("/learn");
   return response.data.sessions;
 };
 
-export const updateStep = async (
+export const updateLearnStep = async (
   id: string,
-  step: SolveStep,
-): Promise<Session> => {
-  const response = await api.patch<Session>(`/sessions/${id}`, {
-    step,
+  step: LearnStep
+): Promise<LearnSession> => {
+  const response = await api.patch<LearnSession>(`/learn/${id}`, {
     current_step: step,
   });
   return response.data;
 };
 
-export const sendMessage = async (
+export const sendLearnMessage = async (
   id: string,
   content: string,
-  step: string, // 后端要求必传 step 字段
-  handlers: StreamHandlers = {},
-): Promise<Message | null> => {
+  step: string,
+  handlers: StreamHandlers = {}
+): Promise<LearnMessage | null> => {
   const fingerprint = getDeviceFingerprint();
 
   if (process.env.NODE_ENV === "development") {
-    console.log("💬 [Send Message] 发送消息", {
+    console.log("📚 [Send Learn Message] 发送学习消息", {
       sessionId: id,
       step,
       fingerprint,
@@ -115,33 +113,32 @@ export const sendMessage = async (
     });
   }
 
-  // 🔧 修复：手动添加设备指纹到请求头（因为使用原生 fetch，不经过 axios 拦截器）
-  const response = await fetch(`${API_BASE_URL}/sessions/${id}/messages`, {
+  const response = await fetch(`${API_BASE_URL}/learn/${id}/messages`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Accept: "text/event-stream",
-      "X-Device-Fingerprint": fingerprint, // ✅ 添加设备指纹
+      "X-Device-Fingerprint": fingerprint,
     },
-    credentials: "include", // httpOnly cookies 模式：自动发送 cookies
-    body: JSON.stringify({ content, step }), // ✅ 添加 step 字段
+    credentials: "include",
+    body: JSON.stringify({ content, step }),
     signal: handlers.signal,
   });
 
   if (!response.ok) {
     if (process.env.NODE_ENV === "development") {
-      console.error("❌ [Send Message] 请求失败", {
+      console.error("❌ [Send Learn Message] 请求失败", {
         status: response.status,
         statusText: response.statusText,
         fingerprint,
       });
     }
-    throw new Error("Failed to send message");
+    throw new Error("Failed to send learn message");
   }
 
   const contentType = response.headers.get("content-type") ?? "";
   if (!contentType.includes("text/event-stream") || !response.body) {
-    const message = (await response.json()) as Message;
+    const message = (await response.json()) as LearnMessage;
     return message;
   }
 
@@ -149,7 +146,7 @@ export const sendMessage = async (
   const decoder = new TextDecoder();
   let buffer = "";
   let aggregated = "";
-  let finalMessage: Message | null = null;
+  const finalMessage: LearnMessage | null = null;
   let shouldStop = false;
 
   while (true) {
@@ -185,11 +182,21 @@ export const sendMessage = async (
         payload = payloadText;
       }
 
+      // 处理 done 事件
       if (payload && typeof payload === "object") {
-        const maybeMessage = (payload as { message?: Message }).message;
-        if (maybeMessage) {
-          finalMessage = maybeMessage;
-          handlers.onMessage?.(maybeMessage);
+        const data = payload as {
+          message_id?: string;
+          next_step?: string | null;
+          step_completed?: boolean;
+          session_completed?: boolean;
+        };
+        if (data.message_id) {
+          handlers.onDone?.({
+            message_id: data.message_id,
+            next_step: data.next_step as LearnStep | null,
+            step_completed: data.step_completed ?? false,
+            session_completed: data.session_completed ?? false,
+          });
         }
       }
 
@@ -210,11 +217,11 @@ export const sendMessage = async (
   }
 
   if (aggregated) {
-    const message: Message = {
+    const message: LearnMessage = {
       id: createLocalId(),
       role: "assistant",
       content: aggregated,
-      step: "receive",
+      step: step as LearnStep,
       created_at: new Date().toISOString(),
     };
     handlers.onMessage?.(message);
@@ -224,18 +231,18 @@ export const sendMessage = async (
   return null;
 };
 
-export const deleteSession = async (id: string): Promise<void> => {
+export const deleteLearnSession = async (id: string): Promise<void> => {
   if (process.env.NODE_ENV === "development") {
-    console.log("🗑️ [Delete Session] 删除会话", {
+    console.log("🗑️ [Delete Learn Session] 删除学习会话", {
       sessionId: id,
       timestamp: new Date().toISOString(),
     });
   }
 
-  await api.delete(`/sessions/${id}`);
+  await api.delete(`/learn/${id}`);
 
   if (process.env.NODE_ENV === "development") {
-    console.log("✅ [Delete Session] 会话删除成功", {
+    console.log("✅ [Delete Learn Session] 学习会话删除成功", {
       sessionId: id,
     });
   }

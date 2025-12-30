@@ -39,3 +39,37 @@ export interface AuthTokens {
   refresh_token: string;
   token_type: string;
 }
+
+// ==================== 学习功能类型 ====================
+
+export type LearnStep = "start" | "explore" | "practice" | "plan";
+
+export interface LearnMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  step?: LearnStep;
+  created_at: string;
+}
+
+export interface ReviewSchedule {
+  day_1: string;
+  day_3: string;
+  day_7: string;
+  day_15: string;
+  day_30: string;
+}
+
+export interface LearnSession {
+  id: string;
+  current_step: LearnStep;
+  status: SessionStatus;
+  topic?: string;
+  key_concepts?: string[];
+  review_schedule?: ReviewSchedule;
+  learning_summary?: string;
+  messages: LearnMessage[];
+  created_at: string;
+  completed_at?: string;
+  first_message?: string;
+}

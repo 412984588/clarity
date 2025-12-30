@@ -1,11 +1,219 @@
 # 项目进度记录本
 
 **项目名称**: Solacore
-**最后更新**: 2025-12-26 14:30
+**最后更新**: 2025-12-30 14:30
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-30 14:30] - 🎓 添加学习功能（基于方法论引导）✅
+
+**功能描述**:
+新增"高效学习"功能，集成多种经典学习方法论，让用户无需手动写提示词，系统自动应用科学方法来引导学习
+
+**内置方法论**:
+- **费曼学习法**：用简单语言解释概念，测试真正理解程度
+- **分块学习法**：把大主题拆成小块，逐个攻克
+- **主题交叉法**：建立知识连接，启发跨界思考
+- **艾宾浩斯遗忘曲线**：科学的复习时间安排（1/3/7/15/30天）
+- **双编码理论**：文字+图像双重编码增强记忆
+- **80/20原则**：找到20%的核心内容
+- **GROW模型**：Goal→Reality→Options→Will
+
+**学习流程（4步）**:
+```
+START → EXPLORE → PRACTICE → PLAN
+(开始)   (探索)    (练习)    (规划)
+```
+
+| 步骤 | 内置方法论 | 系统自动做什么 |
+|------|-----------|---------------|
+| START | 费曼学习法 + 80/20 | 了解学习目标，评估当前水平 |
+| EXPLORE | 分块学习法 + 主题交叉法 | 深入理解概念，建立知识连接 |
+| PRACTICE | 双编码理论 + 费曼教学法 | 让用户"教出来"，巩固理解 |
+| PLAN | 艾宾浩斯曲线 + GROW模型 | 制定复习计划，明确下一步 |
+
+**后端新增文件** (`solacore-api`):
+1. `app/models/learn_session.py` - 学习会话模型
+2. `app/models/learn_message.py` - 学习消息模型
+3. `app/routers/learn.py` - 学习 API 路由（含完整方法论提示词模板）
+4. `alembic/versions/2025-12-30_add_learn_sessions_tables.py` - 数据库迁移
+
+**前端新增文件** (`solacore-web`):
+1. `lib/types.ts` - 添加 LearnStep, LearnMessage, LearnSession 类型
+2. `lib/learn-api.ts` - 学习 API 调用函数
+3. `hooks/useLearnChatStream.ts` - 学习聊天流 Hook
+4. `components/learn/LearnStepProgress.tsx` - 学习步骤进度组件
+5. `components/learn/LearnChatInterface.tsx` - 学习聊天界面组件
+6. `app/(app)/learn/page.tsx` - 学习页面
+
+**前端修改**:
+1. `app/(app)/dashboard/page.tsx` - 添加"高效学习"入口按钮
+
+**功能特点**:
+- ✅ 用户无需写提示词，只需自然对话
+- ✅ 系统自动应用科学学习方法论
+- ✅ 流式输出 AI 回复（SSE）
+- ✅ 学习完成后生成艾宾浩斯复习计划
+- ✅ Dashboard 同时显示"解决问题"和"高效学习"入口
+
+**验证结果**:
+- ✅ ESLint 检查通过
+- ✅ Python 语法检查通过
+- ⏳ 待运行数据库迁移
+- ⏳ 待本地测试验证
+
+**下一步**:
+- [ ] 运行 `alembic upgrade head` 创建数据库表
+- [ ] 本地启动测试完整流程
+- [ ] 部署到生产环境
+
+---
+
+### [2025-12-30 10:45] - 📝 添加会话删除功能 ✅
+
+**功能描述**:
+- 用户可以在 Dashboard 和 Sessions 列表页面删除会话
+- 删除前弹出确认对话框，防止误删
+- 删除会话时自动级联删除所有相关消息和历史记录
+
+**后端修改** (`solacore-api`):
+1. **新增删除端点** (`app/routers/sessions.py`):
+   - `DELETE /sessions/{session_id}` - 删除指定会话
+   - 权限验证：只能删除自己的会话
+   - 级联删除：自动删除相关消息和历史记录
+   - 返回 204 No Content
+   - 位置：第 739-789 行
+
+**前端修改** (`solacore-web`):
+1. **API 函数** (`lib/session-api.ts`):
+   - `deleteSession(id)` - 调用删除 API
+   - 包含开发模式调试日志
+   - 位置：第 227-242 行
+
+2. **Dashboard 页面** (`app/(app)/dashboard/page.tsx`):
+   - 添加删除按钮（垃圾桶图标）
+   - 鼠标悬停时显示删除按钮
+   - 确认对话框组件
+   - 删除后自动更新会话列表
+   - 删除状态提示："删除中..."
+
+3. **Sessions 列表页面** (`app/(app)/sessions/page.tsx`):
+   - 操作列添加删除按钮
+   - 确认对话框组件
+   - 删除后自动更新会话列表
+   - 表头改为"操作"（包含"查看"和"删除"）
+
+**功能特点**:
+- ✅ 安全确认：删除前弹出对话框，显示要删除的会话内容
+- ✅ 权限保护：后端验证，只能删除自己的会话
+- ✅ 级联删除：自动删除会话的所有消息和历史记录
+- ✅ 实时更新：删除后立即从列表中移除，无需刷新页面
+- ✅ 友好提示：删除中状态显示，错误时显示提示
+- ✅ 优雅设计：Dashboard 页面删除按钮仅在 hover 时显示
+
+**验证结果**:
+- ✅ ESLint 检查通过
+- ✅ TypeScript 编译通过
+- ⏳ 待本地测试验证
+
+**相关文件**:
+- 后端：`solacore-api/app/routers/sessions.py`
+- 前端 API：`solacore-web/lib/session-api.ts`
+- Dashboard：`solacore-web/app/(app)/dashboard/page.tsx`
+- Sessions：`solacore-web/app/(app)/sessions/page.tsx`
+
+---
+
+### [2025-12-30 02:30] - 🔧 修复生产环境登录失败问题 ✅
+
+**问题现象**:
+- 用户无法登录 solacore.app，前端显示"登录失败，请稍后重试"
+- API 健康检查正常，但实际登录功能失败
+
+**根本原因**:
+- PostgreSQL 数据库密码认证失败
+- API 容器日志显示: `asyncpg.exceptions.InvalidPasswordError: password authentication failed for user "postgres"`
+- 数据库容器的 postgres 用户密码与 .env 配置文件中的密码不匹配
+
+**诊断过程**:
+1. 检查 API 容器日志，发现数据库连接错误
+2. 验证环境变量配置 (`DATABASE_URL`, `POSTGRES_PASSWORD`)
+3. 测试数据库容器直接连接 - 成功
+4. 测试 API 容器连接数据库 - 失败（密码错误）
+5. 检查 `pg_authid` 表中的密码哈希，发现与配置不匹配
+
+**修复方案**:
+```sql
+-- 重置 postgres 用户密码
+ALTER USER postgres WITH PASSWORD 'postgres';
+```
+
+**执行步骤**:
+1. SSH 连接服务器: `ssh linuxuser@139.180.223.98`
+2. 进入项目目录: `cd /home/linuxuser/solacore/solacore-api`
+3. 在数据库容器中执行密码重置 SQL
+4. 重启 API 容器: `docker-compose -f docker-compose.prod.yml restart api`
+5. 验证 API 健康检查: `curl https://api.solacore.app/health`
+
+**验证结果**:
+- ✅ 数据库连接恢复正常
+- ✅ API 健康检查通过 (status: healthy, database: connected)
+- ✅ 用户成功登录 (beta-tester 用户已登录)
+- ✅ AuthProvider 正常获取用户信息
+
+**相关文件**:
+- `solacore-api/.env` - 环境变量配置
+- `solacore-api/docker-compose.prod.yml` - Docker Compose 生产配置
+- `solacore-web/components/auth/AuthProvider.tsx` - 认证状态管理
+
+**预防措施**:
+- 定期备份 `.env` 文件
+- 在数据库初始化时确保密码与配置文件一致
+- 考虑添加数据库初始化脚本到 `docker-compose.prod.yml`
+
+---
+
+### [2025-12-30 01:00] - 📝 会话列表显示对话内容功能（部署中）⏳
+
+**功能描述**:
+- 会话列表显示第一条用户消息内容，而不是会话 UUID
+- 改进用户体验，使会话列表更具可读性
+
+**后端修改** (`solacore-api`):
+1. **Schema 修改** (`app/schemas/session.py`):
+   - `SessionListItem` 添加 `first_message` 字段
+
+2. **API 修改** (`app/routers/sessions.py`):
+   - GET /sessions 添加 LEFT JOIN 子查询
+   - 获取每个会话的第一条用户消息
+   - 消息超过 50 字符时截断并添加 "..."
+
+**前端修改** (`solacore-web`):
+1. **类型定义** (`lib/types.ts`):
+   - `Session` 接口添加 `first_message?: string`
+
+2. **Dashboard 页面** (`app/(app)/dashboard/page.tsx`):
+   - 显示 `session.first_message` 而不是会话 ID
+   - 如果没有消息，显示 "新会话 · 创建时间"
+
+3. **Sessions 列表页** (`app/(app)/sessions/page.tsx`):
+   - 添加"内容"列作为第一列
+   - 显示 `session.first_message || "新会话"`
+
+**部署状态**:
+- ✅ 后端代码已部署到 Vultr 服务器
+- ✅ 前端代码已推送到 GitHub
+- ⏳ Vercel 自动部署进行中
+- ⏳ 待 Vercel 部署完成后验证
+
+**Git 提交记录**:
+- `9806b2b` feat(sessions): 会话列表显示对话内容而非 ID
+- `85dce20` fix(auth): 修复登录成功后 refreshUser 逻辑缺陷
+- `7eaf199` chore(deploy): 触发 Vercel 重新部署
+
+---
 
 ### [2025-12-26 14:30] - 🔧 修复用户清除 cookies 后的 403 错误 ✅
 
