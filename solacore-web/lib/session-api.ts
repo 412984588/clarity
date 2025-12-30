@@ -76,7 +76,8 @@ export const createSession = async (): Promise<Session> => {
 };
 
 export const getSession = async (id: string): Promise<Session> => {
-  const response = await api.get<Session>(`/sessions/${id}`);
+  // 添加 include_messages=true 以获取会话消息历史
+  const response = await api.get<Session>(`/sessions/${id}?include_messages=true`);
   return response.data;
 };
 
