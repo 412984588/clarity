@@ -1,7 +1,38 @@
 # 项目进度记录本
 
 **项目名称**: SolaCore API
-**最后更新**: 2025-12-29
+**最后更新**: 2025-12-31
+
+### [2025-12-31] - 统一项目错误处理标准
+
+- [x] **健康检查错误处理**: 改用 logger.warning() 替代静默失败
+  - 修改文件: `app/main.py`, `app/utils/health.py`
+  - 受影响函数: `health_check`, `_check_database`, `_check_redis`, `get_active_sessions_count`, `get_active_users_count`
+  - 改进: 所有异常都记录详细日志（error type, error message, latency_ms）
+  - 提交: `efda8d0`
+
+- [x] **SSE 错误处理统一**: 消除重复代码，统一错误处理模式
+  - 新增工具: `app/utils/error_handlers.py`
+    - `handle_sse_error()`: 统一的 SSE 错误处理（回滚事务 + 记录日志 + 返回通用错误）
+    - `log_and_sanitize_error()`: 通用错误日志和清理函数
+  - 重构文件: `app/routers/sessions.py`, `app/routers/learn.py`
+  - 行为: 两个 SSE 端点现在使用完全相同的错误处理逻辑
+  - 提交: `efda8d0`
+
+- [x] **测试覆盖**: 验证错误处理行为
+  - 新增测试: `tests/test_error_handlers.py`（6 个测试全部通过）
+  - 验证内容:
+    - ✅ 事务正确回滚
+    - ✅ 记录详细上下文（session_id, step, user_id）
+    - ✅ 不暴露内部错误细节给客户端
+    - ✅ JSON 格式正确
+    - ✅ 支持多种异常类型
+
+> **技术改进**:
+> - **不再静默失败**: 所有异常都有日志记录，方便排查问题
+> - **安全性提升**: 客户端只收到通用错误码（`STREAM_ERROR`），不泄露数据库路径、内部变量等敏感信息
+> - **事务一致性**: SSE 错误时自动回滚数据库事务，防止数据不一致
+> - **代码复用**: 消除 sessions.py 和 learn.py 中的重复错误处理代码（减少 10 行重复代码）
 
 ### [2025-12-29] - 会话列表显示对话内容
 
