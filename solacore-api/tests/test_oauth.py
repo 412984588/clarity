@@ -42,7 +42,7 @@ async def test_google_oauth_success(client: AsyncClient):
         data = response.json()
         assert "access_token" in response.cookies
         assert "refresh_token" in response.cookies
-        assert data["token_type"] == "bearer"
+        assert "user" in data  # 验证返回用户信息
 
 
 @pytest.mark.asyncio
@@ -177,7 +177,7 @@ async def test_apple_oauth_success(client: AsyncClient):
         data = response.json()
         assert "access_token" in response.cookies
         assert "refresh_token" in response.cookies
-        assert data["token_type"] == "bearer"
+        assert "user" in data  # 验证返回用户信息
 
 
 @pytest.mark.asyncio
