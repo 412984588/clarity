@@ -90,7 +90,7 @@ async def test_webhook_renewal(client_no_csrf: AsyncClient):
         json={
             "email": "rc-renewal@example.com",
             "password": "TestPass123!",
-            "device_fingerprint": "test-device",
+            "device_fingerprint": "test-device-renewal",
             "device_name": "Test Device",
         },
     )
@@ -125,7 +125,7 @@ async def test_webhook_expiration(client_no_csrf: AsyncClient):
         json={
             "email": "rc-expired@example.com",
             "password": "TestPass123!",
-            "device_fingerprint": "test-device",
+            "device_fingerprint": "test-device-expiration",
             "device_name": "Test Device",
         },
     )
@@ -178,7 +178,7 @@ async def test_webhook_idempotency_duplicate_event(client_no_csrf: AsyncClient):
         json={
             "email": "rc-idempotent@example.com",
             "password": "TestPass123!",
-            "device_fingerprint": "test-device",
+            "device_fingerprint": "test-device-idempotent",
             "device_name": "Test Device",
         },
     )
@@ -224,7 +224,7 @@ async def test_webhook_concurrency_final_state_correct(client_no_csrf: AsyncClie
         json={
             "email": "rc-concurrent@example.com",
             "password": "TestPass123!",
-            "device_fingerprint": "test-device",
+            "device_fingerprint": "test-device-concurrent",
             "device_name": "Test Device",
         },
     )
