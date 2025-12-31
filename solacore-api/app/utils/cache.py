@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import time
@@ -24,13 +25,28 @@ class RedisCache:
     def __init__(self) -> None:
         settings = get_settings()
         self._enabled = bool(settings.redis_url)
+        self._redis_url = settings.redis_url
         self._client: Redis | None = None
         self._pool: ConnectionPool | None = None
+        self._loop: asyncio.AbstractEventLoop | None = None
+
+    async def _ensure_client(self) -> Redis | None:
         if not self._enabled:
-            return
+            return None
+
+        loop = asyncio.get_running_loop()
+        if self._client and self._loop is loop:
+            return self._client
+
+        if self._client:
+            try:
+                await self._client.close()
+                await self._client.connection_pool.disconnect()
+            except (RedisError, RuntimeError):
+                logger.debug("Redis close failed", exc_info=True)
 
         self._pool = ConnectionPool.from_url(
-            settings.redis_url,
+            self._redis_url,
             max_connections=20,
             decode_responses=True,
             socket_connect_timeout=2,
@@ -38,14 +54,17 @@ class RedisCache:
             health_check_interval=30,
         )
         self._client = Redis(connection_pool=self._pool)
+        self._loop = loop
+        return self._client
 
     async def get(self, key: str) -> Any | None:
-        if not self._client:
+        client = await self._ensure_client()
+        if not client:
             return None
         start = time.perf_counter()
         try:
-            value = await self._client.get(key)
-        except RedisError:
+            value = await client.get(key)
+        except (RedisError, RuntimeError):
             logger.debug("Redis get failed", exc_info=True)
             metrics.record_cache_miss()
             return None
@@ -63,40 +82,43 @@ class RedisCache:
         return payload
 
     async def set(self, key: str, value: Any, ttl: int | None = None) -> None:
-        if not self._client:
+        client = await self._ensure_client()
+        if not client:
             return
         start = time.perf_counter()
         try:
             payload = json.dumps(value, default=_default_serializer)
-            await self._client.set(key, payload, ex=ttl)
-        except RedisError:
+            await client.set(key, payload, ex=ttl)
+        except (RedisError, RuntimeError):
             logger.debug("Redis set failed", exc_info=True)
         finally:
             metrics.record_redis_command(time.perf_counter() - start, command="set")
 
     async def delete(self, key: str) -> None:
-        if not self._client:
+        client = await self._ensure_client()
+        if not client:
             return
         start = time.perf_counter()
         try:
-            await self._client.delete(key)
-        except RedisError:
+            await client.delete(key)
+        except (RedisError, RuntimeError):
             logger.debug("Redis delete failed", exc_info=True)
         finally:
             metrics.record_redis_command(time.perf_counter() - start, command="delete")
 
     async def invalidate(self, pattern: str) -> None:
-        if not self._client:
+        client = await self._ensure_client()
+        if not client:
             return
         start = time.perf_counter()
         try:
             if "*" not in pattern:
-                await self._client.delete(pattern)
+                await client.delete(pattern)
                 return
-            keys = [key async for key in self._client.scan_iter(match=pattern)]
+            keys = [key async for key in client.scan_iter(match=pattern)]
             if keys:
-                await self._client.delete(*keys)
-        except RedisError:
+                await client.delete(*keys)
+        except (RedisError, RuntimeError):
             logger.debug("Redis invalidate failed", exc_info=True)
         finally:
             metrics.record_redis_command(
@@ -109,7 +131,7 @@ class RedisCache:
         try:
             await self._client.close()
             await self._client.connection_pool.disconnect()
-        except RedisError:
+        except (RedisError, RuntimeError):
             logger.debug("Redis close failed", exc_info=True)
 
 

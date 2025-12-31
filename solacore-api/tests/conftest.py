@@ -1,11 +1,13 @@
 from http.cookies import SimpleCookie
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Generator
 
+import pytest
 import pytest_asyncio
 from app.config import get_settings
 from app.database import Base, get_db
 from app.main import app
 from app.middleware.rate_limit import limiter
+from app.services import stripe_service
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
@@ -18,7 +20,12 @@ if settings.database_url.endswith("/solacore_test"):
     TEST_DATABASE_URL = settings.database_url
 else:
     TEST_DATABASE_URL = settings.database_url.replace("/solacore", "/solacore_test")
-engine_test = create_async_engine(TEST_DATABASE_URL, echo=False, poolclass=NullPool)
+engine_test = create_async_engine(
+    TEST_DATABASE_URL,
+    echo=False,
+    poolclass=NullPool,
+    isolation_level="READ COMMITTED",
+)
 TestingSessionLocal = async_sessionmaker(
     engine_test, class_=AsyncSession, expire_on_commit=False
 )
@@ -43,18 +50,50 @@ async def _add_csrf_header(request) -> None:
 
 
 async def _truncate_tables() -> None:
-    """清空所有表数据（保留表结构,避免死锁）"""
+    """清空所有表数据（保留表结构，避免锁冲突）"""
     from sqlalchemy import text
 
     async with TestingSessionLocal() as session:
         # 获取所有表名
         tables = [table.name for table in reversed(Base.metadata.sorted_tables)]
         if tables:
-            # 使用 TRUNCATE CASCADE 清空数据,比 DROP/CREATE 快且不会死锁
-            await session.execute(
-                text(f"TRUNCATE TABLE {', '.join(tables)} RESTART IDENTITY CASCADE")
-            )
+            # 使用 DELETE 逐表清空，避免 TRUNCATE 的 ACCESS EXCLUSIVE 锁
+            for table in tables:
+                await session.execute(text(f"DELETE FROM {table}"))
             await session.commit()
+
+
+@pytest.fixture(scope="function", autouse=True)
+def _configure_payments(request) -> Generator[None, None, None]:
+    """Ensure Stripe settings and stubs for subscription tests."""
+    if request.node.fspath and request.node.fspath.basename != "test_subscriptions.py":
+        yield
+        return
+
+    settings = get_settings()
+    settings.payments_enabled = True
+    settings.stripe_secret_key = "sk_test_dummy"
+    settings.stripe_webhook_secret = "whsec_test_dummy"
+    settings.stripe_price_standard = "price_standard"
+    settings.stripe_price_pro = "price_pro"
+    settings.stripe_success_url = "https://example.com/success"
+    settings.stripe_cancel_url = "https://example.com/cancel"
+
+    async def _fake_checkout_session(*_args, **_kwargs):
+        return "https://example.com/checkout", "cs_test_dummy"
+
+    async def _fake_portal_session(*_args, **_kwargs):
+        return "https://example.com/portal"
+
+    original_checkout = stripe_service.create_checkout_session
+    original_portal = stripe_service.create_portal_session
+    stripe_service.create_checkout_session = _fake_checkout_session
+    stripe_service.create_portal_session = _fake_portal_session
+    try:
+        yield
+    finally:
+        stripe_service.create_checkout_session = original_checkout
+        stripe_service.create_portal_session = original_portal
 
 
 @pytest_asyncio.fixture(scope="function")

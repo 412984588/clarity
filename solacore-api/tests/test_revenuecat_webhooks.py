@@ -5,7 +5,10 @@ from unittest.mock import patch
 from uuid import uuid4
 
 import pytest
+from app.models.user import User
+from app.utils.security import hash_password
 from httpx import AsyncClient
+from tests.conftest import TestingSessionLocal
 
 
 class _TestSettings:
@@ -14,6 +17,16 @@ class _TestSettings:
     revenuecat_entitlement_pro = "pro_access"
     beta_mode = False
     payments_enabled = True
+
+
+async def _create_user(email: str) -> str:
+    """Create a user directly in the test DB to avoid CSRF/auth side effects."""
+    async with TestingSessionLocal() as session:
+        user = User(email=email, password_hash=hash_password("TestPass123!"))
+        session.add(user)
+        await session.flush()
+        await session.commit()
+        return str(user.id)
 
 
 @pytest.mark.asyncio
@@ -48,18 +61,7 @@ async def test_webhook_invalid_auth_returns_401(client_no_csrf: AsyncClient):
 @pytest.mark.asyncio
 async def test_webhook_initial_purchase(client_no_csrf: AsyncClient):
     """INITIAL_PURCHASE 更新 tier 与状态。"""
-    # 先通过 /auth/register 创建用户
-    register_response = await client_no_csrf.post(
-        "/auth/register",
-        json={
-            "email": "rc-initial@example.com",
-            "password": "TestPass123!",
-            "device_fingerprint": "test-device",
-            "device_name": "Test Device",
-        },
-    )
-    assert register_response.status_code == 201
-    user_id = register_response.json()["user"]["id"]
+    user_id = await _create_user("rc-initial@example.com")
 
     event = {
         "id": f"evt_{uuid4().hex[:14]}",
@@ -84,18 +86,7 @@ async def test_webhook_initial_purchase(client_no_csrf: AsyncClient):
 @pytest.mark.asyncio
 async def test_webhook_renewal(client_no_csrf: AsyncClient):
     """RENEWAL 更新 period_end。"""
-    # 创建用户
-    register_response = await client_no_csrf.post(
-        "/auth/register",
-        json={
-            "email": "rc-renewal@example.com",
-            "password": "TestPass123!",
-            "device_fingerprint": "test-device-renewal",
-            "device_name": "Test Device",
-        },
-    )
-    assert register_response.status_code == 201
-    user_id = register_response.json()["user"]["id"]
+    user_id = await _create_user("rc-renewal@example.com")
 
     event = {
         "id": f"evt_{uuid4().hex[:14]}",
@@ -119,18 +110,7 @@ async def test_webhook_renewal(client_no_csrf: AsyncClient):
 @pytest.mark.asyncio
 async def test_webhook_expiration(client_no_csrf: AsyncClient):
     """EXPIRATION 降级为 free 并标记过期。"""
-    # 创建用户
-    register_response = await client_no_csrf.post(
-        "/auth/register",
-        json={
-            "email": "rc-expired@example.com",
-            "password": "TestPass123!",
-            "device_fingerprint": "test-device-expiration",
-            "device_name": "Test Device",
-        },
-    )
-    assert register_response.status_code == 201
-    user_id = register_response.json()["user"]["id"]
+    user_id = await _create_user("rc-expired@example.com")
 
     # 先发送 INITIAL_PURCHASE 升级到 pro
     initial_event = {
@@ -172,18 +152,7 @@ async def test_webhook_expiration(client_no_csrf: AsyncClient):
 @pytest.mark.asyncio
 async def test_webhook_idempotency_duplicate_event(client_no_csrf: AsyncClient):
     """重复发送同一 event_id 只处理一次（幂等性）。"""
-    # 创建用户
-    register_response = await client_no_csrf.post(
-        "/auth/register",
-        json={
-            "email": "rc-idempotent@example.com",
-            "password": "TestPass123!",
-            "device_fingerprint": "test-device-idempotent",
-            "device_name": "Test Device",
-        },
-    )
-    assert register_response.status_code == 201
-    user_id = register_response.json()["user"]["id"]
+    user_id = await _create_user("rc-idempotent@example.com")
 
     event_id = f"evt_{uuid4().hex[:14]}"
 
@@ -218,18 +187,7 @@ async def test_webhook_idempotency_duplicate_event(client_no_csrf: AsyncClient):
 @pytest.mark.asyncio
 async def test_webhook_concurrency_final_state_correct(client_no_csrf: AsyncClient):
     """并发发送两个不同事件，最终状态正确。"""
-    # 创建用户
-    register_response = await client_no_csrf.post(
-        "/auth/register",
-        json={
-            "email": "rc-concurrent@example.com",
-            "password": "TestPass123!",
-            "device_fingerprint": "test-device-concurrent",
-            "device_name": "Test Device",
-        },
-    )
-    assert register_response.status_code == 201
-    user_id = register_response.json()["user"]["id"]
+    user_id = await _create_user("rc-concurrent@example.com")
 
     # 模拟快速连续的 INITIAL_PURCHASE 和 CANCELLATION
     event1 = {
