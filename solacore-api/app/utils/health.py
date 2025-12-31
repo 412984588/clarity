@@ -230,7 +230,7 @@ async def _build_readiness_report() -> dict[str, Any]:
     results = await asyncio.gather(
         *(_run_check(name, fn) for name, fn in checks.items())
     )
-    checks_payload = {name: payload for name, payload in results}
+    checks_payload = dict(results)
 
     required_checks = {"database", "redis", "disk", "memory"}
     required_ok = all(

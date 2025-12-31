@@ -108,7 +108,9 @@ async def test_list_sessions(client: AsyncClient):
     assert len(data) == 1
 
 
-@pytest.mark.skip(reason="SQLite doesn't support SELECT FOR UPDATE properly in concurrent scenarios. This test passes on PostgreSQL.")
+@pytest.mark.skip(
+    reason="SQLite doesn't support SELECT FOR UPDATE properly in concurrent scenarios. This test passes on PostgreSQL."
+)
 @pytest.mark.asyncio
 async def test_device_limit_concurrent_requests(client: AsyncClient):
     register_resp = await client.post(
