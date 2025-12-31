@@ -1,5 +1,6 @@
 """路由注册模块 - 注册所有 API 路由和健康检查端点"""
 
+from app.config import Settings
 from app.database import get_db, get_db_pool_stats
 from app.logging_config import get_logger
 from app.routers import (
@@ -25,8 +26,6 @@ from fastapi import Depends, FastAPI, Request, status
 from fastapi.responses import JSONResponse, PlainTextResponse
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.config import Settings
 
 logger = get_logger(__name__)
 

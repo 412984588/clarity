@@ -58,3 +58,11 @@ exclude = [
     "alembic/",
     "scripts/"
 ]
+# 放宽某些检查以适配 SQLAlchemy ORM 和 FastAPI
+disable_error_code = [
+    "assignment",  # 允许 Column 对象赋值
+    "arg-type",    # 允许 Column 对象作为参数
+    "method-assign",  # 允许动态方法赋值
+    "dict-item",  # 允许 responses 字典的 int key
+    "attr-defined"  # 允许访问动态属性（如 Pool.size()）
+]

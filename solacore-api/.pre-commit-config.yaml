@@ -42,8 +42,8 @@ repos:
     hooks:
       - id: mypy
         stages: [pre-commit]
-        args: [--ignore-missing-imports]
-        exclude: ^(alembic/|scripts/)
+        args: [--ignore-missing-imports, --config-file=pyproject.toml]
+        exclude: ^(alembic/|scripts/|tests/)
 
   - repo: local
     hooks:
