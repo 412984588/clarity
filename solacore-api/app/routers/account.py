@@ -14,7 +14,7 @@ from app.models.user import User
 from app.services.cache_service import CacheService
 from app.utils.datetime_utils import utc_now
 from app.utils.docs import COMMON_ERROR_RESPONSES
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -75,6 +75,7 @@ def _dt(value: object | None) -> Optional[str]:
 @limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def export_account(
     request: Request,
+    response: Response,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
@@ -228,6 +229,7 @@ async def export_account(
 @limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def delete_account(
     request: Request,
+    response: Response,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> None:

@@ -5,7 +5,6 @@ from uuid import UUID, uuid4
 import pytest
 from app.models.solve_session import SolveStep
 from app.models.step_history import StepHistory
-from app.routers import sessions as sessions_router
 from app.utils.security import decode_token
 from httpx import AsyncClient
 from sqlalchemy import select
@@ -170,7 +169,7 @@ async def test_sse_endpoint_returns_event_stream(
             for token in ["hello", "world"]:
                 yield token
 
-    monkeypatch.setattr(sessions_router, "AIService", FakeAIService)
+    monkeypatch.setattr("app.routers.sessions.stream.AIService", FakeAIService)
     token = await _register_user(
         client, "session-sse@example.com", "session-device-006"
     )
@@ -222,7 +221,7 @@ async def test_sse_updates_step_history_message_count(
             for token in ["ping"]:
                 yield token
 
-    monkeypatch.setattr(sessions_router, "AIService", FakeAIService)
+    monkeypatch.setattr("app.routers.sessions.stream.AIService", FakeAIService)
     token = await _register_user(
         client, "session-step-history@example.com", "session-device-008"
     )

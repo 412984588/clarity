@@ -29,7 +29,7 @@ from app.services.email_service import send_password_reset_email
 from app.utils.datetime_utils import utc_now
 from app.utils.docs import COMMON_ERROR_RESPONSES
 from app.utils.security import hash_password_async
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -70,6 +70,7 @@ router = APIRouter()
 )  # 防止邮件轰炸：每小时最多 3 次
 async def forgot_password(
     request: Request,
+    response: Response,
     data: ForgotPasswordRequest,
     db: AsyncSession = Depends(get_db),
 ):
@@ -126,6 +127,7 @@ async def forgot_password(
 @limiter.limit(API_RATE_LIMIT, key_func=ip_rate_limit_key, override_defaults=False)
 async def reset_password(
     request: Request,
+    response: Response,
     data: ResetPasswordRequest,
     db: AsyncSession = Depends(get_db),
 ):

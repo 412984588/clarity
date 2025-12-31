@@ -1,3 +1,4 @@
+import re
 import secrets
 from typing import Iterable
 
@@ -20,12 +21,13 @@ CSRF_EXEMPT_PATHS = {
     "/auth/oauth/google/code",
     "/auth/oauth/apple",
 }
-CSRF_EXEMPT_PREFIXES = (
-    "/webhooks",
-    # SSE endpoint (/sessions/{id}/stream) 需要豁免CSRF，因为EventSource无法发送自定义header
-    # 其他sessions端点仍需CSRF保护，但暂时统一豁免以保持兼容性
-    # 长期方案：拆分SSE endpoint到独立路径（如 /sse/sessions/{id}），或使用polling替代SSE
-    "/sessions",
+CSRF_EXEMPT_PREFIXES = ("/webhooks",)
+# SSE endpoint 需要豁免CSRF，因为EventSource无法发送自定义header
+# 使用正则匹配具体路径模式，避免过度豁免
+CSRF_EXEMPT_PATTERNS = (
+    re.compile(
+        r"^/sessions/[a-f0-9\-]{36}/messages$"
+    ),  # POST /sessions/{uuid}/messages
 )
 
 
@@ -38,7 +40,9 @@ def _is_exempt_path(path: str) -> bool:
     normalized = _normalize_path(path)
     if normalized in CSRF_EXEMPT_PATHS:
         return True
-    return any(normalized.startswith(prefix) for prefix in CSRF_EXEMPT_PREFIXES)
+    if any(normalized.startswith(prefix) for prefix in CSRF_EXEMPT_PREFIXES):
+        return True
+    return any(pattern.match(normalized) for pattern in CSRF_EXEMPT_PATTERNS)
 
 
 def _cookie_params(httponly: bool) -> dict:

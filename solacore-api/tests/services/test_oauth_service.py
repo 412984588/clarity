@@ -493,7 +493,13 @@ class TestExchangeGoogleCode:
             "refresh_token": "fake-refresh-token",
         }
 
-        with patch("httpx.AsyncClient.post", return_value=mock_response):
+        with (
+            patch("httpx.AsyncClient.post", return_value=mock_response),
+            patch(
+                "app.services.oauth_service.settings.google_client_secret",
+                "fake-client-secret",
+            ),
+        ):
             id_token = await oauth_service._exchange_google_code("auth-code-456")
 
         assert id_token == "fake-id-token-123"

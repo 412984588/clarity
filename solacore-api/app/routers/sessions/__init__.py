@@ -20,6 +20,22 @@ router.include_router(stream_router)
 router.include_router(update_router)
 router.include_router(delete_router)
 
+# 支持无尾斜杠路径，避免 FastAPI 自动 307 重定向
+router.add_api_route(
+    "",
+    create_session,
+    methods=["POST"],
+    name="create_session_no_slash",
+    include_in_schema=False,
+)
+router.add_api_route(
+    "",
+    list_sessions,
+    methods=["GET"],
+    name="list_sessions_no_slash",
+    include_in_schema=False,
+)
+
 __all__ = [
     "router",
     "create_session",

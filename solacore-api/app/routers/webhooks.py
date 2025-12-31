@@ -12,6 +12,7 @@ from app.services import stripe_service
 from app.services.cache_service import CacheService
 from app.utils.datetime_utils import utc_now
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from fastapi.responses import JSONResponse
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -121,12 +122,18 @@ async def stripe_webhook(
 
     payload = await request.body()
     if not stripe_signature:
-        raise HTTPException(status_code=400, detail={"error": "MISSING_SIGNATURE"})
+        return JSONResponse(
+            status_code=400,
+            content={"error": "MISSING_SIGNATURE"},
+        )
 
     try:
         event = stripe_service.verify_webhook(payload, stripe_signature)
     except stripe.error.SignatureVerificationError:  # type: ignore[attr-defined]
-        raise HTTPException(status_code=400, detail={"error": "INVALID_SIGNATURE"})
+        return JSONResponse(
+            status_code=400,
+            content={"error": "INVALID_SIGNATURE"},
+        )
 
     event_id = str(event.get("id") or "")
     event_type = str(event.get("type") or "")

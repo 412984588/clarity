@@ -10,10 +10,21 @@ from redis.exceptions import RedisError
 
 
 def _make_cache(client: AsyncMock | None) -> cache_module.RedisCache:
+    """创建用于测试的 RedisCache 实例，mock _ensure_client() 方法"""
     instance = cache_module.RedisCache.__new__(cache_module.RedisCache)
     instance._client = client
     instance._pool = None
-    instance._enabled = True
+    instance._enabled = client is not None
+    instance._redis_url = "redis://localhost:6379"
+    instance._loop = None
+
+    # Mock _ensure_client() 方法让它直接返回预设的 client
+    async def mock_ensure_client():
+        if not instance._enabled:
+            return None
+        return instance._client
+
+    instance._ensure_client = mock_ensure_client  # type: ignore[method-assign]
     return instance
 
 

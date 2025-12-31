@@ -5,6 +5,7 @@ from unittest.mock import patch
 from uuid import uuid4
 
 import pytest
+from app.config import get_settings
 from app.models.subscription import Subscription
 from app.models.user import User
 from app.models.webhook_event import ProcessedWebhookEvent
@@ -30,6 +31,14 @@ async def _create_user_with_subscription(email: str) -> str:
         session.add(subscription)
         await session.commit()
         return str(user.id)
+
+
+@pytest.fixture(autouse=True)
+def _configure_payments(monkeypatch: pytest.MonkeyPatch) -> None:
+    settings = get_settings()
+    monkeypatch.setattr(settings, "payments_enabled", True)
+    monkeypatch.setattr(settings, "stripe_price_standard", "price_standard")
+    monkeypatch.setattr(settings, "stripe_price_pro", "price_pro")
 
 
 @pytest.mark.asyncio

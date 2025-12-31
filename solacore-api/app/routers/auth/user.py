@@ -15,7 +15,7 @@ from app.schemas.auth import ActiveSessionResponse, DeviceResponse, UserResponse
 from app.services.cache_service import CacheService
 from app.utils.datetime_utils import utc_now
 from app.utils.docs import COMMON_ERROR_RESPONSES
-from fastapi import APIRouter, Depends, Header, HTTPException, Path, Request
+from fastapi import APIRouter, Depends, Header, HTTPException, Path, Request, Response
 from fastapi.responses import JSONResponse
 from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -35,6 +35,7 @@ router = APIRouter()
 @limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def get_current_user_info(
     request: Request,
+    response: Response,
     current_user: User = Depends(get_current_user),
 ):
     """获取当前登录用户的基础资料。"""
@@ -58,6 +59,7 @@ async def get_current_user_info(
 @limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def list_devices(
     request: Request,
+    response: Response,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -69,11 +71,11 @@ async def list_devices(
         .order_by(Device.created_at.asc())
     )
     devices = result.scalars().all()
-    response: list[dict[str, object]] = []
+    devices_list: list[dict[str, object]] = []
     for device in devices:
         cached_device = await cache_service.get_device(device.id)
         if isinstance(cached_device, dict):
-            response.append(cached_device)
+            devices_list.append(cached_device)
             continue
         payload = {
             "id": str(device.id),
@@ -84,9 +86,9 @@ async def list_devices(
             else None,
             "is_active": device.is_active,
         }
-        response.append(payload)
+        devices_list.append(payload)
         await cache_service.set_device(device.id, payload)
-    return response
+    return devices_list
 
 
 @router.delete(
@@ -102,6 +104,7 @@ async def list_devices(
 @limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def revoke_device(
     request: Request,
+    response: Response,
     device_id: UUID = Path(
         ...,
         description="设备 ID",
@@ -164,6 +167,7 @@ async def revoke_device(
 @limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def list_sessions(
     request: Request,
+    response: Response,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -211,6 +215,7 @@ async def list_sessions(
 @limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def revoke_session(
     request: Request,
+    response: Response,
     session_id: UUID = Path(
         ...,
         description="会话 ID",

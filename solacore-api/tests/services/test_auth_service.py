@@ -455,9 +455,7 @@ class TestGetOrCreateDevice:
                 service2 = AuthService(db2)
 
                 # 重新查询用户（避免外键问题）
-                result = await db2.execute(
-                    select(User).where(User.email == email)
-                )
+                result = await db2.execute(select(User).where(User.email == email))
                 user_reloaded = result.scalar_one()
 
                 # 获取设备（更新名称）
@@ -535,9 +533,7 @@ class TestGetOrCreateDevice:
                 service2 = AuthService(db2)
 
                 # 重新查询用户
-                result = await db2.execute(
-                    select(User).where(User.email == email)
-                )
+                result = await db2.execute(select(User).where(User.email == email))
                 user_reloaded = result.scalar_one()
 
                 # 尝试创建第 2 个设备

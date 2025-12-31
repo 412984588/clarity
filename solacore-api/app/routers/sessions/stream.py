@@ -138,16 +138,18 @@ async def stream_messages(
                 db, step_history, session, current_step_enum
             )
 
-            # 保存用户消息
+            # 保存用户消息并立即提交，避免在AI流式响应期间持有DB连接
             _save_user_message(db, session, current_step_enum, data.content)
+            await db.commit()
 
-            # 流式输出 AI 响应
+            # 流式输出 AI 响应（此时DB连接已释放）
             ai_response_parts: list[str] = []
             async for token in ai_service.stream(system_prompt, sanitized_input):
                 ai_response_parts.append(token)
                 payload = json.dumps({"content": token})
                 yield f"event: token\ndata: {payload}\n\n"
 
+            # AI响应完成后，重新开启事务保存回复和状态
             # 保存 AI 回复
             _save_ai_message(db, session, current_step_enum, "".join(ai_response_parts))
 
