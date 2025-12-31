@@ -7,6 +7,39 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2025-12-31] - 修复 Sessions 路由测试失败
+
+- [x] **修复 conftest.py**: 为 TRUNCATE 语句添加 `text()` 包装（SQLAlchemy 2.0+ 要求）
+- [x] **修复测试路径**: 统一 sessions 路由测试中的路径格式
+  - `/sessions/` - 列表和创建端点（带斜杠）
+  - `/sessions/{id}` - 单个资源端点（不带斜杠）
+  - `/sessions/{id}/messages` - 子资源端点（不带斜杠）
+- [x] **修复错误格式**: 统一错误响应格式为 `response.json()["detail"]["error"]`
+- [x] **测试进度**: 13个测试中5个通过（38.5%）
+  - ✅ test_sessions_unauthenticated_returns_401
+  - ✅ test_list_sessions_returns_array
+  - ✅ test_update_status_success
+  - ✅ test_update_step_invalid_transition_fails
+  - ✅ test_get_other_users_session_returns_404
+
+> **遇到的坑**:
+> **SQLAlchemy 2.0 text() 要求**
+> - **现象**: `sqlalchemy.exc.ArgumentError: Textual SQL expression should be declared as text()`
+> - **原因**: SQLAlchemy 2.0+ 不再允许直接传入字符串SQL
+> - **解决**: 用 `text(f"TRUNCATE TABLE ...")` 包裹SQL语句
+> - **教训**: 升级SQLAlchemy后需要检查所有原始SQL语句
+
+> **遇到的坑**:
+> **FastAPI 路由斜杠重定向**
+> - **现象**: 测试返回307而不是期望的状态码
+> - **原因**: 路由定义为 `/` 时，访问无斜杠会重定向；定义为 `/{id}` 时，访问带斜杠会重定向
+> - **解决**: 测试路径需与路由定义完全匹配
+> - **教训**: 一致性很重要 - 列表用 `/sessions/`，详情用 `/sessions/{id}`
+
+> **剩余问题**:
+> - **数据库死锁**: 并行测试时TRUNCATE操作冲突（需要优化测试隔离策略）
+> - **Mock导入问题**: 模块化后AIService的导入路径变更（linter自动修复导致反复）
+
 ### [2025-12-31] - 补充 AuthService 单元测试
 
 - [x] **新增测试文件**: `tests/services/test_auth_service.py` (22 个测试用例)
