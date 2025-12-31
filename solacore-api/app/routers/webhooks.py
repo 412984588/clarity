@@ -129,7 +129,7 @@ async def stripe_webhook(
 
     try:
         event = stripe_service.verify_webhook(payload, stripe_signature)
-    except stripe.error.SignatureVerificationError:  # type: ignore[attr-defined]
+    except stripe.SignatureVerificationError:  # type: ignore[attr-defined]
         return JSONResponse(
             status_code=400,
             content={"error": "INVALID_SIGNATURE"},

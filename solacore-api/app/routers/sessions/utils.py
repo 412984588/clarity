@@ -109,6 +109,8 @@ def _prepare_step_history(
     active_step_history.message_count = (  # type: ignore[assignment]
         (active_step_history.message_count or 0) + 1
     )
+    # 确保对象被 SQLAlchemy 跟踪（如果是已存在的对象）
+    db.add(active_step_history)
     return active_step_history
 
 

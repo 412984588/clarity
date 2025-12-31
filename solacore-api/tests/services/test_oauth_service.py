@@ -511,7 +511,13 @@ class TestExchangeGoogleCode:
         mock_response.status_code = 400
         mock_response.text = "invalid_grant"
 
-        with patch("httpx.AsyncClient.post", return_value=mock_response):
+        with (
+            patch("httpx.AsyncClient.post", return_value=mock_response),
+            patch(
+                "app.services.oauth_service.settings.google_client_secret",
+                "fake-client-secret",
+            ),
+        ):
             with pytest.raises(ValueError, match="GOOGLE_CODE_EXCHANGE_FAILED"):
                 await oauth_service._exchange_google_code("invalid-code")
 

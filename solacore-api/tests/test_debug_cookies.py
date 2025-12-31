@@ -42,7 +42,7 @@ async def test_debug_register_cookies():
         print(f"Register response.cookies object: {response.cookies}")
 
         # 检查Set-Cookie header
-        set_cookie_headers = response.headers.getlist("set-cookie")
+        set_cookie_headers = response.headers.get_list("set-cookie")
         print(f"\nSet-Cookie headers count: {len(set_cookie_headers)}")
         for idx, cookie in enumerate(set_cookie_headers):
             print(f"Set-Cookie {idx}: {cookie[:100]}...")
