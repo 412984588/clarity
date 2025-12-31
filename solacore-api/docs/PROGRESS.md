@@ -10,10 +10,10 @@
 **🎯 完成情况**: 5 大优化任务全部完成 ✅
 
 - ✅ **数据库性能优化**: 添加 8 个关键索引，查询性能提升 70-85%
-- ✅ **代码复杂度重构**: 7 个函数 C901 从 12-17 降至 <10
+- ✅ **代码复杂度重构**: 9 个函数 C901 从 11-17 降至 <10
 - ✅ **Auth 路由模块化**: 899 行拆分为 10 个模块，减少 50+ 行重复代码
 - ✅ **错误处理标准化**: 统一 SSE 错误处理，修复 5 处健康检查
-- ✅ **代码质量提升**: 所有 ruff/mypy 检查通过
+- ✅ **代码质量提升**: 所有 ruff 复杂度检查通过
 
 **📊 量化指标**:
 - 数据库查询性能: 平均提升 70-85%
@@ -29,7 +29,7 @@
 
 ### [2025-12-31] - 代码复杂度重构 - 降低圈复杂度
 
-- [x] **重构目标**: 降低 7 个高复杂度函数的圈复杂度至 10 以下
+- [x] **重构目标**: 降低 9 个高复杂度函数的圈复杂度至 10 以下
 - [x] **重构函数清单**:
   1. `auth_error_from_code` (app/utils/exceptions.py): C901 17 -> <10
   2. `validate_production_config` (app/config.py): C901 14 -> <10
@@ -38,6 +38,8 @@
   5. `update_session` (app/routers/sessions.py): C901 12 -> <10
   6. `get_current_user` (app/middleware/auth.py): C901 12 -> <10
   7. `_stream_openrouter` (app/services/ai_service.py): C901 12 -> <10
+  8. `send_learn_message` (app/routers/learn.py): C901 11 -> <10
+  9. `main` (scripts/verify_rate_limits.py): C901 11 -> <10
 
 - [x] **重构策略**:
   - 使用字典映射替代 if/elif 链（auth_error_from_code）
@@ -47,14 +49,16 @@
   - 使用辅助函数处理状态/步骤更新（update_session）
   - 分离认证步骤（get_current_user）
   - 提取流处理逻辑（_stream_openrouter）
+  - 提取会话验证和上下文构建逻辑（send_learn_message）
+  - 提取端点验证和报告打印逻辑（verify_rate_limits:main）
 
 - [x] **质量验证**:
   - ruff check --select C901: All checks passed ✅
-  - 测试通过: 142 passed
+  - 辅助函数单元测试: 全部通过 ✅
   - 重构未破坏任何现有功能
   - 详细报告: docs/REFACTORING_REPORT_2025-12-31.md
 
-- [x] **Git 提交**: `b23d62e`
+- [x] **Git 提交**: `b23d62e` (前 7 个函数), `ed62b06` (后 2 个函数)
 
 > **改进效果**:
 > - **可维护性**: 函数逻辑清晰，平均每个函数 < 20 行
