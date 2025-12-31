@@ -2,7 +2,8 @@ from functools import lru_cache
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-DEFAULT_JWT_SECRET = "your-secret-key-change-in-production"
+# ⚠️ 仅用于开发环境和测试环境，生产环境必须从环境变量设置
+DEFAULT_JWT_SECRET = "dev-secret-key-DO-NOT-USE-IN-PRODUCTION"
 
 
 class Settings(BaseSettings):
@@ -15,6 +16,8 @@ class Settings(BaseSettings):
     debug: bool = False
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/solacore"
     redis_url: str = "redis://localhost:6379/0"
+
+    # JWT 配置 - 生产环境必须从环境变量设置
     jwt_secret: str = DEFAULT_JWT_SECRET
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 60
@@ -108,9 +111,16 @@ def validate_production_config(settings: Settings | None = None) -> None:
 
     errors = []
 
-    # 1. JWT 校验
-    if active_settings.jwt_secret in {"", DEFAULT_JWT_SECRET}:
-        errors.append("JWT_SECRET must be set to a secure value in production")
+    # 1. JWT 校验 - 严格禁止使用默认密钥
+    if active_settings.jwt_secret in {
+        "",
+        DEFAULT_JWT_SECRET,
+        "your-secret-key-change-in-production",
+    }:
+        errors.append(
+            "🔥 CRITICAL: JWT_SECRET must be set to a secure random value in production. "
+            "Generate one with: python -c 'import secrets; print(secrets.token_urlsafe(32))'"
+        )
 
     # 2. 数据库校验
     if not active_settings.database_url or "localhost" in active_settings.database_url:
