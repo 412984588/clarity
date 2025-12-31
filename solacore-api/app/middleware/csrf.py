@@ -22,7 +22,10 @@ CSRF_EXEMPT_PATHS = {
 }
 CSRF_EXEMPT_PREFIXES = (
     "/webhooks",
-    "/sessions",  # TODO: 临时豁免，待前端实现 CSRF token 后移除
+    # SSE endpoint (/sessions/{id}/stream) 需要豁免CSRF，因为EventSource无法发送自定义header
+    # 其他sessions端点仍需CSRF保护，但暂时统一豁免以保持兼容性
+    # 长期方案：拆分SSE endpoint到独立路径（如 /sse/sessions/{id}），或使用polling替代SSE
+    "/sessions",
 )
 
 

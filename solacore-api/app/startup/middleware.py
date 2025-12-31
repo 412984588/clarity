@@ -95,8 +95,10 @@ def setup_middlewares(app: FastAPI, settings: Settings) -> None:
         return await call_next(request)
 
     # 3. CORS 中间件
-    # 暂时禁用限流中间件，避免 ASGI 协议冲突
-    # TODO: 修复 SlowAPI 与 Starlette 的兼容性问题
+    # SlowAPI 限流中间件已禁用，使用 @limiter.limit() 装饰器替代
+    # 原因：SlowAPIASGIMiddleware 与 Starlette 的 ASGI 协议存在兼容性问题
+    # 当前方案：在每个endpoint手动添加 @limiter.limit() 装饰器（见 verify_rate_limits.py 验证脚本）
+    # 长期方案：等待 SlowAPI 修复兼容性问题，或迁移到其他限流库（如 fastapi-limiter）
     # app.add_middleware(SlowAPIASGIMiddleware)
     # app.add_middleware(RateLimitContextMiddleware)
 
