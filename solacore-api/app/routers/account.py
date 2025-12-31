@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any, Optional, cast
+from uuid import UUID
 
 from app.database import get_db
 from app.middleware.auth import get_current_user
@@ -238,7 +239,7 @@ async def delete_account(
     if not deleted_id:
         raise HTTPException(status_code=404, detail={"error": "USER_NOT_FOUND"})
     await db.commit()
-    await cache_service.invalidate_user(current_user.id)
-    await cache_service.invalidate_subscription(current_user.id)
-    await cache_service.invalidate_sessions(current_user.id)
+    await cache_service.invalidate_user(cast(UUID, current_user.id))
+    await cache_service.invalidate_subscription(cast(UUID, current_user.id))
+    await cache_service.invalidate_sessions(cast(UUID, current_user.id))
     return None
