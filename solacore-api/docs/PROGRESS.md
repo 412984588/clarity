@@ -3,6 +3,41 @@
 **项目名称**: SolaCore API
 **最后更新**: 2025-12-31
 
+### [2025-12-31] - 代码复杂度重构 - 降低圈复杂度
+
+- [x] **重构目标**: 降低 7 个高复杂度函数的圈复杂度至 10 以下
+- [x] **重构函数清单**:
+  1. `auth_error_from_code` (app/utils/exceptions.py): C901 17 -> <10
+  2. `validate_production_config` (app/config.py): C901 14 -> <10
+  3. `revenuecat_webhook` (app/routers/revenuecat_webhooks.py): C901 14 -> <10
+  4. `stream_messages` (app/routers/sessions.py): C901 13 -> <10
+  5. `update_session` (app/routers/sessions.py): C901 12 -> <10
+  6. `get_current_user` (app/middleware/auth.py): C901 12 -> <10
+  7. `_stream_openrouter` (app/services/ai_service.py): C901 12 -> <10
+
+- [x] **重构策略**:
+  - 使用字典映射替代 if/elif 链（auth_error_from_code）
+  - 拆分验证逻辑为独立函数（validate_production_config）
+  - 提取事件处理逻辑（revenuecat_webhook）
+  - 提取 SSE 生成辅助函数（stream_messages）
+  - 使用辅助函数处理状态/步骤更新（update_session）
+  - 分离认证步骤（get_current_user）
+  - 提取流处理逻辑（_stream_openrouter）
+
+- [x] **质量验证**:
+  - ruff check --select C901: All checks passed ✅
+  - 测试通过: 142 passed
+  - 重构未破坏任何现有功能
+  - 详细报告: docs/REFACTORING_REPORT_2025-12-31.md
+
+- [x] **Git 提交**: `b23d62e`
+
+> **改进效果**:
+> - **可维护性**: 函数逻辑清晰，平均每个函数 < 20 行
+> - **可测试性**: 辅助函数可独立测试，覆盖率更高
+> - **可读性**: 代码层次分明，逻辑流程一目了然
+> - **代码质量**: 圈复杂度全部降至 10 以下，符合最佳实践
+
 ### [2025-12-31] - Auth 路由拆分 - 模块化重构
 
 - [x] **目标**: 将 app/routers/auth.py (899 行) 拆分为多个子模块，提高可维护性
