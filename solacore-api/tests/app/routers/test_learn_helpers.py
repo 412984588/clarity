@@ -28,7 +28,7 @@ def test_validate_session_raises_when_missing():
 
     # Act
     with pytest.raises(HTTPException) as excinfo:
-        learn_router._validate_session(session)
+        _validate_session(session)
 
     # Assert
     assert excinfo.value.status_code == 404
@@ -41,7 +41,7 @@ def test_validate_session_raises_when_inactive():
 
     # Act
     with pytest.raises(HTTPException) as excinfo:
-        learn_router._validate_session(session)
+        _validate_session(session)
 
     # Assert
     assert excinfo.value.status_code == 400
