@@ -93,6 +93,59 @@ def check_file(file_path: Path) -> Dict[str, List[str]]:
     return checker.functions
 
 
+def _validate_endpoint(
+    router_file_name: str, func_name: str, decorators: List[str]
+) -> bool:
+    """验证单个端点的限流配置
+
+    Args:
+        router_file_name: 路由文件名
+        func_name: 函数名
+        decorators: 装饰器列表
+
+    Returns:
+        bool: 是否验证通过
+    """
+    key = (router_file_name, func_name)
+    limiter_decorators = [d for d in decorators if "@limiter.limit" in d]
+
+    if key not in EXPECTED_LIMITS:
+        return True  # 未在预期列表中，不判断对错
+
+    expected = EXPECTED_LIMITS[key]
+    if not limiter_decorators:
+        print(f"❌ {router_file_name}::{func_name} - 缺少限流装饰器")
+        return False
+
+    if not any(expected in d for d in limiter_decorators):
+        print(
+            f"⚠️  {router_file_name}::{func_name} - "
+            f"限流配置不匹配 (期望: {expected}, 实际: {limiter_decorators})"
+        )
+        return True  # 警告但不算失败
+
+    print(f"✅ {router_file_name}::{func_name} - {limiter_decorators[0]}")
+    return True
+
+
+def _print_coverage_report(found_endpoints: Set[tuple]) -> None:
+    """打印端点覆盖情况报告"""
+    print("\n📋 端点覆盖情况:")
+    expected_set = set(EXPECTED_LIMITS.keys()) | SKIP_ENDPOINTS
+    missing = expected_set - found_endpoints
+    extra = found_endpoints - expected_set
+
+    if missing:
+        print(f"\n⚠️  未找到的预期端点: {missing}")
+
+    if extra:
+        print(f"\n💡 额外的端点（未配置限流）: {extra}")
+
+    print(f"\n总计: {len(found_endpoints)} 个端点")
+    print(f"已配置限流: {len(EXPECTED_LIMITS)} 个")
+    print(f"跳过限流: {len(SKIP_ENDPOINTS)} 个")
+
+
 def main():
     """主函数"""
     print("🔍 验证限流装饰器配置...\n")
@@ -115,39 +168,12 @@ def main():
             if key in SKIP_ENDPOINTS:
                 continue
 
-            # 检查是否有限流装饰器
-            limiter_decorators = [d for d in decorators if "@limiter.limit" in d]
+            # 验证端点
+            if not _validate_endpoint(router_file.name, func_name, decorators):
+                all_ok = False
 
-            if key in EXPECTED_LIMITS:
-                expected = EXPECTED_LIMITS[key]
-                if not limiter_decorators:
-                    print(f"❌ {router_file.name}::{func_name} - 缺少限流装饰器")
-                    all_ok = False
-                elif not any(expected in d for d in limiter_decorators):
-                    print(
-                        f"⚠️  {router_file.name}::{func_name} - "
-                        f"限流配置不匹配 (期望: {expected}, 实际: {limiter_decorators})"
-                    )
-                else:
-                    print(
-                        f"✅ {router_file.name}::{func_name} - {limiter_decorators[0]}"
-                    )
-
-    # 检查是否有未预期的端点
-    print("\n📋 端点覆盖情况:")
-    expected_set = set(EXPECTED_LIMITS.keys()) | SKIP_ENDPOINTS
-    missing = expected_set - found_endpoints
-    extra = found_endpoints - expected_set
-
-    if missing:
-        print(f"\n⚠️  未找到的预期端点: {missing}")
-
-    if extra:
-        print(f"\n💡 额外的端点（未配置限流）: {extra}")
-
-    print(f"\n总计: {len(found_endpoints)} 个端点")
-    print(f"已配置限流: {len(EXPECTED_LIMITS)} 个")
-    print(f"跳过限流: {len(SKIP_ENDPOINTS)} 个")
+    # 打印覆盖情况报告
+    _print_coverage_report(found_endpoints)
 
     if all_ok:
         print("\n✅ 所有限流配置正确！")

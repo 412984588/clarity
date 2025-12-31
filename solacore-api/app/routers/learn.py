@@ -428,6 +428,41 @@ async def get_learn_session(
     return JSONResponse(content=response_data)
 
 
+def _validate_session(session: LearnSession | None) -> LearnSession:
+    """验证会话是否存在且处于活跃状态"""
+    if not session:
+        raise HTTPException(status_code=404, detail={"error": "SESSION_NOT_FOUND"})
+    if session.status != "active":
+        raise HTTPException(status_code=400, detail={"error": "SESSION_NOT_ACTIVE"})
+    return session
+
+
+def _build_context_prompt(
+    history_messages: list[dict[str, str]], sanitized_content: str
+) -> str:
+    """构建包含历史上下文的用户提示"""
+    if not history_messages:
+        return sanitized_content
+
+    history_text = "Previous conversation:\n"
+    for msg in history_messages[-6:]:  # 只保留最近 6 条消息
+        role_label = "User" if msg["role"] == "user" else "Assistant"
+        history_text += f"{role_label}: {msg['content']}\n"
+    return f"{history_text}\nCurrent message: {sanitized_content}"
+
+
+def _generate_review_schedule() -> dict[str, str]:
+    """生成艾宾浩斯复习计划"""
+    now = utc_now()
+    return {
+        "day_1": (now + timedelta(days=1)).isoformat(),
+        "day_3": (now + timedelta(days=3)).isoformat(),
+        "day_7": (now + timedelta(days=7)).isoformat(),
+        "day_15": (now + timedelta(days=15)).isoformat(),
+        "day_30": (now + timedelta(days=30)).isoformat(),
+    }
+
+
 @router.post(
     "/{session_id}/messages",
     summary="发送学习消息",
@@ -444,20 +479,14 @@ async def send_learn_message(
     db: AsyncSession = Depends(get_db),
 ):
     """发送消息并获取流式回复"""
-    # 查询会话
+    # 查询并验证会话
     result = await db.execute(
         select(LearnSession).where(
             LearnSession.id == session_id,
             LearnSession.user_id == current_user.id,
         )
     )
-    session = result.scalar_one_or_none()
-
-    if not session:
-        raise HTTPException(status_code=404, detail={"error": "SESSION_NOT_FOUND"})
-
-    if session.status != "active":
-        raise HTTPException(status_code=400, detail={"error": "SESSION_NOT_ACTIVE"})
+    session = _validate_session(result.scalar_one_or_none())
 
     # 内容过滤
     sanitized_content = sanitize_user_input(message_request.content)
@@ -474,40 +503,27 @@ async def send_learn_message(
 
     # 如果是第一条消息，提取学习主题
     if not session.topic and message_request.step == LearnStep.START.value:
-        # 简单提取主题：取前30个字符
         session.topic = sanitized_content[:30] + (
             "..." if len(sanitized_content) > 30 else ""
         )
 
     await db.commit()
 
-    # 获取历史消息用于上下文
+    # 获取历史消息并构建上下文提示
     history_messages = [
         {"role": msg.role, "content": msg.content}
         for msg in session.messages
-        if msg.id != user_message.id  # 排除刚添加的消息
+        if msg.id != user_message.id
     ]
-
-    # 构建包含历史的用户提示
-    if history_messages:
-        history_text = "Previous conversation:\n"
-        for msg in history_messages[-6:]:  # 只保留最近 6 条消息
-            role_label = "User" if msg["role"] == "user" else "Assistant"
-            history_text += f"{role_label}: {msg['content']}\n"
-        user_prompt_with_history = (
-            f"{history_text}\nCurrent message: {sanitized_content}"
-        )
-    else:
-        user_prompt_with_history = sanitized_content
-
-    # 获取系统提示词
-    current_step = LearnStep(session.current_step)
-    system_prompt = LEARN_STEP_PROMPTS.get(
-        current_step.value,
-        LEARN_STEP_PROMPTS[LearnStep.START.value],
+    user_prompt_with_history = _build_context_prompt(
+        history_messages, sanitized_content
     )
 
-    # AI 服务
+    # 获取系统提示词和 AI 服务
+    current_step = LearnStep(session.current_step)
+    system_prompt = LEARN_STEP_PROMPTS.get(
+        current_step.value, LEARN_STEP_PROMPTS[LearnStep.START.value]
+    )
     ai_service = AIService()
 
     async def event_generator() -> AsyncGenerator[str, None]:
@@ -515,6 +531,7 @@ async def send_learn_message(
         accumulated_content = ""
 
         try:
+            # 流式接收 AI 回复
             async for token in ai_service.stream(
                 system_prompt, user_prompt_with_history
             ):
@@ -532,23 +549,13 @@ async def send_learn_message(
 
             # 检查是否可以进入下一步
             next_step = get_next_learn_step(current_step)
-            step_completed = (
-                len(accumulated_content) > 50
-            )  # 简单判断：回复足够长则可进入下一步
+            step_completed = len(accumulated_content) > 50
 
             # 如果是最后一步，生成复习计划
             if is_final_learn_step(current_step):
                 session.status = "completed"
                 session.completed_at = utc_now()
-                # 生成艾宾浩斯复习计划
-                now = utc_now()
-                session.review_schedule = {
-                    "day_1": (now + timedelta(days=1)).isoformat(),
-                    "day_3": (now + timedelta(days=3)).isoformat(),
-                    "day_7": (now + timedelta(days=7)).isoformat(),
-                    "day_15": (now + timedelta(days=15)).isoformat(),
-                    "day_30": (now + timedelta(days=30)).isoformat(),
-                }
+                session.review_schedule = _generate_review_schedule()
 
             await db.commit()
             await db.refresh(ai_message)
