@@ -7,6 +7,70 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2025-12-31] - 修复 RevenueCat Webhook 测试（部分完成）
+
+- [x] **问题诊断**: 7 个 webhook 测试中有 6 个失败
+  - 原因 1: RuntimeError: Event loop is closed（独立创建 async session）
+  - 原因 2: 认证测试返回 501（payments_enabled 默认 False）
+  - 原因 3: CSRF middleware 拦截 webhook 请求
+  - 原因 4: 注册接口返回 201 而测试期望 200
+
+- [x] **修复内容**:
+  1. **移除独立 async session** (`tests/test_revenuecat_webhooks.py`)
+     - 删除 `_create_user_with_subscription` 辅助函数
+     - 改用 `/auth/register` API 创建测试用户
+     - 避免在测试外部创建新的 event loop
+
+  2. **修复认证测试**
+     - 使用 `client_no_csrf` fixture 替代 `client`
+     - Mock `get_settings` 设置 `payments_enabled = True`
+     - 修正错误响应格式：`response.json()["detail"]["error"]`
+
+  3. **修正状态码断言**
+     - `/auth/register` 返回 201（Created）而不是 200
+     - 批量替换所有注册测试的状态码断言
+
+  4. **设备指纹唯一化**
+     - 每个测试使用唯一的设备指纹，避免潜在冲突
+     - test-device, test-device-renewal, test-device-expiration, test-device-idempotent, test-device-concurrent
+
+- [x] **测试结果**:
+  - ✅ **单独运行**: 7/7 通过 (100%)
+  - ⚠️ **连续运行**: 5/7 通过 (71.4%)
+    - test_webhook_missing_auth_returns_401 ✅
+    - test_webhook_invalid_auth_returns_401 ✅
+    - test_webhook_initial_purchase ✅
+    - test_webhook_renewal ❌ (RuntimeError: Event loop closed)
+    - test_webhook_expiration ✅
+    - test_webhook_idempotency_duplicate_event ❌ (RuntimeError: Event loop closed)
+    - test_webhook_concurrency_final_state_correct ✅
+
+> **遇到的坑**:
+> **Redis 连接池 Event Loop 冲突**
+> - **现象**: `RuntimeError: Task got Future attached to a different loop`
+> - **原因**: Redis 连接池在多个测试间共享，但 pytest-asyncio 为每个测试创建新的 event loop
+> - **影响**: 只在连续运行多个测试时出现，单独运行每个测试都通过
+> - **临时方案**: 已验证业务逻辑正确（单独运行全通过）
+> - **长期方案**: 需要在 conftest.py 中添加 Redis 连接池清理逻辑
+
+> **技术选型**:
+> **client_no_csrf fixture 用于 Webhook 测试**
+> - **场景**: 第三方服务（RevenueCat）调用 webhook 不会有 CSRF token
+> - **方法**: conftest.py 中已提供 `client_no_csrf` fixture
+> - **用途**: 跳过 CSRF 验证，专注测试业务逻辑
+
+**📊 量化指标**:
+- 修复前：1/7 通过 (14.3%)
+- 修复后（连续运行）：5/7 通过 (71.4%)
+- 修复后（单独运行）：7/7 通过 (100%)
+- 剩余问题：2 个（Redis 连接池清理）
+
+**📝 下一步**:
+1. 在 conftest.py 添加 Redis 连接池清理
+2. 或使用 Mock Redis 避免真实连接
+
+---
+
 ### [2025-12-31] - 修复 Sessions 路由测试失败
 
 - [x] **修复 conftest.py**: 为 TRUNCATE 语句添加 `text()` 包装（SQLAlchemy 2.0+ 要求）
