@@ -107,6 +107,46 @@ def set_session_cookies(
     set_csrf_cookies(response, generate_csrf_token())
 
 
+async def create_auth_response(
+    response: Response,
+    user: User,
+    tokens,
+    db: AsyncSession | None = None,
+) -> AuthSuccessResponse:
+    """统一的认证响应构造函数
+
+    自动处理：
+    1. 设置 access_token 和 refresh_token cookies (httpOnly, Secure, SameSite)
+    2. 设置 CSRF token cookies
+    3. 清除用户会话缓存
+    4. 返回标准的 AuthSuccessResponse
+
+    Args:
+        response: FastAPI Response 对象
+        user: 用户模型实例
+        tokens: 包含 access_token 和 refresh_token 的对象
+        db: 数据库会话（可选，仅 refresh 端点需要）
+
+    Returns:
+        AuthSuccessResponse: 包含用户信息的标准响应
+    """
+    # 设置 httpOnly cookies
+    set_session_cookies(response, tokens.access_token, tokens.refresh_token)
+
+    # 清除会话缓存
+    await cache_service.invalidate_sessions(user.id)
+
+    # 返回用户信息（不包含 token）
+    return AuthSuccessResponse(
+        user=UserResponse(
+            id=user.id,
+            email=user.email,
+            auth_provider=user.auth_provider,
+            locale=user.locale,
+        )
+    )
+
+
 @router.get(
     "/csrf",
     response_model=CsrfTokenResponse,
@@ -146,18 +186,7 @@ async def register(
     service = AuthService(db)
     try:
         user, tokens = await service.register(data)
-        # 设置 httpOnly cookies
-        set_session_cookies(response, tokens.access_token, tokens.refresh_token)
-        await cache_service.invalidate_sessions(user.id)
-        # 返回用户信息（不包含 token）
-        return AuthSuccessResponse(
-            user=UserResponse(
-                id=user.id,
-                email=user.email,
-                auth_provider=user.auth_provider,
-                locale=user.locale,
-            )
-        )
+        return await create_auth_response(response, user, tokens, db)
     except ValueError as e:
         raise_auth_error(e, context="register")
 
@@ -190,18 +219,7 @@ async def login(
     service = AuthService(db)
     try:
         user, tokens = await service.login(data)
-        # 设置 httpOnly cookies
-        set_session_cookies(response, tokens.access_token, tokens.refresh_token)
-        await cache_service.invalidate_sessions(user.id)
-        # 返回用户信息（不包含 token）
-        return AuthSuccessResponse(
-            user=UserResponse(
-                id=user.id,
-                email=user.email,
-                auth_provider=user.auth_provider,
-                locale=user.locale,
-            )
-        )
+        return await create_auth_response(response, user, tokens, db)
     except ValueError as e:
         raise_auth_error(e, context="login")
 
@@ -271,18 +289,7 @@ async def beta_login(
         raise_auth_error(e, context="beta_login")
 
     await db.commit()
-    # 设置 httpOnly cookies
-    set_session_cookies(response, tokens.access_token, tokens.refresh_token)
-    await cache_service.invalidate_sessions(user.id)
-    # 返回用户信息（不包含 token）
-    return AuthSuccessResponse(
-        user=UserResponse(
-            id=user.id,
-            email=user.email,
-            auth_provider=user.auth_provider,
-            locale=user.locale,
-        )
-    )
+    return await create_auth_response(response, user, tokens, db)
 
 
 @router.post(
@@ -318,17 +325,7 @@ async def refresh(
         if not user:
             raise HTTPException(status_code=404, detail={"error": "USER_NOT_FOUND"})
 
-        # 设置 httpOnly cookies
-        set_session_cookies(response, tokens.access_token, tokens.refresh_token)
-        # 返回用户信息（不包含 token）
-        return AuthSuccessResponse(
-            user=UserResponse(
-                id=user.id,
-                email=user.email,
-                auth_provider=user.auth_provider,
-                locale=user.locale,
-            )
-        )
+        return await create_auth_response(response, user, tokens, db)
     except ValueError as e:
         raise_auth_error(e, context="refresh")
 
@@ -550,17 +547,7 @@ async def google_oauth_code(
             device_fingerprint=device_fingerprint or f"web-{code[:8]}",
             device_name=device_name or "Web Browser",
         )
-        # 设置 httpOnly cookies
-        set_session_cookies(response, tokens.access_token, tokens.refresh_token)
-        # 返回用户信息（不包含 token）
-        return AuthSuccessResponse(
-            user=UserResponse(
-                id=user.id,
-                email=user.email,
-                auth_provider=user.auth_provider,
-                locale=user.locale,
-            )
-        )
+        return await create_auth_response(response, user, tokens, db)
     except ValueError as e:
         raise_auth_error(e, context="google_oauth_code")
 
@@ -583,17 +570,7 @@ async def google_oauth(
     service = OAuthService(db)
     try:
         user, tokens = await service.google_auth(data)
-        # 设置 httpOnly cookies
-        set_session_cookies(response, tokens.access_token, tokens.refresh_token)
-        # 返回用户信息（不包含 token）
-        return AuthSuccessResponse(
-            user=UserResponse(
-                id=user.id,
-                email=user.email,
-                auth_provider=user.auth_provider,
-                locale=user.locale,
-            )
-        )
+        return await create_auth_response(response, user, tokens, db)
     except ValueError as e:
         raise_auth_error(e, context="google_oauth")
 
@@ -616,17 +593,7 @@ async def apple_oauth(
     service = OAuthService(db)
     try:
         user, tokens = await service.apple_auth(data)
-        # 设置 httpOnly cookies
-        set_session_cookies(response, tokens.access_token, tokens.refresh_token)
-        # 返回用户信息（不包含 token）
-        return AuthSuccessResponse(
-            user=UserResponse(
-                id=user.id,
-                email=user.email,
-                auth_provider=user.auth_provider,
-                locale=user.locale,
-            )
-        )
+        return await create_auth_response(response, user, tokens, db)
     except ValueError as e:
         raise_auth_error(e, context="apple_oauth")
 

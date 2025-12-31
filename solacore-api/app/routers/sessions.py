@@ -42,6 +42,7 @@ from app.services.state_machine import (
 )
 from app.utils.datetime_utils import utc_now
 from app.utils.docs import COMMON_ERROR_RESPONSES
+from app.utils.error_handlers import handle_sse_error
 from fastapi import APIRouter, Depends, Header, HTTPException, Path, Query, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 from sqlalchemy import and_, func, select
@@ -722,16 +723,17 @@ async def stream_messages(
             )
             yield f"event: done\ndata: {done_payload}\n\n"
         except Exception as e:
-            # 发生异常时回滚事务，防止连接泄漏
-            await db.rollback()
-            # 记录详细错误到日志，但不暴露给客户端
-            logger.error(
-                f"SSE stream error in session {session_id}: {type(e).__name__}: {e}",
-                exc_info=True,
-            )
-            # 客户端只返回通用错误码，不泄露内部详情
-            error_payload = json.dumps({"error": "STREAM_ERROR"})
-            yield f"event: error\ndata: {error_payload}\n\n"
+            # 使用统一的 SSE 错误处理
+            async for error_event in handle_sse_error(
+                db,
+                e,
+                {
+                    "session_id": str(session_id),
+                    "step": current_step,
+                    "user_id": str(current_user.id),
+                },
+            ):
+                yield error_event
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 

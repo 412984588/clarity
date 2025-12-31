@@ -311,8 +311,12 @@ async def health_check(db: AsyncSession = Depends(get_db)):
     try:
         await db.execute(text("SELECT 1"))
         db_ok = True
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(
+            "health_check.database_failed",
+            error=str(e),
+            error_type=type(e).__name__,
+        )
 
     # 基础状态判断
     llm_ok = bool(

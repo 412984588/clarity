@@ -51,7 +51,16 @@ async def _check_database() -> dict[str, Any]:
         async with AsyncSessionLocal() as session:
             await session.execute(text("SELECT 1"))
         return {"status": "up", "latency_ms": _latency_ms(start)}
-    except Exception:
+    except Exception as e:
+        from app.logging_config import get_logger
+
+        logger = get_logger(__name__)
+        logger.warning(
+            "health_check.database_failed",
+            error=str(e),
+            error_type=type(e).__name__,
+            latency_ms=_latency_ms(start),
+        )
         return {"status": "down", "latency_ms": _latency_ms(start)}
 
 
@@ -70,7 +79,16 @@ async def _check_redis() -> dict[str, Any]:
     try:
         await client.ping()
         return {"status": "up", "latency_ms": _latency_ms(start)}
-    except Exception:
+    except Exception as e:
+        from app.logging_config import get_logger
+
+        logger = get_logger(__name__)
+        logger.warning(
+            "health_check.redis_failed",
+            error=str(e),
+            error_type=type(e).__name__,
+            latency_ms=_latency_ms(start),
+        )
         return {"status": "down", "latency_ms": _latency_ms(start)}
     finally:
         await client.close()
@@ -265,7 +283,15 @@ async def get_active_sessions_count() -> int:
                 .where(ActiveSession.expires_at > utc_now())
             )
             return int(result.scalar_one())
-    except Exception:
+    except Exception as e:
+        from app.logging_config import get_logger
+
+        logger = get_logger(__name__)
+        logger.warning(
+            "health_check.active_sessions_count_failed",
+            error=str(e),
+            error_type=type(e).__name__,
+        )
         return -1
 
 
@@ -278,5 +304,13 @@ async def get_active_users_count() -> int:
                 )
             )
             return int(result.scalar_one())
-    except Exception:
+    except Exception as e:
+        from app.logging_config import get_logger
+
+        logger = get_logger(__name__)
+        logger.warning(
+            "health_check.active_users_count_failed",
+            error=str(e),
+            error_type=type(e).__name__,
+        )
         return -1

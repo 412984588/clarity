@@ -32,6 +32,7 @@ from app.services.ai_service import AIService
 from app.services.content_filter import sanitize_user_input, strip_pii
 from app.utils.datetime_utils import utc_now
 from app.utils.docs import COMMON_ERROR_RESPONSES
+from app.utils.error_handlers import handle_sse_error
 from fastapi import APIRouter, Depends, Header, HTTPException, Path, Query, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
@@ -564,16 +565,17 @@ async def send_learn_message(
             yield f"event: done\ndata: {done_data}\n\n"
 
         except Exception as e:
-            # 回滚事务，防止连接状态不一致
-            await db.rollback()
-            # 记录详细错误到日志（包含堆栈跟踪），用于服务器端排查
-            logger.error(
-                f"Error in learn stream (session_id={session_id}, step={session.current_step}): {e}",
-                exc_info=True,
-            )
-            # 客户端只返回通用错误码，不泄露内部详情（如数据库路径、内部变量）
-            error_payload = json.dumps({"error": "STREAM_ERROR"})
-            yield f"event: error\ndata: {error_payload}\n\n"
+            # 使用统一的 SSE 错误处理
+            async for error_event in handle_sse_error(
+                db,
+                e,
+                {
+                    "session_id": str(session_id),
+                    "step": session.current_step,
+                    "user_id": str(current_user.id),
+                },
+            ):
+                yield error_event
 
     return StreamingResponse(
         event_generator(),

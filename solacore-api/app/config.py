@@ -102,17 +102,10 @@ def get_settings() -> Settings:
     return Settings()
 
 
-def validate_production_config(settings: Settings | None = None) -> None:
-    """生产环境配置校验 - 启动时检查所有关键配置"""
-    active_settings = settings or get_settings()
-
-    if active_settings.debug:
-        return  # Debug 模式跳过校验
-
+def _validate_jwt_config(settings: Settings) -> list[str]:
+    """校验 JWT 配置"""
     errors = []
-
-    # 1. JWT 校验 - 严格禁止使用默认密钥
-    if active_settings.jwt_secret in {
+    if settings.jwt_secret in {
         "",
         DEFAULT_JWT_SECRET,
         "your-secret-key-change-in-production",
@@ -121,49 +114,91 @@ def validate_production_config(settings: Settings | None = None) -> None:
             "🔥 CRITICAL: JWT_SECRET must be set to a secure random value in production. "
             "Generate one with: python -c 'import secrets; print(secrets.token_urlsafe(32))'"
         )
+    return errors
 
-    # 2. 数据库校验
-    if not active_settings.database_url or "localhost" in active_settings.database_url:
+
+def _validate_database_config(settings: Settings) -> list[str]:
+    """校验数据库配置"""
+    errors = []
+    if not settings.database_url or "localhost" in settings.database_url:
         errors.append("DATABASE_URL must be set to production database (not localhost)")
+    return errors
 
-    # 3. LLM 配置校验
-    if active_settings.llm_provider == "openai" and not active_settings.openai_api_key:
+
+def _validate_llm_config(settings: Settings) -> list[str]:
+    """校验 LLM 配置"""
+    errors = []
+    if settings.llm_provider == "openai" and not settings.openai_api_key:
         errors.append("OPENAI_API_KEY is required when llm_provider=openai")
-
-    if (
-        active_settings.llm_provider == "anthropic"
-        and not active_settings.anthropic_api_key
-    ):
+    if settings.llm_provider == "anthropic" and not settings.anthropic_api_key:
         errors.append("ANTHROPIC_API_KEY is required when llm_provider=anthropic")
+    return errors
 
-    # 4. 支付配置校验（如果启用支付）
-    if active_settings.payments_enabled:
-        if not active_settings.stripe_secret_key:
-            errors.append("STRIPE_SECRET_KEY is required when payments_enabled=true")
 
-        if not active_settings.stripe_webhook_secret:
-            errors.append(
-                "STRIPE_WEBHOOK_SECRET is required when payments_enabled=true"
-            )
+def _validate_payment_config(settings: Settings) -> list[str]:
+    """校验支付配置"""
+    errors = []
+    if not settings.payments_enabled:
+        return errors
 
-        if not active_settings.revenuecat_webhook_secret:
-            errors.append(
-                "REVENUECAT_WEBHOOK_SECRET is required when payments_enabled=true"
-            )
+    if not settings.stripe_secret_key:
+        errors.append("STRIPE_SECRET_KEY is required when payments_enabled=true")
+    if not settings.stripe_webhook_secret:
+        errors.append("STRIPE_WEBHOOK_SECRET is required when payments_enabled=true")
+    if not settings.revenuecat_webhook_secret:
+        errors.append(
+            "REVENUECAT_WEBHOOK_SECRET is required when payments_enabled=true"
+        )
+    return errors
 
-    # 5. OAuth 校验
-    if not active_settings.google_client_id:
+
+def _validate_oauth_config(settings: Settings) -> list[str]:
+    """校验 OAuth 配置"""
+    errors = []
+    if not settings.google_client_id:
         errors.append("GOOGLE_CLIENT_ID is required for Google OAuth")
+    return errors
 
-    # 6. 前端 URL 校验
-    if not active_settings.frontend_url or "localhost" in active_settings.frontend_url:
+
+def _validate_frontend_config(settings: Settings) -> list[str]:
+    """校验前端 URL 配置"""
+    errors = []
+    if not settings.frontend_url or "localhost" in settings.frontend_url:
         errors.append("FRONTEND_URL must be set to production URL (not localhost)")
+    return errors
 
-    # 7. Beta 模式安全校验 - 生产环境禁止开启
-    if active_settings.beta_mode:
+
+def _validate_beta_mode(settings: Settings) -> list[str]:
+    """校验 Beta 模式配置"""
+    errors = []
+    if settings.beta_mode:
         errors.append(
             "BETA_MODE must be disabled in production (security risk: shared account bypass)"
         )
+    return errors
+
+
+def validate_production_config(settings: Settings | None = None) -> None:
+    """生产环境配置校验 - 启动时检查所有关键配置"""
+    active_settings = settings or get_settings()
+
+    if active_settings.debug:
+        return  # Debug 模式跳过校验
+
+    # 收集所有验证函数的错误
+    validators = [
+        _validate_jwt_config,
+        _validate_database_config,
+        _validate_llm_config,
+        _validate_payment_config,
+        _validate_oauth_config,
+        _validate_frontend_config,
+        _validate_beta_mode,
+    ]
+
+    errors = []
+    for validator in validators:
+        errors.extend(validator(active_settings))
 
     if errors:
         error_msg = "🚨 Production configuration errors:\n" + "\n".join(
