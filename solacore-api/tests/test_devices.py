@@ -229,7 +229,7 @@ async def test_cannot_revoke_current_device(client: AsyncClient):
         app.dependency_overrides.pop(get_current_user, None)
 
     assert resp.status_code == 400
-    assert resp.json()["error"] == "CANNOT_REMOVE_CURRENT_DEVICE"
+    assert resp.json()["detail"]["error"] == "CANNOT_REMOVE_CURRENT_DEVICE"
 
 
 @pytest.mark.asyncio
@@ -288,7 +288,7 @@ async def test_revoke_limit_once_per_day(client: AsyncClient):
 
     assert first_resp.status_code == 204
     assert second_resp.status_code == 429
-    assert second_resp.json()["error"] == "REMOVAL_LIMIT_EXCEEDED"
+    assert second_resp.json()["detail"]["error"] == "REMOVAL_LIMIT_EXCEEDED"
 
 
 @pytest.mark.asyncio
@@ -354,4 +354,4 @@ async def test_revoke_session_not_found(client: AsyncClient):
         app.dependency_overrides.pop(get_current_user, None)
 
     assert resp.status_code == 404
-    assert resp.json()["error"] == "SESSION_NOT_FOUND"
+    assert resp.json()["detail"]["error"] == "SESSION_NOT_FOUND"

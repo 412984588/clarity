@@ -189,10 +189,10 @@ async def test_refresh_token(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_refresh_invalid_token(client: AsyncClient):
+async def test_refresh_invalid_token(client_no_csrf: AsyncClient):
     """测试无效 token 刷新失败"""
-    response = await client.post(
-        "/auth/refresh", json={"refresh_token": "invalid-token"}
-    )
+    # 设置无效的 refresh_token cookie
+    client_no_csrf.cookies.set("refresh_token", "invalid-token")
+    response = await client_no_csrf.post("/auth/refresh")
     assert response.status_code == 401
     assert response.json()["error"] == "INVALID_TOKEN"

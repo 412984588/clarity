@@ -15,6 +15,7 @@ CSRF_EXEMPT_PATHS = {
     "/auth/register",
     "/auth/login",
     "/auth/beta-login",
+    "/auth/refresh",  # Refresh token使用httpOnly cookie，不易受CSRF攻击
     "/auth/forgot-password",
     "/auth/reset-password",
     "/auth/oauth/google",

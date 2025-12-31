@@ -59,8 +59,8 @@ async def test_webhook_invalid_signature_returns_400(client: AsyncClient):
     with patch("app.routers.webhooks.stripe_service") as mock_stripe:
         import stripe
 
-        mock_stripe.verify_webhook.side_effect = (
-            stripe.error.SignatureVerificationError("Invalid", "sig")
+        mock_stripe.verify_webhook.side_effect = stripe.SignatureVerificationError(
+            "Invalid", "sig"
         )
 
         response = await client.post(
