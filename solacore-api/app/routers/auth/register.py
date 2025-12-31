@@ -5,18 +5,16 @@
 
 from app.database import get_db
 from app.middleware.rate_limit import AUTH_RATE_LIMIT, ip_rate_limit_key, limiter
-from app.schemas.auth import AuthSuccessResponse, RegisterRequest, UserResponse
+from app.schemas.auth import AuthSuccessResponse, RegisterRequest
 from app.services.auth_service import AuthService
-from app.services.cache_service import CacheService
 from app.utils.docs import COMMON_ERROR_RESPONSES
 from app.utils.exceptions import raise_auth_error
 from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .utils import set_session_cookies
+from .utils import create_auth_response
 
 router = APIRouter()
-cache_service = CacheService()
 
 
 @router.post(
@@ -41,17 +39,6 @@ async def register(
     service = AuthService(db)
     try:
         user, tokens = await service.register(data)
-        # 设置 httpOnly cookies
-        set_session_cookies(response, tokens.access_token, tokens.refresh_token)
-        await cache_service.invalidate_sessions(user.id)
-        # 返回用户信息（不包含 token）
-        return AuthSuccessResponse(
-            user=UserResponse(
-                id=user.id,
-                email=user.email,
-                auth_provider=user.auth_provider,
-                locale=user.locale,
-            )
-        )
+        return await create_auth_response(response, user, tokens, db)
     except ValueError as e:
         raise_auth_error(e, context="register")

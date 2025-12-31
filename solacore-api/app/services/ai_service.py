@@ -90,6 +90,30 @@ class AIService:
                     if content:
                         yield content
 
+    def _should_collect_reasoning(self) -> bool:
+        """判断是否应该收集 reasoning 内容"""
+        return (
+            self.settings.openrouter_reasoning_fallback
+            and self.settings.enable_reasoning_output
+        )
+
+    async def _process_openrouter_stream(
+        self, response: httpx.Response
+    ) -> AsyncGenerator[tuple[str | None, str | None], None]:
+        """处理 OpenRouter SSE 流，返回 (content, reasoning) 元组"""
+        async for line in response.aiter_lines():
+            if not line or not line.startswith("data:"):
+                continue
+            data = line[len("data:") :].strip()
+            if data == "[DONE]":
+                break
+            try:
+                payload = json.loads(data)
+            except json.JSONDecodeError:
+                continue
+            delta = payload.get("choices", [{}])[0].get("delta", {})
+            yield delta.get("content"), delta.get("reasoning")
+
     async def _stream_openrouter(
         self, system_prompt: str, user_prompt: str
     ) -> AsyncGenerator[str, None]:
@@ -116,8 +140,7 @@ class AIService:
         if self.settings.openrouter_app_name:
             headers["X-Title"] = self.settings.openrouter_app_name
 
-        allow_reasoning_fallback = self.settings.openrouter_reasoning_fallback
-        enable_reasoning_output = self.settings.enable_reasoning_output
+        collect_reasoning = self._should_collect_reasoning()
         reasoning_buffer: list[str] = []
         yielded_content = False
 
@@ -129,36 +152,17 @@ class AIService:
                 json=payload,
             ) as response:
                 response.raise_for_status()
-                async for line in response.aiter_lines():
-                    if not line or not line.startswith("data:"):
-                        continue
-                    data = line[len("data:") :].strip()
-                    if data == "[DONE]":
-                        break
-                    try:
-                        payload = json.loads(data)
-                    except json.JSONDecodeError:
-                        continue
-                    delta = payload.get("choices", [{}])[0].get("delta", {})
-                    content = delta.get("content")
+                async for content, reasoning in self._process_openrouter_stream(
+                    response
+                ):
                     if content:
                         yielded_content = True
                         yield content
-                        continue
-                    # 只有开启 reasoning 输出时，才收集 reasoning 内容
-                    if allow_reasoning_fallback and enable_reasoning_output:
-                        reasoning = delta.get("reasoning")
-                        if reasoning:
-                            reasoning_buffer.append(reasoning)
+                    elif collect_reasoning and reasoning:
+                        reasoning_buffer.append(reasoning)
 
-        # 只有开启 reasoning 输出时，才使用 reasoning 作为兜底
-        if (
-            allow_reasoning_fallback
-            and enable_reasoning_output
-            and (not yielded_content)
-            and reasoning_buffer
-        ):
-            # Fallback for reasoning-only models that emit no content tokens.
+        # Reasoning 兜底：仅在启用时使用
+        if collect_reasoning and not yielded_content and reasoning_buffer:
             yield "".join(reasoning_buffer)
 
     async def _stream_anthropic(

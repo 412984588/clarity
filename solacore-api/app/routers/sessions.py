@@ -121,6 +121,112 @@ def _period_start_for_tier(subscription: Subscription) -> datetime:
     return utc_now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
 
+def _prepare_step_history(
+    db: AsyncSession,
+    step_history: StepHistory | None,
+    session: SolveSession,
+    current_step_enum: SolveStep,
+) -> StepHistory:
+    """获取或创建当前步骤的 StepHistory"""
+    active_step_history = step_history
+    if active_step_history and active_step_history.step != current_step_enum.value:
+        active_step_history = None
+    if not active_step_history:
+        active_step_history = StepHistory(
+            session_id=session.id,
+            step=current_step_enum.value,
+            started_at=utc_now(),
+        )
+        db.add(active_step_history)
+
+    # 增加消息计数
+    active_step_history.message_count = (  # type: ignore[assignment]
+        (active_step_history.message_count or 0) + 1
+    )
+    return active_step_history
+
+
+def _save_user_message(
+    db: AsyncSession,
+    session: SolveSession,
+    current_step_enum: SolveStep,
+    content: str,
+) -> None:
+    """保存用户消息到数据库"""
+    user_message = Message(
+        session_id=session.id,
+        role=MessageRole.USER.value,
+        content=content,
+        step=current_step_enum.value,
+    )
+    db.add(user_message)
+
+
+def _save_ai_message(
+    db: AsyncSession,
+    session: SolveSession,
+    current_step_enum: SolveStep,
+    content: str,
+) -> None:
+    """保存 AI 回复到数据库"""
+    ai_message = Message(
+        session_id=session.id,
+        role=MessageRole.ASSISTANT.value,
+        content=content,
+        step=current_step_enum.value,
+    )
+    db.add(ai_message)
+
+
+async def _handle_step_transition(
+    db: AsyncSession,
+    analytics_service: AnalyticsService,
+    session: SolveSession,
+    active_step_history: StepHistory,
+    current_step_enum: SolveStep,
+) -> str:
+    """处理状态转换和分析事件"""
+    next_step_enum = get_next_step(current_step_enum)
+    next_step = next_step_enum.value if next_step_enum else current_step_enum.value
+    now = utc_now()
+
+    if next_step_enum and can_transition(current_step_enum, next_step_enum):
+        active_step_history.completed_at = now  # type: ignore[assignment]
+        db.add(
+            StepHistory(
+                session_id=session.id,
+                step=next_step_enum.value,
+                started_at=now,
+            )
+        )
+        session.current_step = next_step_enum.value  # type: ignore[assignment]
+        await analytics_service.emit(
+            "step_completed",
+            session.id,  # type: ignore[arg-type]
+            {"from_step": current_step_enum.value, "to_step": next_step_enum.value},
+            flush=False,
+        )
+    elif is_final_step(current_step_enum):
+        if active_step_history.completed_at is None:
+            active_step_history.completed_at = now  # type: ignore[assignment]
+            await analytics_service.emit(
+                "step_completed",
+                session.id,  # type: ignore[arg-type]
+                {"step": current_step_enum.value},
+                flush=False,
+            )
+        session.status = SessionStatus.COMPLETED.value  # type: ignore[assignment]
+        session.completed_at = now  # type: ignore[assignment]
+        await analytics_service.emit(
+            "session_completed",
+            session.id,  # type: ignore[arg-type]
+            {"final_step": current_step_enum.value},
+            flush=False,
+        )
+
+    return next_step
+
+
 async def _get_or_create_usage(
     db: AsyncSession,
     subscription: Subscription,
@@ -445,6 +551,38 @@ async def get_session(
     return JSONResponse(content=response.model_dump(mode="json", exclude_none=True))
 
 
+def _update_session_status(session: SolveSession, status_value: str) -> None:
+    """更新会话状态"""
+    try:
+        status_enum = SessionStatus(status_value)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400, detail={"error": "INVALID_STATUS"}
+        ) from exc
+    session.status = status_enum.value  # type: ignore[assignment]
+    if status_enum == SessionStatus.COMPLETED:
+        session.completed_at = utc_now()  # type: ignore[assignment]
+
+
+def _update_session_step(session: SolveSession, new_step_value: str) -> None:
+    """更新会话步骤（含转换验证）"""
+    try:
+        next_step_enum = SolveStep(new_step_value)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail={"error": "INVALID_STEP"}) from exc
+    try:
+        current_step_enum = SolveStep(str(session.current_step))
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400, detail={"error": "INVALID_CURRENT_STEP"}
+        ) from exc
+    if not validate_transition(current_step_enum, next_step_enum):
+        raise HTTPException(
+            status_code=400, detail={"error": "INVALID_STEP_TRANSITION"}
+        )
+    session.current_step = next_step_enum.value  # type: ignore[assignment]
+
+
 @router.patch(
     "/{session_id}",
     response_model=SessionUpdateResponse,
@@ -474,36 +612,13 @@ async def update_session(
     if not session:
         raise HTTPException(status_code=404, detail={"error": "SESSION_NOT_FOUND"})
 
+    # 使用辅助函数更新状态和步骤
     if updates.status is not None:
-        try:
-            status_enum = SessionStatus(updates.status)
-        except ValueError as exc:
-            raise HTTPException(
-                status_code=400, detail={"error": "INVALID_STATUS"}
-            ) from exc
-        session.status = status_enum.value  # type: ignore[assignment]
-        if status_enum == SessionStatus.COMPLETED:
-            session.completed_at = utc_now()  # type: ignore[assignment]
-
+        _update_session_status(session, updates.status)
     if updates.current_step is not None:
-        try:
-            next_step_enum = SolveStep(updates.current_step)
-        except ValueError as exc:
-            raise HTTPException(
-                status_code=400, detail={"error": "INVALID_STEP"}
-            ) from exc
-        try:
-            current_step_enum = SolveStep(str(session.current_step))
-        except ValueError as exc:
-            raise HTTPException(
-                status_code=400, detail={"error": "INVALID_CURRENT_STEP"}
-            ) from exc
-        if not validate_transition(current_step_enum, next_step_enum):
-            raise HTTPException(
-                status_code=400, detail={"error": "INVALID_STEP_TRANSITION"}
-            )
-        session.current_step = next_step_enum.value  # type: ignore[assignment]
+        _update_session_step(session, updates.current_step)
 
+    # 直接更新简单字段
     if updates.locale is not None:
         session.locale = updates.locale  # type: ignore[assignment]
     if updates.first_step_action is not None:
@@ -621,97 +736,32 @@ async def stream_messages(
 
     async def event_generator() -> AsyncGenerator[str, None]:
         try:
-            # 获取或创建当前步骤的 StepHistory
-            active_step_history = step_history
-            if (
-                active_step_history
-                and active_step_history.step != current_step_enum.value
-            ):
-                active_step_history = None
-            if not active_step_history:
-                active_step_history = StepHistory(
-                    session_id=session.id,
-                    step=current_step_enum.value,
-                    started_at=utc_now(),
-                )
-                db.add(active_step_history)
-
-            # 增加消息计数
-            active_step_history.message_count = (  # type: ignore[assignment]
-                (active_step_history.message_count or 0) + 1
+            # 准备 StepHistory
+            active_step_history = _prepare_step_history(
+                db, step_history, session, current_step_enum
             )
 
-            # 保存用户消息到数据库
-            user_message = Message(
-                session_id=session.id,
-                role=MessageRole.USER.value,
-                content=data.content,  # 保存原始内容
-                step=current_step_enum.value,
-            )
-            db.add(user_message)
+            # 保存用户消息
+            _save_user_message(db, session, current_step_enum, data.content)
 
-            # 流式输出 AI 响应，同时累积完整回复
+            # 流式输出 AI 响应
             ai_response_parts: list[str] = []
             async for token in ai_service.stream(system_prompt, sanitized_input):
                 ai_response_parts.append(token)
                 payload = json.dumps({"content": token})
                 yield f"event: token\ndata: {payload}\n\n"
 
-            # 保存 AI 回复到数据库
-            ai_content = "".join(ai_response_parts)
-            ai_message = Message(
-                session_id=session.id,
-                role=MessageRole.ASSISTANT.value,
-                content=ai_content,
-                step=current_step_enum.value,
-            )
-            db.add(ai_message)
+            # 保存 AI 回复
+            _save_ai_message(db, session, current_step_enum, "".join(ai_response_parts))
 
-            # 获取下一步
-            next_step_enum = get_next_step(current_step_enum)
-            next_step = (
-                next_step_enum.value if next_step_enum else current_step_enum.value
+            # 处理状态转换和分析
+            next_step = await _handle_step_transition(
+                db,
+                analytics_service,
+                session,
+                active_step_history,
+                current_step_enum,
             )
-            now = utc_now()
-
-            # 处理状态转换
-            if next_step_enum and can_transition(current_step_enum, next_step_enum):
-                active_step_history.completed_at = now  # type: ignore[assignment]
-                db.add(
-                    StepHistory(
-                        session_id=session.id,
-                        step=next_step_enum.value,
-                        started_at=now,
-                    )
-                )
-                session.current_step = next_step_enum.value  # type: ignore[assignment]
-                await analytics_service.emit(
-                    "step_completed",
-                    session.id,  # type: ignore[arg-type]
-                    {
-                        "from_step": current_step_enum.value,
-                        "to_step": next_step_enum.value,
-                    },
-                    flush=False,
-                )
-            elif is_final_step(current_step_enum):
-                # 最终步骤完成
-                if active_step_history.completed_at is None:
-                    active_step_history.completed_at = now  # type: ignore[assignment]
-                    await analytics_service.emit(
-                        "step_completed",
-                        session.id,  # type: ignore[arg-type]
-                        {"step": current_step_enum.value},
-                        flush=False,
-                    )
-                session.status = SessionStatus.COMPLETED.value  # type: ignore[assignment]
-                session.completed_at = now  # type: ignore[assignment]
-                await analytics_service.emit(
-                    "session_completed",
-                    session.id,  # type: ignore[arg-type]
-                    {"final_step": current_step_enum.value},
-                    flush=False,
-                )
 
             await db.commit()
             done_payload = json.dumps(

@@ -93,6 +93,47 @@ async def _check_and_record_event(
     return result.rowcount > 0  # type: ignore[attr-defined]
 
 
+def _compute_subscription_updates(
+    event_type: str,
+    entitlement_ids: list[str],
+    period_end: Optional[datetime],
+    existing_sub: Optional[Subscription],
+) -> dict:
+    """根据事件类型计算订阅状态更新"""
+    # 默认值：保持现有状态或使用 free tier 默认值
+    tier = existing_sub.tier if existing_sub else "free"
+    status = existing_sub.status if existing_sub else "active"
+    cancel_at_period_end = existing_sub.cancel_at_period_end if existing_sub else False
+    current_period_end = period_end or (
+        existing_sub.current_period_end if existing_sub else None
+    )
+
+    # 事件类型到状态变更的映射
+    if event_type == "INITIAL_PURCHASE":
+        tier = _entitlement_to_tier(entitlement_ids)
+        status = "active"
+        cancel_at_period_end = False
+    elif event_type == "RENEWAL":
+        status = "active"
+    elif event_type == "CANCELLATION":
+        cancel_at_period_end = True
+    elif event_type == "EXPIRATION":
+        tier = "free"
+        status = "expired"
+        cancel_at_period_end = False
+    elif event_type == "BILLING_ISSUE":
+        status = "past_due"
+    elif event_type == "PRODUCT_CHANGE":
+        tier = _entitlement_to_tier(entitlement_ids)
+
+    return {
+        "tier": tier,  # type: ignore[dict-item]
+        "status": status,  # type: ignore[dict-item]
+        "cancel_at_period_end": cancel_at_period_end,  # type: ignore[dict-item]
+        "current_period_end": current_period_end,  # type: ignore[dict-item]
+    }
+
+
 async def _upsert_subscription(
     db: AsyncSession,
     user_id: UUID,
@@ -196,38 +237,15 @@ async def revenuecat_webhook(
     )
 
     # 根据事件类型计算新状态
-    tier = existing_sub.tier if existing_sub else "free"
-    status = existing_sub.status if existing_sub else "active"
-    cancel_at_period_end = existing_sub.cancel_at_period_end if existing_sub else False
-    current_period_end = period_end or (
-        existing_sub.current_period_end if existing_sub else None
+    subscription_updates = _compute_subscription_updates(
+        event_type, entitlement_ids, period_end, existing_sub
     )
-
-    if event_type == "INITIAL_PURCHASE":
-        tier = _entitlement_to_tier(entitlement_ids)
-        status = "active"
-        cancel_at_period_end = False
-    elif event_type == "RENEWAL":
-        status = "active"
-    elif event_type == "CANCELLATION":
-        cancel_at_period_end = True
-    elif event_type == "EXPIRATION":
-        tier = "free"
-        status = "expired"
-        cancel_at_period_end = False
-    elif event_type == "BILLING_ISSUE":
-        status = "past_due"
-    elif event_type == "PRODUCT_CHANGE":
-        tier = _entitlement_to_tier(entitlement_ids)
 
     # UPSERT 订阅状态
     await _upsert_subscription(
         db,
         user_id=user.id,  # type: ignore[arg-type]
-        tier=tier,  # type: ignore[arg-type]
-        status=status,  # type: ignore[arg-type]
-        cancel_at_period_end=cancel_at_period_end,  # type: ignore[arg-type]
-        current_period_end=current_period_end,  # type: ignore[arg-type]
+        **subscription_updates,  # type: ignore[arg-type]
     )
     await cache_service.invalidate_subscription(user.id)
 

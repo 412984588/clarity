@@ -11,14 +11,8 @@ from app.logging_config import get_logger
 from app.middleware.rate_limit import AUTH_RATE_LIMIT, ip_rate_limit_key, limiter
 from app.models.subscription import Subscription
 from app.models.user import User
-from app.schemas.auth import (
-    AuthSuccessResponse,
-    BetaLoginRequest,
-    LoginRequest,
-    UserResponse,
-)
+from app.schemas.auth import AuthSuccessResponse, BetaLoginRequest, LoginRequest
 from app.services.auth_service import AuthService
-from app.services.cache_service import CacheService
 from app.utils.docs import COMMON_ERROR_RESPONSES
 from app.utils.exceptions import raise_auth_error
 from app.utils.security import hash_password_async
@@ -27,11 +21,10 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from .utils import set_session_cookies
+from .utils import create_auth_response
 
 logger = get_logger(__name__)
 settings = get_settings()
-cache_service = CacheService()
 
 router = APIRouter()
 
@@ -64,18 +57,7 @@ async def login(
     service = AuthService(db)
     try:
         user, tokens = await service.login(data)
-        # 设置 httpOnly cookies
-        set_session_cookies(response, tokens.access_token, tokens.refresh_token)
-        await cache_service.invalidate_sessions(user.id)
-        # 返回用户信息（不包含 token）
-        return AuthSuccessResponse(
-            user=UserResponse(
-                id=user.id,
-                email=user.email,
-                auth_provider=user.auth_provider,
-                locale=user.locale,
-            )
-        )
+        return await create_auth_response(response, user, tokens, db)
     except ValueError as e:
         raise_auth_error(e, context="login")
 
@@ -145,15 +127,4 @@ async def beta_login(
         raise_auth_error(e, context="beta_login")
 
     await db.commit()
-    # 设置 httpOnly cookies
-    set_session_cookies(response, tokens.access_token, tokens.refresh_token)
-    await cache_service.invalidate_sessions(user.id)
-    # 返回用户信息（不包含 token）
-    return AuthSuccessResponse(
-        user=UserResponse(
-            id=user.id,
-            email=user.email,
-            auth_provider=user.auth_provider,
-            locale=user.locale,
-        )
-    )
+    return await create_auth_response(response, user, tokens, db)

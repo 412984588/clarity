@@ -14,46 +14,44 @@ from sqlalchemy.ext.asyncio import AsyncSession
 cache_service = CacheService()
 
 
-async def get_current_user(
-    request: Request,
-    token: Optional[str] = Header(None, alias="Authorization"),
-    db: AsyncSession = Depends(get_db),
-) -> User:
-    """从 httpOnly cookie 或 Authorization header 获取当前用户"""
-    # 请求级缓存：同一个 HTTP 请求内重复调用直接复用结果
-    if hasattr(request.state, "current_user"):
-        return request.state.current_user
-
-    # 优先从 cookie 读取 access_token (httpOnly cookies 模式)
+def _extract_access_token(request: Request, auth_header: Optional[str]) -> str:
+    """从 cookie 或 Authorization header 提取访问令牌"""
     access_token = request.cookies.get("access_token")
+    if access_token:
+        return access_token
 
-    # 如果 cookie 没有，尝试从 Authorization 头读取（向后兼容）
-    if not access_token:
-        if not token:
-            raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"})
-        if token.startswith("Bearer "):
-            access_token = token.split(" ", 1)[1]
-        else:
-            access_token = token
+    if not auth_header:
+        raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"})
 
-    token = access_token
+    return (
+        auth_header.split(" ", 1)[1]
+        if auth_header.startswith("Bearer ")
+        else auth_header
+    )
 
-    payload = decode_token(token)
+
+def _validate_token_payload(payload: dict | None) -> tuple[UUID, UUID]:
+    """验证 token payload 并提取 user_id 和 session_id"""
     if not payload or payload.get("type") != "access":
         raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"})
 
-    user_id = payload.get("sub")
-    session_id = payload.get("sid")
     try:
-        user_uuid = UUID(str(user_id))
+        user_uuid = UUID(str(payload.get("sub")))
     except (TypeError, ValueError):
         raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"})
 
     try:
-        session_uuid = UUID(str(session_id))
+        session_uuid = UUID(str(payload.get("sid")))
     except (TypeError, ValueError):
         raise HTTPException(status_code=401, detail={"error": "SESSION_NOT_FOUND"})
 
+    return user_uuid, session_uuid
+
+
+async def _verify_active_session(
+    db: AsyncSession, session_uuid: UUID, user_uuid: UUID
+) -> None:
+    """验证会话是否存在且未过期"""
     session_result = await db.execute(
         select(ActiveSession).where(
             ActiveSession.id == session_uuid,
@@ -61,24 +59,23 @@ async def get_current_user(
             ActiveSession.expires_at > utc_now(),
         )
     )
-    session = session_result.scalar_one_or_none()
-    if not session:
+    if not session_result.scalar_one_or_none():
         raise HTTPException(status_code=401, detail={"error": "SESSION_REVOKED"})
 
+
+async def _get_user_from_cache_or_db(db: AsyncSession, user_uuid: UUID) -> User:
+    """从缓存或数据库获取用户"""
     cached_user = await cache_service.get_user(user_uuid)
     if isinstance(cached_user, dict) and cached_user.get("email"):
         if not cached_user.get("is_active", True):
             raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"})
-
-        user = User(
+        return User(
             id=user_uuid,
             email=str(cached_user.get("email")),
             auth_provider=str(cached_user.get("auth_provider") or "email"),
             locale=str(cached_user.get("locale") or "en"),
             is_active=bool(cached_user.get("is_active", True)),
         )
-        request.state.current_user = user
-        return user
 
     result = await db.execute(select(User).where(User.id == user_uuid))
     user = result.scalar_one_or_none()
@@ -96,5 +93,28 @@ async def get_current_user(
             "is_active": user.is_active,
         },
     )
+    return user
+
+
+async def get_current_user(
+    request: Request,
+    token: Optional[str] = Header(None, alias="Authorization"),
+    db: AsyncSession = Depends(get_db),
+) -> User:
+    """从 httpOnly cookie 或 Authorization header 获取当前用户"""
+    # 请求级缓存
+    if hasattr(request.state, "current_user"):
+        return request.state.current_user
+
+    # 提取并验证 token
+    access_token = _extract_access_token(request, token)
+    payload = decode_token(access_token)
+    user_uuid, session_uuid = _validate_token_payload(payload)
+
+    # 验证会话
+    await _verify_active_session(db, session_uuid, user_uuid)
+
+    # 获取用户
+    user = await _get_user_from_cache_or_db(db, user_uuid)
     request.state.current_user = user
     return user
