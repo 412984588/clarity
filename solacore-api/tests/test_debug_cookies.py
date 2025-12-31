@@ -1,10 +1,10 @@
 import pytest
-from httpx import AsyncClient, ASGITransport
+from app.database import Base, get_db
 from app.main import app
-from app.database import get_db
-from tests.conftest import TestingSessionLocal, engine_test
-from app.database import Base
 from app.middleware.rate_limit import limiter
+from httpx import ASGITransport, AsyncClient
+from tests.conftest import TestingSessionLocal, engine_test
+
 
 @pytest.mark.asyncio
 async def test_debug_register_cookies():
@@ -26,7 +26,7 @@ async def test_debug_register_cookies():
         # 先获取CSRF token
         csrf_resp = await client.get("/auth/csrf")
         print(f"\nCSRF Response cookies: {dict(csrf_resp.cookies)}")
-        
+
         # 注册
         response = await client.post(
             "/auth/register",
@@ -36,17 +36,17 @@ async def test_debug_register_cookies():
                 "device_fingerprint": "test-001",
             },
         )
-        
+
         print(f"\nRegister status: {response.status_code}")
         print(f"Register cookies: {dict(response.cookies)}")
         print(f"Register response.cookies object: {response.cookies}")
-        
+
         # 检查Set-Cookie header
-        set_cookie_headers = response.headers.getlist('set-cookie')
+        set_cookie_headers = response.headers.getlist("set-cookie")
         print(f"\nSet-Cookie headers count: {len(set_cookie_headers)}")
         for idx, cookie in enumerate(set_cookie_headers):
             print(f"Set-Cookie {idx}: {cookie[:100]}...")
-        
+
         assert response.status_code == 201
 
     app.dependency_overrides.clear()

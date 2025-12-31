@@ -19,6 +19,7 @@ from app.services.cache_service import CacheService
 from app.utils.datetime_utils import utc_now
 from app.utils.docs import COMMON_ERROR_RESPONSES
 from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.responses import JSONResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -129,7 +130,9 @@ async def create_checkout(
     await db.commit()
     await cache_service.invalidate_subscription(current_user.id)
 
-    return CheckoutResponse(checkout_url=checkout_url, session_id=session_id)
+    return JSONResponse(
+        content={"checkout_url": checkout_url, "session_id": session_id}
+    )
 
 
 @router.get(

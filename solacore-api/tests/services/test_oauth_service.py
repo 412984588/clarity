@@ -9,15 +9,14 @@
 6. 公开 API 方法
 """
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.services.oauth_service import OAuthService
-from app.models.user import User
+import pytest
 from app.models.subscription import Subscription
+from app.models.user import User
 from app.schemas.auth import OAuthRequest
-import httpx
+from app.services.oauth_service import OAuthService
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 @pytest.fixture
@@ -53,7 +52,10 @@ class TestVerifyGoogleToken:
             "picture": "https://example.com/photo.jpg",
         }
 
-        with patch("app.services.oauth_service.id_token.verify_oauth2_token", return_value=mock_idinfo):
+        with patch(
+            "app.services.oauth_service.id_token.verify_oauth2_token",
+            return_value=mock_idinfo,
+        ):
             result = await oauth_service._verify_google_token("fake-token")
 
         assert result["sub"] == "google-123"
@@ -71,7 +73,10 @@ class TestVerifyGoogleToken:
             "iss": "malicious.com",  # 错误的签发者
         }
 
-        with patch("app.services.oauth_service.id_token.verify_oauth2_token", return_value=mock_idinfo):
+        with patch(
+            "app.services.oauth_service.id_token.verify_oauth2_token",
+            return_value=mock_idinfo,
+        ):
             with pytest.raises(ValueError, match="INVALID_TOKEN_ISSUER"):
                 await oauth_service._verify_google_token("fake-token")
 
@@ -85,7 +90,10 @@ class TestVerifyGoogleToken:
             "iss": "accounts.google.com",
         }
 
-        with patch("app.services.oauth_service.id_token.verify_oauth2_token", return_value=mock_idinfo):
+        with patch(
+            "app.services.oauth_service.id_token.verify_oauth2_token",
+            return_value=mock_idinfo,
+        ):
             with pytest.raises(ValueError, match="EMAIL_NOT_VERIFIED"):
                 await oauth_service._verify_google_token("fake-token")
 
@@ -114,15 +122,19 @@ class TestVerifyAppleToken:
 
         mock_header = {"kid": "key-001"}
         mock_keys = {
-            "keys": [
-                {"kid": "key-001", "kty": "RSA", "n": "fake_n", "e": "AQAB"}
-            ]
+            "keys": [{"kid": "key-001", "kty": "RSA", "n": "fake_n", "e": "AQAB"}]
         }
 
-        with patch("app.services.oauth_service.jwt.get_unverified_header", return_value=mock_header), \
-             patch("app.services.oauth_service.jwt.decode", return_value=mock_payload), \
-             patch.object(oauth_service, "_get_apple_public_keys", return_value=mock_keys):
-
+        with (
+            patch(
+                "app.services.oauth_service.jwt.get_unverified_header",
+                return_value=mock_header,
+            ),
+            patch("app.services.oauth_service.jwt.decode", return_value=mock_payload),
+            patch.object(
+                oauth_service, "_get_apple_public_keys", return_value=mock_keys
+            ),
+        ):
             result = await oauth_service._verify_apple_token("fake-apple-token")
 
         assert result["sub"] == "apple-123"
@@ -139,15 +151,19 @@ class TestVerifyAppleToken:
 
         mock_header = {"kid": "key-001"}
         mock_keys = {
-            "keys": [
-                {"kid": "key-001", "kty": "RSA", "n": "fake_n", "e": "AQAB"}
-            ]
+            "keys": [{"kid": "key-001", "kty": "RSA", "n": "fake_n", "e": "AQAB"}]
         }
 
-        with patch("app.services.oauth_service.jwt.get_unverified_header", return_value=mock_header), \
-             patch("app.services.oauth_service.jwt.decode", return_value=mock_payload), \
-             patch.object(oauth_service, "_get_apple_public_keys", return_value=mock_keys):
-
+        with (
+            patch(
+                "app.services.oauth_service.jwt.get_unverified_header",
+                return_value=mock_header,
+            ),
+            patch("app.services.oauth_service.jwt.decode", return_value=mock_payload),
+            patch.object(
+                oauth_service, "_get_apple_public_keys", return_value=mock_keys
+            ),
+        ):
             result = await oauth_service._verify_apple_token("fake-apple-token")
 
         assert result["sub"] == "apple-123"
@@ -158,14 +174,18 @@ class TestVerifyAppleToken:
         """测试 Apple 公钥不存在"""
         mock_header = {"kid": "unknown-key"}
         mock_keys = {
-            "keys": [
-                {"kid": "key-001", "kty": "RSA", "n": "fake_n", "e": "AQAB"}
-            ]
+            "keys": [{"kid": "key-001", "kty": "RSA", "n": "fake_n", "e": "AQAB"}]
         }
 
-        with patch("app.services.oauth_service.jwt.get_unverified_header", return_value=mock_header), \
-             patch.object(oauth_service, "_get_apple_public_keys", return_value=mock_keys):
-
+        with (
+            patch(
+                "app.services.oauth_service.jwt.get_unverified_header",
+                return_value=mock_header,
+            ),
+            patch.object(
+                oauth_service, "_get_apple_public_keys", return_value=mock_keys
+            ),
+        ):
             with pytest.raises(ValueError, match="APPLE_KEY_NOT_FOUND"):
                 await oauth_service._verify_apple_token("fake-apple-token")
 
@@ -174,15 +194,22 @@ class TestVerifyAppleToken:
         """测试 Apple token 已过期"""
         mock_header = {"kid": "key-001"}
         mock_keys = {
-            "keys": [
-                {"kid": "key-001", "kty": "RSA", "n": "fake_n", "e": "AQAB"}
-            ]
+            "keys": [{"kid": "key-001", "kty": "RSA", "n": "fake_n", "e": "AQAB"}]
         }
 
-        with patch("app.services.oauth_service.jwt.get_unverified_header", return_value=mock_header), \
-             patch("app.services.oauth_service.jwt.decode", side_effect=__import__("jwt").ExpiredSignatureError), \
-             patch.object(oauth_service, "_get_apple_public_keys", return_value=mock_keys):
-
+        with (
+            patch(
+                "app.services.oauth_service.jwt.get_unverified_header",
+                return_value=mock_header,
+            ),
+            patch(
+                "app.services.oauth_service.jwt.decode",
+                side_effect=__import__("jwt").ExpiredSignatureError,
+            ),
+            patch.object(
+                oauth_service, "_get_apple_public_keys", return_value=mock_keys
+            ),
+        ):
             with pytest.raises(ValueError, match="APPLE_TOKEN_EXPIRED"):
                 await oauth_service._verify_apple_token("expired-token")
 
@@ -235,7 +262,7 @@ class TestGetOrCreateUser:
 
         mock_db.flush.side_effect = mock_flush_side_effect
 
-        user = await oauth_service._get_or_create_user(
+        _ = await oauth_service._get_or_create_user(
             email="newuser@example.com",
             provider="apple",
             provider_id="apple-789",
@@ -324,12 +351,18 @@ class TestProcessOAuthLogin:
             )
             new_user.subscription = Subscription(user_id=1, tier="free")
 
-            with patch.object(oauth_service, "_get_or_create_user", return_value=new_user):
+            with patch.object(
+                oauth_service, "_get_or_create_user", return_value=new_user
+            ):
                 # Mock AuthService 方法
                 mock_device = MagicMock()
                 mock_tokens = MagicMock()
-                oauth_service.auth_service._get_or_create_device = AsyncMock(return_value=mock_device)
-                oauth_service.auth_service._create_session = AsyncMock(return_value=mock_tokens)
+                oauth_service.auth_service._get_or_create_device = AsyncMock(
+                    return_value=mock_device
+                )
+                oauth_service.auth_service._create_session = AsyncMock(
+                    return_value=mock_tokens
+                )
 
                 user, tokens = await oauth_service._process_oauth_login(
                     email="newuser@example.com",
@@ -356,12 +389,18 @@ class TestProcessOAuthLogin:
         existing_user.subscription = Subscription(user_id=1, tier="pro")
 
         # Mock _get_user_by_provider 返回现有用户
-        with patch.object(oauth_service, "_get_user_by_provider", return_value=existing_user):
+        with patch.object(
+            oauth_service, "_get_user_by_provider", return_value=existing_user
+        ):
             # Mock AuthService 方法
             mock_device = MagicMock()
             mock_tokens = MagicMock()
-            oauth_service.auth_service._get_or_create_device = AsyncMock(return_value=mock_device)
-            oauth_service.auth_service._create_session = AsyncMock(return_value=mock_tokens)
+            oauth_service.auth_service._get_or_create_device = AsyncMock(
+                return_value=mock_device
+            )
+            oauth_service.auth_service._create_session = AsyncMock(
+                return_value=mock_tokens
+            )
 
             user, tokens = await oauth_service._process_oauth_login(
                 email=None,  # Apple 后续登录无 email
@@ -531,10 +570,21 @@ class TestPublicAPIMethods:
         mock_user.subscription = Subscription(user_id=1, tier="free")
         mock_tokens = MagicMock()
 
-        with patch.object(oauth_service, "_exchange_google_code", return_value="id-token-123"), \
-             patch.object(oauth_service, "_verify_google_token", return_value={"email": "user@gmail.com", "sub": "google-123"}), \
-             patch.object(oauth_service, "_process_oauth_login", return_value=(mock_user, mock_tokens)):
-
+        with (
+            patch.object(
+                oauth_service, "_exchange_google_code", return_value="id-token-123"
+            ),
+            patch.object(
+                oauth_service,
+                "_verify_google_token",
+                return_value={"email": "user@gmail.com", "sub": "google-123"},
+            ),
+            patch.object(
+                oauth_service,
+                "_process_oauth_login",
+                return_value=(mock_user, mock_tokens),
+            ),
+        ):
             user, tokens = await oauth_service.google_auth_with_code(
                 code="auth-code",
                 device_fingerprint="device-001",
@@ -557,9 +607,18 @@ class TestPublicAPIMethods:
             device_name="Android",
         )
 
-        with patch.object(oauth_service, "_verify_google_token", return_value={"email": "user2@gmail.com", "sub": "google-456"}), \
-             patch.object(oauth_service, "_process_oauth_login", return_value=(mock_user, mock_tokens)):
-
+        with (
+            patch.object(
+                oauth_service,
+                "_verify_google_token",
+                return_value={"email": "user2@gmail.com", "sub": "google-456"},
+            ),
+            patch.object(
+                oauth_service,
+                "_process_oauth_login",
+                return_value=(mock_user, mock_tokens),
+            ),
+        ):
             user, tokens = await oauth_service.google_auth(oauth_request)
 
         assert user.email == "user2@gmail.com"
@@ -578,9 +637,18 @@ class TestPublicAPIMethods:
             device_name=None,
         )
 
-        with patch.object(oauth_service, "_verify_apple_token", return_value={"email": "user@icloud.com", "sub": "apple-789"}), \
-             patch.object(oauth_service, "_process_oauth_login", return_value=(mock_user, mock_tokens)):
-
+        with (
+            patch.object(
+                oauth_service,
+                "_verify_apple_token",
+                return_value={"email": "user@icloud.com", "sub": "apple-789"},
+            ),
+            patch.object(
+                oauth_service,
+                "_process_oauth_login",
+                return_value=(mock_user, mock_tokens),
+            ),
+        ):
             user, tokens = await oauth_service.apple_auth(oauth_request)
 
         assert user.email == "user@icloud.com"

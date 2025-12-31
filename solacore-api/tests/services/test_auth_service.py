@@ -12,7 +12,7 @@ AuthService 单元测试
 """
 
 from datetime import timedelta
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 from uuid import uuid4
 
 import pytest
@@ -21,7 +21,7 @@ from app.models.session import ActiveSession
 from app.models.subscription import Subscription
 from app.models.user import User
 from app.schemas.auth import LoginRequest, RegisterRequest
-from app.services.auth_service import AuthService, BETA_DEVICE_LIMIT, DEVICE_LIMITS
+from app.services.auth_service import BETA_DEVICE_LIMIT, AuthService
 from app.utils.datetime_utils import utc_now
 from app.utils.security import create_refresh_token, hash_token
 from sqlalchemy import select
@@ -58,9 +58,7 @@ class TestRegister:
             assert subscription.tier == "free"
 
             # 验证设备创建
-            result = await db.execute(
-                select(Device).where(Device.user_id == user.id)
-            )
+            result = await db.execute(select(Device).where(Device.user_id == user.id))
             device = result.scalar_one()
             assert device.device_fingerprint == "test-device-001"
             assert device.device_name == "Test iPhone 15"
@@ -374,7 +372,9 @@ class TestGetOrCreateDevice:
             service = AuthService(db)
 
             # 创建用户
-            user = User(email="device@example.com", password_hash="hash", auth_provider="email")
+            user = User(
+                email="device@example.com", password_hash="hash", auth_provider="email"
+            )
             db.add(user)
             await db.flush()
 
@@ -391,10 +391,14 @@ class TestGetOrCreateDevice:
     async def test_get_or_create_device_existing_device(self):
         """获取现有设备"""
         async with TestingSessionLocal() as db:
-            service = AuthService(db)
+            _ = AuthService(db)
 
             # 创建用户和设备
-            user = User(email="existing@example.com", password_hash="hash", auth_provider="email")
+            user = User(
+                email="existing@example.com",
+                password_hash="hash",
+                auth_provider="email",
+            )
             db.add(user)
             await db.flush()
 
@@ -432,8 +436,12 @@ class TestGetOrCreateDevice:
             service = AuthService(db)
 
             # 创建两个用户
-            user1 = User(email="user1@example.com", password_hash="hash", auth_provider="email")
-            user2 = User(email="user2@example.com", password_hash="hash", auth_provider="email")
+            user1 = User(
+                email="user1@example.com", password_hash="hash", auth_provider="email"
+            )
+            user2 = User(
+                email="user2@example.com", password_hash="hash", auth_provider="email"
+            )
             db.add_all([user1, user2])
             await db.flush()
 
@@ -455,9 +463,11 @@ class TestGetOrCreateDevice:
     async def test_get_or_create_device_limit_reached_free(self):
         """Free tier 设备上限"""
         async with TestingSessionLocal() as db:
-            service = AuthService(db)
+            _ = AuthService(db)
 
-            user = User(email="limit@example.com", password_hash="hash", auth_provider="email")
+            user = User(
+                email="limit@example.com", password_hash="hash", auth_provider="email"
+            )
             db.add(user)
             await db.flush()
 
@@ -493,7 +503,9 @@ class TestGetOrCreateDevice:
         async with TestingSessionLocal() as db:
             service = AuthService(db)
 
-            user = User(email="beta@example.com", password_hash="hash", auth_provider="email")
+            user = User(
+                email="beta@example.com", password_hash="hash", auth_provider="email"
+            )
             db.add(user)
             await db.flush()
 
@@ -519,7 +531,9 @@ class TestGetOrCreateDevice:
         async with TestingSessionLocal() as db:
             service = AuthService(db)
 
-            user = User(email="ios@example.com", password_hash="hash", auth_provider="email")
+            user = User(
+                email="ios@example.com", password_hash="hash", auth_provider="email"
+            )
             db.add(user)
             await db.flush()
 
@@ -533,12 +547,17 @@ class TestGetOrCreateDevice:
         async with TestingSessionLocal() as db:
             service = AuthService(db)
 
-            user = User(email="android@example.com", password_hash="hash", auth_provider="email")
+            user = User(
+                email="android@example.com", password_hash="hash", auth_provider="email"
+            )
             db.add(user)
             await db.flush()
 
             device = await service._get_or_create_device(
-                user, "android-device-unique-001", "Samsung Galaxy S24 Ultra", tier="free"
+                user,
+                "android-device-unique-001",
+                "Samsung Galaxy S24 Ultra",
+                tier="free",
             )
             assert device.platform == "android"
 
@@ -547,7 +566,9 @@ class TestGetOrCreateDevice:
         async with TestingSessionLocal() as db:
             service = AuthService(db)
 
-            user = User(email="unknown@example.com", password_hash="hash", auth_provider="email")
+            user = User(
+                email="unknown@example.com", password_hash="hash", auth_provider="email"
+            )
             db.add(user)
             await db.flush()
 
@@ -567,7 +588,9 @@ class TestCreateSession:
             service = AuthService(db)
 
             # 创建用户和设备
-            user = User(email="session@example.com", password_hash="hash", auth_provider="email")
+            user = User(
+                email="session@example.com", password_hash="hash", auth_provider="email"
+            )
             db.add(user)
             await db.flush()
 

@@ -7,7 +7,6 @@ from app.database import Base, get_db
 from app.main import app
 from app.middleware.rate_limit import limiter
 from httpx import ASGITransport, AsyncClient
-from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
 
@@ -45,13 +44,15 @@ async def _add_csrf_header(request) -> None:
 
 async def _truncate_tables() -> None:
     """清空所有表数据（保留表结构,避免死锁）"""
+    from sqlalchemy import text
+
     async with TestingSessionLocal() as session:
         # 获取所有表名
         tables = [table.name for table in reversed(Base.metadata.sorted_tables)]
         if tables:
             # 使用 TRUNCATE CASCADE 清空数据,比 DROP/CREATE 快且不会死锁
             await session.execute(
-                f"TRUNCATE TABLE {', '.join(tables)} RESTART IDENTITY CASCADE"
+                text(f"TRUNCATE TABLE {', '.join(tables)} RESTART IDENTITY CASCADE")
             )
             await session.commit()
 
