@@ -11,6 +11,7 @@ AuthService 单元测试
 - _create_session: 会话创建
 """
 
+import asyncio
 from datetime import timedelta
 from unittest.mock import patch
 from uuid import uuid4
@@ -28,6 +29,14 @@ from sqlalchemy import select
 from tests.conftest import TestingSessionLocal
 
 
+def unique_device_fingerprint(prefix: str) -> str:
+    return f"{prefix}-{uuid4().hex}"
+
+
+def unique_email(prefix: str) -> str:
+    return f"{prefix}-{uuid4().hex}@example.com"
+
+
 @pytest.mark.asyncio
 class TestRegister:
     """测试用户注册"""
@@ -36,17 +45,19 @@ class TestRegister:
         """正常注册流程"""
         async with TestingSessionLocal() as db:
             service = AuthService(db)
+            device_fingerprint = unique_device_fingerprint("test-device")
+            email = unique_email("test-register-success")
             data = RegisterRequest(
-                email="test@example.com",
+                email=email,
                 password="SecurePass123!",
-                device_fingerprint="test-device-001",
+                device_fingerprint=device_fingerprint,
                 device_name="Test iPhone 15",
             )
 
             user, tokens = await service.register(data)
 
             # 验证用户创建
-            assert user.email == "test@example.com"
+            assert user.email == email
             assert user.password_hash is not None
             assert user.auth_provider == "email"
 
@@ -60,7 +71,7 @@ class TestRegister:
             # 验证设备创建
             result = await db.execute(select(Device).where(Device.user_id == user.id))
             device = result.scalar_one()
-            assert device.device_fingerprint == "test-device-001"
+            assert device.device_fingerprint == device_fingerprint
             assert device.device_name == "Test iPhone 15"
             assert device.platform == "ios"
 
@@ -83,19 +94,22 @@ class TestRegister:
             service = AuthService(db)
 
             # 第一次注册
+            device_fingerprint_1 = unique_device_fingerprint("duplicate-device")
+            email = unique_email("duplicate-email")
             data1 = RegisterRequest(
-                email="duplicate@example.com",
+                email=email,
                 password="Pass123!",
-                device_fingerprint="device-001",
+                device_fingerprint=device_fingerprint_1,
                 device_name="Device 1",
             )
             await service.register(data1)
 
             # 第二次注册相同邮箱
+            device_fingerprint_2 = unique_device_fingerprint("duplicate-device")
             data2 = RegisterRequest(
-                email="duplicate@example.com",
+                email=email,
                 password="DiffPass456!",
-                device_fingerprint="device-002",
+                device_fingerprint=device_fingerprint_2,
                 device_name="Device 2",
             )
             with pytest.raises(ValueError, match="EMAIL_ALREADY_EXISTS"):
@@ -112,24 +126,26 @@ class TestLogin:
             service = AuthService(db)
 
             # 先注册
+            device_fingerprint = unique_device_fingerprint("login-device")
+            email = unique_email("login-success")
             register_data = RegisterRequest(
-                email="login@example.com",
+                email=email,
                 password="LoginPass123!",
-                device_fingerprint="login-device-001",
+                device_fingerprint=device_fingerprint,
                 device_name="Login Device",
             )
             await service.register(register_data)
 
             # 登录
             login_data = LoginRequest(
-                email="login@example.com",
+                email=email,
                 password="LoginPass123!",
-                device_fingerprint="login-device-001",
+                device_fingerprint=device_fingerprint,
                 device_name="Login Device",
             )
             user, tokens = await service.login(login_data)
 
-            assert user.email == "login@example.com"
+            assert user.email == email
             assert tokens.access_token is not None
             assert tokens.refresh_token is not None
 
@@ -139,19 +155,21 @@ class TestLogin:
             service = AuthService(db)
 
             # 先注册
+            device_fingerprint = unique_device_fingerprint("wrongpass-device")
+            email = unique_email("login-wrongpass")
             register_data = RegisterRequest(
-                email="wrongpass@example.com",
+                email=email,
                 password="CorrectPass123!",
-                device_fingerprint="device-001",
+                device_fingerprint=device_fingerprint,
                 device_name="Device",
             )
             await service.register(register_data)
 
             # 错误密码登录
             login_data = LoginRequest(
-                email="wrongpass@example.com",
+                email=email,
                 password="WrongPassword!",
-                device_fingerprint="device-001",
+                device_fingerprint=device_fingerprint,
                 device_name="Device",
             )
             with pytest.raises(ValueError, match="INVALID_CREDENTIALS"):
@@ -161,10 +179,12 @@ class TestLogin:
         """用户不存在"""
         async with TestingSessionLocal() as db:
             service = AuthService(db)
+            device_fingerprint = unique_device_fingerprint("nonexistent-device")
+            email = unique_email("login-nonexistent")
             login_data = LoginRequest(
-                email="nonexistent@example.com",
+                email=email,
                 password="AnyPass123!",
-                device_fingerprint="device-001",
+                device_fingerprint=device_fingerprint,
                 device_name="Device",
             )
             with pytest.raises(ValueError, match="INVALID_CREDENTIALS"):
@@ -176,10 +196,12 @@ class TestLogin:
             service = AuthService(db)
 
             # 先注册
+            device_fingerprint_1 = unique_device_fingerprint("newdevice")
+            email = unique_email("login-newdevice")
             register_data = RegisterRequest(
-                email="newdevice@example.com",
+                email=email,
                 password="Pass123!",
-                device_fingerprint="device-001",
+                device_fingerprint=device_fingerprint_1,
                 device_name="Device 1",
             )
             user, _ = await service.register(register_data)
@@ -189,10 +211,11 @@ class TestLogin:
                 service2 = AuthService(db2)
 
                 # 用不同设备登录
+                device_fingerprint_2 = unique_device_fingerprint("newdevice")
                 login_data = LoginRequest(
-                    email="newdevice@example.com",
+                    email=email,
                     password="Pass123!",
-                    device_fingerprint="device-002",
+                    device_fingerprint=device_fingerprint_2,
                     device_name="Samsung Galaxy S24",
                 )
                 _, tokens = await service2.login(login_data)
@@ -203,7 +226,9 @@ class TestLogin:
                 )
                 devices = result.scalars().all()
                 assert len(devices) == 2
-                assert any(d.device_fingerprint == "device-002" for d in devices)
+                assert any(
+                    d.device_fingerprint == device_fingerprint_2 for d in devices
+                )
                 assert any(d.platform == "android" for d in devices)
 
 
@@ -217,10 +242,12 @@ class TestRefreshToken:
             service = AuthService(db)
 
             # 先注册
+            device_fingerprint = unique_device_fingerprint("refresh-device")
+            email = unique_email("refresh-success")
             register_data = RegisterRequest(
-                email="refresh@example.com",
+                email=email,
                 password="Pass123!",
-                device_fingerprint="device-001",
+                device_fingerprint=device_fingerprint,
                 device_name="Device",
             )
             _, tokens = await service.register(register_data)
@@ -228,6 +255,9 @@ class TestRefreshToken:
             # 重新创建 service（使用新 session 避免 detached 状态）
             async with TestingSessionLocal() as db2:
                 service2 = AuthService(db2)
+
+                # 等待1.1秒确保JWT时间戳不同
+                await asyncio.sleep(1.1)
 
                 # 刷新令牌
                 new_tokens = await service2.refresh_token(tokens.refresh_token)
@@ -251,7 +281,7 @@ class TestRefreshToken:
 
             # 创建过期会话
             user = User(
-                email="expired@example.com",
+                email=unique_email("refresh-expired"),
                 password_hash="hash",
                 auth_provider="email",
             )
@@ -260,7 +290,7 @@ class TestRefreshToken:
 
             device = Device(
                 user_id=user.id,
-                device_fingerprint="device-001",
+                device_fingerprint=unique_device_fingerprint("expired-device"),
                 device_name="Device",
             )
             db.add(device)
@@ -294,10 +324,12 @@ class TestLogout:
             service = AuthService(db)
 
             # 先注册
+            device_fingerprint = unique_device_fingerprint("logout-device")
+            email = unique_email("logout-success")
             register_data = RegisterRequest(
-                email="logout@example.com",
+                email=email,
                 password="Pass123!",
-                device_fingerprint="logout-device-unique-001",
+                device_fingerprint=device_fingerprint,
                 device_name="Device",
             )
             user, tokens = await service.register(register_data)
@@ -337,10 +369,12 @@ class TestGetUserById:
             service = AuthService(db)
 
             # 先注册
+            device_fingerprint = unique_device_fingerprint("getuser-device")
+            email = unique_email("getuser-success")
             register_data = RegisterRequest(
-                email="getuser@example.com",
+                email=email,
                 password="Pass123!",
-                device_fingerprint="device-001",
+                device_fingerprint=device_fingerprint,
                 device_name="Device",
             )
             user, _ = await service.register(register_data)
@@ -349,7 +383,7 @@ class TestGetUserById:
             fetched_user = await service.get_user_by_id(user.id)
             assert fetched_user is not None
             assert fetched_user.id == user.id
-            assert fetched_user.email == "getuser@example.com"
+            assert fetched_user.email == email
             assert fetched_user.subscription is not None
             assert fetched_user.subscription.tier == "free"
 
@@ -373,17 +407,20 @@ class TestGetOrCreateDevice:
 
             # 创建用户
             user = User(
-                email="device@example.com", password_hash="hash", auth_provider="email"
+                email=unique_email("device-new"),
+                password_hash="hash",
+                auth_provider="email",
             )
             db.add(user)
             await db.flush()
 
             # 创建设备
+            device_fingerprint = unique_device_fingerprint("new-device")
             device = await service._get_or_create_device(
-                user, "new-device-001", "iPhone 15 Pro", tier="free"
+                user, device_fingerprint, "iPhone 15 Pro", tier="free"
             )
 
-            assert device.device_fingerprint == "new-device-001"
+            assert device.device_fingerprint == device_fingerprint
             assert device.device_name == "iPhone 15 Pro"
             assert device.platform == "ios"
             assert device.is_active is True
@@ -394,17 +431,19 @@ class TestGetOrCreateDevice:
             _ = AuthService(db)
 
             # 创建用户和设备
+            email = unique_email("device-existing")
             user = User(
-                email="existing@example.com",
+                email=email,
                 password_hash="hash",
                 auth_provider="email",
             )
             db.add(user)
             await db.flush()
 
+            device_fingerprint = unique_device_fingerprint("existing-device")
             existing = Device(
                 user_id=user.id,
-                device_fingerprint="existing-device",
+                device_fingerprint=device_fingerprint,
                 device_name="Old Name",
                 platform="ios",
             )
@@ -417,13 +456,13 @@ class TestGetOrCreateDevice:
 
                 # 重新查询用户（避免外键问题）
                 result = await db2.execute(
-                    select(User).where(User.email == "existing@example.com")
+                    select(User).where(User.email == email)
                 )
                 user_reloaded = result.scalar_one()
 
                 # 获取设备（更新名称）
                 device = await service2._get_or_create_device(
-                    user_reloaded, "existing-device", "New Name", tier="free"
+                    user_reloaded, device_fingerprint, "New Name", tier="free"
                 )
 
                 assert device.id == existing.id
@@ -437,18 +476,23 @@ class TestGetOrCreateDevice:
 
             # 创建两个用户
             user1 = User(
-                email="user1@example.com", password_hash="hash", auth_provider="email"
+                email=unique_email("device-user1"),
+                password_hash="hash",
+                auth_provider="email",
             )
             user2 = User(
-                email="user2@example.com", password_hash="hash", auth_provider="email"
+                email=unique_email("device-user2"),
+                password_hash="hash",
+                auth_provider="email",
             )
             db.add_all([user1, user2])
             await db.flush()
 
             # 用户1绑定设备
+            device_fingerprint = unique_device_fingerprint("shared-device")
             device = Device(
                 user_id=user1.id,
-                device_fingerprint="shared-device",
+                device_fingerprint=device_fingerprint,
                 device_name="Device",
             )
             db.add(device)
@@ -457,24 +501,29 @@ class TestGetOrCreateDevice:
             # 用户2尝试使用相同设备
             with pytest.raises(ValueError, match="DEVICE_BOUND_TO_OTHER"):
                 await service._get_or_create_device(
-                    user2, "shared-device", "Device", tier="free"
+                    user2, device_fingerprint, "Device", tier="free"
                 )
 
+    @patch("app.services.auth_service.settings.beta_mode", False)
     async def test_get_or_create_device_limit_reached_free(self):
         """Free tier 设备上限"""
         async with TestingSessionLocal() as db:
             _ = AuthService(db)
 
+            email = unique_email("device-limit")
             user = User(
-                email="limit@example.com", password_hash="hash", auth_provider="email"
+                email=email,
+                password_hash="hash",
+                auth_provider="email",
             )
             db.add(user)
             await db.flush()
 
             # 创建 1 个设备（free tier 上限为 1）
+            device_fingerprint = unique_device_fingerprint("limit-device")
             device1 = Device(
                 user_id=user.id,
-                device_fingerprint="limit-device-001",
+                device_fingerprint=device_fingerprint,
                 device_name="Device 1",
                 is_active=True,
             )
@@ -487,14 +536,18 @@ class TestGetOrCreateDevice:
 
                 # 重新查询用户
                 result = await db2.execute(
-                    select(User).where(User.email == "limit@example.com")
+                    select(User).where(User.email == email)
                 )
                 user_reloaded = result.scalar_one()
 
                 # 尝试创建第 2 个设备
+                device_fingerprint_2 = unique_device_fingerprint("limit-device-2")
                 with pytest.raises(ValueError, match="DEVICE_LIMIT_REACHED"):
                     await service2._get_or_create_device(
-                        user_reloaded, "limit-device-002", "Device 2", tier="free"
+                        user_reloaded,
+                        device_fingerprint_2,
+                        "Device 2",
+                        tier="free",
                     )
 
     @patch("app.services.auth_service.settings.beta_mode", True)
@@ -504,16 +557,19 @@ class TestGetOrCreateDevice:
             service = AuthService(db)
 
             user = User(
-                email="beta@example.com", password_hash="hash", auth_provider="email"
+                email=unique_email("device-beta"),
+                password_hash="hash",
+                auth_provider="email",
             )
             db.add(user)
             await db.flush()
 
             # 创建 10 个设备（Beta 上限）
+            device_prefix = unique_device_fingerprint("beta-device")
             for i in range(BETA_DEVICE_LIMIT):
                 device = Device(
                     user_id=user.id,
-                    device_fingerprint=f"beta-device-{i:03d}",
+                    device_fingerprint=f"{device_prefix}-{i:03d}",
                     device_name=f"Beta Device {i}",
                     is_active=True,
                 )
@@ -523,7 +579,7 @@ class TestGetOrCreateDevice:
             # 尝试创建第 11 个设备
             with pytest.raises(ValueError, match="DEVICE_LIMIT_REACHED"):
                 await service._get_or_create_device(
-                    user, "beta-device-011", "Device 11", tier="free"
+                    user, f"{device_prefix}-011", "Device 11", tier="free"
                 )
 
     async def test_detect_platform_ios(self):
@@ -532,13 +588,16 @@ class TestGetOrCreateDevice:
             service = AuthService(db)
 
             user = User(
-                email="ios@example.com", password_hash="hash", auth_provider="email"
+                email=unique_email("device-ios"),
+                password_hash="hash",
+                auth_provider="email",
             )
             db.add(user)
             await db.flush()
 
+            device_fingerprint = unique_device_fingerprint("ios-device")
             device = await service._get_or_create_device(
-                user, "ios-device-unique-001", "iPhone 15 Pro Max", tier="free"
+                user, device_fingerprint, "iPhone 15 Pro Max", tier="free"
             )
             assert device.platform == "ios"
 
@@ -548,14 +607,17 @@ class TestGetOrCreateDevice:
             service = AuthService(db)
 
             user = User(
-                email="android@example.com", password_hash="hash", auth_provider="email"
+                email=unique_email("device-android"),
+                password_hash="hash",
+                auth_provider="email",
             )
             db.add(user)
             await db.flush()
 
+            device_fingerprint = unique_device_fingerprint("android-device")
             device = await service._get_or_create_device(
                 user,
-                "android-device-unique-001",
+                device_fingerprint,
                 "Samsung Galaxy S24 Ultra",
                 tier="free",
             )
@@ -567,13 +629,16 @@ class TestGetOrCreateDevice:
             service = AuthService(db)
 
             user = User(
-                email="unknown@example.com", password_hash="hash", auth_provider="email"
+                email=unique_email("device-unknown"),
+                password_hash="hash",
+                auth_provider="email",
             )
             db.add(user)
             await db.flush()
 
+            device_fingerprint = unique_device_fingerprint("unknown-device")
             device = await service._get_or_create_device(
-                user, "unknown-device-unique-001", "Unknown Device", tier="free"
+                user, device_fingerprint, "Unknown Device", tier="free"
             )
             assert device.platform is None
 
@@ -589,14 +654,16 @@ class TestCreateSession:
 
             # 创建用户和设备
             user = User(
-                email="session@example.com", password_hash="hash", auth_provider="email"
+                email=unique_email("session"),
+                password_hash="hash",
+                auth_provider="email",
             )
             db.add(user)
             await db.flush()
 
             device = Device(
                 user_id=user.id,
-                device_fingerprint="device-001",
+                device_fingerprint=unique_device_fingerprint("session-device"),
                 device_name="Device",
             )
             db.add(device)
