@@ -137,7 +137,7 @@ def _validate_llm_config(settings: Settings) -> list[str]:
 
 def _validate_payment_config(settings: Settings) -> list[str]:
     """校验支付配置"""
-    errors = []
+    errors: list[str] = []
     if not settings.payments_enabled:
         return errors
 
