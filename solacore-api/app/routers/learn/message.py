@@ -12,9 +12,9 @@ from app.models.learn_session import LearnSession, LearnStep
 from app.models.user import User
 from app.services.ai_service import AIService
 from app.services.content_filter import sanitize_user_input, strip_pii
+from app.utils.datetime_utils import utc_now
 from app.utils.docs import COMMON_ERROR_RESPONSES
 from app.utils.error_handlers import handle_sse_error
-from app.utils.datetime_utils import utc_now
 from fastapi import Depends, Header, Path, Request
 from fastapi.responses import StreamingResponse
 from sqlalchemy import select

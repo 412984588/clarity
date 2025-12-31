@@ -2,6 +2,7 @@
 
 import hashlib
 from datetime import timedelta
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from app.models.password_reset import PasswordResetToken
@@ -15,8 +16,15 @@ from tests.conftest import TestingSessionLocal
 
 
 @pytest.mark.asyncio
-async def test_forgot_password_unknown_email_returns_200(client: AsyncClient):
+@patch(
+    "app.routers.auth.password_reset.send_password_reset_email", new_callable=AsyncMock
+)
+async def test_forgot_password_unknown_email_returns_200(
+    mock_send_email: AsyncMock, client: AsyncClient
+):
     """未知邮箱也返回 200（不泄露账号存在性）"""
+    mock_send_email.return_value = True
+
     response = await client.post(
         "/auth/forgot-password", json={"email": "unknown@example.com"}
     )
@@ -29,10 +37,20 @@ async def test_forgot_password_unknown_email_returns_200(client: AsyncClient):
         result = await session.execute(select(func.count(PasswordResetToken.id)))
         assert result.scalar() == 0
 
+    # 未知邮箱不应该发送邮件
+    mock_send_email.assert_not_called()
+
 
 @pytest.mark.asyncio
-async def test_forgot_password_known_email(client: AsyncClient):
+@patch(
+    "app.routers.auth.password_reset.send_password_reset_email", new_callable=AsyncMock
+)
+async def test_forgot_password_known_email(
+    mock_send_email: AsyncMock, client: AsyncClient
+):
     """已注册邮箱生成 token"""
+    mock_send_email.return_value = True
+
     await client.post(
         "/auth/register",
         json={
@@ -60,6 +78,9 @@ async def test_forgot_password_known_email(client: AsyncClient):
         assert token.token_hash
         assert len(token.token_hash) == 64
 
+    # 已知邮箱应该发送邮件
+    mock_send_email.assert_called_once()
+
 
 @pytest.mark.asyncio
 async def test_reset_password_success(client: AsyncClient):
@@ -76,11 +97,14 @@ async def test_reset_password_success(client: AsyncClient):
     token = "reset-success-token"
     token_hash = hashlib.sha256(token.encode()).hexdigest()
 
+    # 在单独的 session 中创建 token
     async with TestingSessionLocal() as session:
         user_result = await session.execute(
             select(User).where(User.email == "reset-success@example.com")
         )
         user = user_result.scalar_one()
+        user_id = user.id
+
         reset_token = PasswordResetToken(
             user_id=user.id,
             token_hash=token_hash,
@@ -88,7 +112,6 @@ async def test_reset_password_success(client: AsyncClient):
         )
         session.add(reset_token)
         await session.commit()
-        user_id = user.id
 
     response = await client.post(
         "/auth/reset-password", json={"token": token, "new_password": "NewPassword123"}
@@ -96,6 +119,7 @@ async def test_reset_password_success(client: AsyncClient):
     assert response.status_code == 200
     assert response.json()["message"] == "Password reset successful"
 
+    # 在新的 session 中验证结果
     async with TestingSessionLocal() as session:
         user_result = await session.execute(select(User).where(User.id == user_id))
         updated_user = user_result.scalar_one()
@@ -125,6 +149,7 @@ async def test_reset_password_token_single_use(client: AsyncClient):
     token = "reset-single-use-token"
     token_hash = hashlib.sha256(token.encode()).hexdigest()
 
+    # 在单独的 session 中创建 token
     async with TestingSessionLocal() as session:
         user_result = await session.execute(
             select(User).where(User.email == "reset-single-use@example.com")
@@ -165,6 +190,7 @@ async def test_reset_password_expired_token(client: AsyncClient):
     token = "reset-expired-token"
     token_hash = hashlib.sha256(token.encode()).hexdigest()
 
+    # 在单独的 session 中创建过期 token
     async with TestingSessionLocal() as session:
         user_result = await session.execute(
             select(User).where(User.email == "reset-expired@example.com")

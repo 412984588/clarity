@@ -63,7 +63,8 @@ async def test_list_devices(client: AsyncClient):
             "device_fingerprint": "device-list-001",
         },
     )
-    access_token = response.cookies["access_token"]
+    access_token = response.cookies.get("access_token")
+    assert access_token is not None, "access_token cookie not found"
     user = _user_from_access_token(access_token)
 
     app.dependency_overrides[get_current_user] = lambda: user
@@ -90,7 +91,8 @@ async def test_list_sessions(client: AsyncClient):
             "device_fingerprint": "session-list-001",
         },
     )
-    access_token = response.cookies["access_token"]
+    access_token = response.cookies.get("access_token")
+    assert access_token is not None, "access_token cookie not found"
     user = _user_from_access_token(access_token)
 
     app.dependency_overrides[get_current_user] = lambda: user
@@ -116,7 +118,8 @@ async def test_device_limit_concurrent_requests(client: AsyncClient):
             "device_fingerprint": "device-concurrent-base",
         },
     )
-    access_token = register_resp.cookies["access_token"]
+    access_token = register_resp.cookies.get("access_token")
+    assert access_token is not None, "access_token cookie not found"
     user = _user_from_access_token(access_token)
     await _set_subscription_tier(user.id, "standard")
 
@@ -167,7 +170,8 @@ async def test_revoke_device_success(client: AsyncClient):
             "device_fingerprint": "device-old",
         },
     )
-    access_token = register_resp.cookies["access_token"]
+    access_token = register_resp.cookies.get("access_token")
+    assert access_token is not None, "access_token cookie not found"
     user = _user_from_access_token(access_token)
     await _set_subscription_tier(user.id, "standard")
 
@@ -207,7 +211,8 @@ async def test_cannot_revoke_current_device(client: AsyncClient):
             "device_fingerprint": "device-current",
         },
     )
-    access_token = register_resp.cookies["access_token"]
+    access_token = register_resp.cookies.get("access_token")
+    assert access_token is not None, "access_token cookie not found"
     user = _user_from_access_token(access_token)
     current_device_id = await _get_device_id("device-current")
 
@@ -237,7 +242,8 @@ async def test_revoke_limit_once_per_day(client: AsyncClient):
             "device_fingerprint": "device-a",
         },
     )
-    access_token = register_resp.cookies["access_token"]
+    access_token = register_resp.cookies.get("access_token")
+    assert access_token is not None, "access_token cookie not found"
     user = _user_from_access_token(access_token)
     await _set_subscription_tier(user.id, "pro")
 
@@ -295,7 +301,8 @@ async def test_revoke_session_success(client: AsyncClient):
             "device_fingerprint": "session-old",
         },
     )
-    access_token = register_resp.cookies["access_token"]
+    access_token = register_resp.cookies.get("access_token")
+    assert access_token is not None, "access_token cookie not found"
     user = _user_from_access_token(access_token)
     await _set_subscription_tier(user.id, "standard")
 
@@ -333,7 +340,8 @@ async def test_revoke_session_not_found(client: AsyncClient):
             "device_fingerprint": "session-missing",
         },
     )
-    access_token = register_resp.cookies["access_token"]
+    access_token = register_resp.cookies.get("access_token")
+    assert access_token is not None, "access_token cookie not found"
     user = _user_from_access_token(access_token)
 
     app.dependency_overrides[get_current_user] = lambda: user

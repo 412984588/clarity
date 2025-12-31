@@ -7,6 +7,69 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2025-12-31] - 创建数据库索引性能监控脚本
+
+- [x] **功能实现**: 完整的索引性能分析工具
+  - 文件: `scripts/monitor_index_performance.py` (218 行)
+  - 功能：
+    1. 连接 PostgreSQL 数据库（使用 DATABASE_URL 环境变量）
+    2. 查询 pg_stat_user_indexes 和 pg_stat_user_tables 视图
+    3. 显示每个索引的统计信息（扫描次数、读取行数、获取行数、索引大小）
+    4. 计算索引效率（每次扫描平均读取行数）
+    5. 计算索引使用率（idx_scan / (idx_scan + seq_scan)）
+    6. 识别未使用的索引（idx_scan = 0）
+    7. 识别低效索引（每次扫描读取大量行）
+    8. 识别使用率低的索引（表扫描次数远多于索引扫描）
+
+- [x] **技术实现**:
+  - 异步查询：使用 SQLAlchemy AsyncEngine + asyncpg
+  - JOIN 查询：LEFT JOIN pg_stat_user_tables 获取表级统计
+  - 格式化输出：表格形式显示，包含千位分隔符、大小单位转换
+  - 智能分类：高效/中等/低效索引自动标记
+  - 优化建议：自动生成删除建议和优化建议
+
+- [x] **测试验证**:
+  - 本地数据库测试通过 ✅
+  - 识别出 39 个索引，其中 37 个未使用（94.9%）
+  - 总索引大小：320 KB
+  - 发现 1 个低使用率索引：users.ix_users_email (使用率 14.3%)
+
+- [x] **输出报告**:
+  ```
+  📊 索引性能监控报告
+  - 总索引数: 39
+  - 未使用索引: 37 (94.9%)
+  - 低使用索引: 1
+  - 总索引大小: 320 KB
+
+  💡 优化建议:
+  - 未使用的索引（考虑删除以节省空间）
+  - 低效索引（每次扫描读取大量行）
+  - 使用率低的索引（表扫描次数远多于索引扫描）
+  ```
+
+- [x] **使用方法**:
+  ```bash
+  export DATABASE_URL='postgresql+asyncpg://user:pass@host:port/dbname'
+  python scripts/monitor_index_performance.py
+  ```
+
+> **遇到的坑**:
+>
+> **pg_stat_user_indexes 视图列名错误**
+> - **现象**: `column "tablename" does not exist`
+> - **原因**: 视图的表名字段是 `relname` 而不是 `tablename`
+> - **排查**: 使用 `information_schema.columns` 查询视图结构
+> - **解决**: 修改 SQL 查询，使用正确的列名 `relname`
+> - **教训**: 使用系统视图前先查询其确切结构
+
+> **技术选型**:
+> - **异步查询**: SQLAlchemy AsyncEngine 兼容现有代码库
+> - **LEFT JOIN**: 确保所有索引都显示，即使表统计缺失
+> - **COALESCE**: 处理 NULL 值，避免计算错误
+
+---
+
 ### [2025-12-31] - 修复 bcrypt 密码长度限制问题
 
 - [x] **问题诊断**: 60 个测试失败，错误提示 "password cannot be longer than 72 bytes"

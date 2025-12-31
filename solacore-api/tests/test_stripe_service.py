@@ -37,7 +37,8 @@ async def test_create_checkout_session_creates_customer_and_session(
 
     user = User(email="stripe-new@example.com")
     user.id = uuid4()
-    user.subscription = Subscription(user_id=user.id)
+    subscription = Subscription(user_id=user.id)
+    user.subscription = subscription
 
     with patch(
         "app.services.stripe_service.get_settings", return_value=stripe_settings
@@ -52,12 +53,12 @@ async def test_create_checkout_session_creates_customer_and_session(
             ),
         ):
             url, session_id = await stripe_service.create_checkout_session(
-                user, "price_123"
+                user, subscription, "price_123"
             )
 
     assert url == "https://checkout"
     assert session_id == "cs_123"
-    assert user.subscription.stripe_customer_id == "cus_123"
+    assert subscription.stripe_customer_id == "cus_123"
     customer_create.assert_called_once_with(
         email=str(user.email),
         metadata={"user_id": str(user.id)},
@@ -99,7 +100,7 @@ async def test_create_checkout_session_uses_existing_customer(
             ),
         ):
             url, session_id = await stripe_service.create_checkout_session(
-                user, "price_456"
+                user, subscription, "price_456"
             )
 
     assert url == "https://checkout"
@@ -116,7 +117,7 @@ async def test_create_checkout_session_requires_subscription(stripe_settings):
         "app.services.stripe_service.get_settings", return_value=stripe_settings
     ):
         with pytest.raises(ValueError, match="NO_SUBSCRIPTION"):
-            await stripe_service.create_checkout_session(user, "price_123")
+            await stripe_service.create_checkout_session(user, None, "price_123")
 
 
 @pytest.mark.asyncio

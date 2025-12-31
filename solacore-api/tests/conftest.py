@@ -7,6 +7,7 @@ from app.database import Base, get_db
 from app.main import app
 from app.middleware.rate_limit import limiter
 from httpx import ASGITransport, AsyncClient
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
 
@@ -42,13 +43,28 @@ async def _add_csrf_header(request) -> None:
         request.headers["X-CSRF-Token"] = token.value
 
 
+async def _truncate_tables() -> None:
+    """清空所有表数据（保留表结构,避免死锁）"""
+    async with TestingSessionLocal() as session:
+        # 获取所有表名
+        tables = [table.name for table in reversed(Base.metadata.sorted_tables)]
+        if tables:
+            # 使用 TRUNCATE CASCADE 清空数据,比 DROP/CREATE 快且不会死锁
+            await session.execute(
+                f"TRUNCATE TABLE {', '.join(tables)} RESTART IDENTITY CASCADE"
+            )
+            await session.commit()
+
+
 @pytest_asyncio.fixture(scope="function")
 async def client() -> AsyncGenerator[AsyncClient, None]:
     """每个测试函数使用独立的数据库状态"""
-    # 创建表
+    # 首次运行时创建表（如果不存在）
     async with engine_test.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
+
+    # 清空表数据（不删表,避免并发死锁）
+    await _truncate_tables()
 
     # 覆盖依赖
     async def override_get_db() -> AsyncGenerator[AsyncSession, None]:
@@ -75,9 +91,12 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
 @pytest_asyncio.fixture(scope="function")
 async def client_no_csrf() -> AsyncGenerator[AsyncClient, None]:
     """不自动注入 CSRF header 的测试客户端"""
+    # 首次运行时创建表（如果不存在）
     async with engine_test.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
+
+    # 清空表数据（不删表,避免并发死锁）
+    await _truncate_tables()
 
     async def override_get_db() -> AsyncGenerator[AsyncSession, None]:
         async with TestingSessionLocal() as session:

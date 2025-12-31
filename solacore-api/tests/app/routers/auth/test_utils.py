@@ -1,14 +1,12 @@
+import asyncio
 import types
 from dataclasses import dataclass
-from uuid import uuid4
-
-import asyncio
-import pytest
-from fastapi import Response
 from unittest.mock import AsyncMock
+from uuid import uuid4
 
 from app.models.user import User
 from app.routers.auth import utils as auth_utils
+from fastapi import Response
 
 
 @dataclass

@@ -1,7 +1,6 @@
 """学习功能路由 - 创建学习会话"""
 
 import logging
-from uuid import UUID
 
 from app.database import get_db
 from app.middleware.auth import get_current_user

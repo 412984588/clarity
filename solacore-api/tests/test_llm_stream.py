@@ -3,7 +3,6 @@
 import json
 
 import pytest
-from app.routers import sessions as sessions_router
 from httpx import AsyncClient
 
 
@@ -29,17 +28,20 @@ async def test_llm_stream_emits_tokens_and_done(
             for token in ["foo", "bar"]:
                 yield token
 
-    monkeypatch.setattr(sessions_router, "AIService", FakeAIService)
+    # 重构后 AIService 在 stream.py 子模块中导入
+    monkeypatch.setattr("app.routers.sessions.stream.AIService", FakeAIService)
 
     token = await _register_user(client, "llm-stream@example.com", "llm-device-001")
+    # 路由重构后，POST /sessions 需要尾部斜杠
     create_resp = await client.post(
-        "/sessions",
+        "/sessions/",
         json={},
         headers={
             "Authorization": f"Bearer {token}",
             "X-Device-Fingerprint": "llm-device-001",
         },
     )
+    assert create_resp.status_code == 201, f"创建会话失败: {create_resp.status_code} {create_resp.text}"
     session_id = create_resp.json()["session_id"]
 
     async with client.stream(
