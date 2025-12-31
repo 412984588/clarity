@@ -10,31 +10,20 @@
 - GROW模型：Goal→Reality→Options→Will
 """
 
-import json
 import logging
-from datetime import datetime, timedelta
-from typing import AsyncGenerator
+from datetime import datetime
 from uuid import UUID
 
 from app.database import get_db
 from app.middleware.auth import get_current_user
-from app.middleware.rate_limit import (
-    API_RATE_LIMIT,
-    SSE_RATE_LIMIT,
-    limiter,
-    user_rate_limit_key,
-)
-from app.models.device import Device
+from app.middleware.rate_limit import API_RATE_LIMIT, limiter, user_rate_limit_key
 from app.models.learn_message import LearnMessage, LearnMessageRole
 from app.models.learn_session import LearnSession, LearnStep
 from app.models.user import User
-from app.services.ai_service import AIService
-from app.services.content_filter import sanitize_user_input, strip_pii
 from app.utils.datetime_utils import utc_now
 from app.utils.docs import COMMON_ERROR_RESPONSES
-from app.utils.error_handlers import handle_sse_error
-from fastapi import APIRouter, Depends, Header, HTTPException, Path, Query, Request
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -235,61 +224,6 @@ class LearnSessionListResponse(BaseModel):
 # ==================== API 端点 ====================
 
 
-@router.post(
-    "",
-    response_model=LearnSessionCreateResponse,
-    status_code=201,
-    summary="创建学习会话",
-    description="创建一个新的学习会话，开始基于方法论的学习引导。",
-    responses={**COMMON_ERROR_RESPONSES},
-)
-@limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
-async def create_learn_session(
-    request: Request,
-    x_device_fingerprint: str | None = Header(None),
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    """创建学习会话"""
-    # 查找设备
-    device = None
-    if x_device_fingerprint:
-        result = await db.execute(
-            select(Device).where(
-                Device.user_id == current_user.id,
-                Device.fingerprint == x_device_fingerprint,
-            )
-        )
-        device = result.scalar_one_or_none()
-
-    # 创建学习会话
-    session = LearnSession(
-        user_id=current_user.id,
-        device_id=device.id if device else None,
-        status="active",
-        current_step=LearnStep.START.value,
-        locale="zh",
-    )
-    db.add(session)
-    await db.commit()
-    await db.refresh(session)
-
-    logger.info(
-        f"Learn session {session.id} created for user {current_user.id}",
-        extra={"session_id": str(session.id), "user_id": str(current_user.id)},
-    )
-
-    return JSONResponse(
-        status_code=201,
-        content={
-            "session_id": str(session.id),
-            "status": session.status,
-            "current_step": session.current_step,
-            "created_at": session.created_at.isoformat(),
-        },
-    )
-
-
 @router.get(
     "",
     response_model=LearnSessionListResponse,
@@ -369,229 +303,6 @@ async def list_learn_sessions(
             "limit": limit,
             "offset": offset,
         }
-    )
-
-
-@router.get(
-    "/{session_id}",
-    response_model=LearnSessionResponse,
-    summary="获取学习会话详情",
-    description="获取指定学习会话的详细信息，包括消息历史。",
-    responses={**COMMON_ERROR_RESPONSES},
-)
-@limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
-async def get_learn_session(
-    request: Request,
-    session_id: UUID = Path(..., description="会话ID"),
-    include_messages: bool = Query(True, description="是否包含消息历史"),
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    """获取学习会话详情"""
-    result = await db.execute(
-        select(LearnSession).where(
-            LearnSession.id == session_id,
-            LearnSession.user_id == current_user.id,
-        )
-    )
-    session = result.scalar_one_or_none()
-
-    if not session:
-        raise HTTPException(status_code=404, detail={"error": "SESSION_NOT_FOUND"})
-
-    response_data = {
-        "id": str(session.id),
-        "status": session.status,
-        "current_step": session.current_step,
-        "topic": session.topic,
-        "key_concepts": session.key_concepts,
-        "review_schedule": session.review_schedule,
-        "created_at": session.created_at.isoformat(),
-        "completed_at": session.completed_at.isoformat()
-        if session.completed_at
-        else None,
-        "messages": [],
-    }
-
-    if include_messages:
-        response_data["messages"] = [
-            {
-                "id": str(msg.id),
-                "role": msg.role,
-                "content": msg.content,
-                "step": msg.step,
-                "created_at": msg.created_at.isoformat(),
-            }
-            for msg in session.messages
-        ]
-
-    return JSONResponse(content=response_data)
-
-
-def _validate_session(session: LearnSession | None) -> LearnSession:
-    """验证会话是否存在且处于活跃状态"""
-    if not session:
-        raise HTTPException(status_code=404, detail={"error": "SESSION_NOT_FOUND"})
-    if session.status != "active":
-        raise HTTPException(status_code=400, detail={"error": "SESSION_NOT_ACTIVE"})
-    return session
-
-
-def _build_context_prompt(
-    history_messages: list[dict[str, str]], sanitized_content: str
-) -> str:
-    """构建包含历史上下文的用户提示"""
-    if not history_messages:
-        return sanitized_content
-
-    history_text = "Previous conversation:\n"
-    for msg in history_messages[-6:]:  # 只保留最近 6 条消息
-        role_label = "User" if msg["role"] == "user" else "Assistant"
-        history_text += f"{role_label}: {msg['content']}\n"
-    return f"{history_text}\nCurrent message: {sanitized_content}"
-
-
-def _generate_review_schedule() -> dict[str, str]:
-    """生成艾宾浩斯复习计划"""
-    now = utc_now()
-    return {
-        "day_1": (now + timedelta(days=1)).isoformat(),
-        "day_3": (now + timedelta(days=3)).isoformat(),
-        "day_7": (now + timedelta(days=7)).isoformat(),
-        "day_15": (now + timedelta(days=15)).isoformat(),
-        "day_30": (now + timedelta(days=30)).isoformat(),
-    }
-
-
-@router.post(
-    "/{session_id}/messages",
-    summary="发送学习消息",
-    description="向学习会话发送消息，获取 AI 基于方法论的引导回复。",
-    responses={**COMMON_ERROR_RESPONSES},
-)
-@limiter.limit(SSE_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
-async def send_learn_message(
-    request: Request,
-    message_request: LearnMessageRequest,
-    session_id: UUID = Path(..., description="会话ID"),
-    x_device_fingerprint: str | None = Header(None),
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    """发送消息并获取流式回复"""
-    # 查询并验证会话
-    result = await db.execute(
-        select(LearnSession).where(
-            LearnSession.id == session_id,
-            LearnSession.user_id == current_user.id,
-        )
-    )
-    session = _validate_session(result.scalar_one_or_none())
-
-    # 内容过滤
-    sanitized_content = sanitize_user_input(message_request.content)
-    sanitized_content = strip_pii(sanitized_content)
-
-    # 保存用户消息
-    user_message = LearnMessage(
-        session_id=session.id,
-        role=LearnMessageRole.USER.value,
-        content=sanitized_content,
-        step=message_request.step,
-    )
-    db.add(user_message)
-
-    # 如果是第一条消息，提取学习主题
-    if not session.topic and message_request.step == LearnStep.START.value:
-        session.topic = sanitized_content[:30] + (
-            "..." if len(sanitized_content) > 30 else ""
-        )
-
-    await db.commit()
-
-    # 获取历史消息并构建上下文提示
-    history_messages = [
-        {"role": msg.role, "content": msg.content}
-        for msg in session.messages
-        if msg.id != user_message.id
-    ]
-    user_prompt_with_history = _build_context_prompt(
-        history_messages, sanitized_content
-    )
-
-    # 获取系统提示词和 AI 服务
-    current_step = LearnStep(session.current_step)
-    system_prompt = LEARN_STEP_PROMPTS.get(
-        current_step.value, LEARN_STEP_PROMPTS[LearnStep.START.value]
-    )
-    ai_service = AIService()
-
-    async def event_generator() -> AsyncGenerator[str, None]:
-        """SSE 事件生成器"""
-        accumulated_content = ""
-
-        try:
-            # 流式接收 AI 回复
-            async for token in ai_service.stream(
-                system_prompt, user_prompt_with_history
-            ):
-                accumulated_content += token
-                yield f"event: token\ndata: {json.dumps({'content': token})}\n\n"
-
-            # 保存 AI 回复
-            ai_message = LearnMessage(
-                session_id=session.id,
-                role=LearnMessageRole.ASSISTANT.value,
-                content=accumulated_content,
-                step=current_step.value,
-            )
-            db.add(ai_message)
-
-            # 检查是否可以进入下一步
-            next_step = get_next_learn_step(current_step)
-            step_completed = len(accumulated_content) > 50
-
-            # 如果是最后一步，生成复习计划
-            if is_final_learn_step(current_step):
-                session.status = "completed"
-                session.completed_at = utc_now()
-                session.review_schedule = _generate_review_schedule()
-
-            await db.commit()
-            await db.refresh(ai_message)
-
-            # 发送完成事件
-            done_data = json.dumps(
-                {
-                    "message_id": str(ai_message.id),
-                    "next_step": next_step.value if next_step else None,
-                    "step_completed": step_completed,
-                    "session_completed": session.status == "completed",
-                }
-            )
-            yield f"event: done\ndata: {done_data}\n\n"
-
-        except Exception as e:
-            # 使用统一的 SSE 错误处理
-            async for error_event in handle_sse_error(
-                db,
-                e,
-                {
-                    "session_id": str(session_id),
-                    "step": session.current_step,
-                    "user_id": str(current_user.id),
-                },
-            ):
-                yield error_event
-
-    return StreamingResponse(
-        event_generator(),
-        media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "X-Accel-Buffering": "no",
-        },
     )
 
 
@@ -685,3 +396,8 @@ async def delete_learn_session(
     )
 
     return JSONResponse(content=None, status_code=204)
+
+
+from . import create, history, message  # noqa: E402,F401
+
+__all__ = ["router"]
