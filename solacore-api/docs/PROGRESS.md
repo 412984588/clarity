@@ -7,6 +7,91 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2025-12-31] - 修复密码重置测试失败
+
+- [x] **问题诊断**: 6 个密码重置测试全部失败
+  - 原因 1: 邮件服务 `send_password_reset_email` 未 Mock，导致真实发邮件抛异常
+  - 原因 2: slowapi 限流器要求路由函数必须有 `response: Response` 参数
+  - 原因 3: 数据库 session 隔离问题，测试间干扰
+
+- [x] **修复内容**:
+  1. **Mock 邮件服务** (`tests/test_password_reset.py`)
+     - 使用 `@patch("app.routers.auth.password_reset.send_password_reset_email", new_callable=AsyncMock)`
+     - 验证未知邮箱不发邮件：`mock_send_email.assert_not_called()`
+     - 验证已知邮箱发邮件：`mock_send_email.assert_called_once()`
+
+  2. **修复 slowapi 兼容性** (`app/routers/auth/password_reset.py`)
+     - 添加 `response: Response` 参数到 `forgot_password()` 和 `reset_password()`
+     - 导入: `from fastapi import Response`
+
+  3. **优化数据库 session 管理** (`tests/test_password_reset.py`)
+     - 明确分离 session 作用域，避免跨测试共享
+     - 每个测试用独立 session 创建数据，独立 session 验证结果
+
+- [x] **测试结果**: 6/6 通过 ✅
+  - `test_forgot_password_unknown_email_returns_200` - 未知邮箱返回 200 不泄露信息
+  - `test_forgot_password_known_email` - 已知邮箱生成 token 并发邮件
+  - `test_reset_password_success` - 有效 token 成功重置密码
+  - `test_reset_password_token_single_use` - token 只能使用一次
+  - `test_reset_password_expired_token` - 过期 token 返回 400
+  - `test_reset_password_invalidates_sessions` - 重置密码后清空所有会话
+
+> **遇到的坑**:
+> **slowapi 限流器的 Response 参数要求**
+> - **现象**: 路由返回字典，但中间件抛异常 `parameter 'response' must be an instance of starlette.responses.Response`
+> - **原因**: slowapi 需要路由函数签名包含 `response: Response` 参数（即使不直接使用）
+> - **解决**: 添加 `response: Response` 参数到所有使用 `@limiter.limit` 装饰的函数
+> - **教训**: 使用第三方中间件时，仔细检查函数签名要求，不只是返回值
+
+> **技术选型**:
+> **AsyncMock 用于异步函数 Mock**
+> - **场景**: Mock `send_password_reset_email(to_email, token)` 异步函数
+> - **方法**: `@patch("路径", new_callable=AsyncMock)`
+> - **验证**: `mock.assert_called_once()` / `mock.assert_not_called()`
+> - **优点**: 无需真实 SMTP 服务，测试快速且可靠
+
+### [2025-12-31] - 补充 analytics_service 单元测试
+
+- [x] **测试覆盖**: analytics_service.py 测试覆盖率 100% ✅
+  - 文件: `tests/test_analytics_service.py` (234 行)
+  - 覆盖: `app/services/analytics_service.py` (19 语句，0 遗漏)
+
+- [x] **测试内容**:
+  1. `test_emit_success_with_flush` - 测试成功发送事件并立即刷新
+  2. `test_emit_success_without_flush` - 测试发送事件但不刷新
+  3. `test_emit_minimal_params` - 测试最小参数调用
+  4. `test_emit_failure_returns_none` - 测试数据库异常时返回 None（失败不影响主业务）
+  5. `test_emit_flush_failure_returns_none` - 测试 flush 失败时的容错
+  6. `test_emit_logs_warning_on_failure` - 测试失败日志记录
+  7. `test_emit_with_complex_payload` - 测试复杂 JSONB payload
+  8. `test_emit_multiple_events_batch` - 测试批量发送事件
+  9. `test_emit_preserves_session_id_association` - 测试会话 ID 关联
+
+- [x] **测试策略**:
+  - 使用 AsyncMock 模拟数据库会话
+  - 验证 add() 和 flush() 调用次数
+  - 测试异常处理（失败返回 None 而不抛异常）
+  - 验证日志记录（使用 patch mock logger）
+  - 边界条件测试（无 session_id、无 payload、复杂嵌套 payload）
+
+- [x] **测试结果**: 9/9 通过 ✅
+  - 所有测试通过
+  - 代码格式化（black）通过
+  - 覆盖率 100%
+
+> **技术要点**:
+> **非关键路径服务的测试策略**
+> - **原则**: AnalyticsService 失败不应影响主业务流程
+> - **实现**: emit() 方法内部 try/except，异常返回 None 而不抛出
+> - **测试**: 验证异常情况下返回 None，且记录警告日志
+> - **教训**: 埋点/分析类服务应该是"静默失败"，不干扰核心功能
+
+> **Mock 数据库会话的最佳实践**
+> - **方法**: 使用 MagicMock 创建假数据库，AsyncMock 模拟异步方法
+> - **验证**: assert_awaited_once()、assert_not_awaited()、call_count
+> - **异常注入**: side_effect=Exception("错误消息") 模拟数据库错误
+> - **优点**: 无需真实数据库，测试运行快速且隔离
+
 ### [2025-12-31] - 修复 test_llm_stream.py 测试失败
 
 - [x] **问题诊断**: SSE 流式响应测试失败 - AttributeError

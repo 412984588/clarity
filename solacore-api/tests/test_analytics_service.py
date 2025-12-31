@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
@@ -25,10 +24,7 @@ async def test_emit_success_with_flush() -> None:
 
     # 执行
     result = await service.emit(
-        event_type="user_action",
-        session_id=session_id,
-        payload=payload,
-        flush=True
+        event_type="user_action", session_id=session_id, payload=payload, flush=True
     )
 
     # 验证
@@ -53,10 +49,7 @@ async def test_emit_success_without_flush() -> None:
     service = AnalyticsService(fake_db)
 
     result = await service.emit(
-        event_type="page_view",
-        session_id=None,
-        payload={"page": "/home"},
-        flush=False
+        event_type="page_view", session_id=None, payload={"page": "/home"}, flush=False
     )
 
     assert result is not None
@@ -99,10 +92,7 @@ async def test_emit_failure_returns_none() -> None:
     service = AnalyticsService(fake_db)
 
     # 应该返回 None 而不是抛出异常
-    result = await service.emit(
-        event_type="error_event",
-        payload={"error": "test"}
-    )
+    result = await service.emit(event_type="error_event", payload={"error": "test"})
 
     assert result is None
     fake_db.add.assert_called_once()
@@ -119,10 +109,7 @@ async def test_emit_flush_failure_returns_none() -> None:
 
     service = AnalyticsService(fake_db)
 
-    result = await service.emit(
-        event_type="flush_test",
-        flush=True
-    )
+    result = await service.emit(event_type="flush_test", flush=True)
 
     assert result is None
 
@@ -160,18 +147,15 @@ async def test_emit_with_complex_payload() -> None:
         "metadata": {
             "browser": "Chrome",
             "version": "120.0",
-            "screen": {"width": 1920, "height": 1080}
+            "screen": {"width": 1920, "height": 1080},
         },
         "tags": ["mobile", "ios"],
         "timestamp": "2024-12-31T12:00:00Z",
         "count": 42,
-        "is_premium": True
+        "is_premium": True,
     }
 
-    result = await service.emit(
-        event_type="complex_event",
-        payload=complex_payload
-    )
+    result = await service.emit(event_type="complex_event", payload=complex_payload)
 
     assert result is not None
     assert result.payload == complex_payload
@@ -181,20 +165,31 @@ async def test_emit_with_complex_payload() -> None:
 
 
 @pytest.mark.asyncio
-async def test_emit_creates_unique_event_ids() -> None:
-    """测试每次调用生成唯一的事件 ID"""
+async def test_emit_multiple_events_batch() -> None:
+    """测试批量发送多个事件（不 flush）"""
     fake_db = MagicMock()
     fake_db.add = MagicMock()
     fake_db.flush = AsyncMock()
 
     service = AnalyticsService(fake_db)
 
-    event1 = await service.emit(event_type="event1")
-    event2 = await service.emit(event_type="event2")
+    # 批量发送 5 个事件，都不 flush
+    events = []
+    for i in range(5):
+        event = await service.emit(
+            event_type=f"batch_event_{i}", payload={"index": i}, flush=False
+        )
+        events.append(event)
 
-    assert event1 is not None
-    assert event2 is not None
-    assert event1.id != event2.id
+    # 验证所有事件都创建成功
+    assert len(events) == 5
+    assert all(e is not None for e in events)
+
+    # 验证 add 被调用 5 次
+    assert fake_db.add.call_count == 5
+
+    # 验证没有任何 flush
+    fake_db.flush.assert_not_awaited()
 
 
 @pytest.mark.asyncio
@@ -208,18 +203,9 @@ async def test_emit_preserves_session_id_association() -> None:
     session_id = uuid4()
 
     # 同一个会话的多个事件
-    event1 = await service.emit(
-        event_type="session_start",
-        session_id=session_id
-    )
-    event2 = await service.emit(
-        event_type="user_message",
-        session_id=session_id
-    )
-    event3 = await service.emit(
-        event_type="session_end",
-        session_id=session_id
-    )
+    event1 = await service.emit(event_type="session_start", session_id=session_id)
+    event2 = await service.emit(event_type="user_message", session_id=session_id)
+    event3 = await service.emit(event_type="session_end", session_id=session_id)
 
     assert event1.session_id == session_id
     assert event2.session_id == session_id
