@@ -5,6 +5,91 @@
 
 ---
 
+## 最新进度（倒序记录，最新的在最上面）
+
+### [2025-12-31] - 修复 bcrypt 密码长度限制问题
+
+- [x] **问题诊断**: 60 个测试失败，错误提示 "password cannot be longer than 72 bytes"
+  - 现象：注册/登录接口返回 400 错误，密码 "Password123" 仅 11 字节却报超限
+  - 排查：通过 `pytest -xvs --log-cli-level=DEBUG` 定位到 passlib 版本兼容问题
+  - 文件: `tests/test_auth.py`, `app/services/auth_service.py`
+
+- [x] **根本原因**: bcrypt 5.0.0 与 passlib 1.7.4 不兼容
+  - bcrypt 5.0.0 移除了 `__about__` 属性
+  - passlib 1.7.4 无法正确识别 bcrypt 版本，导致误判密码长度
+  - pyproject.toml 已限制 `bcrypt>=4.0,<5.0`，但系统安装了 5.0.0
+  - 文件: `app/utils/security.py:13-18`
+
+- [x] **解决方案**: 降级 bcrypt 到 4.3.0
+  - 执行：`pip3 uninstall bcrypt -y && pip3 install 'bcrypt>=4.0,<5.0'`
+  - 验证：测试通过 `pwd_context.hash()` 和 `pwd_context.verify()` 功能正常
+  - 结果：从 60 个失败降到 3 failed + 2 errors（密码功能全通过）
+  - 文件: 系统依赖
+
+- [x] **测试验证**: 密码核心功能全部通过
+  - ✅ test_register_success - 注册成功
+  - ✅ test_register_weak_password - 弱密码验证
+  - ✅ test_register_no_uppercase - 密码强度检查（缺少大写）
+  - ✅ test_register_no_digit - 密码强度检查（缺少数字）
+  - ✅ test_login_invalid_email - 不存在的邮箱登录失败
+  - 文件: `tests/test_auth.py:8-199`
+
+> **遇到的坑**:
+> **bcrypt 版本兼容性问题**
+> - **现象**: 短密码被误判为超过 72 字节限制
+> - **陷阱**: passlib 1.7.4 (2020年) 无法识别 bcrypt 5.0.0 (2024年)
+> - **解决**: 严格遵守 pyproject.toml 的版本约束，避免系统级安装覆盖项目依赖
+> - **教训**: 依赖版本锁定很重要，`pip install` 时需检查冲突
+
+> **剩余问题**（不在本次修复范围）:
+> - 3 个测试失败：Event loop is closed（异步测试隔离问题）
+> - 1 个测试失败：KeyError: 'error'（响应格式问题）
+> - 2 个测试错误：sqlalchemy.exc.DBAPIError（数据库事务问题）
+
+**下一步**:
+- [ ] 修复异步测试的 Event loop 隔离问题（pytest-asyncio 配置）
+- [ ] 修复 refresh_invalid_token 的响应格式问题
+- [ ] 修复数据库事务隔离问题（测试 fixture）
+
+---
+
+### [2025-12-31] - API 文档更新 - 反映模块化架构
+
+- [x] **更新 README.md**: 添加完整的项目结构图
+  - 新增 "Project structure" 部分，展示 auth/sessions/learn/startup 模块树状结构
+  - 详细说明每个子模块的职责（10+6+5+6 个模块）
+  - 添加 "Modular architecture benefits" 部分（可维护性、协作性、可测试性、可扩展性、代码复用）
+  - 文件: `README.md:21-76`
+
+- [x] **更新 ARCHITECTURE.md**: 添加模块化架构专题
+  - 新增 "Modular router architecture" 主章节
+  - 详细说明 Auth、Sessions、Learn、Startup 四大模块的设计模式
+  - 添加重构指标表格（Before/After 对比，文件数、平均行数、改进效果）
+  - 说明设计选择（路由聚合模式、共享工具函数、模板集中化）
+  - 量化收益：代码去重 50+ 行、复杂度 <10、main.py 减少 97%
+  - 文件: `docs/ARCHITECTURE.md:40-131`
+
+- [x] **更新 API.md**: 添加架构说明部分
+  - 在文档开头添加 "架构说明" 部分
+  - 简要介绍模块化路由架构（4 大模块，21 个子模块）
+  - 列出模块化的四大优势（易维护、减少冲突、便于测试、代码复用）
+  - 引导读者查看 ARCHITECTURE.md 详细文档
+  - 文件: `docs/API.md:9-24`
+
+**更新内容总结**:
+- 3 个文档文件更新
+- 新增项目结构树状图（展示完整的目录层级）
+- 新增架构专题章节（设计模式、重构指标、收益分析）
+- 提高文档一致性（README、ARCHITECTURE、API 三者互相引用）
+
+**文档改进效果**:
+- **新手友好**: 清晰的目录结构帮助快速定位代码
+- **维护便利**: 详细的模块职责说明减少误修改
+- **知识传递**: 设计模式和重构指标可供其他项目参考
+- **团队协作**: 明确的模块划分便于分工
+
+---
+
 ## 📋 2025-12-31 优化总览
 
 **🎯 完成情况**: 5 大优化任务全部完成 ✅

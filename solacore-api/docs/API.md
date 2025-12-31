@@ -6,6 +6,23 @@
 - ReDoc: `/redoc`
 - OpenAPI JSON: `/openapi.json`
 
+## 架构说明
+
+本 API 采用模块化路由架构，主要路由组已拆分为独立子模块：
+
+- **Auth 路由** (`app/routers/auth/`) - 10 个子模块处理认证、OAuth、会话管理
+- **Sessions 路由** (`app/routers/sessions/`) - 6 个子模块处理 Solve 会话的创建、列表、流式消息、更新、删除
+- **Learn 路由** (`app/routers/learn/`) - 5 个子模块处理学习会话（费曼学习法、分块学习等）
+- **Startup 模块** (`app/startup/`) - 6 个模块管理应用初始化、中间件、路由注册
+
+这种架构带来以下优势：
+- 易于维护（每个文件 50-200 行，专注单一职责）
+- 减少合并冲突（多人协作时不同开发者修改不同模块）
+- 便于测试（独立的工具函数可单独测试）
+- 代码复用（共享工具减少重复代码 50+ 行）
+
+详见 `docs/ARCHITECTURE.md` 的模块化架构部分。
+
 ## 基础信息
 
 - Base URL（本地开发）: `http://localhost:8000`
