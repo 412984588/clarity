@@ -41,7 +41,9 @@ async def test_llm_stream_emits_tokens_and_done(
             "X-Device-Fingerprint": "llm-device-001",
         },
     )
-    assert create_resp.status_code == 201, f"创建会话失败: {create_resp.status_code} {create_resp.text}"
+    assert create_resp.status_code == 201, (
+        f"创建会话失败: {create_resp.status_code} {create_resp.text}"
+    )
     session_id = create_resp.json()["session_id"]
 
     async with client.stream(

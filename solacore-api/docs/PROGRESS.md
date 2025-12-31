@@ -7,6 +7,37 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2025-12-31] - 修复 test_llm_stream.py 测试失败
+
+- [x] **问题诊断**: SSE 流式响应测试失败 - AttributeError
+  - 错误: `AttributeError: <module 'app.routers.sessions'> has no attribute 'AIService'`
+  - 原因: sessions.py 已拆分为模块包（sessions/__init__.py），AIService 在 stream.py 子模块中
+  - 文件: `tests/test_llm_stream.py:32`
+
+- [x] **修复内容**:
+  1. 更新 monkeypatch 路径: `sessions_router.AIService` → `app.routers.sessions.stream.AIService`
+  2. 修复路由路径: `/sessions` → `/sessions/`（FastAPI 路由重构后需要尾部斜杠）
+  3. 清理导入: 删除无用的 `from app.routers import sessions as sessions_router`
+
+- [x] **测试结果**: 1/1 通过 ✅
+  - `test_llm_stream_emits_tokens_and_done` - SSE 流式消息测试通过
+  - Mock AIService 正常工作
+  - 正确验证 `event: token` 和 `event: done` 事件
+  - 验证 `next_step` 和 `emotion_detected` 字段
+
+> **遇到的坑**:
+> **模块化重构后的 Monkeypatch 路径**
+> - **现象**: 测试尝试 patch `sessions_router.AIService` 但找不到属性
+> - **原因**: sessions.py 拆分为模块包后，AIService 在 `sessions.stream` 子模块中导入
+> - **解决**: 使用完整路径 `app.routers.sessions.stream.AIService` 进行 monkeypatch
+> - **教训**: 模块化重构后，测试的 mock/patch 路径需要同步更新到子模块
+
+> **FastAPI 路由尾部斜杠问题**
+> - **现象**: POST /sessions 返回 307 Temporary Redirect
+> - **原因**: 子路由使用 `@router.post("/")`，FastAPI 严格区分 `/sessions` 和 `/sessions/`
+> - **解决**: 测试中使用 `/sessions/` 带尾部斜杠的路径
+> - **教训**: FastAPI 路由 prefix + path 组合时注意尾部斜杠的一致性
+
 ### [2025-12-31] - 创建数据库索引性能监控脚本
 
 - [x] **功能实现**: 完整的索引性能分析工具
