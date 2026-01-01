@@ -89,9 +89,13 @@ async def create_session(
         update(Usage)
         .where(Usage.user_id == current_user.id, Usage.period_start == period_start)
         .values(session_count=Usage.session_count + 1)
-        .returning(Usage.session_count)
     )
-    result = await db.execute(stmt)
+    await db.execute(stmt)
+    result = await db.execute(
+        select(Usage.session_count).where(
+            Usage.user_id == current_user.id, Usage.period_start == period_start
+        )
+    )
     new_count = result.scalar_one()
 
     # 检查是否超限（递增后再检查，避免竞态条件）
@@ -115,6 +119,8 @@ async def create_session(
                 "upgrade_url": "/subscriptions/checkout",
             },
         )
+
+    usage.session_count = new_count  # keep response in sync with DB
 
     session = SolveSession(
         user_id=current_user.id,

@@ -3,11 +3,14 @@
 from uuid import UUID, uuid4
 
 import pytest
+from app.config import Settings
+from app.middleware.rate_limit import limiter
 from app.models.solve_session import SolveStep
 from app.models.step_history import StepHistory
+from app.models.subscription import Subscription, Usage
 from app.utils.security import decode_token
-from httpx import AsyncClient
-from sqlalchemy import select
+from httpx import AsyncClient, Response
+from sqlalchemy import delete, select
 from tests.conftest import TestingSessionLocal
 
 
@@ -23,6 +26,34 @@ async def _register_user(client: AsyncClient, email: str, fingerprint: str) -> s
     assert response.status_code == 201
     # httpOnly cookie mode: get token from cookie
     return response.cookies["access_token"]
+
+
+async def _create_session(
+    client: AsyncClient, token: str, fingerprint: str
+) -> Response:
+    return await client.post(
+        "/sessions",
+        json={},
+        headers={
+            "Authorization": f"Bearer {token}",
+            "X-Device-Fingerprint": fingerprint,
+        },
+    )
+
+
+async def _set_subscription_tier(user_id: UUID, tier: str) -> None:
+    async with TestingSessionLocal() as session:
+        result = await session.execute(
+            select(Subscription).where(Subscription.user_id == user_id)
+        )
+        subscription = result.scalar_one()
+        subscription.tier = tier  # type: ignore[assignment]
+        await session.commit()
+
+
+def _bypass_rate_limit(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(limiter, "enabled", False, raising=False)
+    monkeypatch.setattr(limiter, "_enabled", False, raising=False)
 
 
 @pytest.mark.asyncio
@@ -67,20 +98,146 @@ async def test_create_session_returns_201(client: AsyncClient):
     token = await _register_user(
         client, "session-create@example.com", "session-device-001"
     )
-    response = await client.post(
-        "/sessions",
-        json={},
-        headers={
-            "Authorization": f"Bearer {token}",
-            "X-Device-Fingerprint": "session-device-001",
-        },
-    )
+    response = await _create_session(client, token, "session-device-001")
     assert response.status_code == 201
     data = response.json()
     assert "session_id" in data
     assert data["status"] == "active"
     assert data["current_step"] == "receive"
     assert "usage" in data
+
+
+@pytest.mark.asyncio
+async def test_create_session_device_not_found(client: AsyncClient):
+    token = await _register_user(
+        client, "session-device-missing@example.com", "session-device-009"
+    )
+    response = await _create_session(client, token, "session-device-missing")
+    assert response.status_code == 403
+    assert response.json()["detail"]["error"] == "DEVICE_NOT_FOUND"
+
+
+@pytest.mark.asyncio
+async def test_create_session_creates_subscription_if_missing(client: AsyncClient):
+    token = await _register_user(
+        client, "session-subscription-missing@example.com", "session-device-010"
+    )
+    payload = decode_token(token) or {}
+    user_id = UUID(str(payload.get("sub")))
+
+    async with TestingSessionLocal() as session:
+        await session.execute(
+            delete(Subscription).where(Subscription.user_id == user_id)
+        )
+        await session.commit()
+
+    response = await _create_session(client, token, "session-device-010")
+    assert response.status_code == 201
+
+    async with TestingSessionLocal() as session:
+        result = await session.execute(
+            select(Subscription).where(Subscription.user_id == user_id)
+        )
+        subscription = result.scalar_one()
+
+    assert subscription.tier == "free"
+
+
+@pytest.mark.asyncio
+async def test_create_session_beta_mode_unlimited(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+):
+    beta_settings = Settings()
+    beta_settings.beta_mode = True
+    monkeypatch.setattr(
+        "app.routers.sessions.create.get_settings", lambda: beta_settings
+    )
+
+    token = await _register_user(
+        client, "session-beta@example.com", "session-device-011"
+    )
+    last_response = None
+    for _ in range(12):
+        last_response = await _create_session(client, token, "session-device-011")
+        assert last_response.status_code == 201
+
+    assert last_response is not None
+    assert last_response.json()["usage"]["sessions_limit"] == 0
+
+
+@pytest.mark.asyncio
+async def test_create_session_quota_exceeded(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+):
+    # 确保 beta_mode 关闭，以便 session 限制生效
+    from app.config import get_settings
+
+    settings = get_settings()
+    monkeypatch.setattr(settings, "beta_mode", False)
+
+    token = await _register_user(
+        client, "session-quota@example.com", "session-device-012"
+    )
+    payload = decode_token(token) or {}
+    user_id = UUID(str(payload.get("sub")))
+
+    # 清理 Usage 表，确保测试从干净状态开始
+    async with TestingSessionLocal() as session:
+        await session.execute(delete(Usage).where(Usage.user_id == user_id))
+        await session.commit()
+
+    for _ in range(10):
+        response = await _create_session(client, token, "session-device-012")
+        assert response.status_code == 201
+
+    response = await _create_session(client, token, "session-device-012")
+    assert response.status_code == 403
+    assert response.json()["detail"]["error"] == "QUOTA_EXCEEDED"
+
+    async with TestingSessionLocal() as session:
+        result = await session.execute(select(Usage).where(Usage.user_id == user_id))
+        usage = result.scalar_one()
+
+    assert usage.session_count == 10
+
+
+@pytest.mark.asyncio
+async def test_create_session_standard_tier_limit(client: AsyncClient):
+    token = await _register_user(
+        client, "session-standard@example.com", "session-device-013"
+    )
+    payload = decode_token(token) or {}
+    user_id = UUID(str(payload.get("sub")))
+    await _set_subscription_tier(user_id, "standard")
+
+    last_response = None
+    for _ in range(11):
+        last_response = await _create_session(client, token, "session-device-013")
+        assert last_response.status_code == 201
+
+    assert last_response is not None
+    assert last_response.json()["usage"]["tier"] == "standard"
+
+
+@pytest.mark.asyncio
+async def test_create_session_pro_tier_unlimited(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+):
+    _bypass_rate_limit(monkeypatch)
+    token = await _register_user(
+        client, "session-pro@example.com", "session-device-014"
+    )
+    payload = decode_token(token) or {}
+    user_id = UUID(str(payload.get("sub")))
+    await _set_subscription_tier(user_id, "pro")
+
+    last_response = None
+    for _ in range(201):
+        last_response = await _create_session(client, token, "session-device-014")
+        assert last_response.status_code == 201
+
+    assert last_response is not None
+    assert last_response.json()["usage"]["tier"] == "pro"
 
 
 @pytest.mark.asyncio
