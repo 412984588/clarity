@@ -7,7 +7,95 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
-### [2026-01-01 07:50] - 🚀 Git Worktree 并行测试开发（进行中）
+
+### [2026-01-01 深夜] - 🐛 修复跨用户隔离测试失败（Auth 中间件 Bug）
+
+- [x] **问题排查**: 深度调查 2 个失败测试（test_list_sessions_user_isolation, test_get_session_cross_user_access）
+- [x] **根因定位**: 发现 AsyncClient Cookie 优先级导致 Token 混淆
+- [x] **核心修复**: 修改 `app/middleware/auth.py` - Authorization Header 优先于 Cookie
+- [x] **测试验证**: 76 passed, 1 skipped（修复前：74 passed, 3 skipped）
+- [ ] **下一步**: 继续补充测试，目标 85% 覆盖率
+
+> **遇到的坑**:
+> **Cookie 优先级导致的跨用户污染**
+> - **现象**: 用户 A 请求时看到用户 B 的数据（测试中 User A 应看到 2 个会话，实际返回 3 个属于 User B 的会话）
+> - **根因**:
+>   - AsyncClient 自动保存 Cookie（注册 User B 时覆盖了 User A 的 Cookie）
+>   - `_extract_access_token()` 优先读取 Cookie 而非 Authorization Header
+>   - 即使 Header 中传了 `Bearer token_a`，中间件还是读了 Cookie 中的 `token_b`
+> - **排查过程**:
+>   1. 验证数据库状态（User A: 2 sessions, User B: 3 sessions）✅
+>   2. 手动解码 Token（Token A 的 payload 正确）✅
+>   3. 添加中间件日志跟踪
+>   4. **发现**: 同一 Token 在测试中解码为 User A，在中间件中解码为 User B
+>   5. **突破**: 发现是 Cookie 被后注册的用户覆盖导致
+> - **解决**: 修改 `_extract_access_token()` 逻辑：
+>   ```python
+>   # BEFORE (Bug):
+>   access_token = request.cookies.get("access_token")  # Cookie first!
+>   if access_token:
+>       return access_token
+>   # ... then check Authorization Header
+>
+>   # AFTER (Fixed):
+>   if auth_header:  # Authorization Header first!
+>       return auth_header.split(" ", 1)[1] if auth_header.startswith("Bearer ") else auth_header
+>   # ... fallback to Cookie for browser scenarios
+>   ```
+> - **教训**: RESTful API 应优先使用 Authorization Header，Cookie 仅作为浏览器场景的后备方案
+> - **影响文件**:
+>   - `app/middleware/auth.py` (修复 Cookie 优先级)
+>   - `tests/app/routers/test_sessions_list.py` (移除 skip 装饰器和调试代码)
+>   - `app/routers/sessions/list.py` (清理临时日志)
+
+> **技术决策**:
+> - **为什么选择修改中间件而非修改测试**:
+>   - 这是根本原因，不是测试问题
+>   - 符合 RESTful API 标准（Header 优先）
+>   - 影响范围可控，不会破坏现有功能
+
+### [2026-01-01 11:05] - ✅ Git Worktree 并行测试开发 - 完成合并
+
+- [x] **合并成果**:
+  - 成功合并 3 个并行开发分支
+  - `test-sessions-list`: +421 行，14 个测试用例 (12 passed, 2 skipped)
+  - `test-sessions-update`: +606 行，13 个测试用例 (13 passed)
+  - `test-password-reset`: 已在之前合并
+  - 清理所有 Worktree 环境 ✅
+
+- [x] **修复问题**:
+  - 修正 `test_update_session_unauthorized` 期望状态码: 403 → 401
+    - 原因：认证中间件优先于 CSRF 中间件执行
+  - 移除未使用变量 (ruff linter)
+
+- [x] **暂时跳过的测试** (标记 TODO):
+  - `test_list_sessions_user_isolation` - worktree 中通过，main 中失败
+  - `test_get_session_cross_user_access` - 同上，需深入调查
+
+- [x] **测试覆盖率**:
+  - **整体覆盖率**: 83% (目标 85%，非常接近 🎯)
+  - **测试通过**: 354 passed, 4 skipped
+  - **路由覆盖率**: 51%
+
+- [x] **Git 提交**:
+  ```
+  7082af4 fix(tests): 修正 test_update_session_unauthorized 期望状态码
+  6f48374 test(sessions-list): 暂时跳过2个失败测试待调查
+  f94d31b Merge branch 'test-sessions-update'
+  b532605 Merge branch 'test-sessions-list'
+  ```
+
+> **遇到的坑**:
+> **测试在 Worktree 中通过但在 Main 分支失败**
+> - **现象**: 用户隔离测试在 worktree 中 100% 通过，合并到 main 后失败
+> - **症状**: 用户 A 应该看到 2 个会话，但实际看到 3 个
+> - **调试**: 检查了数据库、Token、UUID 唯一性，对比了代码差异，都正常
+> - **临时方案**: 标记 `@pytest.mark.skip` 并添加 TODO 注释
+> - **下一步**: 需要在 main 分支环境下深入调查根本原因
+
+---
+
+### [2026-01-01 07:50] - 🚀 Git Worktree 并行测试开发（已完成）
 
 - [x] **并行策略**:
   - 使用 Git Worktree 创建 3 个隔离开发环境
@@ -19,15 +107,15 @@
   2. `.worktrees/test-sessions-update` (branch: test-sessions-update)
   3. `.worktrees/test-password-reset` (branch: test-password-reset)
 
-- [ ] **并行任务**（进行中）:
-  - 🤖 **Agent 1**: Sessions List 测试 (53% → 80%+)
-  - 🤖 **Agent 2**: Sessions Update 测试 (54% → 80%+)
-  - 🤖 **Agent 3**: Password Reset 测试 (64% → 85%+)
+- [x] **并行任务**（已完成）:
+  - 🤖 **Agent 1**: Sessions List 测试 ✅
+  - 🤖 **Agent 2**: Sessions Update 测试 ✅
+  - 🤖 **Agent 3**: Password Reset 测试 ✅
 
-- [ ] **预期成果**:
+- [x] **实际成果**:
   - 3 个新测试文件
-  - 整体覆盖率：83% → 85%+
-  - 3 个功能分支待合并
+  - 整体覆盖率：83% (接近目标 85%)
+  - 3 个功能分支已合并
 
 ---
 
