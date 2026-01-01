@@ -7,6 +7,87 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2026-01-01 晚间] - 🌐 修复生产环境 CORS 和网络连接问题 (Critical Infrastructure Fix)
+
+- [x] **问题诊断**: 前端无法访问 API，CORS 错误 + 504 Gateway Timeout
+- [x] **根本原因 1**: nginx 配置缺少 CORS 响应头
+- [x] **根本原因 2**: Docker 网络配置与运行容器不一致
+- [x] **修复 CORS**: 添加完整的 CORS 头配置到 nginx.conf
+- [x] **修复网络**: 重建所有容器，应用正确的网络配置
+- [x] **验证通过**: OPTIONS 预检请求成功，API 连接恢复 ✅
+
+> **问题现象**:
+> ```
+> Access to XMLHttpRequest blocked by CORS policy:
+> No 'Access-Control-Allow-Origin' header is present
+>
+> GET https://api.solacore.app/auth/me → 504 (Gateway Timeout)
+> nginx error: api could not be resolved (3: Host not found)
+> ```
+
+> **根本原因分析**:
+> 1. **CORS 缺失**: nginx 配置中完全没有 CORS 响应头
+> 2. **网络隔离**:
+>    - API 容器应该在 `solacore_frontend` + `solacore_backend` 两个网络
+>    - 实际只在 `solacore-api_default` 网络中
+>    - nginx 无法通过 DNS 解析 `api` 主机名
+
+> **修复方案**:
+> ```nginx
+> # nginx.conf 添加 CORS 配置
+> location / {
+>   # OPTIONS 预检请求处理
+>   if ($request_method = 'OPTIONS') {
+>     add_header 'Access-Control-Allow-Origin' 'https://solacore.app' always;
+>     add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, PATCH, OPTIONS' always;
+>     add_header 'Access-Control-Allow-Headers' '...' always;
+>     add_header 'Access-Control-Allow-Credentials' 'true' always;
+>     return 204;
+>   }
+>
+>   # 所有请求添加 CORS 头
+>   add_header 'Access-Control-Allow-Origin' 'https://solacore.app' always;
+>   add_header 'Access-Control-Allow-Credentials' 'true' always;
+>
+>   # 使用变量延迟 DNS 解析
+>   set $upstream_api api:8000;
+>   proxy_pass http://$upstream_api;
+> }
+> ```
+
+> **网络修复步骤**:
+> ```bash
+> # 1. 停止并删除所有容器
+> docker-compose -f docker-compose.prod.yml down
+>
+> # 2. 重新启动（应用正确的网络配置）
+> docker-compose -f docker-compose.prod.yml up -d
+>
+> # 结果：API 容器正确加入两个网络，nginx 可以解析 api 主机名
+> ```
+
+**验证结果**:
+- ✅ **OPTIONS 预检请求**: 返回 204，包含正确的 CORS 头
+- ✅ **实际 API 请求**: 返回正确的 CORS 头和数据
+- ✅ **网络连通性**: nginx 可以成功连接 API 容器
+- ✅ **DNS 解析**: `api:8000` 正确解析到 API 容器 IP
+
+**修复文件**:
+- `solacore-api/nginx/nginx.conf` - 添加 CORS 配置和动态 DNS 解析
+
+**影响范围**:
+- 修复前：所有浏览器访问都被 CORS 阻止
+- 修复后：前端可以正常调用 API，携带凭证（cookies）
+
+**技术细节**:
+- CORS 允许域名: `https://solacore.app`
+- 允许携带凭证: `credentials: include`
+- 允许的方法: GET, POST, PUT, DELETE, PATCH, OPTIONS
+- 允许的头: X-CSRF-Token, X-Device-Fingerprint 等
+- 预检缓存时间: 86400 秒（24 小时）
+
+---
+
 ### [2026-01-01 深夜] - 🔧 修复 Device Fingerprint 不匹配问题 (Critical Bug Fix)
 
 - [x] **问题诊断**: Google OAuth 登录后无法创建 Session（403 DEVICE_NOT_FOUND）
