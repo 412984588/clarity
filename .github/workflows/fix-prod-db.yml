@@ -1,0 +1,50 @@
+name: 🔧 Fix Production Database
+
+on:
+  workflow_dispatch:  # 手动触发
+
+jobs:
+  fix-database:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Fix production database
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            echo "🔧 开始修复生产数据库..."
+            cd /home/linuxuser/solacore/solacore-api
+
+            echo "📊 检查容器状态："
+            docker-compose -f docker-compose.prod.yml ps
+
+            echo "🔄 重启数据库容器..."
+            docker-compose -f docker-compose.prod.yml restart db
+
+            echo "⏳ 等待数据库启动..."
+            sleep 10
+
+            echo "🔄 重启 API 容器..."
+            docker-compose -f docker-compose.prod.yml restart api
+
+            echo "⏳ 等待 API 启动..."
+            sleep 5
+
+            echo "✅ 验证修复结果："
+            curl -s https://api.solacore.app/health | python3 -m json.tool || echo "API 尚未就绪，请等待 30 秒后再次检查"
+
+            echo "📊 最终容器状态："
+            docker-compose -f docker-compose.prod.yml ps
+
+            echo "✅ 修复完成！"
+
+      - name: Notify completion
+        run: |
+          echo "✅ 数据库修复流程已执行"
+          echo "请访问 https://api.solacore.app/health 验证修复结果"
