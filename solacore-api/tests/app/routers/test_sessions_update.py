@@ -1,10 +1,11 @@
 """Sessions Update 路由测试 - 更新会话状态、步骤和提醒配置"""
 
+from datetime import timedelta
+from uuid import uuid4
+
 import pytest
 import pytest_asyncio
-from datetime import datetime, timedelta
-from uuid import uuid4
-from app.models.solve_session import SolveSession, SessionStatus, SolveStep
+from app.models.solve_session import SessionStatus, SolveSession, SolveStep
 from app.models.subscription import Subscription
 from app.models.user import User
 from app.utils.datetime_utils import utc_now
@@ -178,7 +179,6 @@ async def test_update_session_invalid_step_transition(
     response = await client.patch(
         f"/sessions/{session_id}",
         json={"current_step": "commit"},
-
         cookies=auth_cookies,
     )
 
@@ -215,7 +215,6 @@ async def test_update_session_invalid_status(
     response = await client.patch(
         f"/sessions/{session_id}",
         json={"status": "invalid_status"},
-
         cookies=auth_cookies,
     )
 
@@ -224,9 +223,7 @@ async def test_update_session_invalid_status(
 
 
 @pytest.mark.asyncio
-async def test_update_session_invalid_step(
-    client: AsyncClient, test_user_with_session
-):
+async def test_update_session_invalid_step(client: AsyncClient, test_user_with_session):
     """测试使用非法步骤值"""
     user_id, session_id = test_user_with_session
 
@@ -253,7 +250,6 @@ async def test_update_session_invalid_step(
     response = await client.patch(
         f"/sessions/{session_id}",
         json={"current_step": "invalid_step"},
-
         cookies=auth_cookies,
     )
 
@@ -288,7 +284,6 @@ async def test_update_session_locale(client: AsyncClient, test_user_with_session
     response = await client.patch(
         f"/sessions/{session_id}",
         json={"locale": "en-US"},
-
         cookies=auth_cookies,
     )
 
@@ -334,7 +329,6 @@ async def test_update_session_first_step_action(
     response = await client.patch(
         f"/sessions/{session_id}",
         json={"first_step_action": action},
-
         cookies=auth_cookies,
     )
 
@@ -380,7 +374,6 @@ async def test_update_session_reminder_time(
     response = await client.patch(
         f"/sessions/{session_id}",
         json={"reminder_time": reminder_iso},
-
         cookies=auth_cookies,
     )
 
@@ -434,7 +427,6 @@ async def test_update_session_multiple_fields(
             "first_step_action": "Take a deep breath",
             "reminder_time": tomorrow.isoformat(),
         },
-
         cookies=auth_cookies,
     )
 
@@ -482,7 +474,6 @@ async def test_update_session_not_found(client: AsyncClient, test_user_with_sess
     response = await client.patch(
         f"/sessions/{fake_session_id}",
         json={"status": "completed"},
-
         cookies=auth_cookies,
     )
 
@@ -544,7 +535,6 @@ async def test_update_session_forbidden_other_user(
     response = await client.patch(
         f"/sessions/{session_id}",
         json={"status": "completed"},
-
         cookies=auth_cookies,
     )
 
@@ -590,7 +580,6 @@ async def test_update_session_empty_payload(
     response = await client.patch(
         f"/sessions/{session_id}",
         json={},
-
         cookies=auth_cookies,
     )
 
