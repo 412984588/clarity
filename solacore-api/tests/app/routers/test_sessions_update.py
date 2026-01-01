@@ -483,17 +483,17 @@ async def test_update_session_not_found(client: AsyncClient, test_user_with_sess
 
 @pytest.mark.asyncio
 async def test_update_session_unauthorized(client: AsyncClient, test_user_with_session):
-    """测试未登录用户尝试更新会话（返回 403 因为缺少 CSRF token）"""
+    """测试未登录用户尝试更新会话（返回 401 因为未认证）"""
     _, session_id = test_user_with_session
 
     # 不登录直接请求（不提供认证 cookies）
-    # 注意：会先被 CSRF 中间件拦截返回 403，而不是认证中间件的 401
+    # 注意：认证中间件优先执行，返回 401 而不是 CSRF 的 403
     response = await client.patch(
         f"/sessions/{session_id}",
         json={"status": "completed"},
     )
 
-    assert response.status_code == 403
+    assert response.status_code == 401
 
 
 @pytest.mark.asyncio
