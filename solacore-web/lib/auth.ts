@@ -1,5 +1,5 @@
 import type { User } from "@/lib/types";
-import { api, refreshTokens } from "@/lib/api";
+import { api, refreshTokens, getDeviceFingerprint } from "@/lib/api";
 
 interface UserResponse {
   id: string;
@@ -13,7 +13,7 @@ export const login = async (googleCode: string): Promise<void> => {
   // 使用 authorization code flow（更安全）
   const params = new URLSearchParams({
     code: googleCode,
-    device_fingerprint: `web-${Date.now()}`,
+    device_fingerprint: getDeviceFingerprint(), // 使用持久化的设备指纹，与后续 API 请求保持一致
     device_name: navigator.userAgent.substring(0, 50),
   });
 
