@@ -19,6 +19,21 @@ class LearnStep(str, Enum):
     PLAN = "plan"  # 规划：制定学习计划
 
 
+class LearnTool(str, Enum):
+    """学习工具 - 可组合的学习方法论"""
+
+    PARETO = "pareto"  # 80/20原则
+    FEYNMAN = "feynman"  # 费曼学习法
+    CHUNKING = "chunking"  # 分块学习法
+    DUAL_CODING = "dual_coding"  # 双编码理论
+    INTERLEAVING = "interleaving"  # 主题交叉法
+    RETRIEVAL = "retrieval"  # 检索练习
+    SPACED = "spaced"  # 艾宾浩斯复习
+    GROW = "grow"  # GROW模型
+    SOCRATIC = "socratic"  # 苏格拉底提问
+    ERROR_DRIVEN = "error_driven"  # 错误驱动学习
+
+
 class LearnSession(Base):
     """学习会话模型
 
@@ -39,7 +54,12 @@ class LearnSession(Base):
         UUID(as_uuid=True), ForeignKey("devices.id", ondelete="SET NULL"), nullable=True
     )
     status = Column(String(50), default="active")  # active, completed, abandoned
-    current_step = Column(String(50), default=LearnStep.START.value)
+    current_step = Column(  # deprecated: 使用 learning_mode + current_tool
+        String(50), default=LearnStep.START.value
+    )
+    learning_mode = Column(String(20), default="quick")  # quick, deep, custom
+    current_tool = Column(String(50), default=LearnTool.PARETO.value)
+    tool_plan = Column(JSON, default=list)  # 工具计划数组
     locale = Column(String(10), default="zh")  # 默认中文
 
     # 学习相关字段

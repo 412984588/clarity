@@ -31,7 +31,8 @@ class LearnMessage(Base):
     )
     role = Column(String(20), nullable=False)  # user 或 assistant
     content = Column(Text, nullable=False)
-    step = Column(String(50), nullable=True)  # 消息所属的步骤
+    step = Column(String(50), nullable=True)  # 消息所属的步骤 (已废弃，保留兼容)
+    tool = Column(String(50), nullable=True)  # 消息使用的学习工具
     created_at = Column(DateTime, default=lambda: utc_now())
 
     # Relationships

@@ -5,6 +5,21 @@ from typing import AsyncGenerator
 from uuid import UUID
 
 from app.database import get_db
+from app.learn.prompts import LEARN_STEP_PROMPTS
+from app.learn.prompts.base import BASE_ROLE
+from app.learn.prompts.registry import TOOL_REGISTRY
+from app.learn.prompts.tools import (
+    CHUNKING_PROMPT,
+    DUAL_CODING_PROMPT,
+    ERROR_DRIVEN_PROMPT,
+    FEYNMAN_PROMPT,
+    GROW_PROMPT,
+    INTERLEAVING_PROMPT,
+    PARETO_PROMPT,
+    RETRIEVAL_PROMPT,
+    SOCRATIC_PROMPT,
+    SPACED_PROMPT,
+)
 from app.middleware.auth import get_current_user
 from app.middleware.rate_limit import SSE_RATE_LIMIT, limiter, user_rate_limit_key
 from app.models.learn_message import LearnMessage, LearnMessageRole
@@ -15,19 +30,37 @@ from app.services.content_filter import sanitize_user_input, strip_pii
 from app.utils.datetime_utils import utc_now
 from app.utils.docs import COMMON_ERROR_RESPONSES
 from app.utils.error_handlers import handle_sse_error
-from fastapi import Depends, Header, Path, Request, Response
+from fastapi import Depends, Header, HTTPException, Path, Request, Response
 from fastapi.responses import StreamingResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from . import (
-    LEARN_STEP_PROMPTS,
-    LearnMessageRequest,
-    get_next_learn_step,
-    is_final_learn_step,
-    router,
-)
+from . import LearnMessageRequest, get_next_learn_step, is_final_learn_step, router
 from .utils import _build_context_prompt, _generate_review_schedule, _validate_session
+
+TOOL_PROMPTS = {
+    "pareto": PARETO_PROMPT,
+    "feynman": FEYNMAN_PROMPT,
+    "chunking": CHUNKING_PROMPT,
+    "dual_coding": DUAL_CODING_PROMPT,
+    "interleaving": INTERLEAVING_PROMPT,
+    "retrieval": RETRIEVAL_PROMPT,
+    "spaced": SPACED_PROMPT,
+    "grow": GROW_PROMPT,
+    "socratic": SOCRATIC_PROMPT,
+    "error_driven": ERROR_DRIVEN_PROMPT,
+}
+
+
+def _build_tool_prompt(tool: str) -> str:
+    return "\n\n".join(
+        [
+            BASE_ROLE,
+            f"当前方法论：{TOOL_PROMPTS[tool]}",
+            "语言要求：必须用中文，语气温暖鼓励。",
+            "回复长度：2-4句话，简洁有引导性。",
+        ]
+    )
 
 
 @router.post(
@@ -56,6 +89,21 @@ async def send_learn_message(
     )
     session = _validate_session(result.scalar_one_or_none())
 
+    if not message_request.tool and not message_request.step:
+        raise HTTPException(status_code=400, detail={"error": "STEP_OR_TOOL_REQUIRED"})
+
+    if message_request.tool and message_request.tool not in TOOL_REGISTRY:
+        raise HTTPException(
+            status_code=400,
+            detail={"error": "INVALID_TOOL", "tool": message_request.tool},
+        )
+
+    step_value = message_request.step or session.current_step
+    try:
+        current_step = LearnStep(step_value)
+    except ValueError:
+        raise HTTPException(status_code=400, detail={"error": "INVALID_STEP"})
+
     # 内容过滤
     sanitized_content = sanitize_user_input(message_request.content)
     sanitized_content = strip_pii(sanitized_content)
@@ -65,12 +113,13 @@ async def send_learn_message(
         session_id=session.id,
         role=LearnMessageRole.USER.value,
         content=sanitized_content,
-        step=message_request.step,
+        step=step_value,
     )
+    user_message.tool = message_request.tool
     db.add(user_message)
 
     # 如果是第一条消息，提取学习主题
-    if not session.topic and message_request.step == LearnStep.START.value:
+    if not session.topic and step_value == LearnStep.START.value:
         session.topic = sanitized_content[:30] + (
             "..." if len(sanitized_content) > 30 else ""
         )
@@ -88,10 +137,12 @@ async def send_learn_message(
     )
 
     # 获取系统提示词和 AI 服务
-    current_step = LearnStep(session.current_step)
-    system_prompt = LEARN_STEP_PROMPTS.get(
-        current_step.value, LEARN_STEP_PROMPTS[LearnStep.START.value]
-    )
+    if message_request.tool:
+        system_prompt = _build_tool_prompt(message_request.tool)
+    else:
+        system_prompt = LEARN_STEP_PROMPTS.get(
+            current_step.value, LEARN_STEP_PROMPTS[LearnStep.START.value]
+        )
     ai_service = AIService()
 
     async def event_generator() -> AsyncGenerator[str, None]:
@@ -113,6 +164,7 @@ async def send_learn_message(
                 content=accumulated_content,
                 step=current_step.value,
             )
+            ai_message.tool = message_request.tool
             db.add(ai_message)
 
             # 检查是否可以进入下一步

@@ -7,6 +7,57 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2026-01-01 上午] - ✨ 学习功能扩展：工具箱模式（10个学习方法论）
+
+- [x] **数据模型**: 新增 `LearnTool` 枚举（10个工具：pareto, feynman, chunking, dual_coding, interleaving, retrieval, spaced, grow, socratic, error_driven）
+- [x] **数据模型**: `LearnSession` 添加字段（learning_mode, current_tool, tool_plan）
+- [x] **数据库迁移**: 生成并运行 Alembic 迁移（2个迁移文件）
+- [x] **提示词重构**: 创建模块化 `app/learn/prompts/` 目录结构（base, tools/, modes/, registry）
+- [x] **API 新增**: 4个新端点（GET /learn/tools, POST /learn/{id}/path, PATCH /learn/{id}/current-tool, GET /learn/{id}/progress）
+- [x] **API 修改**: POST /learn 支持 mode 参数，POST /learn/{id}/messages 支持 tool 参数
+- [x] **核心验证**: LearnTool 枚举、TOOL_REGISTRY、新路由全部正常 ✅
+- [ ] **测试用例**: 已创建 15 个测试（WIP，待修复认证问题）
+
+> **技术方案（方案 B - 工具箱模式）**:
+> - **用户需求**: 灵活学习路径，支持"快速学习"和"深度学习"模式
+> - **核心改动**:
+>   - 把"步骤"升级为"工具"：从 4 步固定流程改为 10 个可组合工具
+>   - 学习模式：quick（3-4个工具）、deep（全部10个）、custom（用户自选）
+>   - 提示词模块化：每个工具独立提示词，支持动态组合
+> - **10个学习工具**:
+>   1. 80/20原则 (pareto) - 抓重点
+>   2. 费曼学习法 (feynman) - 用简单话讲清楚
+>   3. 分块学习法 (chunking) - 降低信息量
+>   4. 双编码理论 (dual_coding) - 文字+图像
+>   5. 主题交叉法 (interleaving) - 跨界联想
+>   6. 检索练习 (retrieval) - 不看资料回忆
+>   7. 艾宾浩斯复习 (spaced) - 科学复习节点
+>   8. GROW模型 (grow) - 目标导向规划
+>   9. 苏格拉底提问 (socratic) - 追问式引导
+>   10. 错误驱动学习 (error_driven) - 从错误中学习
+
+> **技术实现**:
+> - **数据库迁移**:
+>   - `1680ca1ed645`: 添加 learn_sessions 字段（learning_mode, current_tool, tool_plan）
+>   - `c9cb822b00d0`: 添加 learn_messages.tool 字段
+> - **文件结构**:
+>   ```
+>   app/learn/prompts/
+>   ├── base.py           # 统一角色
+>   ├── tools/            # 10个工具提示词
+>   ├── modes/            # 模式差异
+>   └── registry.py       # 元数据
+>   app/routers/learn/
+>   ├── tools.py          # GET /learn/tools
+>   ├── path.py           # POST /learn/{id}/path
+>   ├── switch_tool.py    # PATCH /learn/{id}/current-tool
+>   └── progress.py       # GET /learn/{id}/progress
+>   ```
+
+> **下一步**:
+> - [ ] 修复测试认证问题（422 Unprocessable Entity）
+> - [ ] 补充测试覆盖率
+> - [ ] 前端对接工具选择界面
 
 ### [2026-01-01 深夜] - 🐛 修复跨用户隔离测试失败（Auth 中间件 Bug）
 

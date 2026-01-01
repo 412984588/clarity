@@ -3,19 +3,23 @@
 import logging
 
 from app.database import get_db
+from app.learn.prompts.registry import TOOL_REGISTRY
 from app.middleware.auth import get_current_user
 from app.middleware.rate_limit import API_RATE_LIMIT, limiter, user_rate_limit_key
 from app.models.device import Device
 from app.models.learn_session import LearnSession, LearnStep
 from app.models.user import User
 from app.utils.docs import COMMON_ERROR_RESPONSES
-from fastapi import Depends, Header, Request, Response
+from fastapi import Depends, Header, HTTPException, Query, Request, Response
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from . import LearnSessionCreateResponse, router
 
 logger = logging.getLogger(__name__)
+
+DEFAULT_QUICK_TOOLS = ["pareto", "feynman", "grow"]
+DEFAULT_DEEP_TOOLS = list(TOOL_REGISTRY.keys())
 
 
 @router.post(
@@ -30,11 +34,16 @@ logger = logging.getLogger(__name__)
 async def create_learn_session(
     request: Request,
     response: Response,
+    mode: str | None = Query(None, description="学习模式: quick/deep/custom"),
     x_device_fingerprint: str | None = Header(None),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """创建学习会话"""
+    selected_mode = mode or "quick"
+    if selected_mode not in {"quick", "deep", "custom"}:
+        raise HTTPException(status_code=400, detail={"error": "INVALID_MODE"})
+
     # 查找设备
     device = None
     if x_device_fingerprint:
@@ -54,6 +63,18 @@ async def create_learn_session(
         current_step=LearnStep.START.value,
         locale="zh",
     )
+
+    if selected_mode == "quick":
+        tool_plan = DEFAULT_QUICK_TOOLS
+    elif selected_mode == "deep":
+        tool_plan = DEFAULT_DEEP_TOOLS
+    else:
+        tool_plan = []
+
+    session.learning_mode = selected_mode
+    session.tool_plan = tool_plan
+    session.current_tool = tool_plan[0] if tool_plan else None
+
     db.add(session)
     await db.commit()
     await db.refresh(session)
