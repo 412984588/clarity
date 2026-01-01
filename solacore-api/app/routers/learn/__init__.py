@@ -299,8 +299,8 @@ async def delete_learn_session(
     return None
 
 
-from . import history  # noqa: E402,F401 # 通配路径最后
 from . import tools  # noqa: E402,F401 # 具体路径优先，避免被 /{session_id} 捕获
 from . import create, message, path, progress, switch_tool  # noqa: E402,F401
+from . import history  # noqa: E402,F401 # 通配路径最后
 
 __all__ = ["router"]
