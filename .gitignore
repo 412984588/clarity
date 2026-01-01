@@ -10,3 +10,4 @@
 .Python
 .DS_Store
 node_modules/
+.worktrees/

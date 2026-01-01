@@ -352,16 +352,9 @@ async def test_reset_password_invalid_token_format(client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_reset_password_token_without_user(client: AsyncClient):
-    """Token 存在但 user 关联为 None（异常情况）"""
-    # 直接创建一个没有关联用户的 token（模拟异常情况）
+    """Token 不存在于数据库（异常情况）"""
+    # 由于外键约束，实际无法创建孤立token，所以直接测试不存在的token
     token = "orphan-token"
-    token_hash = hashlib.sha256(token.encode()).hexdigest()
-
-    async with TestingSessionLocal() as session:
-        # 创建一个孤立的 token（user_id 会因为外键约束而需要存在的用户）
-        # 所以这个测试实际上测试的是 reset_token.user 为 None 的情况
-        # 这在正常情况下不会发生，但代码中有这个检查
-        pass
 
     # 尝试重置密码（token 不存在于数据库）
     response = await client.post(
@@ -392,7 +385,9 @@ async def test_forgot_password_creates_token_with_correct_expiration(
     )
 
     before_request = utc_now()
-    await client.post("/auth/forgot-password", json={"email": "token-expiry@example.com"})
+    await client.post(
+        "/auth/forgot-password", json={"email": "token-expiry@example.com"}
+    )
     after_request = utc_now()
 
     async with TestingSessionLocal() as session:

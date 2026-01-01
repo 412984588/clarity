@@ -9,7 +9,9 @@ from tests.conftest import TestingSessionLocal
 
 
 @pytest.mark.asyncio
-async def test_beta_login_disabled(client: AsyncClient, monkeypatch: pytest.MonkeyPatch):
+async def test_beta_login_disabled(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+):
     """测试 Beta mode 关闭时返回 403"""
     # Mock settings.beta_mode = False
     from app.routers.auth import login
