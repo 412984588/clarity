@@ -15,19 +15,21 @@ cache_service = CacheService()
 
 
 def _extract_access_token(request: Request, auth_header: Optional[str]) -> str:
-    """从 cookie 或 Authorization header 提取访问令牌"""
+    """从 Authorization header 或 cookie 提取访问令牌（Header 优先）"""
+    # 优先使用 Authorization Header（API 标准）
+    if auth_header:
+        return (
+            auth_header.split(" ", 1)[1]
+            if auth_header.startswith("Bearer ")
+            else auth_header
+        )
+
+    # 后备使用 Cookie（浏览器场景）
     access_token = request.cookies.get("access_token")
     if access_token:
         return access_token
 
-    if not auth_header:
-        raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"})
-
-    return (
-        auth_header.split(" ", 1)[1]
-        if auth_header.startswith("Bearer ")
-        else auth_header
-    )
+    raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"})
 
 
 def _validate_token_payload(payload: dict | None) -> tuple[UUID, UUID]:

@@ -224,9 +224,6 @@ async def test_list_sessions_no_message(client: AsyncClient):
     assert data["sessions"][0]["first_message"] is None
 
 
-@pytest.mark.skip(
-    reason="TODO: 修复测试 - 在worktree中通过但在main分支失败，需要进一步调查"
-)
 @pytest.mark.asyncio
 async def test_list_sessions_user_isolation(client: AsyncClient):
     """测试跨用户隔离：用户 A 看不到用户 B 的会话"""
@@ -356,9 +353,6 @@ async def test_get_session_not_found(client: AsyncClient):
     assert response.json()["detail"]["error"] == "SESSION_NOT_FOUND"
 
 
-@pytest.mark.skip(
-    reason="TODO: 修复测试 - 在worktree中通过但在main分支失败，需要进一步调查"
-)
 @pytest.mark.asyncio
 async def test_get_session_cross_user_access(client: AsyncClient):
     """测试跨用户访问：用户 A 访问用户 B 的会话返回 404"""
