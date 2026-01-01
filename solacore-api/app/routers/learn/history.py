@@ -8,8 +8,7 @@ from app.middleware.rate_limit import API_RATE_LIMIT, limiter, user_rate_limit_k
 from app.models.learn_session import LearnSession
 from app.models.user import User
 from app.utils.docs import COMMON_ERROR_RESPONSES
-from fastapi import Depends, HTTPException, Path, Query, Request
-from fastapi.responses import JSONResponse
+from fastapi import Depends, HTTPException, Path, Query, Request, Response
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -26,6 +25,7 @@ from . import LearnSessionResponse, router
 @limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def get_learn_session(
     request: Request,
+    response: Response,
     session_id: UUID = Path(..., description="会话ID"),
     include_messages: bool = Query(True, description="是否包含消息历史"),
     current_user: User = Depends(get_current_user),
@@ -43,30 +43,25 @@ async def get_learn_session(
     if not session:
         raise HTTPException(status_code=404, detail={"error": "SESSION_NOT_FOUND"})
 
-    response_data = {
-        "id": str(session.id),
-        "status": session.status,
-        "current_step": session.current_step,
-        "topic": session.topic,
-        "key_concepts": session.key_concepts,
-        "review_schedule": session.review_schedule,
-        "created_at": session.created_at.isoformat(),
-        "completed_at": session.completed_at.isoformat()
-        if session.completed_at
-        else None,
-        "messages": [],
-    }
-
-    if include_messages:
-        response_data["messages"] = [
+    return LearnSessionResponse(
+        id=session.id,
+        status=str(session.status),
+        current_step=str(session.current_step),
+        topic=session.topic,
+        key_concepts=session.key_concepts,
+        review_schedule=session.review_schedule,
+        created_at=session.created_at,  # type: ignore[arg-type]
+        completed_at=session.completed_at,
+        messages=[
             {
-                "id": str(msg.id),
-                "role": msg.role,
+                "id": msg.id,
+                "role": str(msg.role),
                 "content": msg.content,
-                "step": msg.step,
-                "created_at": msg.created_at.isoformat(),
+                "step": str(msg.step),
+                "created_at": msg.created_at,
             }
             for msg in session.messages
         ]
-
-    return JSONResponse(content=response_data)
+        if include_messages
+        else [],
+    )

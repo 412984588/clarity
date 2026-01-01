@@ -10,8 +10,7 @@ from app.models.user import User
 from app.schemas.session import SessionUpdateRequest, SessionUpdateResponse
 from app.utils.datetime_utils import utc_now
 from app.utils.docs import COMMON_ERROR_RESPONSES
-from fastapi import APIRouter, Depends, HTTPException, Path, Request
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, HTTPException, Path, Request, Response
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -30,6 +29,7 @@ router = APIRouter()
 @limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def update_session(
     request: Request,
+    response: Response,
     updates: SessionUpdateRequest,
     session_id: UUID = Path(
         ...,
@@ -71,4 +71,4 @@ async def update_session(
         current_step=str(session.current_step),
         updated_at=utc_now(),
     )
-    return JSONResponse(content=response.model_dump(mode="json"))
+    return response

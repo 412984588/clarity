@@ -15,8 +15,7 @@ from app.schemas.session import (
     SessionResponse,
 )
 from app.utils.docs import COMMON_ERROR_RESPONSES
-from fastapi import APIRouter, Depends, HTTPException, Path, Query, Request
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, Request, Response
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import noload
@@ -34,6 +33,7 @@ router = APIRouter()
 @limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def list_sessions(
     request: Request,
+    response: Response,
     limit: int = Query(
         20,
         ge=1,
@@ -105,7 +105,7 @@ async def list_sessions(
         limit=limit,
         offset=offset,
     )
-    return JSONResponse(content=response.model_dump(mode="json"))
+    return response
 
 
 @router.get(
@@ -122,6 +122,7 @@ async def list_sessions(
 @limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def get_session(
     request: Request,
+    response: Response,
     session_id: UUID = Path(
         ...,
         description="会话 ID",
@@ -177,4 +178,4 @@ async def get_session(
         completed_at=session.completed_at,
         messages=messages,
     )
-    return JSONResponse(content=response.model_dump(mode="json", exclude_none=True))
+    return response

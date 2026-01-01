@@ -11,7 +11,7 @@ from app.models.webhook_event import ProcessedWebhookEvent
 from app.services import stripe_service
 from app.services.cache_service import CacheService
 from app.utils.datetime_utils import utc_now
-from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response
 from fastapi.responses import JSONResponse
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
@@ -113,6 +113,7 @@ async def _reset_usage_for_period(
 @router.post("/stripe")
 async def stripe_webhook(
     request: Request,
+    response: Response,
     stripe_signature: Optional[str] = Header(None, alias="Stripe-Signature"),
     db: AsyncSession = Depends(get_db),
 ):

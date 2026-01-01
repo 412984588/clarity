@@ -114,23 +114,8 @@ class AIService:
             delta = payload.get("choices", [{}])[0].get("delta", {})
             yield delta.get("content"), delta.get("reasoning")
 
-    async def _stream_openrouter(
-        self, system_prompt: str, user_prompt: str
-    ) -> AsyncGenerator[str, None]:
-        api_key = self.settings.openrouter_api_key
-        if not api_key:
-            raise ValueError("OPENROUTER_API_KEY is not configured")
-
-        base_url = self.settings.openrouter_base_url.rstrip("/")
-        payload = {
-            "model": self.settings.llm_model,
-            "messages": [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            "stream": True,
-            "max_tokens": self.settings.llm_max_tokens,
-        }
+    def _get_openrouter_headers(self, api_key: str) -> dict[str, str]:
+        """获取 OpenRouter API 请求头"""
         headers = {
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
@@ -139,6 +124,30 @@ class AIService:
             headers["HTTP-Referer"] = self.settings.openrouter_referer
         if self.settings.openrouter_app_name:
             headers["X-Title"] = self.settings.openrouter_app_name
+        return headers
+
+    def _get_openrouter_payload(self, system_prompt: str, user_prompt: str) -> dict:
+        """获取 OpenRouter API 请求负载"""
+        return {
+            "model": self.settings.llm_model,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            "stream": True,
+            "max_tokens": self.settings.llm_max_tokens,
+        }
+
+    async def _stream_openrouter(
+        self, system_prompt: str, user_prompt: str
+    ) -> AsyncGenerator[str, None]:
+        api_key = self.settings.openrouter_api_key
+        if not api_key:
+            raise ValueError("OPENROUTER_API_KEY is not configured")
+
+        base_url = self.settings.openrouter_base_url.rstrip("/")
+        payload = self._get_openrouter_payload(system_prompt, user_prompt)
+        headers = self._get_openrouter_headers(api_key)
 
         collect_reasoning = self._should_collect_reasoning()
         reasoning_buffer: list[str] = []

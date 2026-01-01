@@ -15,7 +15,7 @@ from app.services.content_filter import sanitize_user_input, strip_pii
 from app.utils.datetime_utils import utc_now
 from app.utils.docs import COMMON_ERROR_RESPONSES
 from app.utils.error_handlers import handle_sse_error
-from fastapi import Depends, Header, Path, Request
+from fastapi import Depends, Header, Path, Request, Response
 from fastapi.responses import StreamingResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -39,6 +39,7 @@ from .utils import _build_context_prompt, _generate_review_schedule, _validate_s
 @limiter.limit(SSE_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def send_learn_message(
     request: Request,
+    response: Response,
     message_request: LearnMessageRequest,
     session_id: UUID = Path(..., description="会话ID"),
     x_device_fingerprint: str | None = Header(None),

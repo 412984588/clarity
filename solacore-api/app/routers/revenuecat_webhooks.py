@@ -101,37 +101,37 @@ def _compute_subscription_updates(
 ) -> dict:
     """根据事件类型计算订阅状态更新"""
     # 默认值：保持现有状态或使用 free tier 默认值
-    tier = existing_sub.tier if existing_sub else "free"
-    status = existing_sub.status if existing_sub else "active"
-    cancel_at_period_end = existing_sub.cancel_at_period_end if existing_sub else False
-    current_period_end = period_end or (
-        existing_sub.current_period_end if existing_sub else None
-    )
-
-    # 事件类型到状态变更的映射
-    if event_type == "INITIAL_PURCHASE":
-        tier = _entitlement_to_tier(entitlement_ids)
-        status = "active"
-        cancel_at_period_end = False
-    elif event_type == "RENEWAL":
-        status = "active"
-    elif event_type == "CANCELLATION":
-        cancel_at_period_end = True
-    elif event_type == "EXPIRATION":
-        tier = "free"
-        status = "expired"
-        cancel_at_period_end = False
-    elif event_type == "BILLING_ISSUE":
-        status = "past_due"
-    elif event_type == "PRODUCT_CHANGE":
-        tier = _entitlement_to_tier(entitlement_ids)
-
-    return {
-        "tier": tier,  # type: ignore[dict-item]
-        "status": status,  # type: ignore[dict-item]
-        "cancel_at_period_end": cancel_at_period_end,  # type: ignore[dict-item]
-        "current_period_end": current_period_end,  # type: ignore[dict-item]
+    updates = {
+        "tier": existing_sub.tier if existing_sub else "free",
+        "status": existing_sub.status if existing_sub else "active",
+        "cancel_at_period_end": existing_sub.cancel_at_period_end
+        if existing_sub
+        else False,
+        "current_period_end": period_end
+        or (existing_sub.current_period_end if existing_sub else None),
     }
+
+    # 事件类型处理逻辑
+    if event_type == "INITIAL_PURCHASE":
+        updates.update(
+            {
+                "tier": _entitlement_to_tier(entitlement_ids),
+                "status": "active",
+                "cancel_at_period_end": False,
+            }
+        )
+    elif event_type in ("RENEWAL", "BILLING_ISSUE"):
+        updates["status"] = "active" if event_type == "RENEWAL" else "past_due"
+    elif event_type == "CANCELLATION":
+        updates["cancel_at_period_end"] = True
+    elif event_type == "EXPIRATION":
+        updates.update(
+            {"tier": "free", "status": "expired", "cancel_at_period_end": False}
+        )
+    elif event_type == "PRODUCT_CHANGE":
+        updates["tier"] = _entitlement_to_tier(entitlement_ids)
+
+    return updates
 
 
 async def _upsert_subscription(
@@ -170,6 +170,26 @@ async def _upsert_subscription(
     await db.execute(stmt)
 
 
+def _verify_webhook_auth(authorization: Optional[str], secret: str) -> None:
+    """验证 Webhook 认证令牌"""
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail={"error": "MISSING_AUTH"})
+    token = authorization.replace("Bearer ", "", 1).strip()
+    if token != secret:
+        raise HTTPException(status_code=401, detail={"error": "INVALID_AUTH"})
+
+
+def _get_user_id_from_event(event: dict) -> UUID | None:
+    """从事件中提取并验证用户 UUID"""
+    app_user_id = event.get("app_user_id")
+    if not app_user_id:
+        return None
+    try:
+        return UUID(str(app_user_id))
+    except (TypeError, ValueError):
+        return None
+
+
 @router.post("/revenuecat")
 async def revenuecat_webhook(
     request: Request,
@@ -180,11 +200,7 @@ async def revenuecat_webhook(
     if not settings.payments_enabled:
         raise HTTPException(status_code=501, detail={"error": "PAYMENTS_DISABLED"})
 
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail={"error": "MISSING_AUTH"})
-    token = authorization.replace("Bearer ", "", 1).strip()
-    if token != settings.revenuecat_webhook_secret:
-        raise HTTPException(status_code=401, detail={"error": "INVALID_AUTH"})
+    _verify_webhook_auth(authorization, settings.revenuecat_webhook_secret)
 
     payload = await request.json()
     event = payload.get("event", payload)
@@ -192,42 +208,35 @@ async def revenuecat_webhook(
     event_id = str(event.get("id") or event.get("event_id") or "")
     payload_hash = _compute_payload_hash(payload)
 
-    # 幂等性检查：DB 去重
-    is_new_event = await _check_and_record_event(db, event_id, event_type, payload_hash)
-    if not is_new_event:
+    # 幂等性检查
+    if not await _check_and_record_event(db, event_id, event_type, payload_hash):
         logger.info(f"RevenueCat webhook 重复事件已跳过: event_id={event_id}")
         return {"received": True}
 
-    app_user_id = event.get("app_user_id")
-    if not app_user_id:
-        logger.warning(f"RevenueCat webhook 缺少 app_user_id: event_type={event_type}")
-        await db.commit()  # 提交事件记录
-        return {"received": True}
-
-    try:
-        user_uuid = UUID(str(app_user_id))
-    except (TypeError, ValueError):
-        logger.error(
-            f"RevenueCat webhook app_user_id 无法解析为 UUID: {app_user_id}, event_type={event_type}"
+    user_uuid = _get_user_id_from_event(event)
+    if not user_uuid:
+        logger.warning(
+            f"RevenueCat webhook 缺少有效 app_user_id: event_type={event_type}"
         )
         await db.commit()
         return {"received": True}
 
-    result = await db.execute(select(User).where(User.id == user_uuid))
-    user = result.scalar_one_or_none()
+    # 获取用户和当前订阅
+    user_result = await db.execute(select(User).where(User.id == user_uuid))
+    user = user_result.scalar_one_or_none()
     if not user:
         logger.warning(
-            f"RevenueCat webhook 用户不存在: user_id={app_user_id}, event_type={event_type}"
+            f"RevenueCat webhook 用户不存在: user_id={user_uuid}, event_type={event_type}"
         )
         await db.commit()
         return {"received": True}
 
-    # 获取当前订阅状态（用于部分更新场景）
-    result = await db.execute(
+    sub_result = await db.execute(
         select(Subscription).where(Subscription.user_id == user.id)
     )
-    existing_sub = result.scalar_one_or_none()
+    existing_sub = sub_result.scalar_one_or_none()
 
+    # 解析事件数据并计算更新
     entitlement_ids = _extract_entitlement_ids(event)
     period_end = _parse_timestamp(
         event.get("expiration_at_ms")
@@ -236,20 +245,15 @@ async def revenuecat_webhook(
         or event.get("expires_at")
     )
 
-    # 根据事件类型计算新状态
-    subscription_updates = _compute_subscription_updates(
+    updates = _compute_subscription_updates(
         event_type, entitlement_ids, period_end, existing_sub
     )
 
-    # UPSERT 订阅状态
-    await _upsert_subscription(
-        db,
-        user_id=user.id,  # type: ignore[arg-type]
-        **subscription_updates,  # type: ignore[arg-type]
-    )
+    # 执行更新
+    await _upsert_subscription(db, user_id=user.id, **updates)
     await cache_service.invalidate_subscription(user.id)
-
     await db.commit()
+
     logger.info(
         f"RevenueCat webhook 处理成功: event_id={event_id}, event_type={event_type}, user_id={user.id}"
     )

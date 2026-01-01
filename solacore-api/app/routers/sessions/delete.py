@@ -9,8 +9,7 @@ from app.middleware.rate_limit import API_RATE_LIMIT, limiter, user_rate_limit_k
 from app.models.solve_session import SolveSession
 from app.models.user import User
 from app.utils.docs import COMMON_ERROR_RESPONSES
-from fastapi import APIRouter, Depends, HTTPException, Path, Request
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, HTTPException, Path, Request, Response
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -39,6 +38,7 @@ logger = logging.getLogger(__name__)
 @limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def delete_session(
     request: Request,
+    response: Response,
     session_id: UUID = Path(
         ...,
         description="会话 ID",
@@ -68,4 +68,4 @@ async def delete_session(
     )
 
     # 返回 204 No Content
-    return JSONResponse(content=None, status_code=204)
+    return None

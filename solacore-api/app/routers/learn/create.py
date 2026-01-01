@@ -9,8 +9,7 @@ from app.models.device import Device
 from app.models.learn_session import LearnSession, LearnStep
 from app.models.user import User
 from app.utils.docs import COMMON_ERROR_RESPONSES
-from fastapi import Depends, Header, Request
-from fastapi.responses import JSONResponse
+from fastapi import Depends, Header, Request, Response
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -30,6 +29,7 @@ logger = logging.getLogger(__name__)
 @limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def create_learn_session(
     request: Request,
+    response: Response,
     x_device_fingerprint: str | None = Header(None),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -63,12 +63,9 @@ async def create_learn_session(
         extra={"session_id": str(session.id), "user_id": str(current_user.id)},
     )
 
-    return JSONResponse(
-        status_code=201,
-        content={
-            "session_id": str(session.id),
-            "status": session.status,
-            "current_step": session.current_step,
-            "created_at": session.created_at.isoformat(),
-        },
+    return LearnSessionCreateResponse(
+        session_id=session.id,
+        status=str(session.status),
+        current_step=str(session.current_step),
+        created_at=session.created_at,  # type: ignore[arg-type]
     )

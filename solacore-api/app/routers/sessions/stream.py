@@ -18,7 +18,7 @@ from app.services.crisis_detector import detect_crisis, get_crisis_response
 from app.services.emotion_detector import detect_emotion
 from app.utils.docs import COMMON_ERROR_RESPONSES
 from app.utils.error_handlers import handle_sse_error
-from fastapi import APIRouter, Depends, HTTPException, Path, Request
+from fastapi import APIRouter, Depends, HTTPException, Path, Request, Response
 from fastapi.responses import StreamingResponse
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -68,6 +68,7 @@ router = APIRouter()
 @limiter.limit(SSE_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def stream_messages(
     request: Request,
+    response: Response,
     data: MessageRequest,
     session_id: UUID = Path(
         ...,

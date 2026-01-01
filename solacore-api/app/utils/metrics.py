@@ -110,9 +110,9 @@ def format_prometheus_metrics(
         "# TYPE http_requests_total counter",
     ]
 
-    for (method, path, status), value in sorted(request_counts.items()):
+    for (method, path, status), count in sorted(request_counts.items()):
         labels = _format_labels({"method": method, "path": path, "status": status})
-        lines.append(f"http_requests_total{labels} {value}")
+        lines.append(f"http_requests_total{labels} {count}")
 
     lines.extend(
         [
@@ -120,9 +120,9 @@ def format_prometheus_metrics(
             "# TYPE http_request_duration_seconds_sum counter",
         ]
     )
-    for (method, path, status), value in sorted(request_duration_sum.items()):
+    for (method, path, status), duration in sorted(request_duration_sum.items()):
         labels = _format_labels({"method": method, "path": path, "status": status})
-        lines.append(f"http_request_duration_seconds_sum{labels} {value:.6f}")
+        lines.append(f"http_request_duration_seconds_sum{labels} {duration:.6f}")
 
     lines.extend(
         [
@@ -130,9 +130,9 @@ def format_prometheus_metrics(
             "# TYPE http_request_duration_seconds_count counter",
         ]
     )
-    for (method, path, status), value in sorted(request_duration_count.items()):
+    for (method, path, status), count in sorted(request_duration_count.items()):
         labels = _format_labels({"method": method, "path": path, "status": status})
-        lines.append(f"http_request_duration_seconds_count{labels} {value}")
+        lines.append(f"http_request_duration_seconds_count{labels} {count}")
 
     lines.extend(
         [
@@ -168,9 +168,9 @@ def format_prometheus_metrics(
         ]
     )
 
-    for command, value in sorted(redis_command_duration_sum.items()):
+    for command, duration in sorted(redis_command_duration_sum.items()):
         labels = _format_labels({"command": command})
-        lines.append(f"redis_command_duration_seconds_sum{labels} {value:.6f}")
+        lines.append(f"redis_command_duration_seconds_sum{labels} {duration:.6f}")
 
     lines.extend(
         [
@@ -178,9 +178,9 @@ def format_prometheus_metrics(
             "# TYPE redis_command_duration_seconds_count counter",
         ]
     )
-    for command, value in sorted(redis_command_duration_count.items()):
+    for command, count in sorted(redis_command_duration_count.items()):
         labels = _format_labels({"command": command})
-        lines.append(f"redis_command_duration_seconds_count{labels} {value}")
+        lines.append(f"redis_command_duration_seconds_count{labels} {count}")
 
     if db_pool:
         pool_size = db_pool.get("size")

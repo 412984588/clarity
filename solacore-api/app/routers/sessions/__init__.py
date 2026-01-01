@@ -25,6 +25,7 @@ router.add_api_route(
     "",
     create_session,
     methods=["POST"],
+    status_code=201,
     name="create_session_no_slash",
     include_in_schema=False,
 )

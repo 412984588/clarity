@@ -13,8 +13,7 @@ from app.schemas.session import SessionCreateResponse
 from app.services.analytics_service import AnalyticsService
 from app.utils.datetime_utils import utc_now
 from app.utils.docs import COMMON_ERROR_RESPONSES
-from fastapi import APIRouter, Depends, Header, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -43,6 +42,7 @@ router = APIRouter()
 @limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def create_session(
     request: Request,
+    response: Response,
     current_user: User = Depends(get_current_user),
     device_fingerprint: str = Header(
         ...,
@@ -149,19 +149,14 @@ async def create_session(
 
     await db.commit()
 
-    return JSONResponse(
-        status_code=201,
-        content={
-            "session_id": str(session.id),
-            "status": str(session.status),
-            "current_step": str(session.current_step),
-            "created_at": session.created_at.isoformat()
-            if session.created_at
-            else None,
-            "usage": {
-                "sessions_used": int(usage.session_count or 0),
-                "sessions_limit": sessions_limit,
-                "tier": tier,
-            },
+    return SessionCreateResponse(
+        session_id=session.id,
+        status=str(session.status),
+        current_step=str(session.current_step),
+        created_at=session.created_at,  # type: ignore[arg-type]
+        usage={
+            "sessions_used": int(usage.session_count or 0),
+            "sessions_limit": sessions_limit,
+            "tier": tier,
         },
     )

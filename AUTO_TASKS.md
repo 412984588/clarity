@@ -34,12 +34,13 @@
 | T2 | 加固设备限制 - 修复潜在并发竞态条件 | `app/services/auth_service.py` | [x] Done |
 | T3 | 加固默认配置 - 确保生产环境不使用弱密钥 | `app/config.py` + `app/main.py` | [x] Done |
 
-### 优先级 P2 - 代码质量 (可选)
+### 优先级 P2 - 代码质量 (完成)
 
 | ID | 任务 | 文件 | 状态 |
 |----|------|------|------|
-| T4 | 添加更多边界测试用例 | `tests/` | [ ] Pending |
-| T5 | 增加测试覆盖率到 90%+ | `tests/` | [ ] Pending |
+| T4 | 深度优化 - 数据库索引补齐 (4个) | `alembic/` | [x] Done |
+| T5 | 深度优化 - 复杂度重构 (RevenueCat & AI Service) | `app/` | [x] Done |
+| T6 | 深度优化 - 响应模型一致性 (Routers) | `app/routers/` | [x] Done |
 
 ### 优先级 P3 - 文档 (可选)
 

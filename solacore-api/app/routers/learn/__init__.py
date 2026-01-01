@@ -22,8 +22,7 @@ from app.models.learn_session import LearnSession, LearnStep
 from app.models.user import User
 from app.utils.datetime_utils import utc_now
 from app.utils.docs import COMMON_ERROR_RESPONSES
-from fastapi import APIRouter, Depends, HTTPException, Path, Query, Request
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, Request, Response
 from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -234,6 +233,7 @@ class LearnSessionListResponse(BaseModel):
 @limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def list_learn_sessions(
     request: Request,
+    response: Response,
     limit: int = Query(20, ge=1, le=100, description="返回数量限制"),
     offset: int = Query(0, ge=0, description="偏移量"),
     current_user: User = Depends(get_current_user),
@@ -286,23 +286,21 @@ async def list_learn_sessions(
             )
 
         sessions.append(
-            {
-                "id": str(session.id),
-                "status": session.status,
-                "current_step": session.current_step,
-                "topic": session.topic,
-                "created_at": session.created_at.isoformat(),
-                "first_message": truncated_message,
-            }
+            LearnSessionListItem(
+                id=session.id,
+                status=str(session.status),
+                current_step=str(session.current_step),
+                topic=session.topic,
+                created_at=session.created_at,  # type: ignore[arg-type]
+                first_message=truncated_message,
+            )
         )
 
-    return JSONResponse(
-        content={
-            "sessions": sessions,
-            "total": total,
-            "limit": limit,
-            "offset": offset,
-        }
+    return LearnSessionListResponse(
+        sessions=sessions,
+        total=total,
+        limit=limit,
+        offset=offset,
     )
 
 
@@ -315,6 +313,7 @@ async def list_learn_sessions(
 @limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def update_learn_session(
     request: Request,
+    response: Response,
     session_id: UUID = Path(..., description="会话ID"),
     current_step: str | None = None,
     status: str | None = None,
@@ -351,14 +350,12 @@ async def update_learn_session(
     await db.commit()
     await db.refresh(session)
 
-    return JSONResponse(
-        content={
-            "id": str(session.id),
-            "status": session.status,
-            "current_step": session.current_step,
-            "topic": session.topic,
-        }
-    )
+    return {
+        "id": str(session.id),
+        "status": session.status,
+        "current_step": session.current_step,
+        "topic": session.topic,
+    }
 
 
 @router.delete(
@@ -371,6 +368,7 @@ async def update_learn_session(
 @limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def delete_learn_session(
     request: Request,
+    response: Response,
     session_id: UUID = Path(..., description="会话ID"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -395,7 +393,7 @@ async def delete_learn_session(
         extra={"session_id": str(session_id), "user_id": str(current_user.id)},
     )
 
-    return JSONResponse(content=None, status_code=204)
+    return None
 
 
 from . import create, history, message  # noqa: E402,F401

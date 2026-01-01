@@ -16,7 +16,6 @@ from app.services.cache_service import CacheService
 from app.utils.datetime_utils import utc_now
 from app.utils.docs import COMMON_ERROR_RESPONSES
 from fastapi import APIRouter, Depends, Header, HTTPException, Path, Request, Response
-from fastapi.responses import JSONResponse
 from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -39,13 +38,11 @@ async def get_current_user_info(
     current_user: User = Depends(get_current_user),
 ):
     """获取当前登录用户的基础资料。"""
-    return JSONResponse(
-        content={
-            "id": str(current_user.id),
-            "email": current_user.email,
-            "auth_provider": current_user.auth_provider,
-            "locale": current_user.locale,
-        }
+    return UserResponse(
+        id=current_user.id,
+        email=current_user.email,
+        auth_provider=current_user.auth_provider,
+        locale=current_user.locale,
     )
 
 

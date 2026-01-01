@@ -43,7 +43,7 @@ repos:
       - id: mypy
         stages: [pre-commit]
         args: [--ignore-missing-imports]
-        exclude: ^(alembic/|scripts/|tests/)
+        exclude: (solacore-api/)?(alembic/|scripts/|tests/)
         additional_dependencies: []
 
   - repo: local

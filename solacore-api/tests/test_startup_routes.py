@@ -1,10 +1,7 @@
 """测试 app/startup/routes.py 中的健康检查端点和异常处理"""
 
-from unittest.mock import AsyncMock, patch
-
 import pytest
 from httpx import AsyncClient
-
 
 # ==================== /health 端点测试 ====================
 
@@ -143,7 +140,11 @@ async def test_auth_error_handler(client: AsyncClient):
     assert "detail" in data
     assert "error" in data["detail"]
     # 可能的错误码：INVALID_TOKEN 或 SESSION_NOT_FOUND 等
-    assert data["detail"]["error"] in ["INVALID_TOKEN", "SESSION_NOT_FOUND", "SESSION_REVOKED"]
+    assert data["detail"]["error"] in [
+        "INVALID_TOKEN",
+        "SESSION_NOT_FOUND",
+        "SESSION_REVOKED",
+    ]
 
 
 # ==================== OpenAPI 配置测试 ====================
