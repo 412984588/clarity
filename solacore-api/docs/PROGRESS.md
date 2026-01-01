@@ -7,6 +7,53 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2025-12-31] - 提升测试覆盖率 - Webhooks 模块
+
+- [x] **整体进展**:
+  - 测试数量：271 → 285 passed (+14 tests)
+  - 整体覆盖率：80% → 81% (+1%)
+  - Webhooks 覆盖率：52% → 65% (+13%)
+
+- [x] **补充的测试用例** (14 个):
+  1. **Payments disabled** - 测试 payments_enabled=False 时返回 501
+  2. **Empty event_id** - 测试空事件 ID 的处理逻辑
+  3. **Checkout completed 边界情况**:
+     - 无 user_id（metadata 和 client_reference_id 都为空）
+     - 无效的 user_id UUID
+     - 找不到订阅记录
+     - 无 price_id 的情况
+  4. **Invoice paid 边界情况**:
+     - 找不到订阅记录
+     - 无 period 信息（lines 为空）
+     - Free tier 不重置使用量
+     - **Paid tier 重置使用量** - 验证 _reset_usage_for_period 被正确调用
+     - **Customer ID 查找** - 测试通过 customer_id 查找订阅（subscription_id 为空时）
+  5. **Payment failed 边界情况** - 找不到订阅记录
+  6. **Subscription deleted 边界情况** - 找不到订阅记录
+  7. **Unknown event type** - 测试未知事件类型的处理
+
+- [x] **技术改进**:
+  - 新增辅助函数 `_create_user_with_subscription_tier` - 支持创建不同 tier 的订阅
+  - 所有测试使用现有 fixture 和 mock 模式，保持一致性
+  - 测试覆盖了之前未测试的关键代码路径（lines 98-110 _reset_usage_for_period）
+
+- [x] **使用 Multi-AI 协作**:
+  - 任务级别：T3（200+ 行代码，多个测试用例）
+  - 调用 Codex 两轮：第一轮补充 10 个测试，第二轮补充 2 个关键测试
+  - Gemini 审核：✅ 通过（无严重问题）
+
+- [x] **Commit**: 5d4bd6e
+- [x] **推送**: ✅ 已推送到 GitHub
+
+> **下一步计划**:
+> - 继续提升其他低覆盖率模块：
+>   - sessions/create.py (42%)
+>   - learn/message.py (39%)
+>   - email_service.py (29%)
+> - 目标：整体覆盖率从 81% 提升到 85%
+
+---
+
 ### [2025-12-31] - 代码质量优化
 
 - [x] **代码质量分析**:
