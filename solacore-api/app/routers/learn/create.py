@@ -41,7 +41,7 @@ async def create_learn_session(
         result = await db.execute(
             select(Device).where(
                 Device.user_id == current_user.id,
-                Device.fingerprint == x_device_fingerprint,
+                Device.device_fingerprint == x_device_fingerprint,
             )
         )
         device = result.scalar_one_or_none()
