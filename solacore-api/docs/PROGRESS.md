@@ -7,6 +7,46 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2025-12-31] - 补充会话创建测试 - Sessions Create 模块
+
+- [x] **整体进展**:
+  - 测试数量：285 → 291 passed (+6 tests)
+  - 整体覆盖率：81% (保持)
+  - Sessions/Create 测试：1 → 7 个 (+6 tests)
+
+- [x] **补充的测试用例** (6 个):
+  1. **test_create_session_device_not_found** - 设备指纹不存在时返回 403
+  2. **test_create_session_creates_subscription_if_missing** - 自动创建 free tier 订阅
+  3. **test_create_session_beta_mode_unlimited** - Beta 模式下无限制会话
+  4. **test_create_session_quota_exceeded** - 超过使用量限制并回滚计数器
+  5. **test_create_session_standard_tier_limit** - Standard tier (100 sessions) 验证
+  6. **test_create_session_pro_tier_unlimited** - Pro tier 无限制验证
+
+- [x] **修复的问题**:
+  - **Beta mode 干扰**: .env 中 BETA_MODE=true 导致所有测试无限制，添加 monkeypatch 强制 beta_mode=False
+  - **Rate limit bypass**: 修复 _bypass_rate_limit 函数的 AttributeError
+  - **Usage 同步**: 修复 app/routers/sessions/create.py 中 usage.session_count 同步到 DB 的逻辑
+
+- [x] **技术改进**:
+  - 新增辅助函数：`_create_session`, `_set_subscription_tier`, `_bypass_rate_limit`
+  - 测试前清理 Usage 表，确保从干净状态开始
+  - 所有测试覆盖关键边界情况：device not found、quota limits、beta mode、tier limits
+
+- [x] **使用 Multi-AI 协作**:
+  - 任务级别：T3（100+ 行代码，多个测试用例）
+  - 调用 Codex 两轮：第一轮生成测试，第二轮修复失败测试
+  - 自主 Debug：发现并修复 beta_mode 和 rate_limit 问题
+
+- [x] **Commit**: 61dd6b4
+- [x] **推送**: ✅ 已推送到 GitHub
+
+> **关键发现**:
+> - .env 中的 BETA_MODE=true 会影响测试行为，需要在测试中显式 mock
+> - Usage 计数器需要正确同步到 DB 和内存对象
+> - Rate limiter bypass 需要使用正确的属性名
+
+---
+
 ### [2025-12-31] - 提升测试覆盖率 - Webhooks 模块
 
 - [x] **整体进展**:
