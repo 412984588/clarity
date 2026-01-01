@@ -1,3 +1,4 @@
+from unittest.mock import patch
 from uuid import UUID, uuid4
 
 import pytest
@@ -6,7 +7,6 @@ from app.models.learn_session import LearnSession, LearnStep
 from httpx import AsyncClient
 from sqlalchemy import select
 from tests.conftest import TestingSessionLocal
-from unittest.mock import patch
 
 
 async def _register_user(client: AsyncClient, email: str, fingerprint: str) -> str:
@@ -50,9 +50,7 @@ async def test_send_learn_message_success(
     token = await _register_user(
         client, "learn-message@example.com", "learn-device-001"
     )
-    session_id = await _create_learn_session(
-        client, token, "learn-device-001"
-    )
+    session_id = await _create_learn_session(client, token, "learn-device-001")
 
     async with client.stream(
         "POST",
@@ -69,20 +67,12 @@ async def test_send_learn_message_success(
 
     async with TestingSessionLocal() as session:
         result = await session.execute(
-            select(LearnMessage).where(
-                LearnMessage.session_id == UUID(session_id)
-            )
+            select(LearnMessage).where(LearnMessage.session_id == UUID(session_id))
         )
         messages = result.scalars().all()
 
-    assert any(
-        message.role == LearnMessageRole.USER.value
-        for message in messages
-    )
-    assert any(
-        message.role == LearnMessageRole.ASSISTANT.value
-        for message in messages
-    )
+    assert any(message.role == LearnMessageRole.USER.value for message in messages)
+    assert any(message.role == LearnMessageRole.ASSISTANT.value for message in messages)
 
 
 @pytest.mark.asyncio
@@ -108,9 +98,7 @@ async def test_send_learn_message_wrong_user(
     token_a = await _register_user(
         client, "learn-message-user-a@example.com", "learn-device-003"
     )
-    session_id = await _create_learn_session(
-        client, token_a, "learn-device-003"
-    )
+    session_id = await _create_learn_session(client, token_a, "learn-device-003")
 
     token_b = await _register_user(
         client, "learn-message-user-b@example.com", "learn-device-004"
@@ -138,9 +126,7 @@ async def test_send_learn_message_first_message_sets_topic(
     token = await _register_user(
         client, "learn-message-topic@example.com", "learn-device-005"
     )
-    session_id = await _create_learn_session(
-        client, token, "learn-device-005"
-    )
+    session_id = await _create_learn_session(client, token, "learn-device-005")
     message = "I want to learn Python programming"
 
     async with client.stream(
@@ -154,9 +140,7 @@ async def test_send_learn_message_first_message_sets_topic(
 
     async with TestingSessionLocal() as session:
         result = await session.execute(
-            select(LearnSession).where(
-                LearnSession.id == UUID(session_id)
-            )
+            select(LearnSession).where(LearnSession.id == UUID(session_id))
         )
         learn_session = result.scalar_one()
 
@@ -177,9 +161,7 @@ async def test_send_learn_message_long_topic_truncated(
     token = await _register_user(
         client, "learn-message-long-topic@example.com", "learn-device-006"
     )
-    session_id = await _create_learn_session(
-        client, token, "learn-device-006"
-    )
+    session_id = await _create_learn_session(client, token, "learn-device-006")
     message = "A" * 35
 
     async with client.stream(
@@ -193,9 +175,7 @@ async def test_send_learn_message_long_topic_truncated(
 
     async with TestingSessionLocal() as session:
         result = await session.execute(
-            select(LearnSession).where(
-                LearnSession.id == UUID(session_id)
-            )
+            select(LearnSession).where(LearnSession.id == UUID(session_id))
         )
         learn_session = result.scalar_one()
 
@@ -223,15 +203,11 @@ async def test_send_learn_message_final_step_generates_review(
     token = await _register_user(
         client, "learn-message-final@example.com", "learn-device-007"
     )
-    session_id = await _create_learn_session(
-        client, token, "learn-device-007"
-    )
+    session_id = await _create_learn_session(client, token, "learn-device-007")
 
     async with TestingSessionLocal() as session:
         result = await session.execute(
-            select(LearnSession).where(
-                LearnSession.id == UUID(session_id)
-            )
+            select(LearnSession).where(LearnSession.id == UUID(session_id))
         )
         learn_session = result.scalar_one()
         learn_session.current_step = LearnStep.PLAN.value
@@ -248,9 +224,7 @@ async def test_send_learn_message_final_step_generates_review(
 
     async with TestingSessionLocal() as session:
         result = await session.execute(
-            select(LearnSession).where(
-                LearnSession.id == UUID(session_id)
-            )
+            select(LearnSession).where(LearnSession.id == UUID(session_id))
         )
         updated_session = result.scalar_one()
 
@@ -272,18 +246,19 @@ async def test_send_learn_message_content_filtering(
     token = await _register_user(
         client, "learn-message-filter@example.com", "learn-device-008"
     )
-    session_id = await _create_learn_session(
-        client, token, "learn-device-008"
-    )
+    session_id = await _create_learn_session(client, token, "learn-device-008")
     message = "Call me at 555-123-4567 or email me@example.com"
 
-    with patch(
-        "app.routers.learn.message.sanitize_user_input",
-        return_value="sanitized",
-    ) as sanitize_mock, patch(
-        "app.routers.learn.message.strip_pii",
-        return_value="cleaned",
-    ) as strip_mock:
+    with (
+        patch(
+            "app.routers.learn.message.sanitize_user_input",
+            return_value="sanitized",
+        ) as sanitize_mock,
+        patch(
+            "app.routers.learn.message.strip_pii",
+            return_value="cleaned",
+        ) as strip_mock,
+    ):
         async with client.stream(
             "POST",
             f"/learn/{session_id}/messages",
@@ -322,9 +297,7 @@ async def test_send_learn_message_ai_service_error(
     token = await _register_user(
         client, "learn-message-error@example.com", "learn-device-009"
     )
-    session_id = await _create_learn_session(
-        client, token, "learn-device-009"
-    )
+    session_id = await _create_learn_session(client, token, "learn-device-009")
 
     async with client.stream(
         "POST",
