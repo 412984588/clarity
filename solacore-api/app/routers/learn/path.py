@@ -39,7 +39,7 @@ class LearnPathResponse(BaseModel):
 
     session_id: UUID
     mode: str
-    current_tool: str
+    current_tool: str | None
     tool_plan: list[str]
 
 

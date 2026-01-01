@@ -27,7 +27,7 @@ class LearnSwitchToolResponse(BaseModel):
     """切换工具响应"""
 
     session_id: UUID
-    current_tool: str
+    current_tool: str | None
     tool_plan: list[str]
 
 

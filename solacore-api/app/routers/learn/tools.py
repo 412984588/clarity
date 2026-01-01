@@ -8,7 +8,7 @@ from app.middleware.rate_limit import API_RATE_LIMIT, limiter, user_rate_limit_k
 from app.models.user import User
 from app.utils.docs import COMMON_ERROR_RESPONSES
 from fastapi import Depends, Request, Response
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, Field
 
 from . import router
 
@@ -20,9 +20,7 @@ class LearnToolItem(BaseModel):
     name: str = Field(..., description="工具名称")
     description: str = Field(..., description="工具描述")
     estimated_minutes: int = Field(..., ge=1, description="预计用时(分钟)")
-    scenarios: list[str] = Field(..., alias="适用场景", description="适用场景")
-
-    model_config = ConfigDict(populate_by_name=True)
+    scenarios: list[str] = Field(..., description="适用场景")
 
 
 class LearnToolListResponse(BaseModel):

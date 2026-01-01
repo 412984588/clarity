@@ -73,7 +73,7 @@ async def test_get_tools_returns_expected_fields(
         assert "name" in tool
         assert "description" in tool
         assert "estimated_minutes" in tool
-        assert "适用场景" in tool
+        assert "scenarios" in tool
 
 
 @pytest.mark.asyncio

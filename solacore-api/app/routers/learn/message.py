@@ -98,6 +98,14 @@ async def send_learn_message(
             detail={"error": "INVALID_TOOL", "tool": message_request.tool},
         )
 
+    # 校验tool是否在会话tool_plan中（如果已设置plan）
+    if message_request.tool and session.tool_plan:
+        if message_request.tool not in session.tool_plan:
+            raise HTTPException(
+                status_code=400,
+                detail={"error": "TOOL_NOT_IN_PLAN", "tool": message_request.tool},
+            )
+
     step_value = message_request.step or session.current_step
     try:
         current_step = LearnStep(step_value)

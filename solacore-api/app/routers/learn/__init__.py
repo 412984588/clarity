@@ -10,6 +10,9 @@
 - GROW模型：Goal→Reality→Options→Will
 """
 
+# isort: skip_file
+# 路由导入顺序影响 FastAPI 路由注册，必须保持 tools 在 history 之前
+
 import logging
 from datetime import datetime
 from uuid import UUID
@@ -296,14 +299,8 @@ async def delete_learn_session(
     return None
 
 
-from . import (  # noqa: E402,F401
-    create,
-    history,
-    message,
-    path,
-    progress,
-    switch_tool,
-    tools,
-)
+from . import history  # noqa: E402,F401 # 通配路径最后
+from . import tools  # noqa: E402,F401 # 具体路径优先，避免被 /{session_id} 捕获
+from . import create, message, path, progress, switch_tool  # noqa: E402,F401
 
 __all__ = ["router"]

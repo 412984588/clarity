@@ -58,6 +58,7 @@ async def get_learn_session(
                 "role": str(msg.role),
                 "content": msg.content,
                 "step": str(msg.step),
+                "tool": msg.tool,
                 "created_at": msg.created_at,
             }
             for msg in session.messages

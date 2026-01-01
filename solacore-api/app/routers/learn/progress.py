@@ -21,7 +21,7 @@ class LearnProgressResponse(BaseModel):
 
     session_id: UUID
     mode: str
-    current_tool: str
+    current_tool: str | None
     tool_plan: list[str]
     completed_tools: list[str]
     progress_percentage: int
