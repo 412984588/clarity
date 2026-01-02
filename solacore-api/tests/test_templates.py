@@ -86,6 +86,39 @@ async def test_list_templates_filters_by_category(client: AsyncClient) -> None:
 
 
 @pytest.mark.asyncio
+async def test_list_templates_supports_pagination(client: AsyncClient) -> None:
+    await _create_template(
+        role_name="Template A",
+        category="learning",
+        system_prompt="Prompt A",
+        usage_count=30,
+    )
+    template_b = await _create_template(
+        role_name="Template B",
+        category="learning",
+        system_prompt="Prompt B",
+        usage_count=20,
+    )
+    await _create_template(
+        role_name="Template C",
+        category="learning",
+        system_prompt="Prompt C",
+        usage_count=10,
+    )
+
+    response = await client.get(
+        "/api/v1/templates",
+        params={"limit": 1, "offset": 1},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["total"] == 3
+    assert len(payload["templates"]) == 1
+    assert payload["templates"][0]["id"] == str(template_b.id)
+
+
+@pytest.mark.asyncio
 async def test_get_template_returns_detail(client: AsyncClient) -> None:
     template = await _create_template(
         role_name="Career Counselor",

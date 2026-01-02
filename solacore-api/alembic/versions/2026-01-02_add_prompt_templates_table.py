@@ -6,12 +6,12 @@ Create Date: 2026-01-02 10:00:00.000000
 
 """
 
-import datetime
 import uuid
 from typing import Sequence, Union
 
 import sqlalchemy as sa
 from alembic import op
+from app.utils.datetime_utils import utc_now
 
 # revision identifiers, used by Alembic.
 revision: str = "c4d5e6f7a8b9"
@@ -74,7 +74,7 @@ def upgrade() -> None:
         sa.column("created_at", sa.DateTime()),
         sa.column("updated_at", sa.DateTime()),
     )
-    now = datetime.datetime.utcnow()
+    now = utc_now()
     op.bulk_insert(
         prompt_templates,
         [

@@ -41,6 +41,12 @@ async def list_templates(
         description="分页大小（1-100）",
         example=20,
     ),
+    offset: int = Query(
+        0,
+        ge=0,
+        description="偏移量",
+        examples=[0, 20, 40],
+    ),
     db: AsyncSession = Depends(get_db),
 ) -> PromptTemplateListResponse:
     """返回模板列表，默认只展示启用的模板。"""
@@ -58,6 +64,7 @@ async def list_templates(
         .where(*filters)
         .order_by(PromptTemplate.usage_count.desc(), PromptTemplate.created_at.desc())
         .limit(limit)
+        .offset(offset)
     )
     templates = templates_result.scalars().all()
 
