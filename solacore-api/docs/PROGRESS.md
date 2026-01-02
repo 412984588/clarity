@@ -7,6 +7,53 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2026-01-02 下午] - 🔧 修复 CSRF Token 配置不匹配问题
+
+- [x] **Gemini 诊断**: 发现 CSRF token 名称不匹配导致 403 错误
+- [x] **修复前端**: 配置 Axios 使用正确的 CSRF cookie 和 header 名称
+- [x] **验证后端**: 确认 COOKIE_DOMAIN 已正确配置为 `.solacore.app`
+- [ ] **等待部署**: Vercel 自动部署前端修改
+
+> **问题现象**:
+> - 登录后访问 `/solve` 页面时，创建 session 失败
+> - POST `/sessions` 返回 403 Forbidden
+> - 浏览器控制台显示 CSRF 相关错误
+
+> **Gemini 诊断结果**:
+> 1. **CSRF Token 名称不匹配**:
+>    - 后端设置的 cookie 名: `csrf_token`
+>    - 后端期望的 header: `X-CSRF-Token`
+>    - 前端 Axios 默认查找: `XSRF-TOKEN` cookie
+>    - 前端 Axios 默认发送: `X-XSRF-TOKEN` header
+>    - **结果**: 前端无法读取并发送 CSRF token，导致后端拒绝请求
+>
+> 2. **Cookie Domain 配置** (已正确):
+>    - 后端已配置 `COOKIE_DOMAIN=.solacore.app`
+>    - 允许 `api.solacore.app` 和 `solacore.app` 共享 cookies ✅
+
+> **前端修复** (solacore-web/lib/api.ts):
+> ```typescript
+> const api = axios.create({
+>   baseURL: API_BASE_URL,
+>   withCredentials: true,
+>   xsrfCookieName: "csrf_token",      // 匹配后端 cookie 名称
+>   xsrfHeaderName: "X-CSRF-Token",    // 匹配后端期望的 header
+> });
+> ```
+
+**修复影响**:
+- ✅ 前端能正确读取后端设置的 `csrf_token` cookie
+- ✅ 前端自动在 POST/PUT/DELETE 请求中添加 `X-CSRF-Token` header
+- ✅ 修复登录后无法创建 session 的问题
+- ✅ 修复 `/solve` 页面 403 错误
+
+**部署状态**:
+- ✅ 前端修改已提交并推送到 GitHub (commit 6055a9b)
+- ⏳ 等待 Vercel 自动部署完成
+- ⏳ 部署完成后需验证登录和 /solve 页面功能
+
+---
+
 ### [2026-01-02 下午] - ✅ 永久修复网络别名配置问题 (Production Deployed)
 
 - [x] **问题根源**: docker-compose.prod.yml 未显式指定网络别名，导致容器重启后丢失 `api` 别名
