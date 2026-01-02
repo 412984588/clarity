@@ -5,7 +5,9 @@ from uuid import UUID, uuid4
 import pytest
 from app.config import Settings
 from app.middleware.rate_limit import limiter
-from app.models.solve_session import SolveStep
+from app.models.message import Message
+from app.models.prompt_template import PromptTemplate
+from app.models.solve_session import SolveSession, SolveStep
 from app.models.step_history import StepHistory
 from app.models.subscription import Subscription, Usage
 from app.utils.security import decode_token
@@ -29,11 +31,14 @@ async def _register_user(client: AsyncClient, email: str, fingerprint: str) -> s
 
 
 async def _create_session(
-    client: AsyncClient, token: str, fingerprint: str
+    client: AsyncClient,
+    token: str,
+    fingerprint: str,
+    payload: dict | None = None,
 ) -> Response:
     return await client.post(
         "/sessions",
-        json={},
+        json=payload or {},
         headers={
             "Authorization": f"Bearer {token}",
             "X-Device-Fingerprint": fingerprint,
@@ -238,6 +243,57 @@ async def test_create_session_pro_tier_unlimited(
 
     assert last_response is not None
     assert last_response.json()["usage"]["tier"] == "pro"
+
+
+@pytest.mark.asyncio
+async def test_create_session_with_template_inserts_messages(
+    client: AsyncClient,
+) -> None:
+    token = await _register_user(
+        client, "session-template@example.com", "session-device-015"
+    )
+
+    template = PromptTemplate(
+        id=uuid4(),
+        role_name="English Teacher",
+        category="learning",
+        system_prompt="Teach English.",
+        welcome_message="Hello!",
+    )
+    async with TestingSessionLocal() as session:
+        session.add(template)
+        await session.commit()
+
+    response = await _create_session(
+        client,
+        token,
+        "session-device-015",
+        payload={"template_id": str(template.id)},
+    )
+
+    assert response.status_code == 201
+    session_id = UUID(response.json()["session_id"])
+
+    async with TestingSessionLocal() as session:
+        db_session = await session.get(SolveSession, session_id)
+        assert db_session is not None
+        assert db_session.template_id == template.id
+
+        messages_result = await session.execute(
+            select(Message).where(Message.session_id == session_id)
+        )
+        messages = messages_result.scalars().all()
+        roles = {message.role for message in messages}
+
+        assert len(messages) == 2
+        assert "system" in roles
+        assert "assistant" in roles
+
+        template_result = await session.execute(
+            select(PromptTemplate).where(PromptTemplate.id == template.id)
+        )
+        updated_template = template_result.scalar_one()
+        assert updated_template.usage_count == 1
 
 
 @pytest.mark.asyncio

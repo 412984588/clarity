@@ -13,6 +13,7 @@ from sqlalchemy.orm import relationship
 class MessageRole(str, Enum):
     """消息角色"""
 
+    SYSTEM = "system"
     USER = "user"
     ASSISTANT = "assistant"
 

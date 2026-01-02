@@ -8,6 +8,7 @@ from app.models.device import Device
 from app.models.learn_message import LearnMessage
 from app.models.learn_session import LearnSession
 from app.models.message import Message, MessageRole
+from app.models.prompt_template import PromptTemplate
 from app.models.session import ActiveSession
 from app.models.solve_session import SessionStatus, SolveSession, SolveStep
 from app.models.step_history import StepHistory
@@ -120,6 +121,18 @@ def test_subscription_repr():
     )
     repr_str = repr(subscription)
     assert "Subscription" in repr_str
+
+
+def test_prompt_template_repr():
+    """测试 PromptTemplate 的 __repr__ 方法"""
+    template = PromptTemplate(
+        id=uuid4(),
+        role_name="English Teacher",
+        category="learning",
+        system_prompt="Teach English.",
+    )
+    repr_str = repr(template)
+    assert "PromptTemplate" in repr_str
 
 
 def test_user_repr():

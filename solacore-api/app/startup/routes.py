@@ -11,6 +11,7 @@ from app.routers import (
     revenuecat_webhooks,
     sessions,
     subscriptions,
+    templates,
     webhooks,
 )
 from app.utils.docs import COMMON_ERROR_RESPONSES
@@ -278,6 +279,7 @@ def register_routes(app: FastAPI, settings: Settings) -> None:
     app.include_router(sessions.router)
     app.include_router(learn.router)
     app.include_router(subscriptions.router)
+    app.include_router(templates.router)
     app.include_router(webhooks.router)
     app.include_router(revenuecat_webhooks.router)
     app.include_router(account.router)

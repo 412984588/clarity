@@ -34,6 +34,11 @@ class SolveSession(Base):
     device_id = Column(
         UUID(as_uuid=True), ForeignKey("devices.id", ondelete="SET NULL"), nullable=True
     )
+    template_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("prompt_templates.id", ondelete="SET NULL"),
+        nullable=True,
+    )
     status = Column(String(50), default=SessionStatus.ACTIVE.value)
     current_step = Column(String(50), default=SolveStep.RECEIVE.value)
     locale = Column(String(10), default="en")
@@ -45,6 +50,7 @@ class SolveSession(Base):
     # Relationships
     user = relationship("User", back_populates="solve_sessions")
     device = relationship("Device")
+    template = relationship("PromptTemplate", back_populates="sessions")
     step_history = relationship(
         "StepHistory", back_populates="session", lazy="selectin"
     )

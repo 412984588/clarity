@@ -4,6 +4,7 @@ from app.models.learn_message import LearnMessage
 from app.models.learn_session import LearnSession
 from app.models.message import Message
 from app.models.password_reset import PasswordResetToken
+from app.models.prompt_template import PromptTemplate
 from app.models.session import ActiveSession
 from app.models.solve_session import SolveSession
 from app.models.step_history import StepHistory
@@ -21,6 +22,7 @@ __all__ = [
     "Subscription",
     "Usage",
     "PasswordResetToken",
+    "PromptTemplate",
     "ProcessedWebhookEvent",
     "StepHistory",
     "AnalyticsEvent",

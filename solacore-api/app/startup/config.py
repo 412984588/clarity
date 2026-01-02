@@ -18,6 +18,10 @@ OPENAPI_TAGS = [
         "description": "订阅状态、结账与使用量统计接口。",
     },
     {
+        "name": "Templates",
+        "description": "Prompt 模板列表与详情接口。",
+    },
+    {
         "name": "Account",
         "description": "账户导出与删除接口。",
     },

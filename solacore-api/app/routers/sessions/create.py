@@ -5,15 +5,17 @@ from app.database import get_db
 from app.middleware.auth import get_current_user
 from app.middleware.rate_limit import API_RATE_LIMIT, limiter, user_rate_limit_key
 from app.models.device import Device
+from app.models.message import Message, MessageRole
+from app.models.prompt_template import PromptTemplate
 from app.models.solve_session import SessionStatus, SolveSession, SolveStep
 from app.models.step_history import StepHistory
 from app.models.subscription import Subscription, Usage
 from app.models.user import User
-from app.schemas.session import SessionCreateResponse
+from app.schemas.session import SessionCreateRequest, SessionCreateResponse
 from app.services.analytics_service import AnalyticsService
 from app.utils.datetime_utils import utc_now
 from app.utils.docs import COMMON_ERROR_RESPONSES
-from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response
+from fastapi import APIRouter, Body, Depends, Header, HTTPException, Request, Response
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -43,6 +45,7 @@ router = APIRouter()
 async def create_session(
     request: Request,
     response: Response,
+    payload: SessionCreateRequest | None = Body(default=None),
     current_user: User = Depends(get_current_user),
     device_fingerprint: str = Header(
         ...,
@@ -53,6 +56,18 @@ async def create_session(
     db: AsyncSession = Depends(get_db),
 ):
     """创建新的 Solve 会话并返回会话基础信息与使用量。"""
+    template: PromptTemplate | None = None
+    if payload and payload.template_id:
+        template_result = await db.execute(
+            select(PromptTemplate).where(
+                PromptTemplate.id == payload.template_id,
+                PromptTemplate.is_active.is_(True),
+            )
+        )
+        template = template_result.scalar_one_or_none()
+        if not template:
+            raise HTTPException(status_code=404, detail={"error": "TEMPLATE_NOT_FOUND"})
+
     device_result = await db.execute(
         select(Device).where(
             Device.user_id == current_user.id,
@@ -128,6 +143,8 @@ async def create_session(
         status=SessionStatus.ACTIVE.value,
         current_step=SolveStep.RECEIVE.value,
     )
+    if template:
+        session.template_id = template.id  # type: ignore[assignment]
     db.add(session)
     await db.flush()
 
@@ -138,6 +155,28 @@ async def create_session(
         started_at=utc_now(),
     )
     db.add(step_history)
+    if template:
+        system_message = Message(
+            session_id=session.id,
+            role=MessageRole.SYSTEM.value,
+            content=template.system_prompt,
+        )
+        db.add(system_message)
+
+        if template.welcome_message:
+            welcome_message = Message(
+                session_id=session.id,
+                role=MessageRole.ASSISTANT.value,
+                content=template.welcome_message,
+            )
+            db.add(welcome_message)
+
+        # 原子更新 usage_count，避免高并发下的丢失更新问题
+        await db.execute(
+            update(PromptTemplate)
+            .where(PromptTemplate.id == template.id)
+            .values(usage_count=PromptTemplate.usage_count + 1)
+        )
 
     # 记录 session_started 事件
     analytics_service = AnalyticsService(db)

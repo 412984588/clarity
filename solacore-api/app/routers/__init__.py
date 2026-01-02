@@ -8,6 +8,7 @@ from . import (
     revenuecat_webhooks,
     sessions,
     subscriptions,
+    templates,
     webhooks,
 )
 
@@ -19,5 +20,6 @@ __all__ = [
     "revenuecat_webhooks",
     "sessions",
     "subscriptions",
+    "templates",
     "webhooks",
 ]

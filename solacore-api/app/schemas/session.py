@@ -167,6 +167,16 @@ class SessionCreateResponse(BaseModel):
     )
 
 
+class SessionCreateRequest(BaseModel):
+    """会话创建请求（可选模板）"""
+
+    template_id: Optional[UUID] = Field(
+        default=None,
+        description="Prompt 模板 ID",
+        example="2c3d4e5f-6a7b-8c9d-0e1f-2a3b4c5d6e7f",
+    )
+
+
 class SessionListResponse(BaseModel):
     """会话列表响应（使用轻量级 SessionListItem）"""
 
