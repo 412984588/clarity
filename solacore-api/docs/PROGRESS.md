@@ -1,11 +1,65 @@
 # 项目进度记录本
 
 **项目名称**: SolaCore API
-**最后更新**: 2026-01-01
+**最后更新**: 2026-01-02
 
 ---
 
 ## 最新进度（倒序记录，最新的在最上面）
+
+### [2026-01-02 深夜] - 🔧 修复 nginx DNS 解析和网络别名问题 (Critical Hotfix)
+
+- [x] **问题复现**: 前端再次遇到 502 Bad Gateway 错误
+- [x] **根本原因**: API 容器在 frontend 网络中缺少 `api` 别名
+- [x] **修复方案**: 恢复 upstream 配置 + 手动添加网络别名
+- [x] **验证通过**: API 访问恢复正常 ✅
+
+> **问题现象**:
+> ```
+> GET https://api.solacore.app/auth/me 502 (Bad Gateway)
+> nginx error: api could not be resolved (3: Host not found)
+> ```
+
+> **根本原因**:
+> 1. **nginx 配置问题**: 之前使用变量 `$upstream_api` 导致 DNS 解析不稳定
+> 2. **网络别名缺失**: API 容器在 `solacore_frontend` 网络中没有 `api` 别名
+>    - 在 `default` 网络: 有 `api` 别名 ✅
+>    - 在 `frontend` 网络: 只有 `solacore-api_api_1` ❌
+
+> **修复步骤**:
+> ```bash
+> # 1. 恢复 nginx upstream 配置
+> upstream api_upstream {
+>   server api:8000;
+>   keepalive 32;
+> }
+>
+> # 2. 断开手动添加的网络（没有别名）
+> docker network disconnect solacore-api_solacore_frontend solacore-api_api_1
+>
+> # 3. 重新连接并添加别名
+> docker network connect --alias api solacore-api_solacore_frontend solacore-api_api_1
+>
+> # 4. 重启 nginx
+> docker-compose -f docker-compose.prod.yml restart nginx
+> ```
+
+**验证结果**:
+- ✅ nginx 启动成功（不再报 DNS 解析错误）
+- ✅ API 健康检查返回 200
+- ✅ CORS 头正确配置
+- ✅ 前端可以正常调用 API
+
+**技术细节**:
+- nginx 在启动时解析 `api:8000`，需要 DNS 在启动时可用
+- 使用 `upstream api_upstream` 比动态变量更稳定
+- Docker 网络别名必须在连接时指定，后续无法修改
+
+**影响范围**:
+- 修复前：所有前端请求返回 502
+- 修复后：API 访问完全恢复
+
+---
 
 ### [2026-01-01 晚间] - 🌐 修复生产环境 CORS 和网络连接问题 (Critical Infrastructure Fix)
 
