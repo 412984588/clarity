@@ -32,14 +32,14 @@ async def list_templates(
     category: str | None = Query(
         None,
         description="模板分类筛选",
-        example="learning",
+        examples=["learning"],
     ),
     limit: int = Query(
         20,
         ge=1,
         le=100,
         description="分页大小（1-100）",
-        example=20,
+        examples=[20],
     ),
     offset: int = Query(
         0,
@@ -90,7 +90,7 @@ async def get_template(
     template_id: UUID = Path(
         ...,
         description="模板 ID",
-        example="2c3d4e5f-6a7b-8c9d-0e1f-2a3b4c5d6e7f",
+        examples=["2c3d4e5f-6a7b-8c9d-0e1f-2a3b4c5d6e7f"],
     ),
     db: AsyncSession = Depends(get_db),
 ) -> PromptTemplateDetailResponse:

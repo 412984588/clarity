@@ -31,17 +31,17 @@ async def google_oauth_code(
     code: str = Query(
         ...,
         description="Google OAuth 授权码",
-        example="4/0AX4XfWj8M7WmC9o0pP3yR",
+        examples=["4/0AX4XfWj8M7WmC9o0pP3yR"],
     ),
     device_fingerprint: str | None = Query(
         default=None,
         description="设备指纹（用于识别登录设备）",
-        example="web-2f1a8c7d",
+        examples=["web-2f1a8c7d"],
     ),
     device_name: str | None = Query(
         default=None,
         description="设备名称",
-        example="Chrome on macOS",
+        examples=["Chrome on macOS"],
     ),
     db: AsyncSession = Depends(get_db),
 ):

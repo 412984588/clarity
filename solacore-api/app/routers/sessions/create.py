@@ -51,7 +51,7 @@ async def create_session(
         ...,
         alias="X-Device-Fingerprint",
         description="设备指纹，用于识别当前设备",
-        example="ios-4f3e9b2c",
+        examples=["ios-4f3e9b2c"],
     ),
     db: AsyncSession = Depends(get_db),
 ):

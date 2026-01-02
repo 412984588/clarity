@@ -105,13 +105,13 @@ async def revoke_device(
     device_id: UUID = Path(
         ...,
         description="设备 ID",
-        example="1c2d3e4f-5a6b-7c8d-9e0f-1a2b3c4d5e6f",
+        examples=["1c2d3e4f-5a6b-7c8d-9e0f-1a2b3c4d5e6f"],
     ),
     device_fingerprint: str = Header(
         ...,
         alias="X-Device-Fingerprint",
         description="当前设备指纹，用于避免解绑自己",
-        example="ios-4f3e9b2c",
+        examples=["ios-4f3e9b2c"],
     ),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -216,7 +216,7 @@ async def revoke_session(
     session_id: UUID = Path(
         ...,
         description="会话 ID",
-        example="5f1c9b3e-7c2a-4d1a-9a1d-0b8f7c5f2c10",
+        examples=["5f1c9b3e-7c2a-4d1a-9a1d-0b8f7c5f2c10"],
     ),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),

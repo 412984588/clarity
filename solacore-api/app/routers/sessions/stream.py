@@ -73,7 +73,7 @@ async def stream_messages(
     session_id: UUID = Path(
         ...,
         description="会话 ID",
-        example="2c3d4e5f-6a7b-8c9d-0e1f-2a3b4c5d6e7f",
+        examples=["2c3d4e5f-6a7b-8c9d-0e1f-2a3b4c5d6e7f"],
     ),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
