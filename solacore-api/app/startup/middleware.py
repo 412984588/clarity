@@ -102,13 +102,15 @@ def setup_middlewares(app: FastAPI, settings: Settings) -> None:
     # app.add_middleware(SlowAPIASGIMiddleware)
     # app.add_middleware(RateLimitContextMiddleware)
 
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=get_cors_origins(settings),
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+    # CORS 中间件：仅在开发环境启用（生产环境由 nginx 统一处理 CORS，避免 header 重复）
+    if settings.debug:
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=get_cors_origins(settings),
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
 
     # 4. 注册限流器
     app.state.limiter = limiter
