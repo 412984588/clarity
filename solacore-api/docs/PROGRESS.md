@@ -7,6 +7,70 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2026-01-02 下午] - ✅ 永久修复网络别名配置问题 (Production Deployed)
+
+- [x] **问题根源**: docker-compose.prod.yml 未显式指定网络别名，导致容器重启后丢失 `api` 别名
+- [x] **永久方案**: 在 docker-compose.prod.yml 中显式配置网络别名
+- [x] **生产部署**: 已成功部署到生产服务器 ✅
+- [x] **验证通过**: 502 错误彻底解决，登录功能恢复正常 ✅
+
+> **问题现象**:
+> - 前端登录页面显示 "登录失败，请稍后重试"
+> - 浏览器控制台报错: `GET /auth/me 502 (Bad Gateway)`
+> - API 容器重启后又丢失了 frontend 网络连接
+
+> **根本原因**:
+> - 之前的手动修复 `docker network connect --alias api` 只是临时方案
+> - docker-compose.prod.yml 默认网络配置不会持久化自定义别名
+> - 容器重启后，API 只在 `solacore-api_default` 网络，丢失 `solacore_frontend` 网络
+
+> **永久修复**:
+> ```yaml
+> # solacore-api/docker-compose.prod.yml
+> services:
+>   api:
+>     networks:
+>       solacore_frontend:
+>         aliases:
+>           - api  # 显式指定网络别名，确保 nginx 能解析 api:8000
+>       solacore_backend:
+> ```
+
+> **部署步骤**:
+> ```bash
+> # 1. 拉取最新代码
+> cd ~/solacore/solacore-api
+> git stash
+> git pull origin main
+>
+> # 2. 重建所有容器应用新配置
+> docker-compose -f docker-compose.prod.yml down
+> docker-compose -f docker-compose.prod.yml up -d
+>
+> # 3. 验证网络别名
+> docker inspect solacore-api_api_1 --format='{{json .NetworkSettings.Networks}}'
+> # 确认 "solacore-api_solacore_frontend" 网络中包含 "api" 别名
+> ```
+
+**验证结果**:
+- ✅ API 容器在 frontend 网络中有 `api` 别名（永久）
+- ✅ nginx 能够成功解析 `api:8000` 主机名
+- ✅ 外部访问 `https://api.solacore.app/health/live` 返回 200 OK
+- ✅ 认证接口 `/auth/me` 返回正确的 401 未登录响应（不再是 502）
+- ✅ 登录页面恢复正常，不再显示 "登录失败"
+
+**技术要点**:
+- Docker Compose 网络别名需要显式配置才能持久化
+- 使用 `networks: service_name: aliases: []` 格式指定别名
+- 容器重启后，显式配置的别名会自动恢复
+
+**下次遇到类似问题**:
+- 检查 `docker inspect` 查看容器的网络配置
+- 确认网络别名是否在 docker-compose.yml 中显式声明
+- 避免依赖手动的 `docker network connect --alias` 命令
+
+---
+
 ### [2026-01-02 深夜] - 🔧 修复 nginx DNS 解析和网络别名问题 (Critical Hotfix)
 
 - [x] **问题复现**: 前端再次遇到 502 Bad Gateway 错误
