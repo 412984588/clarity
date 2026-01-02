@@ -11,6 +11,8 @@ interface RetryRequestConfig extends InternalAxiosRequestConfig {
 const api = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true, // 自动发送 cookies
+  xsrfCookieName: "csrf_token", // 后端设置的 CSRF cookie 名称
+  xsrfHeaderName: "X-CSRF-Token", // 后端期望的 CSRF header 名称
 });
 
 // 设备指纹生成和存储
