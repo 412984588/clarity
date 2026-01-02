@@ -26,8 +26,10 @@ services:
       - db
       - redis
     networks:
-      - solacore_frontend
-      - solacore_backend
+      solacore_frontend:
+        aliases:
+          - api  # 显式指定网络别名，确保 nginx 能解析 api:8000
+      solacore_backend:
 
   db:
     image: postgres:15-alpine
