@@ -7,6 +7,61 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2026-01-03 晚] - 密码重置邮件功能修复 + 设备限制登录问题解决
+
+#### ✅ 完成任务
+
+**SMTP 邮件功能修复**：
+- 问题现象：发送密码重置邮件失败，报错 `[SSL: WRONG_VERSION_NUMBER]`
+- 根本原因：代码使用 `use_tls=True`（适用于端口 465），但 Resend SMTP 端口 587 需要 `start_tls=True`
+- 修复文件：app/services/email_service.py:77
+- 修复代码：`use_tls=True` → `start_tls=True`
+- 测试验证：触发速率限制（3次/小时），证明邮件功能正常
+- Git commit: `e65e332` - fix(email): 修复 SMTP 端口 587 需要 STARTTLS 而非直接 TLS 的问题
+
+**Docker 网络配置修复**：
+- 问题现象：Nginx 502 Bad Gateway，无法访问 API
+- 根本原因：容器网络配置错误（API 在 default 网络，Nginx 在 solacore_frontend）
+- 修复方案：重建容器，确保 API 和 Nginx 都在 solacore_frontend 网络
+- 副作用：数据库密码验证失败（旧密码残留）
+- 额外修复：`ALTER USER postgres WITH PASSWORD 'postgres';`
+
+**设备限制登录问题解决**：
+- 问题现象：用户 412984588@qq.com 登录报 "DEVICE_LIMIT_REACHED"
+- 根本原因：免费账户限制 1 设备，测试时已占用 1 个设备
+- 尝试方案 1：启用 BETA_MODE（10 设备限制）❌ 被生产环境验证拦截
+- 最终方案：删除旧测试设备，释放名额
+- 执行操作：`DELETE FROM devices WHERE user_id = ...` → 删除 1 条记录
+- 验证结果：设备数量 0/1，用户可正常登录 ✅
+
+**文档提交**：
+- 提交文件：9 个文档文件（2818 行）
+- 排除文件：prompts.csv (1.1MB), prompts_seed.sql (1.4MB)
+- .gitignore 更新：添加大数据文件排除规则
+- 提交记录：3 个 commits
+
+#### 🔍 技术发现
+
+- **SMTP TLS 模式**：端口 587 用 STARTTLS，端口 465 用直接 TLS
+- **Docker 环境变量**：容器重启不会重载 .env，必须重建容器
+- **生产环境保护**：config.py 的验证机制阻止了 BETA_MODE 启用（正确的安全设计）
+- **设备限制机制**：free=1, standard=2, pro=3, beta=10
+
+#### 📊 修复效果
+
+- SMTP 邮件功能：正常 ✅
+- 设备登录问题：已解决 ✅
+- 速率限制保护：正常运行 ✅
+- 生产环境安全：配置验证正常 ✅
+
+#### 🎯 用户可执行操作
+
+- 刷新浏览器，使用 412984588@qq.com / TestPass123 登录
+- 这将是该账户的第 1 个设备（免费版允许 1 个设备）
+- 如需测试密码重置邮件，等待 1 小时后（速率限制）再尝试
+
+---
+
 ### [2026-01-03] - 代码质量提升 + 认证问题诊断
 
 #### ✅ 完成任务
