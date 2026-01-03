@@ -7,7 +7,7 @@
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
-from app.config import get_settings
+from app.config import get_settings, validate_production_config
 from app.logging_config import setup_logging
 from app.startup.config import (
     OPENAPI_TAGS,
@@ -30,6 +30,9 @@ def create_app() -> FastAPI:
     """
     # 加载配置
     settings = get_settings()
+
+    # 生产环境配置校验（启动时检查）
+    validate_production_config(settings)
 
     # 初始化结构化日志
     setup_logging(debug=settings.debug)

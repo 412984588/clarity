@@ -178,6 +178,21 @@ def _validate_beta_mode(settings: Settings) -> list[str]:
     return errors
 
 
+def _validate_cookie_config(settings: Settings) -> list[str]:
+    """校验 Cookie 配置"""
+    errors = []
+    if not settings.cookie_domain:
+        errors.append(
+            "COOKIE_DOMAIN must be set in production (e.g., '.solacore.app') "
+            "to allow cookie sharing between api.solacore.app and solacore.app"
+        )
+    elif not settings.cookie_domain.startswith("."):
+        errors.append(
+            f"COOKIE_DOMAIN must start with '.' for subdomain sharing, got: {settings.cookie_domain}"
+        )
+    return errors
+
+
 def validate_production_config(settings: Settings | None = None) -> None:
     """生产环境配置校验 - 启动时检查所有关键配置"""
     active_settings = settings or get_settings()
@@ -194,6 +209,7 @@ def validate_production_config(settings: Settings | None = None) -> None:
         _validate_oauth_config,
         _validate_frontend_config,
         _validate_beta_mode,
+        _validate_cookie_config,
     ]
 
     errors = []
