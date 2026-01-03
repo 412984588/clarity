@@ -74,7 +74,7 @@ Solacore 团队
             port=settings.smtp_port,
             username=settings.smtp_user,
             password=settings.smtp_password,
-            use_tls=True,
+            start_tls=True,  # 端口 587 需要 STARTTLS，而非直接 TLS
         )
         logger.info(f"Password reset email sent to {to_email}")
         return True
