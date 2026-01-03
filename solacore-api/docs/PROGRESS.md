@@ -7,6 +7,56 @@
 
 ## 最新进度（倒序记录，最新的在最上面）
 
+### [2026-01-03] - 代码质量提升 + 认证问题诊断
+
+#### ✅ 完成任务
+
+**P1 DeprecationWarning 修复**：
+- 修复 68 个 Pydantic `example=` 弃用警告
+- 涉及文件：12 个（app/schemas/*, app/routers/*）
+- 修改行数：165 insertions(+), 159 deletions(-)
+- 测试状态：397 passed, 2 skipped ✅
+- 多 AI 协作：Window 3 (router 文件 8处) + Window 5 (schema 文件 60处)
+- Git commit: `467f117` - fix(schemas,routers): 修复 Pydantic example 参数弃用警告
+
+**前端认证 401 错误诊断**：
+- 问题现象：/auth/login, /auth/me, /auth/refresh 全部返回 401
+- 诊断方法：深度代码审查（后端认证中间件、CSRF、Cookie、CORS、Nginx）
+- 根因定位：生产环境缺少 `COOKIE_DOMAIN` 配置
+- 影响分析：Cookie 限制在 api.solacore.app，前端 solacore.app 无法访问
+- 修复方案：添加环境变量 `COOKIE_DOMAIN=.solacore.app`
+- 配置模板：已更新 `.env.prod.example`
+- 诊断报告：docs/FRONTEND_AUTH_DEBUG_2026-01-03.md
+- Git commit: `5ed5d14` - docs(.env.prod.example): 添加 COOKIE_DOMAIN 配置说明
+
+#### 🔍 技术发现
+
+- **前端配置验证**：axios withCredentials 和 fetch credentials 均已正确配置
+- **Cookie Domain 机制**：必须以 `.` 开头才能跨子域名共享
+- **CORS 配置**：Nginx 正确配置，但需配合后端 Cookie Domain
+- **其他问题**：DraggableContainer（浏览器扩展）、KaTeX quirks mode（次要）
+
+#### 📊 质量指标
+
+- DeprecationWarning：68 → 0 ✅
+- 测试通过率：100%（397/399，2 个 skipped）
+- 代码覆盖率：83%（保持）
+- Git commits：2 个（代码修复 + 配置文档）
+
+#### 🎯 下一步
+
+- [ ] 生产环境部署：添加 COOKIE_DOMAIN=.solacore.app
+- [ ] 验证修复效果：清除浏览器 Cookie 后重新登录测试
+- [ ] 后续优化：处理剩余 76 个 type:ignore 语句（P1 级别）
+
+#### 🤖 多 AI 协作记录
+
+- **Window 1 (Orchestrator)**：任务编排、进度跟踪、Git 操作
+- **Window 3 (Codex)**：代码修复（router 文件）、问题诊断
+- **Window 5 (Codex)**：代码修复（schema 文件）、前端检查、文档生成
+
+---
+
 ### [2026-01-02 下午] - 🔧 修复 CSRF Token 配置不匹配问题
 
 - [x] **Gemini 诊断**: 发现 CSRF token 名称不匹配导致 403 错误
