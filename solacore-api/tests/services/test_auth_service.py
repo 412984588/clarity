@@ -190,6 +190,7 @@ class TestLogin:
             with pytest.raises(ValueError, match="INVALID_CREDENTIALS"):
                 await service.login(login_data)
 
+    @patch("app.services.auth_service.settings.beta_mode", True)
     async def test_login_creates_new_device(self):
         """登录时创建新设备"""
         async with TestingSessionLocal() as db:

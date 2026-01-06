@@ -63,7 +63,7 @@ async def test_send_password_reset_email_success(monkeypatch: pytest.MonkeyPatch
     assert call_args[1]["port"] == 587
     assert call_args[1]["username"] == "test@solacore.com"
     assert call_args[1]["password"] == "test-password"
-    assert call_args[1]["use_tls"] is True
+    assert call_args[1]["start_tls"] is True  # 端口 587 使用 STARTTLS
 
 
 @pytest.mark.asyncio

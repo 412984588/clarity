@@ -24,8 +24,9 @@ def test_validate_allows_custom_secret_in_production() -> None:
         jwt_secret="secure-secret",
         database_url="postgresql+asyncpg://user:pass@prod-db:5432/solacore",
         openai_api_key="sk-test-key",
-        payments_enabled=False,  # 禁用支付则不需要 Stripe 配置
+        payments_enabled=False,
         google_client_id="test-google-client-id",
-        frontend_url="https://solacore.app",  # 生产环境 URL
+        frontend_url="https://solacore.app",
+        cookie_domain=".solacore.app",
     )
     validate_production_config(settings)
