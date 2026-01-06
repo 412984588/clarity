@@ -12,7 +12,7 @@ from fastapi import Depends, HTTPException, Path, Query, Request, Response
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from . import LearnSessionResponse, router
+from . import LearnMessageResponse, LearnSessionResponse, router
 
 
 @router.get(
@@ -53,14 +53,14 @@ async def get_learn_session(
         created_at=session.created_at,  # type: ignore[arg-type]
         completed_at=session.completed_at,
         messages=[
-            {
-                "id": msg.id,
-                "role": str(msg.role),
-                "content": msg.content,
-                "step": str(msg.step),
-                "tool": msg.tool,
-                "created_at": msg.created_at,
-            }
+            LearnMessageResponse(
+                id=msg.id,
+                role=str(msg.role),
+                content=msg.content,
+                step=str(msg.step) if msg.step else None,
+                tool=msg.tool,
+                created_at=msg.created_at,  # type: ignore[arg-type]
+            )
             for msg in session.messages
         ]
         if include_messages
