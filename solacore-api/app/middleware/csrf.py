@@ -91,6 +91,10 @@ def validate_csrf(
     if request.method not in CSRF_PROTECTED_METHODS:
         return
 
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        return
+
     path = request.url.path
     exempt_paths_set = set(exempt_paths) if exempt_paths is not None else None
     exempt_prefixes_seq = (

@@ -187,7 +187,10 @@ class UserResponse(BaseModel):
 
 
 class AuthSuccessResponse(BaseModel):
-    """认证成功响应（httpOnly cookies 模式）"""
+    """认证成功响应（httpOnly cookies 模式 + token body 双模式兼容）
+
+    Web 端使用 httpOnly cookies，Mobile 端使用 body 中的 token。
+    """
 
     user: UserResponse = Field(
         ...,
@@ -205,6 +208,22 @@ class AuthSuccessResponse(BaseModel):
         default="Authentication successful",
         description="认证结果提示",
         examples=["Authentication successful"],
+    )
+    # Mobile 兼容：同时在 body 中返回 token（Web 端可忽略）
+    access_token: Optional[str] = Field(
+        default=None,
+        description="访问令牌（Mobile 端使用，Web 端使用 httpOnly cookie）",
+        examples=["eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."],
+    )
+    refresh_token: Optional[str] = Field(
+        default=None,
+        description="刷新令牌（Mobile 端使用，Web 端使用 httpOnly cookie）",
+        examples=["eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."],
+    )
+    user_id: Optional[UUID] = Field(
+        default=None,
+        description="用户 ID（便于 Mobile 端存储）",
+        examples=["2f1c9b3e-7c2a-4d1a-9a1d-0b8f7c5f2c10"],
     )
 
 

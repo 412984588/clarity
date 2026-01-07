@@ -59,35 +59,18 @@ async def create_auth_response(
     tokens,
     db: AsyncSession | None = None,
 ) -> AuthSuccessResponse:
-    """统一的认证响应构造函数
-
-    自动处理：
-    1. 设置 access_token 和 refresh_token cookies (httpOnly, Secure, SameSite)
-    2. 设置 CSRF token cookies
-    3. 清除用户会话缓存
-    4. 返回标准的 AuthSuccessResponse
-
-    Args:
-        response: FastAPI Response 对象
-        user: 用户模型实例
-        tokens: 包含 access_token 和 refresh_token 的对象
-        db: 数据库会话（可选，仅 refresh 端点需要）
-
-    Returns:
-        AuthSuccessResponse: 包含用户信息的标准响应
-    """
-    # 设置 httpOnly cookies
+    """统一的认证响应构造函数（Web cookie + Mobile token 双模式）"""
     set_session_cookies(response, tokens.access_token, tokens.refresh_token)
-
-    # 清除会话缓存
     await cache_service.invalidate_sessions(user.id)
 
-    # 返回用户信息（不包含 token）
     return AuthSuccessResponse(
         user=UserResponse(
             id=user.id,
             email=user.email,
             auth_provider=user.auth_provider,
             locale=user.locale,
-        )
+        ),
+        access_token=tokens.access_token,
+        refresh_token=tokens.refresh_token,
+        user_id=user.id,
     )

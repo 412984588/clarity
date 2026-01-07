@@ -154,18 +154,20 @@ async def send_learn_message(
     ai_service = AIService()
 
     async def event_generator() -> AsyncGenerator[str, None]:
-        """SSE 事件生成器"""
         accumulated_content = ""
 
         try:
-            # 流式接收 AI 回复
             async for token in ai_service.stream(
                 system_prompt, user_prompt_with_history
             ):
+                if await request.is_disconnected():
+                    return
                 accumulated_content += token
                 yield f"event: token\ndata: {json.dumps({'content': token})}\n\n"
 
-            # 保存 AI 回复
+            if await request.is_disconnected():
+                return
+
             ai_message = LearnMessage(
                 session_id=session.id,
                 role=LearnMessageRole.ASSISTANT.value,
@@ -175,11 +177,9 @@ async def send_learn_message(
             ai_message.tool = message_request.tool
             db.add(ai_message)
 
-            # 检查是否可以进入下一步
             next_step = get_next_learn_step(current_step)
             step_completed = len(accumulated_content) > 50
 
-            # 如果是最后一步，生成复习计划
             if is_final_learn_step(current_step):
                 session.status = "completed"
                 session.completed_at = utc_now()
@@ -188,7 +188,6 @@ async def send_learn_message(
             await db.commit()
             await db.refresh(ai_message)
 
-            # 发送完成事件
             done_data = json.dumps(
                 {
                     "message_id": str(ai_message.id),
@@ -200,7 +199,6 @@ async def send_learn_message(
             yield f"event: done\ndata: {done_data}\n\n"
 
         except Exception as e:
-            # 使用统一的 SSE 错误处理
             async for error_event in handle_sse_error(
                 db,
                 e,

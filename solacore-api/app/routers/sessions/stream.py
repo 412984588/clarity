@@ -134,27 +134,26 @@ async def stream_messages(
 
     async def event_generator() -> AsyncGenerator[str, None]:
         try:
-            # 准备 StepHistory
             active_step_history = _prepare_step_history(
                 db, step_history, session, current_step_enum
             )
 
-            # 保存用户消息并立即提交，避免在AI流式响应期间持有DB连接
             _save_user_message(db, session, current_step_enum, data.content)
             await db.commit()
 
-            # 流式输出 AI 响应（此时DB连接已释放）
             ai_response_parts: list[str] = []
             async for token in ai_service.stream(system_prompt, sanitized_input):
+                if await request.is_disconnected():
+                    return
                 ai_response_parts.append(token)
                 payload = json.dumps({"content": token})
                 yield f"event: token\ndata: {payload}\n\n"
 
-            # AI响应完成后，重新开启事务保存回复和状态
-            # 保存 AI 回复
+            if await request.is_disconnected():
+                return
+
             _save_ai_message(db, session, current_step_enum, "".join(ai_response_parts))
 
-            # 处理状态转换和分析
             next_step = await _handle_step_transition(
                 db,
                 analytics_service,
@@ -173,7 +172,6 @@ async def stream_messages(
             )
             yield f"event: done\ndata: {done_payload}\n\n"
         except Exception as e:
-            # 使用统一的 SSE 错误处理
             async for error_event in handle_sse_error(
                 db,
                 e,
@@ -185,4 +183,12 @@ async def stream_messages(
             ):
                 yield error_event
 
-    return StreamingResponse(event_generator(), media_type="text/event-stream")
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )

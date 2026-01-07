@@ -3,6 +3,7 @@
 提供 Token 刷新和登出功能
 """
 
+from typing import Optional
 from uuid import UUID
 
 from app.config import get_settings
@@ -12,13 +13,13 @@ from app.middleware.csrf import clear_csrf_cookies
 from app.middleware.rate_limit import API_RATE_LIMIT, limiter, user_rate_limit_key
 from app.models.session import ActiveSession
 from app.models.user import User
-from app.schemas.auth import AuthSuccessResponse
+from app.schemas.auth import AuthSuccessResponse, RefreshRequest
 from app.services.auth_service import AuthService
 from app.services.cache_service import CacheService
 from app.utils.docs import COMMON_ERROR_RESPONSES
 from app.utils.exceptions import raise_auth_error
 from app.utils.security import decode_token
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi import APIRouter, Body, Depends, HTTPException, Request, Response
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -34,25 +35,26 @@ router = APIRouter()
     "/refresh",
     response_model=AuthSuccessResponse,
     summary="刷新访问令牌",
-    description="使用 refresh_token cookie 刷新 access token，并更新认证 cookies。",
+    description="使用 refresh_token（cookie 或 body）刷新 access token，并更新认证 cookies。",
     responses=COMMON_ERROR_RESPONSES,
 )
 @limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
 async def refresh(
     request: Request,
     response: Response,
+    data: Optional[RefreshRequest] = Body(default=None),
     db: AsyncSession = Depends(get_db),
 ):
-    """刷新 access token 并更新认证 Cookie。"""
-    # 从 cookie 读取 refresh_token
+    """刷新 access token（支持 cookie 和 body 两种方式）"""
     refresh_token = request.cookies.get("refresh_token")
+    if not refresh_token and data and data.refresh_token:
+        refresh_token = data.refresh_token
     if not refresh_token:
         raise HTTPException(status_code=401, detail={"error": "MISSING_REFRESH_TOKEN"})
 
     service = AuthService(db)
     try:
         tokens = await service.refresh_token(refresh_token)
-        # 获取用户信息
         payload = decode_token(tokens.access_token)
         if not payload:
             raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"})
