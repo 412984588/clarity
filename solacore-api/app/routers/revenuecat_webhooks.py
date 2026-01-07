@@ -1,6 +1,7 @@
 import hashlib
 import json
 import logging
+import secrets
 from datetime import datetime, timezone
 from typing import Optional
 from uuid import UUID
@@ -175,7 +176,7 @@ def _verify_webhook_auth(authorization: Optional[str], secret: str) -> None:
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail={"error": "MISSING_AUTH"})
     token = authorization.replace("Bearer ", "", 1).strip()
-    if token != secret:
+    if not secrets.compare_digest(token, secret):
         raise HTTPException(status_code=401, detail={"error": "INVALID_AUTH"})
 
 

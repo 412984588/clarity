@@ -39,13 +39,15 @@ def _validate_token_payload(payload: dict | None) -> tuple[UUID, UUID]:
 
     try:
         user_uuid = UUID(str(payload.get("sub")))
-    except (TypeError, ValueError):
-        raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"})
+    except (TypeError, ValueError) as e:
+        raise HTTPException(status_code=401, detail={"error": "INVALID_TOKEN"}) from e
 
     try:
         session_uuid = UUID(str(payload.get("sid")))
-    except (TypeError, ValueError):
-        raise HTTPException(status_code=401, detail={"error": "SESSION_NOT_FOUND"})
+    except (TypeError, ValueError) as e:
+        raise HTTPException(
+            status_code=401, detail={"error": "SESSION_NOT_FOUND"}
+        ) from e
 
     return user_uuid, session_uuid
 
