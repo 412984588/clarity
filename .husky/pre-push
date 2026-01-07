@@ -1,0 +1,37 @@
+#!/bin/sh
+
+# 推送前执行更重的校验（严格：失败则禁止 push）
+
+ROOT_DIR=$(git rev-parse --show-toplevel)
+cd "$ROOT_DIR" || exit 1
+
+# 尽量用 origin/main...HEAD 判断是否涉及子项目
+BASE_REF="refs/remotes/origin/main"
+if git show-ref --verify --quiet "$BASE_REF"; then
+  DIFF_RANGE="origin/main...HEAD"
+else
+  # 没有 origin/main（比如首次 clone 未 fetch），退化为检查最近一次提交
+  DIFF_RANGE="HEAD~1...HEAD"
+fi
+
+changed_in_range() {
+  git diff --name-only "$DIFF_RANGE" | grep -q "^$1/"
+}
+
+if changed_in_range "solacore-api"; then
+  cd "$ROOT_DIR/solacore-api" || exit 1
+  poetry run pytest -q --maxfail=1 --disable-warnings --cov=app --cov-fail-under=85 || exit 1
+fi
+
+if changed_in_range "solacore-web"; then
+  cd "$ROOT_DIR/solacore-web" || exit 1
+  npx tsc --noEmit || exit 1
+  npm run lint || exit 1
+  npm run build || exit 1
+fi
+
+if changed_in_range "solacore-mobile"; then
+  cd "$ROOT_DIR/solacore-mobile" || exit 1
+  npx tsc --noEmit || exit 1
+  npm run lint || exit 1
+fi

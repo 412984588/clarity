@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# 统一提交信息规范（Conventional Commits 风格）
+# 复用后端已存在的校验脚本：solacore-api/scripts/check-commit-msg.py
+
+ROOT_DIR=$(git rev-parse --show-toplevel)
+cd "$ROOT_DIR" || exit 1
+
+python3 solacore-api/scripts/check-commit-msg.py "$1"
