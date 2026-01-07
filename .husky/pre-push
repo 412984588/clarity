@@ -1,6 +1,9 @@
 #!/bin/sh
 
 # 推送前执行更重的校验（严格：失败则禁止 push）
+# 说明：覆盖率门槛放到 CI 强制，本地只保证“测试通过”与“类型/构建通过”
+
+set -eu
 
 ROOT_DIR=$(git rev-parse --show-toplevel)
 cd "$ROOT_DIR" || exit 1
@@ -20,10 +23,11 @@ changed_in_range() {
 
 if changed_in_range "solacore-api"; then
   cd "$ROOT_DIR/solacore-api" || exit 1
-  poetry run pytest -q --maxfail=1 --disable-warnings --cov=app --cov-fail-under=85 || exit 1
+  poetry run pytest -q --maxfail=1 --disable-warnings || exit 1
 fi
 
 if changed_in_range "solacore-web"; then
+  printf '%s\n' "🌐 检查 Web：类型检查 + Lint + 构建" >&2
   cd "$ROOT_DIR/solacore-web" || exit 1
   npx tsc --noEmit || exit 1
   npm run lint || exit 1
@@ -31,6 +35,7 @@ if changed_in_range "solacore-web"; then
 fi
 
 if changed_in_range "solacore-mobile"; then
+  printf '%s\n' "📱 检查 Mobile：类型检查 + Lint" >&2
   cd "$ROOT_DIR/solacore-mobile" || exit 1
   npx tsc --noEmit || exit 1
   npm run lint || exit 1

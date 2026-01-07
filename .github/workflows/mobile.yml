@@ -8,7 +8,7 @@ on:
 
 defaults:
   run:
-    working-directory: clarity-mobile
+    working-directory: solacore-mobile
 
 jobs:
   lint:
@@ -19,7 +19,7 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-          cache-dependency-path: clarity-mobile/package-lock.json
+          cache-dependency-path: solacore-mobile/package-lock.json
       - run: npm ci --legacy-peer-deps
       - run: npm run lint
       - run: npx tsc --noEmit

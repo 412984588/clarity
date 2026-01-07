@@ -51,7 +51,7 @@ jobs:
           JWT_SECRET: test-jwt-secret-for-ci-only
           REDIS_URL: redis://localhost:6379
           DEBUG: "true"
-      - run: poetry run pytest -v
+      - run: poetry run pytest -q --cov=app --cov-fail-under=85
         env:
           DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/clarity_test
           JWT_SECRET: test-jwt-secret-for-ci-only

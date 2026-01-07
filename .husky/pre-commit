@@ -2,12 +2,97 @@
 
 # 获取项目根目录
 ROOT_DIR=$(git rev-parse --show-toplevel)
+cd "$ROOT_DIR" || exit 1
 
-# 后端检查
-cd "$ROOT_DIR/solacore-api" && poetry run pre-commit run --all-files || exit 1
+# ---------- 全局安全/质量快检查（严格阻止提交） ----------
+# 提醒：至少看一眼 staged 变更概览
+printf '%s\n' "⚠️  staged 改动概览：" >&2
+(git diff --cached --stat || true) >&2
 
-# Web 前端检查（可选，lint-staged 可能失败如果没有改动）
-cd "$ROOT_DIR/solacore-web" && npx lint-staged || true
+# 安全检查：合并冲突标记 / 私钥片段 / 大文件（>500KB）
+python3 - <<'PY'
+import re
+import subprocess
+import sys
 
-# Mobile 前端检查
-cd "$ROOT_DIR/solacore-mobile" && npx lint-staged || true
+MAX_BYTES = 500 * 1024
+
+CONFLICT_RE = re.compile(rb"^(<<<<<<<|=======|>>>>>>>)(\s|$)", re.M)
+PRIVATE_KEY_RE = re.compile(
+    rb"-----BEGIN (OPENSSH |RSA |EC |DSA )?PRIVATE KEY-----",
+    re.M,
+)
+
+
+def run(args: list[str]) -> subprocess.CompletedProcess[bytes]:
+    return subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+
+def staged_files() -> list[str]:
+    out = subprocess.check_output(
+        ["git", "diff", "--cached", "--name-only", "--diff-filter=ACMR"],
+        text=True,
+    )
+    files = [line.strip() for line in out.splitlines() if line.strip()]
+    return files
+
+
+def blob_size(path: str) -> int:
+    p = run(["git", "cat-file", "-s", f":{path}"])
+    if p.returncode != 0:
+        return -1
+    try:
+        return int(p.stdout.strip() or b"0")
+    except ValueError:
+        return -1
+
+
+def blob_bytes(path: str) -> bytes:
+    p = run(["git", "show", f":{path}"])
+    if p.returncode != 0:
+        return b""
+    return p.stdout
+
+
+problems: list[str] = []
+
+for path in staged_files():
+    size = blob_size(path)
+    if size > MAX_BYTES:
+        problems.append(f"❌ 大文件禁止提交: {path} ({size} bytes)")
+
+    data = blob_bytes(path)
+    if not data:
+        continue
+
+    if CONFLICT_RE.search(data):
+        problems.append(f"❌ 检测到合并冲突标记: {path}")
+
+    if PRIVATE_KEY_RE.search(data):
+        problems.append(f"❌ 疑似私钥内容: {path}")
+
+if problems:
+    print("\n".join(problems), file=sys.stderr)
+    print("\n提交已被阻止：请修复以上问题后重新 git add 再提交", file=sys.stderr)
+    raise SystemExit(1)
+PY
+
+changed_in() {
+  git diff --cached --name-only --diff-filter=ACMR | grep -q "^$1/"
+}
+
+# ---------- 子项目检查：仅对本次提交涉及的子项目执行 ----------
+if changed_in "solacore-api"; then
+  cd "$ROOT_DIR/solacore-api" || exit 1
+  poetry run pre-commit run || exit 1
+fi
+
+if changed_in "solacore-web"; then
+  cd "$ROOT_DIR/solacore-web" || exit 1
+  npx lint-staged || exit 1
+fi
+
+if changed_in "solacore-mobile"; then
+  cd "$ROOT_DIR/solacore-mobile" || exit 1
+  npx lint-staged || exit 1
+fi
