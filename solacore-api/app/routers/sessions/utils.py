@@ -1,18 +1,14 @@
 # 会话路由辅助工具：常量、状态转换与消息存储等共享逻辑
 
 from datetime import datetime
+from typing import cast
 
 from app.models.message import Message, MessageRole
 from app.models.solve_session import SessionStatus, SolveSession, SolveStep
 from app.models.step_history import StepHistory
 from app.models.subscription import Subscription, Usage
 from app.services.analytics_service import AnalyticsService
-from app.services.state_machine import (
-    can_transition,
-    get_next_step,
-    is_final_step,
-    validate_transition,
-)
+from app.services.state_machine import get_next_step, is_final_step, validate_transition
 from app.utils.datetime_utils import utc_now
 from fastapi import HTTPException
 from sqlalchemy import select
@@ -78,12 +74,16 @@ STEP_SYSTEM_PROMPTS = {
 }
 
 
-def _period_start_for_tier(subscription: Subscription) -> datetime:
-    if subscription.tier == "free":
-        anchor = subscription.created_at or utc_now()
+def _period_start_for_tier(
+    tier: str,
+    created_at: datetime | None,
+    current_period_start: datetime | None,
+) -> datetime:
+    if tier == "free":
+        anchor = created_at or utc_now()
         return anchor.replace(hour=0, minute=0, second=0, microsecond=0)
-    if subscription.current_period_start:
-        return subscription.current_period_start  # type: ignore[return-value]
+    if current_period_start is not None:
+        return current_period_start
     return utc_now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
 
@@ -95,9 +95,11 @@ def _prepare_step_history(
 ) -> StepHistory:
     """获取或创建当前步骤的 StepHistory"""
     active_step_history = step_history
-    if active_step_history and active_step_history.step != current_step_enum.value:
-        active_step_history = None
-    if not active_step_history:
+    if active_step_history is not None:
+        active_step = cast(str, active_step_history.step)
+        if active_step != current_step_enum.value:
+            active_step_history = None
+    if active_step_history is None:
         active_step_history = StepHistory(
             session_id=session.id,
             step=current_step_enum.value,
@@ -153,28 +155,30 @@ async def _handle_step_transition(
     active_step_history: StepHistory,
     current_step_enum: SolveStep,
 ) -> str:
-    """处理状态转换和分析事件"""
     next_step_enum = get_next_step(current_step_enum)
+
     next_step = next_step_enum.value if next_step_enum else current_step_enum.value
+    return await _handle_step_transition_to(
+        db,
+        analytics_service,
+        session,
+        active_step_history,
+        current_step_enum,
+        next_step,
+    )
+
+
+async def _handle_step_transition_to(
+    db: AsyncSession,
+    analytics_service: AnalyticsService,
+    session: SolveSession,
+    active_step_history: StepHistory,
+    current_step_enum: SolveStep,
+    target_step_value: str,
+) -> str:
     now = utc_now()
 
-    if next_step_enum and can_transition(current_step_enum, next_step_enum):
-        active_step_history.completed_at = now  # type: ignore[assignment]
-        db.add(
-            StepHistory(
-                session_id=session.id,
-                step=next_step_enum.value,
-                started_at=now,
-            )
-        )
-        session.current_step = next_step_enum.value  # type: ignore[assignment]
-        await analytics_service.emit(
-            "step_completed",
-            session.id,  # type: ignore[arg-type]
-            {"from_step": current_step_enum.value, "to_step": next_step_enum.value},
-            flush=False,
-        )
-    elif is_final_step(current_step_enum):
+    if is_final_step(current_step_enum):
         if active_step_history.completed_at is None:
             active_step_history.completed_at = now  # type: ignore[assignment]
             await analytics_service.emit(
@@ -191,8 +195,32 @@ async def _handle_step_transition(
             {"final_step": current_step_enum.value},
             flush=False,
         )
+        return current_step_enum.value
 
-    return next_step
+    try:
+        target_step_enum = SolveStep(target_step_value)
+    except ValueError:
+        return current_step_enum.value
+
+    if not validate_transition(current_step_enum, target_step_enum):
+        return current_step_enum.value
+
+    active_step_history.completed_at = now  # type: ignore[assignment]
+    db.add(
+        StepHistory(
+            session_id=session.id,
+            step=target_step_enum.value,
+            started_at=now,
+        )
+    )
+    session.current_step = target_step_enum.value  # type: ignore[assignment]
+    await analytics_service.emit(
+        "step_completed",
+        session.id,  # type: ignore[arg-type]
+        {"from_step": current_step_enum.value, "to_step": target_step_enum.value},
+        flush=False,
+    )
+    return target_step_enum.value
 
 
 async def _get_or_create_usage(
@@ -202,7 +230,11 @@ async def _get_or_create_usage(
     """获取或创建当月 Usage 记录，使用 PostgreSQL upsert 保证并发安全"""
     from sqlalchemy.dialects.postgresql import insert as pg_insert
 
-    period_start = _period_start_for_tier(subscription)
+    period_start = _period_start_for_tier(
+        cast(str, subscription.tier),
+        cast(datetime | None, subscription.created_at),
+        cast(datetime | None, subscription.current_period_start),
+    )
 
     # 使用 PostgreSQL 的 INSERT ON CONFLICT 实现并发安全的 upsert
     stmt = pg_insert(Usage).values(

@@ -99,7 +99,9 @@ async def create_session(
     usage = await _get_or_create_usage(db, subscription)
 
     # 原子递增 session_count，避免并发丢失更新
-    period_start = _period_start_for_tier(subscription)
+    period_start = _period_start_for_tier(
+        tier, subscription.created_at, subscription.current_period_start
+    )
     stmt = (
         update(Usage)
         .where(Usage.user_id == current_user.id, Usage.period_start == period_start)

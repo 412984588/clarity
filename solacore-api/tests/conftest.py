@@ -1,25 +1,40 @@
+import os
 from http.cookies import SimpleCookie
 from typing import AsyncGenerator, Generator
 
-import pytest
-import pytest_asyncio
-from app.config import get_settings
-from app.database import Base, get_db
-from app.main import app
-from app.middleware.rate_limit import limiter
-from app.services import stripe_service
-from httpx import ASGITransport, AsyncClient
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.pool import NullPool
+# Ensure the FastAPI app and global engine are bound to the test database.
+# This must happen before importing any `app.*` modules that initialize engines.
+_DEFAULT_DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/solacore"
+_base_db_url = os.getenv("DATABASE_URL", _DEFAULT_DATABASE_URL)
+if _base_db_url.endswith("/solacore_test"):
+    _test_db_url = _base_db_url
+elif _base_db_url.endswith("/solacore"):
+    _test_db_url = _base_db_url.replace("/solacore", "/solacore_test")
+else:
+    _test_db_url = _base_db_url
+
+# Override unconditionally for tests to avoid mixing databases.
+os.environ["DATABASE_URL"] = _test_db_url
+
+import pytest  # noqa: E402
+import pytest_asyncio  # noqa: E402
+from app.config import get_settings  # noqa: E402
+from app.database import Base, get_db  # noqa: E402
+from app.main import app  # noqa: E402
+from app.middleware.rate_limit import limiter  # noqa: E402
+from app.services import stripe_service  # noqa: E402
+from httpx import ASGITransport, AsyncClient  # noqa: E402
+from sqlalchemy.ext.asyncio import (  # noqa: E402
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
+from sqlalchemy.pool import NullPool  # noqa: E402
 
 settings = get_settings()
 
-# 使用测试数据库，禁用连接池避免并发问题
-# CI 中 DATABASE_URL 已是 solacore_test，本地是 solacore 需替换
-if settings.database_url.endswith("/solacore_test"):
-    TEST_DATABASE_URL = settings.database_url
-else:
-    TEST_DATABASE_URL = settings.database_url.replace("/solacore", "/solacore_test")
+# Use the test database, disable pooling to avoid cross-test leakage.
+TEST_DATABASE_URL = settings.database_url
 engine_test = create_async_engine(
     TEST_DATABASE_URL,
     echo=False,
@@ -47,6 +62,24 @@ async def _add_csrf_header(request) -> None:
     token = cookie.get("csrf_token")
     if token:
         request.headers["X-CSRF-Token"] = token.value
+
+
+async def _ensure_db_available() -> None:
+    """Fail fast with a helpful message when Postgres isn't running."""
+    from sqlalchemy import text
+
+    try:
+        async with engine_test.connect() as conn:
+            await conn.execute(text("SELECT 1"))
+    except Exception as exc:
+        message = (
+            "PostgreSQL is unavailable for tests. Start it with "
+            "`cd solacore-api && docker compose up -d db redis`. "
+            "Set SOLACORE_TEST_SKIP_DB=1 to skip DB-backed tests locally."
+        )
+        if os.getenv("SOLACORE_TEST_SKIP_DB") == "1":
+            pytest.skip(message)
+        raise RuntimeError(message) from exc
 
 
 async def _truncate_tables() -> None:
@@ -99,6 +132,7 @@ def _configure_payments(request) -> Generator[None, None, None]:
 @pytest_asyncio.fixture(scope="function")
 async def client() -> AsyncGenerator[AsyncClient, None]:
     """每个测试函数使用独立的数据库状态"""
+    await _ensure_db_available()
     # 首次运行时创建表（如果不存在）
     async with engine_test.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -131,6 +165,7 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
 @pytest_asyncio.fixture(scope="function")
 async def client_no_csrf() -> AsyncGenerator[AsyncClient, None]:
     """不自动注入 CSRF header 的测试客户端"""
+    await _ensure_db_available()
     # 首次运行时创建表（如果不存在）
     async with engine_test.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
