@@ -60,6 +60,12 @@ class SolveSession(Base):
         lazy="selectin",
         order_by="Message.created_at",
     )
+    profile = relationship(
+        "SolveProfile",
+        back_populates="session",
+        lazy="selectin",
+        uselist=False,
+    )
 
     def __repr__(self):
         return f"<SolveSession {self.id}>"

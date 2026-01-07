@@ -15,7 +15,7 @@ from tests.conftest import TestingSessionLocal
 
 
 @pytest_asyncio.fixture
-async def test_user_with_session():
+async def test_user_with_session(client: AsyncClient):
     """创建测试用户和会话的 fixture"""
     async with TestingSessionLocal() as session:
         # 创建用户

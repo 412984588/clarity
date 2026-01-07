@@ -6,6 +6,7 @@ from app.models.message import Message
 from app.models.password_reset import PasswordResetToken
 from app.models.prompt_template import PromptTemplate
 from app.models.session import ActiveSession
+from app.models.solve_profile import SolveProfile
 from app.models.solve_session import SolveSession
 from app.models.step_history import StepHistory
 from app.models.subscription import Subscription, Usage
@@ -17,6 +18,7 @@ __all__ = [
     "Device",
     "ActiveSession",
     "SolveSession",
+    "SolveProfile",
     "LearnSession",
     "LearnMessage",
     "Subscription",
