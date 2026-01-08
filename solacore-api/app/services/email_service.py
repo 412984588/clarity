@@ -74,10 +74,16 @@ Solacore 团队
             port=settings.smtp_port,
             username=settings.smtp_user,
             password=settings.smtp_password,
-            start_tls=True,  # 端口 587 需要 STARTTLS，而非直接 TLS
+            start_tls=True,
         )
-        logger.info(f"Password reset email sent to {to_email}")
+        logger.info("Password reset email sent to %s", to_email)
         return True
     except Exception as e:
-        logger.error(f"Failed to send password reset email to {to_email}: {e}")
+        logger.error(
+            "Failed to send password reset email to %s: %s",
+            to_email,
+            str(e),
+            exc_info=True,
+            extra={"to_email": to_email, "smtp_host": settings.smtp_host},
+        )
         return False

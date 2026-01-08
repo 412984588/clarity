@@ -94,7 +94,13 @@ async def forgot_password(
         try:
             await send_password_reset_email(str(user.email), token)
         except Exception as e:
-            logger.error(f"Password reset email error: {e}")
+            logger.error(
+                "Password reset email failed for user_id=%s: %s",
+                user.id,
+                str(e),
+                exc_info=True,
+                extra={"user_id": str(user.id), "email": user.email},
+            )
 
         # Debug 模式额外记录日志
         if settings.debug:
