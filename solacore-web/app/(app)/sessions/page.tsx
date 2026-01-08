@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
-import { Trash2 } from "lucide-react";
+import { Search, Trash2, X } from "lucide-react";
 
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
@@ -27,7 +27,22 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { Session } from "@/lib/types";
-import { listSessions, deleteSession } from "@/lib/session-api";
+import {
+  listSessions,
+  deleteSession,
+  type SessionSearchParams,
+} from "@/lib/session-api";
+
+function debounce(
+  func: (params?: SessionSearchParams) => Promise<void>,
+  wait: number,
+): (params?: SessionSearchParams) => void {
+  let timeout: NodeJS.Timeout;
+  return (params?: SessionSearchParams) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(params), wait);
+  };
+}
 
 export default function SessionsPage() {
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -37,20 +52,36 @@ export default function SessionsPage() {
   const [sessionToDelete, setSessionToDelete] = useState<Session | null>(null);
   const [deleting, setDeleting] = useState(false);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const data = await listSessions();
-        setSessions(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "加载会话失败");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedStatus, setSelectedStatus] = useState<string>("");
 
-    void load();
+  const loadSessions = useCallback(async (params?: SessionSearchParams) => {
+    try {
+      setLoading(true);
+      const data = await listSessions(params);
+      setSessions(data);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "加载会话失败");
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  const debouncedSearch = useMemo(
+    () => debounce(loadSessions, 300),
+    [loadSessions],
+  );
+
+  useEffect(() => {
+    const params: SessionSearchParams = {};
+    if (searchQuery) params.q = searchQuery;
+    if (selectedTags.length > 0) params.tags = selectedTags.join(",");
+    if (selectedStatus) params.status = selectedStatus;
+
+    debouncedSearch(params);
+  }, [searchQuery, selectedTags, selectedStatus, debouncedSearch]);
 
   const handleDeleteClick = (session: Session) => {
     setSessionToDelete(session);
@@ -79,6 +110,14 @@ export default function SessionsPage() {
     setSessionToDelete(null);
   };
 
+  const allTags = useMemo(() => {
+    const tagSet = new Set<string>();
+    sessions.forEach((session) => {
+      session.tags?.forEach((tag) => tagSet.add(tag));
+    });
+    return Array.from(tagSet).sort();
+  }, [sessions]);
+
   if (loading) {
     return (
       <div className="flex h-[60vh] items-center justify-center">
@@ -97,7 +136,12 @@ export default function SessionsPage() {
     );
   }
 
-  if (sessions.length === 0) {
+  if (
+    sessions.length === 0 &&
+    !searchQuery &&
+    selectedTags.length === 0 &&
+    !selectedStatus
+  ) {
     return (
       <EmptyState
         title="暂无会话记录"
@@ -113,6 +157,81 @@ export default function SessionsPage() {
 
   return (
     <>
+      <div className="mb-4 space-y-3">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="搜索会话..."
+            className="w-full pl-10 pr-10 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2"
+            >
+              <X className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+            </button>
+          )}
+        </div>
+
+        <div className="flex gap-2 flex-wrap">
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className="px-3 py-1.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">所有状态</option>
+            <option value="active">进行中</option>
+            <option value="completed">已完成</option>
+            <option value="archived">已归档</option>
+          </select>
+
+          {allTags.length > 0 && (
+            <select
+              value=""
+              onChange={(e) => {
+                const tag = e.target.value;
+                if (tag && !selectedTags.includes(tag)) {
+                  setSelectedTags([...selectedTags, tag]);
+                }
+              }}
+              className="px-3 py-1.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">添加标签过滤...</option>
+              {allTags.map((tag) => (
+                <option
+                  key={tag}
+                  value={tag}
+                  disabled={selectedTags.includes(tag)}
+                >
+                  {tag}
+                </option>
+              ))}
+            </select>
+          )}
+
+          {selectedTags.map((tag) => (
+            <span
+              key={tag}
+              className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
+            >
+              {tag}
+              <button
+                onClick={() =>
+                  setSelectedTags(selectedTags.filter((t) => t !== tag))
+                }
+                className="hover:bg-blue-200 rounded-full p-0.5"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </span>
+          ))}
+        </div>
+      </div>
+
       <Card className="overflow-hidden">
         <Table>
           <TableHeader>

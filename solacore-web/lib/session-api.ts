@@ -83,9 +83,20 @@ export const getSession = async (id: string): Promise<Session> => {
   return response.data;
 };
 
-export const listSessions = async (): Promise<Session[]> => {
-  const response = await api.get<{ sessions: Session[] }>("/sessions");
-  // 后端返回 { sessions: [], total: 0, limit: 20, offset: 0 }
+export interface SessionSearchParams {
+  q?: string;
+  tags?: string;
+  status?: string;
+  from_date?: string;
+  to_date?: string;
+}
+
+export const listSessions = async (
+  params?: SessionSearchParams,
+): Promise<Session[]> => {
+  const response = await api.get<{ sessions: Session[] }>("/sessions", {
+    params,
+  });
   return response.data.sessions;
 };
 
