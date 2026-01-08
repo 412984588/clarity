@@ -38,6 +38,202 @@ from .utils import (
 router = APIRouter()
 
 
+async def _validate_session_and_get_context(
+    db: AsyncSession,
+    session_id: UUID,
+    user_id: UUID,
+) -> tuple[SolveSession, StepHistory | None]:
+    """验证会话并获取上下文（会话 + 当前步骤历史）"""
+    result = await db.execute(
+        select(SolveSession, StepHistory)
+        .outerjoin(
+            StepHistory,
+            and_(
+                StepHistory.session_id == SolveSession.id,
+                StepHistory.step == SolveSession.current_step,
+                StepHistory.completed_at.is_(None),
+            ),
+        )
+        .where(SolveSession.id == session_id, SolveSession.user_id == user_id)
+        .order_by(StepHistory.started_at.desc())
+        .limit(1)
+    )
+    row = result.first()
+    if not row:
+        raise HTTPException(status_code=404, detail={"error": "SESSION_NOT_FOUND"})
+    session, step_history = row
+    if session.status == SessionStatus.COMPLETED.value:
+        raise HTTPException(status_code=400, detail={"error": "SESSION_COMPLETED"})
+    return session, step_history
+
+
+async def _handle_crisis_detection(
+    db: AsyncSession,
+    session: SolveSession,
+    content: str,
+) -> StreamingResponse | None:
+    """处理危机检测，如果触发危机则返回 StreamingResponse，否则返回 None"""
+    crisis_result = detect_crisis(content)
+    if not crisis_result.blocked:
+        return None
+
+    analytics_service = AnalyticsService(db)
+    await analytics_service.emit(
+        "crisis_detected",
+        session.id,  # type: ignore[arg-type]
+        {"keyword": crisis_result.matched_keyword},
+        flush=False,
+    )
+    await db.commit()
+
+    async def crisis_event_generator() -> AsyncGenerator[str, None]:
+        crisis_response = get_crisis_response()
+        message = crisis_response.get("message", "")
+        payload = json.dumps({"content": message})
+        yield f"event: token\ndata: {payload}\n\n"
+        done_payload = json.dumps(
+            {
+                "blocked": True,
+                "reason": "CRISIS",
+                "resources": crisis_response.get("resources", {}),
+            }
+        )
+        yield f"event: done\ndata: {done_payload}\n\n"
+
+    return StreamingResponse(
+        crisis_event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
+def _create_event_generator(
+    request: Request,
+    db: AsyncSession,
+    session: SolveSession,
+    step_history: StepHistory | None,
+    current_step_enum: SolveStep,
+    system_prompt: str,
+    sanitized_input: str,
+    user_content: str,
+    emotion_result,
+    enable_orchestration: bool,
+    session_id: UUID,
+    user_id: UUID,
+) -> AsyncGenerator[str, None]:
+    """创建 SSE 事件生成器（根据配置选择多代理或传统 AI 流）"""
+
+    async def event_generator() -> AsyncGenerator[str, None]:
+        try:
+            active_step_history = _prepare_step_history(
+                db, step_history, session, current_step_enum
+            )
+            _save_user_message(db, session, current_step_enum, user_content)
+            await db.commit()
+
+            if enable_orchestration:
+                analytics_service = AnalyticsService(db)
+                orchestrator = OrchestratorService(db)
+                decision = await orchestrator.handle_solve_message(
+                    session, user_content, current_step_enum, sanitized_input
+                )
+
+                if await request.is_disconnected():
+                    _close_step_history(db, active_step_history, "disconnected")
+                    await db.commit()
+                    return
+
+                response_text = decision.response_text
+                payload = json.dumps({"content": response_text})
+                yield f"event: token\ndata: {payload}\n\n"
+
+                if await request.is_disconnected():
+                    _close_step_history(db, active_step_history, "disconnected")
+                    await db.commit()
+                    return
+
+                next_step = current_step_enum.value
+                actual_step_for_message = current_step_enum
+                if decision.next_step != current_step_enum.value:
+                    next_step = await _handle_step_transition_to(
+                        db,
+                        analytics_service,
+                        session,
+                        active_step_history,
+                        current_step_enum,
+                        decision.next_step,
+                    )
+                    try:
+                        actual_step_for_message = SolveStep(decision.next_step)
+                    except ValueError:
+                        actual_step_for_message = current_step_enum
+
+                _save_ai_message(db, session, actual_step_for_message, response_text)
+                await db.commit()
+                done_payload = json.dumps(
+                    {
+                        "next_step": next_step,
+                        "primary_agent": decision.primary_agent.value,
+                        "emotion_detected": emotion_result.emotion.value,
+                        "confidence": emotion_result.confidence,
+                    }
+                )
+                yield f"event: done\ndata: {done_payload}\n\n"
+                return
+
+            analytics_service = AnalyticsService(db)
+            ai_service = AIService()
+            ai_response_parts: list[str] = []
+            async for token in ai_service.stream(system_prompt, sanitized_input):
+                if await request.is_disconnected():
+                    _close_step_history(db, active_step_history, "disconnected")
+                    await db.commit()
+                    return
+                ai_response_parts.append(token)
+                payload = json.dumps({"content": token})
+                yield f"event: token\ndata: {payload}\n\n"
+
+            if await request.is_disconnected():
+                _close_step_history(db, active_step_history, "disconnected")
+                await db.commit()
+                return
+
+            _save_ai_message(db, session, current_step_enum, "".join(ai_response_parts))
+            next_step = await _handle_step_transition(
+                db,
+                analytics_service,
+                session,
+                active_step_history,
+                current_step_enum,
+            )
+            await db.commit()
+            done_payload = json.dumps(
+                {
+                    "next_step": next_step,
+                    "emotion_detected": emotion_result.emotion.value,
+                    "confidence": emotion_result.confidence,
+                }
+            )
+            yield f"event: done\ndata: {done_payload}\n\n"
+        except Exception as e:
+            async for error_event in handle_sse_error(
+                db,
+                e,
+                {
+                    "session_id": str(session_id),
+                    "step": current_step_enum.value,
+                    "user_id": str(user_id),
+                },
+            ):
+                yield error_event
+
+    return event_generator()
+
+
 @router.post(
     "/{session_id}/messages",
     response_class=StreamingResponse,
@@ -83,75 +279,23 @@ async def stream_messages(
     db: AsyncSession = Depends(get_db),
 ):
     """向会话发送消息并以 SSE 方式流式返回 AI 回复。"""
-    result = await db.execute(
-        select(SolveSession, StepHistory)
-        .outerjoin(
-            StepHistory,
-            and_(
-                StepHistory.session_id == SolveSession.id,
-                StepHistory.step == SolveSession.current_step,
-                StepHistory.completed_at.is_(None),
-            ),
-        )
-        .where(SolveSession.id == session_id, SolveSession.user_id == current_user.id)
-        .order_by(StepHistory.started_at.desc())
-        .limit(1)
+    session, step_history = await _validate_session_and_get_context(
+        db,
+        session_id,
+        current_user.id,  # type: ignore[arg-type]
     )
-    row = result.first()
-    if not row:
-        raise HTTPException(status_code=404, detail={"error": "SESSION_NOT_FOUND"})
-    session, step_history = row
-    if session.status == SessionStatus.COMPLETED.value:
-        raise HTTPException(status_code=400, detail={"error": "SESSION_COMPLETED"})
 
-    # 危机检测 - 在处理消息之前检查
-    crisis_result = detect_crisis(data.content)
-    if crisis_result.blocked:
-        analytics_service = AnalyticsService(db)
-        await analytics_service.emit(
-            "crisis_detected",
-            session.id,  # type: ignore[arg-type]
-            {"keyword": crisis_result.matched_keyword},
-            flush=False,
-        )
-        await db.commit()
-
-        async def crisis_event_generator() -> AsyncGenerator[str, None]:
-            crisis_response = get_crisis_response()
-            message = crisis_response.get("message", "")
-            payload = json.dumps({"content": message})
-            yield f"event: token\ndata: {payload}\n\n"
-            done_payload = json.dumps(
-                {
-                    "blocked": True,
-                    "reason": "CRISIS",
-                    "resources": crisis_response.get("resources", {}),
-                }
-            )
-            yield f"event: done\ndata: {done_payload}\n\n"
-
-        return StreamingResponse(
-            crisis_event_generator(),
-            media_type="text/event-stream",
-            headers={
-                "Cache-Control": "no-cache",
-                "Connection": "keep-alive",
-                "X-Accel-Buffering": "no",
-            },
-        )
+    crisis_response = await _handle_crisis_detection(db, session, data.content)
+    if crisis_response:
+        return crisis_response
 
     settings = get_settings()
-
     current_step = str(session.current_step)
     system_prompt = STEP_SYSTEM_PROMPTS.get(
         current_step,
         STEP_SYSTEM_PROMPTS[SolveStep.RECEIVE.value],
     )
     sanitized_input = strip_pii(sanitize_user_input(data.content))
-    ai_service = AIService()
-    analytics_service = AnalyticsService(db)
-
-    # 情绪检测
     emotion_result = detect_emotion(data.content)
 
     try:
@@ -160,116 +304,67 @@ async def stream_messages(
         current_step_enum = SolveStep.RECEIVE
         session.current_step = current_step_enum.value  # type: ignore[assignment]
 
-    async def event_generator() -> AsyncGenerator[str, None]:
-        try:
-            active_step_history = _prepare_step_history(
-                db, step_history, session, current_step_enum
-            )
-
-            _save_user_message(db, session, current_step_enum, data.content)
-            await db.commit()
-
-            if settings.enable_multi_agent_orchestration:
-                orchestrator = OrchestratorService(db)
-                decision = await orchestrator.handle_solve_message(
-                    session, data.content, current_step_enum, sanitized_input
-                )
-
-                if await request.is_disconnected():
-                    _close_step_history(db, active_step_history, "disconnected")
-                    await db.commit()
-                    return
-
-                response_text = decision.response_text
-                payload = json.dumps({"content": response_text})
-                yield f"event: token\ndata: {payload}\n\n"
-
-                if await request.is_disconnected():
-                    _close_step_history(db, active_step_history, "disconnected")
-                    await db.commit()
-                    return
-
-                # 先计算实际的 next_step，再保存 AI 消息
-                next_step = current_step_enum.value
-                actual_step_for_message = current_step_enum
-                if decision.next_step != current_step_enum.value:
-                    next_step = await _handle_step_transition_to(
-                        db,
-                        analytics_service,
-                        session,
-                        active_step_history,
-                        current_step_enum,
-                        decision.next_step,
-                    )
-                    # 如果发生了 step 转换，AI 消息应该归属到新的 step
-                    try:
-                        actual_step_for_message = SolveStep(decision.next_step)
-                    except ValueError:
-                        # 如果 next_step 无效，fallback 到当前 step
-                        actual_step_for_message = current_step_enum
-
-                _save_ai_message(db, session, actual_step_for_message, response_text)
-
-                await db.commit()
-                done_payload = json.dumps(
-                    {
-                        "next_step": next_step,
-                        "primary_agent": decision.primary_agent.value,
-                        "emotion_detected": emotion_result.emotion.value,
-                        "confidence": emotion_result.confidence,
-                    }
-                )
-                yield f"event: done\ndata: {done_payload}\n\n"
-                return
-
-            ai_response_parts: list[str] = []
-            async for token in ai_service.stream(system_prompt, sanitized_input):
-                if await request.is_disconnected():
-                    _close_step_history(db, active_step_history, "disconnected")
-                    await db.commit()
-                    return
-                ai_response_parts.append(token)
-                payload = json.dumps({"content": token})
-                yield f"event: token\ndata: {payload}\n\n"
-
-            if await request.is_disconnected():
-                _close_step_history(db, active_step_history, "disconnected")
-                await db.commit()
-                return
-
-            _save_ai_message(db, session, current_step_enum, "".join(ai_response_parts))
-
-            next_step = await _handle_step_transition(
-                db,
-                analytics_service,
-                session,
-                active_step_history,
-                current_step_enum,
-            )
-
-            await db.commit()
-            done_payload = json.dumps(
-                {
-                    "next_step": next_step,
-                    "emotion_detected": emotion_result.emotion.value,
-                    "confidence": emotion_result.confidence,
-                }
-            )
-            yield f"event: done\ndata: {done_payload}\n\n"
-        except Exception as e:
-            async for error_event in handle_sse_error(
-                db,
-                e,
-                {
-                    "session_id": str(session_id),
-                    "step": current_step,
-                    "user_id": str(current_user.id),
-                },
-            ):
-                yield error_event
+    event_gen = _create_event_generator(
+        request,
+        db,
+        session,
+        step_history,
+        current_step_enum,
+        system_prompt,
+        sanitized_input,
+        data.content,
+        emotion_result,
+        settings.enable_multi_agent_orchestration,
+        session_id,
+        current_user.id,  # type: ignore[arg-type]
+    )
 
     return StreamingResponse(
-        event_generator(),
+        event_gen,
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+    crisis_response = await _handle_crisis_detection(db, session, data.content)
+    if crisis_response:
+        return crisis_response
+
+    settings = get_settings()
+    current_step = str(session.current_step)
+    system_prompt = STEP_SYSTEM_PROMPTS.get(
+        current_step,
+        STEP_SYSTEM_PROMPTS[SolveStep.RECEIVE.value],
+    )
+    sanitized_input = strip_pii(sanitize_user_input(data.content))
+    emotion_result = detect_emotion(data.content)
+
+    try:
+        current_step_enum = SolveStep(current_step)
+    except ValueError:
+        current_step_enum = SolveStep.RECEIVE
+        session.current_step = current_step_enum.value  # type: ignore[assignment]
+
+    event_gen = _create_event_generator(
+        request,
+        db,
+        session,
+        step_history,
+        current_step_enum,
+        system_prompt,
+        sanitized_input,
+        data.content,
+        emotion_result,
+        settings.enable_multi_agent_orchestration,
+        session_id,
+        current_user.id,  # type: ignore[arg-type]
+    )
+
+    return StreamingResponse(
+        event_gen,
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
