@@ -9,6 +9,7 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { TagBadge } from "@/components/session/TagBadge";
 import {
   Dialog,
   DialogContent,
@@ -117,6 +118,7 @@ export default function SessionsPage() {
           <TableHeader>
             <TableRow>
               <TableHead>内容</TableHead>
+              <TableHead>标签</TableHead>
               <TableHead>创建时间</TableHead>
               <TableHead>当前步骤</TableHead>
               <TableHead>状态</TableHead>
@@ -128,6 +130,17 @@ export default function SessionsPage() {
               <TableRow key={session.id}>
                 <TableCell className="max-w-md truncate font-medium">
                   {session.first_message || "新会话"}
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-wrap gap-1">
+                    {session.tags && session.tags.length > 0 ? (
+                      session.tags.map((tag) => (
+                        <TagBadge key={tag} tag={tag} variant="outline" />
+                      ))
+                    ) : (
+                      <span className="text-xs text-gray-400">无标签</span>
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell className="text-muted-foreground">
                   {format(new Date(session.created_at), "yyyy/MM/dd HH:mm")}

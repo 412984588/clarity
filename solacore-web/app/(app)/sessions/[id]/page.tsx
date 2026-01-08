@@ -12,6 +12,7 @@ import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { Button } from "@/components/ui/button";
 import { ReminderPicker } from "@/components/session/ReminderPicker";
 import { ActionPlanCard } from "@/components/session/ActionPlanCard";
+import { TagInput } from "@/components/session/TagInput";
 import type { Session } from "@/lib/types";
 import { getSession, updateSession } from "@/lib/session-api";
 import { completeAction, uncompleteAction } from "@/lib/action-api";
@@ -73,6 +74,19 @@ export default function SessionDetailPage() {
     }
   };
 
+  const handleTagsChange = async (tags: string[]) => {
+    if (!sessionId) return;
+
+    try {
+      await updateSession(sessionId, { tags });
+      setSession((prev) => (prev ? { ...prev, tags } : null));
+      toast.success("标签已更新");
+    } catch (err) {
+      toast.error("更新标签失败");
+      console.error(err);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex h-[60vh] items-center justify-center">
@@ -109,6 +123,14 @@ export default function SessionDetailPage() {
           onToggle={handleActionToggle}
         />
       )}
+      <div className="border rounded-lg p-4 bg-white">
+        <h3 className="text-sm font-medium text-gray-700 mb-2">标签</h3>
+        <TagInput
+          value={session.tags || []}
+          onChange={handleTagsChange}
+          placeholder="添加标签以便分类..."
+        />
+      </div>
       <ChatInterface
         sessionId={session.id}
         initialMessages={session.messages}

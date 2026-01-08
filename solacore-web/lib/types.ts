@@ -36,6 +36,7 @@ export interface Session {
   first_step_action?: string | null;
   action_completed?: boolean;
   action_completed_at?: string | null;
+  tags?: string[];
 }
 
 export interface AuthTokens {

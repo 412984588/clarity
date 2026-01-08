@@ -102,7 +102,7 @@ export const updateStep = async (
 
 export const updateSession = async (
   id: string,
-  updates: Partial<Pick<Session, "reminder_time">>,
+  updates: Partial<Pick<Session, "reminder_time" | "tags">>,
 ): Promise<Session> => {
   const response = await api.patch<Session>(`/sessions/${id}`, updates);
   return response.data;
