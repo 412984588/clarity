@@ -262,3 +262,26 @@ export const deleteSession = async (id: string): Promise<void> => {
     });
   }
 };
+
+export const exportAllSessions = async (
+  format: "json" | "csv" = "json",
+  filters?: {
+    startDate?: string;
+    endDate?: string;
+    status?: string;
+    tags?: string;
+  },
+): Promise<Blob> => {
+  const params = new URLSearchParams({ format });
+
+  if (filters?.startDate) params.append("start_date", filters.startDate);
+  if (filters?.endDate) params.append("end_date", filters.endDate);
+  if (filters?.status) params.append("status", filters.status);
+  if (filters?.tags) params.append("tags", filters.tags);
+
+  const response = await api.get(`/sessions/all/export?${params.toString()}`, {
+    responseType: "blob",
+  });
+
+  return response.data;
+};

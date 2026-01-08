@@ -33,3 +33,12 @@ export const getStatsOverview = async (): Promise<StatsOverview> => {
   const response = await api.get<StatsOverview>("/stats/overview");
   return response.data;
 };
+
+export const exportStats = async (
+  format: "json" | "csv" = "json",
+): Promise<Blob> => {
+  const response = await api.get(`/stats/export?format=${format}`, {
+    responseType: "blob",
+  });
+  return response.data;
+};

@@ -2,6 +2,8 @@
 
 from fastapi import APIRouter
 
+from .batch_export import batch_export_sessions
+from .batch_export import router as batch_export_router
 from .create import create_session
 from .create import router as create_router
 from .delete import delete_session
@@ -21,6 +23,7 @@ router.include_router(list_router)
 router.include_router(stream_router)
 router.include_router(update_router)
 router.include_router(delete_router)
+router.include_router(batch_export_router)
 router.include_router(export_router)
 
 # 支持无尾斜杠路径，避免 FastAPI 自动 307 重定向
@@ -49,4 +52,5 @@ __all__ = [
     "update_session",
     "delete_session",
     "export_session",
+    "batch_export_sessions",
 ]

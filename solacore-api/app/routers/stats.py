@@ -1,14 +1,19 @@
 """统计数据路由 - 提供会话统计、标签分析、时间趋势等数据洞察"""
 
+import csv
+import io
+import json
 from datetime import datetime, timedelta, timezone
-from typing import Any
+from typing import Any, Literal
 
 from app.database import get_db
 from app.middleware.auth import get_current_user
+from app.middleware.rate_limit import API_RATE_LIMIT, limiter, user_rate_limit_key
 from app.models.solve_session import SessionStatus, SolveSession, SolveStep
 from app.models.user import User
 from app.utils.docs import COMMON_ERROR_RESPONSES
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query, Request
+from fastapi.responses import Response
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -169,3 +174,108 @@ async def get_stats_overview(
         },
         "step_distribution": step_distribution,
     }
+
+
+def generate_stats_csv(stats: dict[str, Any]) -> str:
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    writer.writerow(["Statistics Export Report"])
+    writer.writerow(["Export Time", datetime.utcnow().isoformat()])
+    writer.writerow([])
+
+    writer.writerow(["Total Sessions", stats["total_sessions"]])
+    writer.writerow([])
+
+    writer.writerow(["Status Distribution"])
+    writer.writerow(["Status", "Count"])
+    for status, count in stats["status_distribution"].items():
+        writer.writerow([status, count])
+    writer.writerow([])
+
+    writer.writerow(["Step Distribution"])
+    writer.writerow(["Step", "Count"])
+    for step, count in stats["step_distribution"].items():
+        writer.writerow([step, count])
+    writer.writerow([])
+
+    writer.writerow(["Action Completion"])
+    writer.writerow(["Metric", "Value"])
+    writer.writerow(["Total Actions", stats["action_completion"]["total"]])
+    writer.writerow(["Completed Actions", stats["action_completion"]["completed"]])
+    writer.writerow(
+        ["Completion Rate (%)", stats["action_completion"]["completion_rate"]]
+    )
+    writer.writerow([])
+
+    writer.writerow(["Top Tags"])
+    writer.writerow(["Tag", "Count"])
+    for tag_info in stats["top_tags"]:
+        writer.writerow([tag_info["tag"], tag_info["count"]])
+    writer.writerow([])
+
+    writer.writerow(["Daily Trend (Last 30 Days)"])
+    writer.writerow(["Date", "Count"])
+    for trend_info in stats["daily_trend"]:
+        writer.writerow([trend_info["date"], trend_info["count"]])
+
+    return output.getvalue()
+
+
+@router.get(
+    "/export",
+    summary="导出统计报告",
+    description="""
+    导出用户的统计数据报告。
+
+    **功能特性**:
+    - 支持 JSON 和 CSV 两种格式
+    - JSON 格式：与 /stats/overview 相同的结构化数据
+    - CSV 格式：分段展示各项统计指标，适合 Excel 查看
+
+    **使用场景**:
+    - 定期数据备份
+    - 数据分析和可视化
+    - 向第三方工具导入
+    - 生成报告文档
+    """,
+    responses=COMMON_ERROR_RESPONSES,
+)
+@limiter.limit(API_RATE_LIMIT, key_func=user_rate_limit_key, override_defaults=False)
+async def export_stats(
+    request: Request,
+    format: Literal["json", "csv"] = Query("json", description="导出格式"),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    stats = await get_stats_overview(current_user=current_user, db=db)
+
+    timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+
+    if format == "csv":
+        content = generate_stats_csv(stats)
+        filename = f"stats_report_{timestamp}.csv"
+        return Response(
+            content=content,
+            media_type="text/csv; charset=utf-8",
+            headers={
+                "Content-Disposition": f'attachment; filename="{filename}"',
+                "Content-Type": "text/csv; charset=utf-8",
+            },
+        )
+
+    else:
+        stats_with_meta = {
+            "export_time": datetime.utcnow().isoformat(),
+            **stats,
+        }
+        content = json.dumps(stats_with_meta, ensure_ascii=False, indent=2)
+        filename = f"stats_report_{timestamp}.json"
+        return Response(
+            content=content,
+            media_type="application/json; charset=utf-8",
+            headers={
+                "Content-Disposition": f'attachment; filename="{filename}"',
+                "Content-Type": "application/json; charset=utf-8",
+            },
+        )

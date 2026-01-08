@@ -122,3 +122,136 @@ async def test_stats_overview_with_tags(client: AsyncClient):
 async def test_stats_overview_unauthorized(client: AsyncClient):
     response = await client.get("/stats/overview")
     assert response.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_stats_export_json(client: AsyncClient):
+    token = await _register_user(
+        client, "stats-export-json@example.com", "stats-device-004"
+    )
+    headers = _get_auth_headers(token, "stats-device-004")
+
+    session_data = {"template_id": None, "locale": "zh"}
+    await client.post("/sessions/", json=session_data, headers=headers)
+
+    response = await client.get("/stats/export?format=json", headers=headers)
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/json; charset=utf-8"
+    assert "attachment" in response.headers["content-disposition"]
+    assert ".json" in response.headers["content-disposition"]
+
+    import json
+
+    data = json.loads(response.content)
+    assert "export_time" in data
+    assert "total_sessions" in data
+    assert data["total_sessions"] >= 1
+
+
+@pytest.mark.asyncio
+async def test_stats_export_csv(client: AsyncClient):
+    token = await _register_user(
+        client, "stats-export-csv@example.com", "stats-device-005"
+    )
+    headers = _get_auth_headers(token, "stats-device-005")
+
+    response = await client.get("/stats/export?format=csv", headers=headers)
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "text/csv; charset=utf-8"
+    assert "attachment" in response.headers["content-disposition"]
+    assert ".csv" in response.headers["content-disposition"]
+
+    content = response.content.decode("utf-8")
+    assert "Statistics Export Report" in content
+    assert "Total Sessions" in content
+
+
+@pytest.mark.asyncio
+async def test_batch_export_sessions_json(client: AsyncClient):
+    token = await _register_user(
+        client, "batch-export-json@example.com", "batch-device-001"
+    )
+    headers = _get_auth_headers(token, "batch-device-001")
+
+    session_data = {"template_id": None, "locale": "zh"}
+    response1 = await client.post("/sessions/", json=session_data, headers=headers)
+    session1_id = response1.json()["session_id"]
+
+    await client.patch(
+        f"/sessions/{session1_id}",
+        json={"tags": ["work"]},
+        headers=headers,
+    )
+
+    response = await client.get("/sessions/all/export?format=json", headers=headers)
+    if response.status_code != 200:
+        import json as json_module
+
+        print(f"\nStatus: {response.status_code}")
+        print(f"Response: {json_module.dumps(response.json(), indent=2)}")
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/json; charset=utf-8"
+
+    import json
+
+    data = json.loads(response.content)
+    assert data["total_sessions"] >= 1
+    assert "sessions" in data
+    assert len(data["sessions"]) >= 1
+
+
+@pytest.mark.asyncio
+async def test_batch_export_sessions_csv(client: AsyncClient):
+    token = await _register_user(
+        client, "batch-export-csv@example.com", "batch-device-002"
+    )
+    headers = _get_auth_headers(token, "batch-device-002")
+
+    session_data = {"template_id": None, "locale": "zh"}
+    await client.post("/sessions/", json=session_data, headers=headers)
+
+    response = await client.get("/sessions/all/export?format=csv", headers=headers)
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "text/csv; charset=utf-8"
+
+    content = response.content.decode("utf-8")
+    assert "Session ID" in content
+    assert "Status" in content
+
+
+@pytest.mark.asyncio
+async def test_batch_export_with_filters(client: AsyncClient):
+    token = await _register_user(client, "batch-filter@example.com", "batch-device-003")
+    headers = _get_auth_headers(token, "batch-device-003")
+
+    session_data = {"template_id": None, "locale": "zh"}
+    response1 = await client.post("/sessions/", json=session_data, headers=headers)
+    session1_id = response1.json()["session_id"]
+
+    await client.patch(
+        f"/sessions/{session1_id}",
+        json={"tags": ["urgent"]},
+        headers=headers,
+    )
+
+    response = await client.get(
+        "/sessions/all/export?format=json&tags=urgent", headers=headers
+    )
+    assert response.status_code == 200
+
+    import json
+
+    data = json.loads(response.content)
+    assert data["total_sessions"] >= 1
+
+
+@pytest.mark.asyncio
+async def test_batch_export_unauthorized(client: AsyncClient):
+    response = await client.get("/sessions/all/export")
+    assert response.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_stats_export_unauthorized(client: AsyncClient):
+    response = await client.get("/stats/export")
+    assert response.status_code == 401
