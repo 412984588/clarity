@@ -45,7 +45,7 @@ class Settings(BaseSettings):
 
     # AI 功能开关
     enable_reasoning_output: bool = False  # 默认禁用思考过程输出
-    enable_multi_agent_orchestration: bool = False
+    enable_multi_agent_orchestration: bool = True  # 启用多代理编排系统
 
     # CORS 配置
     cors_allowed_origins: str = ""  # 逗号分隔的域名列表
