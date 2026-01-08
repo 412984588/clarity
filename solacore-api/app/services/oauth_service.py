@@ -192,7 +192,7 @@ class OAuthService:
                     break
 
             if not key:
-                raise ValueError("APPLE_KEY_NOT_FOUND")
+                raise jwt.InvalidTokenError("APPLE_KEY_NOT_FOUND")
 
             # 验证并解码 token
             payload = jwt.decode(
@@ -213,8 +213,8 @@ class OAuthService:
             raise ValueError("APPLE_TOKEN_EXPIRED")
         except jwt.InvalidTokenError as e:
             raise ValueError(f"APPLE_TOKEN_INVALID: {e}")
-        except Exception as e:
-            raise ValueError(f"APPLE_TOKEN_INVALID: {e}")
+        except (httpx.HTTPError, httpx.TimeoutException) as e:
+            raise RuntimeError(f"APPLE_KEYS_FETCH_FAILED: {e}")
 
     async def _get_apple_public_keys(self) -> dict:
         """获取 Apple 公钥（带 24 小时缓存）"""

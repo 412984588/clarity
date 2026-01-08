@@ -41,8 +41,13 @@ class MemoryBankService:
             try:
                 await self._db.flush()
                 return entity
-            except IntegrityError:
-                pass
+            except IntegrityError as e:
+                logger.warning(
+                    "Profile creation conflict for session_id=%s, user_id=%s: %s",
+                    session_id,
+                    user_id,
+                    str(e.orig) if hasattr(e, "orig") else str(e),
+                )
 
         result = await self._db.execute(
             select(SolveProfile).where(SolveProfile.session_id == session_id)

@@ -207,7 +207,14 @@ def validate_production_config(settings: Settings | None = None) -> None:
     active_settings = settings or get_settings()
 
     if active_settings.debug:
-        return  # Debug 模式跳过校验
+        if active_settings.jwt_secret == DEFAULT_JWT_SECRET:
+            import logging
+
+            logging.warning(
+                "⚠️  Using default JWT secret in debug mode. "
+                "This is OK for development but NEVER use debug=True in production!"
+            )
+        return
 
     # 收集所有验证函数的错误
     validators = [

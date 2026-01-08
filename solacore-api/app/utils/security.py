@@ -81,7 +81,7 @@ def decode_token(token: str) -> Optional[dict]:
 
 
 def hash_token(token: str) -> str:
-    """Hash token for storage (use first 32 chars of sha256)"""
+    """Hash token for storage (full SHA256 hash for security)"""
     import hashlib
 
-    return hashlib.sha256(token.encode()).hexdigest()[:32]
+    return hashlib.sha256(token.encode()).hexdigest()
