@@ -3,6 +3,7 @@ from __future__ import annotations
 import time
 from uuid import UUID
 
+from app.config import get_settings
 from app.models.solve_session import SolveSession, SolveStep
 from app.schemas.orchestration import AgentName, OrchestratorDecision
 from app.services.crisis_detector import get_crisis_response
@@ -22,9 +23,10 @@ class OrchestratorService:
     def __init__(self, db: AsyncSession):
         self._db = db
         self._memory = MemoryBankService(db)
+        self._settings = get_settings()
 
     async def handle_solve_message(
-        self, session: SolveSession, user_input: str
+        self, session: SolveSession, user_input: str, current_step: SolveStep
     ) -> OrchestratorDecision:
         profile_entity = await self._memory.get_or_create_profile(
             session_id=UUID(str(session.id)),
@@ -34,7 +36,7 @@ class OrchestratorService:
 
         audit_started = utc_now()
         audit0 = time.perf_counter()
-        audit = run_auditor(user_input)
+        audit = run_auditor(user_input, self._settings.prompt_injection_policy)
         append_run(
             profile,
             AgentName.AUDITOR,
@@ -45,7 +47,7 @@ class OrchestratorService:
         if not audit.allowed:
             decision = OrchestratorDecision(
                 primary_agent=AgentName.AUDITOR,
-                next_step=str(session.current_step),
+                next_step=current_step.value,
                 response_text=get_crisis_response().get("message", ""),
                 profile=profile,
                 audit=audit,
@@ -53,12 +55,8 @@ class OrchestratorService:
             await self._memory.save_profile(profile_entity, profile)
             return decision
 
-        now_step = str(session.current_step)
-        try:
-            solve_step = SolveStep(now_step)
-        except ValueError:
-            solve_step = SolveStep.RECEIVE
-            now_step = SolveStep.RECEIVE.value
+        solve_step = current_step
+        now_step = current_step.value
 
         response_text = ""
         next_step = now_step

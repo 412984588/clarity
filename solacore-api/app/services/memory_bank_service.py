@@ -7,6 +7,7 @@ from app.models.solve_profile import SolveProfile
 from app.schemas.orchestration import ProblemProfile
 from app.utils.datetime_utils import utc_now
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -31,8 +32,19 @@ class MemoryBankService:
             profile=profile.model_dump(mode="json"),
         )
         self._db.add(entity)
-        await self._db.flush()
-        return entity
+
+        try:
+            await self._db.flush()
+            return entity
+        except IntegrityError:
+            await self._db.rollback()
+            result = await self._db.execute(
+                select(SolveProfile).where(SolveProfile.session_id == session_id)
+            )
+            existing = result.scalar_one_or_none()
+            if existing:
+                return existing
+            raise ValueError("PROFILE_CREATE_CONFLICT")
 
     def load_profile(self, entity: SolveProfile) -> ProblemProfile:
         data = cast(dict[str, Any], getattr(entity, "profile"))

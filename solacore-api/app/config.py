@@ -97,6 +97,8 @@ class Settings(BaseSettings):
     smtp_from: str = "noreply@solacore.app"
     smtp_from_name: str = "Solacore Support"
 
+    prompt_injection_policy: str = "warn"
+
 
 @lru_cache
 def get_settings() -> Settings:

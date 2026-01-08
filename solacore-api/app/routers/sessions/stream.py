@@ -149,7 +149,7 @@ async def stream_messages(
             if settings.enable_multi_agent_orchestration:
                 orchestrator = OrchestratorService(db)
                 decision = await orchestrator.handle_solve_message(
-                    session, data.content
+                    session, data.content, current_step_enum
                 )
 
                 if await request.is_disconnected():
@@ -162,9 +162,9 @@ async def stream_messages(
                 if await request.is_disconnected():
                     return
 
-                _save_ai_message(db, session, current_step_enum, response_text)
-
+                # 先计算实际的 next_step，再保存 AI 消息
                 next_step = current_step_enum.value
+                actual_step_for_message = current_step_enum
                 if decision.next_step != current_step_enum.value:
                     next_step = await _handle_step_transition_to(
                         db,
@@ -174,6 +174,14 @@ async def stream_messages(
                         current_step_enum,
                         decision.next_step,
                     )
+                    # 如果发生了 step 转换，AI 消息应该归属到新的 step
+                    try:
+                        actual_step_for_message = SolveStep(decision.next_step)
+                    except ValueError:
+                        # 如果 next_step 无效，fallback 到当前 step
+                        actual_step_for_message = current_step_enum
+
+                _save_ai_message(db, session, actual_step_for_message, response_text)
 
                 await db.commit()
                 done_payload = json.dumps(

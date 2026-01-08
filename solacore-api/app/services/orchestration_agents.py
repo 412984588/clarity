@@ -24,7 +24,9 @@ from app.services.crisis_detector import detect_crisis
 from app.services.emotion_detector import detect_emotion
 
 
-def run_auditor(user_input: str) -> AuditorOutput:
+def run_auditor(
+    user_input: str, prompt_injection_policy: str = "warn"
+) -> AuditorOutput:
     crisis = detect_crisis(user_input)
     sanitized = strip_pii(sanitize_user_input(user_input))
     flags: list[AuditFlag] = []
@@ -40,6 +42,13 @@ def run_auditor(user_input: str) -> AuditorOutput:
 
     if _looks_like_prompt_injection(user_input):
         flags.append(AuditFlag.PROMPT_INJECTION)
+        if prompt_injection_policy == "block":
+            return AuditorOutput(
+                allowed=False,
+                sanitized_user_input=sanitized,
+                flags=flags,
+                reason="PROMPT_INJECTION",
+            )
 
     if _looks_like_email(user_input):
         flags.append(AuditFlag.PII_EMAIL)
