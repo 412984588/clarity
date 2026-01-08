@@ -73,6 +73,11 @@ def _normalize_content(content: str) -> str:
     return unicodedata.normalize("NFKC", content)
 
 
+def looks_like_prompt_injection(content: str) -> bool:
+    normalized = _normalize_content(content)
+    return any(regex.search(normalized) for regex in _DANGEROUS_REGEXES)
+
+
 def sanitize_user_input(content: str) -> str:
     sanitized = _normalize_content(content)
     for regex in _DANGEROUS_REGEXES:

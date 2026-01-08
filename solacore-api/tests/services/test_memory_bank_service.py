@@ -131,6 +131,43 @@ class TestLoadProfile:
             assert loaded.user_id == user.id
             assert loaded.meta.schema_version.value == "v1"
 
+    async def test_load_profile_corrupted_data_fallback(self):
+        async with TestingSessionLocal() as db:
+            user = User(email=f"test-{uuid4().hex}@example.com", password_hash="hash")
+            db.add(user)
+            await db.flush()
+
+            session = SolveSession(
+                user_id=user.id,
+                current_step=SolveStep.RECEIVE.value,
+                locale="zh-CN",
+            )
+            db.add(session)
+            await db.flush()
+
+            session_id_val = session.id
+            user_id_val = user.id
+
+            corrupted_entity = SolveProfile(
+                session_id=session_id_val,
+                schema_version="v1",
+                profile={
+                    "session_id": str(session_id_val),
+                    "user_id": str(user_id_val),
+                    "meta": {"invalid_field": "bad_value"},
+                },
+            )
+            db.add(corrupted_entity)
+            await db.flush()
+
+            service = MemoryBankService(db)
+            loaded = service.load_profile(corrupted_entity)
+
+            assert isinstance(loaded, ProblemProfile)
+            assert loaded.session_id == session_id_val
+            assert loaded.user_id == user_id_val
+            assert loaded.meta.schema_version.value == "v1"
+
 
 @pytest.mark.asyncio
 class TestSaveProfile:

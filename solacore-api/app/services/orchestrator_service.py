@@ -26,7 +26,11 @@ class OrchestratorService:
         self._settings = get_settings()
 
     async def handle_solve_message(
-        self, session: SolveSession, user_input: str, current_step: SolveStep
+        self,
+        session: SolveSession,
+        user_input: str,
+        current_step: SolveStep,
+        sanitized_input: str | None = None,
     ) -> OrchestratorDecision:
         profile_entity = await self._memory.get_or_create_profile(
             session_id=UUID(str(session.id)),
@@ -36,7 +40,9 @@ class OrchestratorService:
 
         audit_started = utc_now()
         audit0 = time.perf_counter()
-        audit = run_auditor(user_input, self._settings.prompt_injection_policy)
+        audit = run_auditor(
+            user_input, self._settings.prompt_injection_policy, sanitized_input
+        )
         append_run(
             profile,
             AgentName.AUDITOR,

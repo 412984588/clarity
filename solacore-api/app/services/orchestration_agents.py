@@ -19,16 +19,26 @@ from app.schemas.orchestration import (
     QuestionPlan,
     VisionaryOutput,
 )
-from app.services.content_filter import sanitize_user_input, strip_pii
+from app.services.content_filter import (
+    looks_like_prompt_injection,
+    sanitize_user_input,
+    strip_pii,
+)
 from app.services.crisis_detector import detect_crisis
 from app.services.emotion_detector import detect_emotion
 
 
 def run_auditor(
-    user_input: str, prompt_injection_policy: str = "warn"
+    user_input: str,
+    prompt_injection_policy: str = "warn",
+    sanitized_input: str | None = None,
 ) -> AuditorOutput:
     crisis = detect_crisis(user_input)
-    sanitized = strip_pii(sanitize_user_input(user_input))
+    sanitized = (
+        sanitized_input
+        if sanitized_input is not None
+        else strip_pii(sanitize_user_input(user_input))
+    )
     flags: list[AuditFlag] = []
 
     if crisis.blocked:
@@ -40,7 +50,7 @@ def run_auditor(
             reason="CRISIS",
         )
 
-    if _looks_like_prompt_injection(user_input):
+    if looks_like_prompt_injection(user_input):
         flags.append(AuditFlag.PROMPT_INJECTION)
         if prompt_injection_policy == "block":
             return AuditorOutput(
@@ -399,12 +409,6 @@ def _first_constraint(profile: ProblemProfile) -> str:
     if profile.constraints:
         return profile.constraints[0]
     return "现有约束"
-
-
-def _looks_like_prompt_injection(text: str) -> bool:
-    lowered = text.lower()
-    patterns = ["ignore previous", "system prompt", "act as", "disregard", "override"]
-    return any(p in lowered for p in patterns)
 
 
 def _looks_like_email(text: str) -> bool:

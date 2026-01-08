@@ -27,6 +27,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from .utils import (
     STEP_SYSTEM_PROMPTS,
+    _close_step_history,
     _handle_step_transition,
     _handle_step_transition_to,
     _prepare_step_history,
@@ -149,10 +150,12 @@ async def stream_messages(
             if settings.enable_multi_agent_orchestration:
                 orchestrator = OrchestratorService(db)
                 decision = await orchestrator.handle_solve_message(
-                    session, data.content, current_step_enum
+                    session, data.content, current_step_enum, sanitized_input
                 )
 
                 if await request.is_disconnected():
+                    _close_step_history(db, active_step_history, "disconnected")
+                    await db.commit()
                     return
 
                 response_text = decision.response_text
@@ -160,6 +163,8 @@ async def stream_messages(
                 yield f"event: token\ndata: {payload}\n\n"
 
                 if await request.is_disconnected():
+                    _close_step_history(db, active_step_history, "disconnected")
+                    await db.commit()
                     return
 
                 # 先计算实际的 next_step，再保存 AI 消息
@@ -198,12 +203,16 @@ async def stream_messages(
             ai_response_parts: list[str] = []
             async for token in ai_service.stream(system_prompt, sanitized_input):
                 if await request.is_disconnected():
+                    _close_step_history(db, active_step_history, "disconnected")
+                    await db.commit()
                     return
                 ai_response_parts.append(token)
                 payload = json.dumps({"content": token})
                 yield f"event: token\ndata: {payload}\n\n"
 
             if await request.is_disconnected():
+                _close_step_history(db, active_step_history, "disconnected")
+                await db.commit()
                 return
 
             _save_ai_message(db, session, current_step_enum, "".join(ai_response_parts))

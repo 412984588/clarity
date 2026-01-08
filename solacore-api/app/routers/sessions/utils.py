@@ -116,6 +116,14 @@ def _prepare_step_history(
     return active_step_history
 
 
+def _close_step_history(
+    db: AsyncSession, step_history: StepHistory, reason: str = "disconnected"
+) -> None:
+    if step_history.completed_at is None:
+        step_history.completed_at = utc_now()  # type: ignore[assignment]
+        db.add(step_history)
+
+
 def _save_user_message(
     db: AsyncSession,
     session: SolveSession,
