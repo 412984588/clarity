@@ -2,6 +2,7 @@
 
 from . import (
     account,
+    actions,
     auth,
     config,
     learn,
@@ -14,6 +15,7 @@ from . import (
 
 __all__ = [
     "account",
+    "actions",
     "auth",
     "config",
     "learn",

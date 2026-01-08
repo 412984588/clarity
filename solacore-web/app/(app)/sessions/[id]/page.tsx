@@ -11,8 +11,10 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { Button } from "@/components/ui/button";
 import { ReminderPicker } from "@/components/session/ReminderPicker";
+import { ActionPlanCard } from "@/components/session/ActionPlanCard";
 import type { Session } from "@/lib/types";
 import { getSession, updateSession } from "@/lib/session-api";
+import { completeAction, uncompleteAction } from "@/lib/action-api";
 
 export default function SessionDetailPage() {
   const params = useParams<{ id: string }>();
@@ -61,6 +63,16 @@ export default function SessionDetailPage() {
     }
   };
 
+  const handleActionToggle = async (completed: boolean) => {
+    if (!sessionId) return;
+
+    if (completed) {
+      await completeAction(sessionId);
+    } else {
+      await uncompleteAction(sessionId);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex h-[60vh] items-center justify-center">
@@ -89,6 +101,14 @@ export default function SessionDetailPage() {
         <StepProgress currentStep={session.current_step} />
         <ReminderPicker value={reminderTime} onChange={handleReminderChange} />
       </div>
+      {session.first_step_action && (
+        <ActionPlanCard
+          sessionId={session.id}
+          action={session.first_step_action}
+          completed={session.action_completed || false}
+          onToggle={handleActionToggle}
+        />
+      )}
       <ChatInterface
         sessionId={session.id}
         initialMessages={session.messages}

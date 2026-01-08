@@ -33,6 +33,9 @@ export interface Session {
   completed_at?: string;
   first_message?: string;
   reminder_time?: string | null;
+  first_step_action?: string | null;
+  action_completed?: boolean;
+  action_completed_at?: string | null;
 }
 
 export interface AuthTokens {

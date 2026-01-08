@@ -46,6 +46,8 @@ class SolveSession(Base):
     reminder_time = Column(DateTime, nullable=True)
     reminder_sent = Column(Boolean, default=False, nullable=False)
     reminder_sent_at = Column(DateTime, nullable=True)
+    action_completed = Column(Boolean, default=False, nullable=False)
+    action_completed_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=lambda: utc_now())
     completed_at = Column(DateTime, nullable=True)
 

@@ -5,6 +5,7 @@ from app.database import get_db, get_db_pool_stats
 from app.logging_config import get_logger
 from app.routers import (
     account,
+    actions,
     auth,
     config,
     learn,
@@ -278,6 +279,7 @@ def register_routes(app: FastAPI, settings: Settings) -> None:
     app.include_router(auth.router)
     app.include_router(sessions.router)
     app.include_router(learn.router)
+    app.include_router(actions.router)
     app.include_router(subscriptions.router)
     app.include_router(templates.router)
     app.include_router(webhooks.router)
