@@ -2,19 +2,16 @@ import os
 from http.cookies import SimpleCookie
 from typing import AsyncGenerator, Generator
 
-# Ensure the FastAPI app and global engine are bound to the test database.
-# This must happen before importing any `app.*` modules that initialize engines.
 _DEFAULT_DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/solacore"
-_base_db_url = os.getenv("DATABASE_URL", _DEFAULT_DATABASE_URL)
-if _base_db_url.endswith("/solacore_test"):
-    _test_db_url = _base_db_url
-elif _base_db_url.endswith("/solacore"):
-    _test_db_url = _base_db_url.replace("/solacore", "/solacore_test")
+base_db_url = os.getenv("DATABASE_URL", _DEFAULT_DATABASE_URL)
+if base_db_url.endswith("/solacore_test"):
+    test_db_url = base_db_url
+elif base_db_url.endswith("/solacore"):
+    test_db_url = base_db_url.replace("/solacore", "/solacore_test")
 else:
-    _test_db_url = _base_db_url
+    test_db_url = base_db_url
 
-# Override unconditionally for tests to avoid mixing databases.
-os.environ["DATABASE_URL"] = _test_db_url
+os.environ["DATABASE_URL"] = test_db_url
 
 import pytest  # noqa: E402
 import pytest_asyncio  # noqa: E402
@@ -31,10 +28,10 @@ from sqlalchemy.ext.asyncio import (  # noqa: E402
 )
 from sqlalchemy.pool import NullPool  # noqa: E402
 
+get_settings.cache_clear()
 settings = get_settings()
 
-# Use the test database, disable pooling to avoid cross-test leakage.
-TEST_DATABASE_URL = settings.database_url
+TEST_DATABASE_URL = test_db_url
 engine_test = create_async_engine(
     TEST_DATABASE_URL,
     echo=False,
@@ -45,7 +42,6 @@ TestingSessionLocal = async_sessionmaker(
     engine_test, class_=AsyncSession, expire_on_commit=False
 )
 
-# 导出供其他测试文件使用
 __all__ = ["TestingSessionLocal", "TEST_DATABASE_URL"]
 
 
@@ -65,7 +61,6 @@ async def _add_csrf_header(request) -> None:
 
 
 async def _ensure_db_available() -> None:
-    """Fail fast with a helpful message when Postgres isn't running."""
     from sqlalchemy import text
 
     try:

@@ -28,7 +28,12 @@ async def test_llm_stream_emits_tokens_and_done(
             for token in ["foo", "bar"]:
                 yield token
 
-    # 重构后 AIService 在 stream.py 子模块中导入
+    from app.config import Settings
+
+    disabled = Settings()
+    disabled.enable_multi_agent_orchestration = False
+    monkeypatch.setattr("app.routers.sessions.stream.get_settings", lambda: disabled)
+
     monkeypatch.setattr("app.routers.sessions.stream.AIService", FakeAIService)
 
     token = await _register_user(client, "llm-stream@example.com", "llm-device-001")
@@ -72,3 +77,51 @@ async def test_llm_stream_emits_tokens_and_done(
     assert done_payload is not None
     assert done_payload["next_step"] == "clarify"
     assert done_payload["emotion_detected"] == "neutral"
+
+
+@pytest.mark.asyncio
+async def test_llm_stream_multi_agent_orchestration_path(
+    client: AsyncClient, monkeypatch
+):
+    from app.config import Settings
+
+    enabled = Settings()
+    enabled.enable_multi_agent_orchestration = True
+    monkeypatch.setattr("app.routers.sessions.stream.get_settings", lambda: enabled)
+
+    token = await _register_user(client, "llm-orch@example.com", "llm-orch-device-001")
+    create_resp = await client.post(
+        "/sessions",
+        json={},
+        headers={
+            "Authorization": f"Bearer {token}",
+            "X-Device-Fingerprint": "llm-orch-device-001",
+        },
+    )
+    assert create_resp.status_code == 201
+    session_id = create_resp.json()["session_id"]
+
+    async with client.stream(
+        "POST",
+        f"/sessions/{session_id}/messages",
+        json={"content": "hello", "step": "receive"},
+        headers={"Authorization": f"Bearer {token}"},
+    ) as response:
+        assert response.status_code == 200
+        body = (await response.aread()).decode()
+
+    assert "event: token" in body
+    assert "event: done" in body
+
+    lines = body.splitlines()
+    done_payload = None
+    for idx, line in enumerate(lines):
+        if line == "event: done" and idx + 1 < len(lines):
+            data_line = lines[idx + 1]
+            if data_line.startswith("data: "):
+                done_payload = json.loads(data_line[len("data: ") :])
+                break
+
+    assert done_payload is not None
+    assert done_payload["next_step"] == "clarify"
+    assert done_payload["primary_agent"] == "empath"

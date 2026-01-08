@@ -4,6 +4,7 @@ import json
 from typing import AsyncGenerator
 from uuid import UUID
 
+from app.config import get_settings
 from app.database import get_db
 from app.middleware.auth import get_current_user
 from app.middleware.rate_limit import SSE_RATE_LIMIT, limiter, user_rate_limit_key
@@ -16,6 +17,7 @@ from app.services.analytics_service import AnalyticsService
 from app.services.content_filter import sanitize_user_input, strip_pii
 from app.services.crisis_detector import detect_crisis, get_crisis_response
 from app.services.emotion_detector import detect_emotion
+from app.services.orchestrator_service import OrchestratorService
 from app.utils.docs import COMMON_ERROR_RESPONSES
 from app.utils.error_handlers import handle_sse_error
 from fastapi import APIRouter, Depends, HTTPException, Path, Request, Response
@@ -26,6 +28,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from .utils import (
     STEP_SYSTEM_PROMPTS,
     _handle_step_transition,
+    _handle_step_transition_to,
     _prepare_step_history,
     _save_ai_message,
     _save_user_message,
@@ -114,6 +117,8 @@ async def stream_messages(
         # 返回危机资源响应，不继续 Solve 流程
         return get_crisis_response()
 
+    settings = get_settings()
+
     current_step = str(session.current_step)
     system_prompt = STEP_SYSTEM_PROMPTS.get(
         current_step,
@@ -140,6 +145,47 @@ async def stream_messages(
 
             _save_user_message(db, session, current_step_enum, data.content)
             await db.commit()
+
+            if settings.enable_multi_agent_orchestration:
+                orchestrator = OrchestratorService(db)
+                decision = await orchestrator.handle_solve_message(
+                    session, data.content
+                )
+
+                if await request.is_disconnected():
+                    return
+
+                response_text = decision.response_text
+                payload = json.dumps({"content": response_text})
+                yield f"event: token\ndata: {payload}\n\n"
+
+                if await request.is_disconnected():
+                    return
+
+                _save_ai_message(db, session, current_step_enum, response_text)
+
+                next_step = current_step_enum.value
+                if decision.next_step != current_step_enum.value:
+                    next_step = await _handle_step_transition_to(
+                        db,
+                        analytics_service,
+                        session,
+                        active_step_history,
+                        current_step_enum,
+                        decision.next_step,
+                    )
+
+                await db.commit()
+                done_payload = json.dumps(
+                    {
+                        "next_step": next_step,
+                        "primary_agent": decision.primary_agent.value,
+                        "emotion_detected": emotion_result.emotion.value,
+                        "confidence": emotion_result.confidence,
+                    }
+                )
+                yield f"event: done\ndata: {done_payload}\n\n"
+                return
 
             ai_response_parts: list[str] = []
             async for token in ai_service.stream(system_prompt, sanitized_input):
