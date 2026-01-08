@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
-import { Search, Trash2, X } from "lucide-react";
+import { Download, Search, Trash2, X } from "lucide-react";
 
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
@@ -30,6 +30,7 @@ import type { Session } from "@/lib/types";
 import {
   listSessions,
   deleteSession,
+  exportAllSessions,
   type SessionSearchParams,
 } from "@/lib/session-api";
 
@@ -55,6 +56,7 @@ export default function SessionsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<string>("");
+  const [exporting, setExporting] = useState(false);
 
   const loadSessions = useCallback(async (params?: SessionSearchParams) => {
     try {
@@ -110,6 +112,29 @@ export default function SessionsPage() {
     setSessionToDelete(null);
   };
 
+  const handleExport = async (format: "json" | "csv") => {
+    setExporting(true);
+    try {
+      const filters: Record<string, string> = {};
+      if (selectedStatus) filters.status = selectedStatus;
+      if (selectedTags.length > 0) filters.tags = selectedTags.join(",");
+
+      const blob = await exportAllSessions(format, filters);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `sessions_export_${new Date().toISOString().split("T")[0]}.${format}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "导出失败");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const allTags = useMemo(() => {
     const tagSet = new Set<string>();
     sessions.forEach((session) => {
@@ -158,6 +183,30 @@ export default function SessionsPage() {
   return (
     <>
       <div className="mb-4 space-y-3">
+        <div className="flex gap-2 items-center justify-between">
+          <h1 className="text-2xl font-bold">会话列表</h1>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleExport("json")}
+              disabled={exporting || sessions.length === 0}
+            >
+              <Download className="w-4 h-4 mr-2" />
+              {exporting ? "导出中..." : "导出 JSON"}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleExport("csv")}
+              disabled={exporting || sessions.length === 0}
+            >
+              <Download className="w-4 h-4 mr-2" />
+              {exporting ? "导出中..." : "导出 CSV"}
+            </Button>
+          </div>
+        </div>
+
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input

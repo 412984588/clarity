@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Download } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -15,8 +16,13 @@ import {
 } from "recharts";
 
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { getStatsOverview, type StatsOverview } from "@/lib/stats-api";
+import {
+  getStatsOverview,
+  exportStats,
+  type StatsOverview,
+} from "@/lib/stats-api";
 
 interface StatCardProps {
   title: string;
@@ -38,6 +44,7 @@ export default function StatsPage() {
   const [stats, setStats] = useState<StatsOverview | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     const loadStats = async () => {
@@ -55,6 +62,25 @@ export default function StatsPage() {
 
     loadStats();
   }, []);
+
+  const handleExport = async (format: "json" | "csv") => {
+    setExporting(true);
+    try {
+      const blob = await exportStats(format);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `stats_report_${new Date().toISOString().split("T")[0]}.${format}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "导出失败");
+    } finally {
+      setExporting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -94,7 +120,29 @@ export default function StatsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="mb-8 text-3xl font-bold">数据统计</h1>
+      <div className="mb-8 flex items-center justify-between">
+        <h1 className="text-3xl font-bold">数据统计</h1>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleExport("json")}
+            disabled={exporting || !stats}
+          >
+            <Download className="mr-2 h-4 w-4" />
+            {exporting ? "导出中..." : "导出 JSON"}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleExport("csv")}
+            disabled={exporting || !stats}
+          >
+            <Download className="mr-2 h-4 w-4" />
+            {exporting ? "导出中..." : "导出 CSV"}
+          </Button>
+        </div>
+      </div>
 
       <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         <StatCard title="总会话数" value={stats.total_sessions} />
