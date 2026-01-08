@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 from datetime import datetime
 
+from app.config import PromptInjectionPolicy
 from app.schemas.orchestration import (
     AgentName,
     AgentRun,
@@ -30,7 +31,7 @@ from app.services.emotion_detector import detect_emotion
 
 def run_auditor(
     user_input: str,
-    prompt_injection_policy: str = "warn",
+    prompt_injection_policy: PromptInjectionPolicy = PromptInjectionPolicy.WARN,
     sanitized_input: str | None = None,
 ) -> AuditorOutput:
     crisis = detect_crisis(user_input)
@@ -52,7 +53,7 @@ def run_auditor(
 
     if looks_like_prompt_injection(user_input):
         flags.append(AuditFlag.PROMPT_INJECTION)
-        if prompt_injection_policy == "block":
+        if prompt_injection_policy == PromptInjectionPolicy.BLOCK:
             return AuditorOutput(
                 allowed=False,
                 sanitized_user_input=sanitized,

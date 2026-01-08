@@ -1,9 +1,15 @@
+from enum import Enum
 from functools import lru_cache
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # ⚠️ 仅用于开发环境和测试环境，生产环境必须从环境变量设置
 DEFAULT_JWT_SECRET = "dev-secret-key-DO-NOT-USE-IN-PRODUCTION"
+
+
+class PromptInjectionPolicy(str, Enum):
+    WARN = "warn"
+    BLOCK = "block"
 
 
 class Settings(BaseSettings):
@@ -97,7 +103,7 @@ class Settings(BaseSettings):
     smtp_from: str = "noreply@solacore.app"
     smtp_from_name: str = "Solacore Support"
 
-    prompt_injection_policy: str = "warn"
+    prompt_injection_policy: PromptInjectionPolicy = PromptInjectionPolicy.WARN
 
 
 @lru_cache

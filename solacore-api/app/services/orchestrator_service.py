@@ -32,6 +32,9 @@ class OrchestratorService:
         current_step: SolveStep,
         sanitized_input: str | None = None,
     ) -> OrchestratorDecision:
+        if session.id is None or session.user_id is None:
+            raise ValueError("SESSION_ID_OR_USER_ID_MISSING")
+
         profile_entity = await self._memory.get_or_create_profile(
             session_id=UUID(str(session.id)),
             user_id=UUID(str(session.user_id)),

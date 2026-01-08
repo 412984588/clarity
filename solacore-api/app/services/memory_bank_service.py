@@ -35,20 +35,22 @@ class MemoryBankService:
             schema_version=profile.meta.schema_version.value,
             profile=profile.model_dump(mode="json"),
         )
-        self._db.add(entity)
 
-        try:
-            await self._db.flush()
-            return entity
-        except IntegrityError:
-            await self._db.rollback()
-            result = await self._db.execute(
-                select(SolveProfile).where(SolveProfile.session_id == session_id)
-            )
-            existing = result.scalar_one_or_none()
-            if existing:
-                return existing
-            raise ValueError("PROFILE_CREATE_CONFLICT")
+        async with self._db.begin_nested():
+            self._db.add(entity)
+            try:
+                await self._db.flush()
+                return entity
+            except IntegrityError:
+                pass
+
+        result = await self._db.execute(
+            select(SolveProfile).where(SolveProfile.session_id == session_id)
+        )
+        existing = result.scalar_one_or_none()
+        if existing:
+            return existing
+        raise ValueError("PROFILE_CREATE_CONFLICT")
 
     def load_profile(self, entity: SolveProfile) -> ProblemProfile:
         """加载 profile，遇到 schema 校验失败时降级处理"""

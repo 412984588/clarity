@@ -115,8 +115,30 @@ async def stream_messages(
             flush=False,
         )
         await db.commit()
-        # 返回危机资源响应，不继续 Solve 流程
-        return get_crisis_response()
+
+        async def crisis_event_generator() -> AsyncGenerator[str, None]:
+            crisis_response = get_crisis_response()
+            message = crisis_response.get("message", "")
+            payload = json.dumps({"content": message})
+            yield f"event: token\ndata: {payload}\n\n"
+            done_payload = json.dumps(
+                {
+                    "blocked": True,
+                    "reason": "CRISIS",
+                    "resources": crisis_response.get("resources", {}),
+                }
+            )
+            yield f"event: done\ndata: {done_payload}\n\n"
+
+        return StreamingResponse(
+            crisis_event_generator(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+                "X-Accel-Buffering": "no",
+            },
+        )
 
     settings = get_settings()
 
