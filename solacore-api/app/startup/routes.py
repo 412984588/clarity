@@ -11,6 +11,7 @@ from app.routers import (
     learn,
     revenuecat_webhooks,
     sessions,
+    stats,
     subscriptions,
     templates,
     webhooks,
@@ -280,6 +281,7 @@ def register_routes(app: FastAPI, settings: Settings) -> None:
     app.include_router(sessions.router)
     app.include_router(learn.router)
     app.include_router(actions.router)
+    app.include_router(stats.router)
     app.include_router(subscriptions.router)
     app.include_router(templates.router)
     app.include_router(webhooks.router)

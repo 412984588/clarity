@@ -6,6 +6,7 @@ import {
   LayoutGrid,
   MessageSquare,
   Layers,
+  BarChart3,
   Settings as SettingsIcon,
 } from "lucide-react";
 
@@ -17,6 +18,7 @@ const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutGrid },
   { href: "/solve", label: "Solve", icon: MessageSquare },
   { href: "/sessions", label: "Sessions", icon: Layers },
+  { href: "/stats", label: "Stats", icon: BarChart3 },
   { href: "/settings", label: "Settings", icon: SettingsIcon },
 ];
 
