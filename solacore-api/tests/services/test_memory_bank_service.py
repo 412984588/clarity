@@ -104,6 +104,13 @@ class TestGetOrCreateProfile:
             profile_ids = {p.id for p in successful_profiles}
             assert len(profile_ids) == 1
 
+            async with TestingSessionLocal() as verify_db:
+                result = await verify_db.execute(
+                    select(SolveProfile).where(SolveProfile.session_id == session_id)
+                )
+                all_profiles = result.scalars().all()
+                assert len(all_profiles) == 1
+
 
 @pytest.mark.asyncio
 class TestLoadProfile:
