@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
+import { Download } from "lucide-react";
 
 import { ChatInterface } from "@/components/solve/ChatInterface";
 import { StepProgress } from "@/components/solve/StepProgress";
@@ -87,6 +88,44 @@ export default function SessionDetailPage() {
     }
   };
 
+  const handleExport = async (format: "markdown" | "json") => {
+    if (!sessionId) return;
+
+    try {
+      const API_URL =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const response = await fetch(
+        `${API_URL}/sessions/${sessionId}/export?format=${format}`,
+        { credentials: "include" },
+      );
+
+      if (!response.ok) {
+        throw new Error("导出失败");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+
+      const contentDisposition = response.headers.get("Content-Disposition");
+      const filename =
+        contentDisposition?.split("filename=")[1]?.replace(/"/g, "") ||
+        `session_${sessionId}.${format === "markdown" ? "md" : "json"}`;
+
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+
+      toast.success(`导出成功：${filename}`);
+    } catch (err) {
+      toast.error("导出失败");
+      console.error(err);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex h-[60vh] items-center justify-center">
@@ -113,7 +152,20 @@ export default function SessionDetailPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <StepProgress currentStep={session.current_step} />
-        <ReminderPicker value={reminderTime} onChange={handleReminderChange} />
+        <div className="flex items-center gap-2">
+          <ReminderPicker
+            value={reminderTime}
+            onChange={handleReminderChange}
+          />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleExport("markdown")}
+          >
+            <Download className="w-4 h-4 mr-2" />
+            导出
+          </Button>
+        </div>
       </div>
       {session.first_step_action && (
         <ActionPlanCard
