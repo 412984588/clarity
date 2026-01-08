@@ -3,14 +3,16 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
 
 import { ChatInterface } from "@/components/solve/ChatInterface";
 import { StepProgress } from "@/components/solve/StepProgress";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { Button } from "@/components/ui/button";
+import { ReminderPicker } from "@/components/session/ReminderPicker";
 import type { Session } from "@/lib/types";
-import { getSession } from "@/lib/session-api";
+import { getSession, updateSession } from "@/lib/session-api";
 
 export default function SessionDetailPage() {
   const params = useParams<{ id: string }>();
@@ -18,6 +20,7 @@ export default function SessionDetailPage() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [reminderTime, setReminderTime] = useState<Date | null>(null);
 
   useEffect(() => {
     if (!sessionId) {
@@ -30,6 +33,9 @@ export default function SessionDetailPage() {
       try {
         const data = await getSession(sessionId);
         setSession(data);
+        setReminderTime(
+          data.reminder_time ? new Date(data.reminder_time) : null,
+        );
       } catch (err) {
         setError(err instanceof Error ? err.message : "加载会话失败");
       } finally {
@@ -39,6 +45,21 @@ export default function SessionDetailPage() {
 
     void load();
   }, [sessionId]);
+
+  const handleReminderChange = async (date: Date | null) => {
+    if (!sessionId) return;
+
+    try {
+      await updateSession(sessionId, {
+        reminder_time: date?.toISOString() ?? null,
+      });
+      setReminderTime(date);
+      toast.success(date ? "提醒已设置" : "提醒已取消");
+    } catch (err) {
+      toast.error("更新提醒失败");
+      console.error(err);
+    }
+  };
 
   if (loading) {
     return (
@@ -64,7 +85,10 @@ export default function SessionDetailPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <StepProgress currentStep={session.current_step} />
+      <div className="flex items-center justify-between">
+        <StepProgress currentStep={session.current_step} />
+        <ReminderPicker value={reminderTime} onChange={handleReminderChange} />
+      </div>
       <ChatInterface
         sessionId={session.id}
         initialMessages={session.messages}

@@ -3,7 +3,7 @@ from enum import Enum
 
 from app.database import Base
 from app.utils.datetime_utils import utc_now
-from sqlalchemy import Column, DateTime, ForeignKey, String, Text
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -44,6 +44,8 @@ class SolveSession(Base):
     locale = Column(String(10), default="en")
     first_step_action = Column(Text, nullable=True)
     reminder_time = Column(DateTime, nullable=True)
+    reminder_sent = Column(Boolean, default=False, nullable=False)
+    reminder_sent_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=lambda: utc_now())
     completed_at = Column(DateTime, nullable=True)
 

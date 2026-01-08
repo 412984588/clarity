@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
 from app.config import Settings, validate_production_config
+from app.tasks.scheduler import shutdown_scheduler, start_scheduler
 from fastapi import FastAPI
 
 
@@ -18,7 +19,7 @@ async def lifespan_handler(app: FastAPI, settings: Settings) -> AsyncIterator[No
     Yields:
         None: 生命周期上下文
     """
-    # 启动时校验生产配置
     validate_production_config(settings)
+    start_scheduler()
     yield
-    # 关闭时的清理工作（如需要可在此添加）
+    shutdown_scheduler()

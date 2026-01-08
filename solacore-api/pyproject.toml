@@ -31,7 +31,8 @@ dependencies = [
     "stripe (>=14.1.0,<15.0.0)",
     "aiosmtplib (>=5.0.0,<6.0.0)",
     "slowapi (>=0.1.9,<0.2.0) ; python_version >= \"3.11\" and python_version < \"4.0\"",
-    "structlog (>=25.5.0,<26.0.0)"
+    "structlog (>=25.5.0,<26.0.0)",
+    "apscheduler (>=3.11.2,<4.0.0)"
 ]
 
 

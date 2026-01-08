@@ -30,8 +30,9 @@ export interface Session {
   status: SessionStatus;
   messages: Message[];
   created_at: string;
-  completed_at?: string; // Renamed from updated_at to match backend
-  first_message?: string; // First user message for list display
+  completed_at?: string;
+  first_message?: string;
+  reminder_time?: string | null;
 }
 
 export interface AuthTokens {

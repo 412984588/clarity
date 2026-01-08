@@ -2,9 +2,14 @@
 
 import logging
 from email.message import EmailMessage
+from typing import TYPE_CHECKING
 
 import aiosmtplib
 from app.config import get_settings
+
+if TYPE_CHECKING:
+    from app.models.solve_session import SolveSession
+    from app.models.user import User
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -85,5 +90,86 @@ Solacore 团队
             str(e),
             exc_info=True,
             extra={"to_email": to_email, "smtp_host": settings.smtp_host},
+        )
+        return False
+
+
+async def send_session_reminder_email(user: "User", session: "SolveSession") -> bool:
+    if not settings.smtp_enabled:
+        logger.warning("SMTP is disabled, reminder email not sent")
+        return False
+
+    session_link = f"{settings.frontend_url}/sessions/{session.id}"
+
+    action_items_html = ""
+    action_items_text = ""
+    if session.first_step_action is not None:
+        action_items_html = f"<ul><li>{session.first_step_action}</li></ul>"
+        action_items_text = f"- {session.first_step_action}"
+
+    message = EmailMessage()
+    message["From"] = f"{settings.smtp_from_name} <{settings.smtp_from}>"
+    message["To"] = user.email
+    message["Subject"] = "⏰ 提醒：继续处理您的问题"
+
+    message.set_content(f"""
+您好，
+
+这是您设置的提醒，请继续处理您的问题：
+
+{action_items_text}
+
+查看详情：{session_link}
+
+Solacore 团队
+    """)
+
+    message.add_alternative(
+        f"""
+<html>
+  <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+      <h2 style="color: #4CAF50;">⏰ 提醒：继续处理您的问题</h2>
+      <p>您好，</p>
+      <p>这是您设置的提醒，请继续处理您的问题：</p>
+      {action_items_html}
+      <p style="margin: 30px 0;">
+        <a href="{session_link}"
+           style="background-color: #4CAF50;
+                  color: white;
+                  padding: 12px 24px;
+                  text-decoration: none;
+                  border-radius: 5px;
+                  display: inline-block;">
+          查看详情
+        </a>
+      </p>
+      <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+      <p style="color: #999; font-size: 12px;">Solacore 团队</p>
+    </div>
+  </body>
+</html>
+    """,
+        subtype="html",
+    )
+
+    try:
+        await aiosmtplib.send(
+            message,
+            hostname=settings.smtp_host,
+            port=settings.smtp_port,
+            username=settings.smtp_user,
+            password=settings.smtp_password,
+            start_tls=True,
+        )
+        logger.info("Session reminder email sent to %s", user.email)
+        return True
+    except Exception as e:
+        logger.error(
+            "Failed to send session reminder email to %s: %s",
+            user.email,
+            str(e),
+            exc_info=True,
+            extra={"to_email": user.email, "session_id": str(session.id)},
         )
         return False
