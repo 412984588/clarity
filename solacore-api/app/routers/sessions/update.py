@@ -62,13 +62,15 @@ async def update_session(
         session.first_step_action = updates.first_step_action  # type: ignore[assignment]
     if updates.reminder_time is not None:
         session.reminder_time = updates.reminder_time  # type: ignore[assignment]
+    if updates.tags is not None:
+        session.tags = updates.tags  # type: ignore[assignment]
 
     await db.commit()
 
-    response = SessionUpdateResponse(
+    session_response = SessionUpdateResponse(
         id=str(session.id),
         status=str(session.status),
         current_step=str(session.current_step),
         updated_at=utc_now(),
     )
-    return response
+    return session_response

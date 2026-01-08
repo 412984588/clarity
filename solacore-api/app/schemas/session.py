@@ -274,6 +274,11 @@ class SessionUpdateRequest(BaseModel):
         description="提醒时间",
         examples=["2024-08-01T09:00:00Z"],
     )
+    tags: Optional[List[str]] = Field(
+        default=None,
+        description="会话标签",
+        examples=[["工作", "重要"]],
+    )
 
 
 class SessionUpdateResponse(BaseModel):

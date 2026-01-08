@@ -1,6 +1,6 @@
-from typing import Any
+from typing import Any, Dict, Union
 
-COMMON_ERROR_RESPONSES: dict[int, dict[str, Any]] = {
+COMMON_ERROR_RESPONSES: Dict[Union[int, str], Dict[str, Any]] = {
     401: {
         "description": "Unauthorized",
         "content": {

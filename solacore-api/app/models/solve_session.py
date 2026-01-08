@@ -1,10 +1,11 @@
 import uuid
 from enum import Enum
+from typing import List, Optional
 
 from app.database import Base
 from app.utils.datetime_utils import utc_now
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, Text
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from sqlalchemy.orm import relationship
 
 
@@ -48,6 +49,9 @@ class SolveSession(Base):
     reminder_sent_at = Column(DateTime, nullable=True)
     action_completed = Column(Boolean, default=False, nullable=False)
     action_completed_at = Column(DateTime, nullable=True)
+    tags: Optional[List[str]] = Column(
+        ARRAY(String(50)), nullable=True, server_default="{}"
+    )  # type: ignore[assignment]
     created_at = Column(DateTime, default=lambda: utc_now())
     completed_at = Column(DateTime, nullable=True)
 
